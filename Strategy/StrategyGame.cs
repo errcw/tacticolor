@@ -36,8 +36,8 @@ namespace Strategy
         {
             base.Initialize();
 
-            MapGenerator generator = new MapGenerator();
-            _map = generator.Generate(16, 4);
+            _generator = new MapGenerator();
+            ShowMap(_generator.Generate(12, 3));
         }
 
         protected override void LoadContent()
@@ -45,46 +45,63 @@ namespace Strategy
             base.LoadContent();
 
             _colourable = Content.Load<Texture2D>("Colourable");
-            _tile = Content.Load<Texture2D>("Tile");
+            _tile = Content.Load<Texture2D>("TileSmall");
             _piece = Content.Load<Texture2D>("Piece");
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _isoBatch = new IsometricBatch(_spriteBatch, Content.Load<SpriteFont>("Debug"));
+            _isoBatch = new IsometricBatch(_spriteBatch);
         }
 
-        private void ShowTerritory()
+        private void ShowMap(Map map)
         {
-            const int ROX = -38;
-            const int ROY = 19;
-            const int COX = 40;
-            const int COY = 20;
-            bool[,] territory = GenerateTerritoryLayout();
-
-            _tiles.Clear();
-            for (int r = 0; r < territory.GetLength(0); r++)
+            _sprites.Clear();
+            foreach (Territory territory in map.Territories)
             {
-                for (int c = 0; c < territory.GetLength(1); c++)
+                _sprites.AddRange(ShowTerritory(territory));
+            }
+        }
+
+        private List<IsometricSprite> ShowTerritory(Territory territory)
+        {
+            const int ROX = -19;
+            const int ROY = 9;
+            const int COX = 19;
+            const int COY = 10;
+
+            List<IsometricSprite> tileSprites = new List<IsometricSprite>(25);
+            bool[,] layout = GenerateTerritoryLayout();
+
+            int tr = (int)territory.Position.X;
+            int tc = (int)territory.Position.Y;
+
+            for (int r = 0; r < layout.GetLength(0); r++)
+            {
+                for (int c = 0; c < layout.GetLength(1); c++)
                 {
-                    if (territory[r, c])
+                    if (layout[r, c])
                     {
                         IsometricSprite sprite = new IsometricSprite(_tile);
-                        sprite.X = r * ROX + c * COX + 500;
-                        sprite.Y = r * ROY + c * COY + 150;
-                        _tiles.Add(sprite);
+                        sprite.X = (tr + r) * ROX + (tc + c) * COX + 500;
+                        sprite.Y = (tr + r) * ROY + (tc + c) * COY + 150;
+                        tileSprites.Add(sprite);
                     }
                 }
             }
+
+            return tileSprites;
         }
 
         private bool[,] GenerateTerritoryLayout()
         {
-            Random random = new Random();
-            bool[,] layout = new bool[9, 9];
+            bool[,] layout = new bool[5, 5];
+
+            const int CENTER_START = 1;
+            const int CENTER_END = 4;
 
             // fill in the center for the piece tiles
-            for (int r = 3; r < 6; r++)
+            for (int r = CENTER_START; r < CENTER_END; r++)
             {
-                for (int c = 3; c < 6; c++)
+                for (int c = CENTER_START; c < CENTER_END; c++)
                 {
                     layout[r, c] = true;
                 }
@@ -93,12 +110,12 @@ namespace Strategy
             // add randomized decoration
             for (int d = 0; d < 5; d++)
             {
-                int baseRow = random.Next(3, 6);
+                int baseRow = random.Next(CENTER_START, CENTER_END);
                 int deltaRows = random.Next(-5, 5);
                 int startRow = Math.Min(baseRow, baseRow + deltaRows);
                 int endRow = Math.Max(baseRow, baseRow + deltaRows);
 
-                int baseCol = random.Next(3, 6);
+                int baseCol = random.Next(CENTER_START, CENTER_END);
                 int deltaCols = random.Next(-5, 5);
                 int startCol = Math.Min(baseCol, baseCol + deltaCols);
                 int endCol = Math.Max(baseCol, baseCol + deltaCols);
@@ -107,7 +124,8 @@ namespace Strategy
                 {
                     for (int c = startCol; c <= endCol; c++)
                     {
-                        if (r >= 0 && r < 9 && c >= 0 && c < 9)
+                        if (r >= 0 && r < layout.GetLength(0) &&
+                            c >= 0 && c < layout.GetLength(1))
                         {
                             layout[r, c] = true;
                         }
@@ -138,7 +156,7 @@ namespace Strategy
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.R) && _rWasDown)
             {
-                ShowTerritory();
+                ShowMap(_generator.Generate(12, 3));
                 _rWasDown = false;
             }
             base.Update(gameTime);
@@ -153,47 +171,13 @@ namespace Strategy
             GraphicsDevice.Clear(new Color(45, 45, 45));
 
             _isoBatch.Begin();
-            foreach (IsometricSprite sprite in _tiles)
+            foreach (IsometricSprite sprite in _sprites)
             {
                 _isoBatch.Draw(sprite);
             }
             _isoBatch.End();
 
             base.Draw(gameTime);
-        }
-
-        private void DrawMap()
-        {
-            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Texture, SaveStateMode.None);
-            foreach (Territory t in _map.Territories)
-            {
-                foreach (Territory tt in t.Adjacent)
-                {
-                    float angle = (float)Math.Atan2(tt.Position.Y - t.Position.Y, tt.Position.X - t.Position.X);
-                    float distance = Vector2.Distance(t.Position, tt.Position);
-                    _spriteBatch.Draw(
-                        _colourable,
-                        t.Position + new Vector2(100, 100),
-                        null,
-                        Color.Black,
-                        angle,
-                        Vector2.Zero,
-                        new Vector2(distance, 1),
-                        SpriteEffects.None,
-                        0f);
-                }
-                _spriteBatch.Draw(
-                    _colourable,
-                    t.Position + new Vector2(95, 95),
-                    null,
-                    GetPlayerColor(t.Owner),
-                    0f,
-                    Vector2.Zero,
-                    new Vector2(10, 10),
-                    SpriteEffects.None,
-                    0f);
-            }
-            _spriteBatch.End();
         }
 
         private Color GetPlayerColor(PlayerId? player)
@@ -209,14 +193,16 @@ namespace Strategy
             }
         }
 
-        private Map _map;
+        Random random = new Random();
+
+        private MapGenerator _generator;
 
         private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;
         private Texture2D _colourable;
         private Texture2D _tile;
         private Texture2D _piece;
-        private List<IsometricSprite> _tiles = new List<IsometricSprite>();
+        private List<IsometricSprite> _sprites = new List<IsometricSprite>();
 
         private bool _rWasDown;
     }

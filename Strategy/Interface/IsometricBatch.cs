@@ -8,11 +8,9 @@ namespace Strategy.Interface
 {
     public class IsometricBatch
     {
-        private SpriteFont _debug;
-        public IsometricBatch(SpriteBatch batch, SpriteFont debug)
+        public IsometricBatch(SpriteBatch batch)
         {
             _batch = batch;
-            _debug = debug;
             _sprites = new List<IsometricSprite>(32);
         }
 

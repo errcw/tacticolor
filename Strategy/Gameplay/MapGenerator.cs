@@ -54,7 +54,7 @@ namespace Strategy.Gameplay
                     int x = c * GRID_SIZE + xoffset + _random.Next(-OFFSET_THRESHOLD, OFFSET_THRESHOLD);
                     int y = r * GRID_SIZE + _random.Next(-OFFSET_THRESHOLD, OFFSET_THRESHOLD);
 
-                    territories[r * rows + c] = new Territory(x, y);
+                    territories[r * cols + c] = new Territory(x, y);
                 }
             }
 
@@ -76,7 +76,7 @@ namespace Strategy.Gameplay
             }
 
             // connect the territories
-            LinkedList<LineSegment> segments = new LinkedList<LineSegment>();
+            List<LineSegment> segments = new List<LineSegment>(numTerritories * numTerritories);
             foreach (Territory ta in territories)
             {
                 // find all the candidate territories
@@ -105,15 +105,14 @@ namespace Strategy.Gameplay
                         {
                             ta.Adjacent.Add(tb);
                             tb.Adjacent.Add(ta);
-                            segments.AddLast(new LineSegment(ta.Position, tb.Position));
+                            segments.Add(new LineSegment(ta.Position, tb.Position));
                             neighbors[i] = null;
                         }
                     }
                 }
             }
 
-            Map map = new Map(territories);
-            return map;
+            return new Map(territories);
         }
 
         /// <summary>
@@ -167,10 +166,10 @@ namespace Strategy.Gameplay
 
         private Random _random;
 
-        private const int GRID_SIZE = 150;
-        private const int OFFSET_THRESHOLD = 25;
+        private const int GRID_SIZE = 10;
+        private const int OFFSET_THRESHOLD = 4;
         private const int CONNECTION_MINIMUM = 2;
         private const double CONNECTION_CHANCE = 0.75;
-        private const int CONNECTION_THRESHOLD = 250;
+        private const int CONNECTION_THRESHOLD = GRID_SIZE * 2;
     }
 }
