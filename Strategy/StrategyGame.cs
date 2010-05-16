@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Storage;
 
 using Strategy.Gameplay;
 using Strategy.Interface;
+using Strategy.Library;
 using Strategy.Properties;
 
 namespace Strategy
@@ -47,6 +48,7 @@ namespace Strategy
             _colourable = Content.Load<Texture2D>("Colourable");
             _tile = Content.Load<Texture2D>("TileSmall");
             _piece = Content.Load<Texture2D>("Piece");
+            _conn = Content.Load<Texture2D>("Connection");
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _isoBatch = new IsometricBatch(_spriteBatch);
@@ -55,24 +57,29 @@ namespace Strategy
         private void ShowMap(Map map)
         {
             _sprites.Clear();
+            _spritesLow.Clear();
             foreach (Territory territory in map.Territories)
             {
                 _sprites.AddRange(ShowTerritory(territory));
+                foreach (Territory other in territory.Adjacent)
+                {
+                    _spritesLow.AddRange(ShowConnection(territory, other));
+                }
             }
         }
 
+        const int ROX = -19;
+        const int ROY = 9;
+        const int COX = 19;
+        const int COY = 10;
+
         private List<IsometricSprite> ShowTerritory(Territory territory)
         {
-            const int ROX = -19;
-            const int ROY = 9;
-            const int COX = 19;
-            const int COY = 10;
-
             List<IsometricSprite> tileSprites = new List<IsometricSprite>(25);
             bool[,] layout = GenerateTerritoryLayout();
 
-            int tr = (int)territory.Position.X;
-            int tc = (int)territory.Position.Y;
+            int tr = (int)territory.Position.X - 2;
+            int tc = (int)territory.Position.Y - 2;
 
             for (int r = 0; r < layout.GetLength(0); r++)
             {
@@ -89,6 +96,19 @@ namespace Strategy
             }
 
             return tileSprites;
+        }
+
+        private List<IsometricSprite> ShowConnection(Territory a, Territory b)
+        {
+            List<IsometricSprite> sprites = new List<IsometricSprite>(25);
+            foreach (Vector2 v in BresenhamIterator.Get((int)a.Position.X, (int)a.Position.Y, (int)b.Position.X, (int)b.Position.Y))
+            {
+                IsometricSprite sprite = new IsometricSprite(_conn);
+                sprite.X = (v.X) * ROX + (v.Y) * COX + 500;
+                sprite.Y = (v.X) * ROY + (v.Y) * COY + 150;
+                sprites.Add(sprite);
+            }
+            return sprites;
         }
 
         private bool[,] GenerateTerritoryLayout()
@@ -171,6 +191,13 @@ namespace Strategy
             GraphicsDevice.Clear(new Color(45, 45, 45));
 
             _isoBatch.Begin();
+            foreach (IsometricSprite sprite in _spritesLow)
+            {
+                _isoBatch.Draw(sprite);
+            }
+            _isoBatch.End();
+
+            _isoBatch.Begin();
             foreach (IsometricSprite sprite in _sprites)
             {
                 _isoBatch.Draw(sprite);
@@ -202,7 +229,9 @@ namespace Strategy
         private Texture2D _colourable;
         private Texture2D _tile;
         private Texture2D _piece;
+        private Texture2D _conn;
         private List<IsometricSprite> _sprites = new List<IsometricSprite>();
+        private List<IsometricSprite> _spritesLow = new List<IsometricSprite>();
 
         private bool _rWasDown;
     }
