@@ -68,10 +68,10 @@ namespace Strategy
             }
         }
 
-        const int ROX = -19;
-        const int ROY = 9;
-        const int COX = 19;
-        const int COY = 10;
+        const int ROX = 22;
+        const int ROY = 11;
+        const int COX = 20;
+        const int COY = -10;
 
         private List<IsometricSprite> ShowTerritory(Territory territory)
         {
@@ -101,7 +101,7 @@ namespace Strategy
         private List<IsometricSprite> ShowConnection(Territory a, Territory b)
         {
             List<IsometricSprite> sprites = new List<IsometricSprite>(25);
-            foreach (Vector2 v in BresenhamIterator.Get((int)a.Position.X, (int)a.Position.Y, (int)b.Position.X, (int)b.Position.Y))
+            foreach (Vector2 v in BresenhamIterator.GetPointsOnLine((int)a.Position.X, (int)a.Position.Y, (int)b.Position.X, (int)b.Position.Y))
             {
                 IsometricSprite sprite = new IsometricSprite(_conn);
                 sprite.X = (v.X) * ROX + (v.Y) * COX + 500;

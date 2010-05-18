@@ -7,7 +7,7 @@ namespace Strategy.Library
 {
     public class BresenhamIterator
     {
-        public static IEnumerable<Vector2> Get(int x0, int y0, int x1, int y1)
+        public static IEnumerable<Vector2> GetPointsOnLine(int x0, int y0, int x1, int y1)
         {
             bool steep = Math.Abs(y1 - y0) > Math.Abs(x1 - x0);
             if (steep)
