@@ -166,8 +166,8 @@ namespace Strategy.Gameplay
 
         private Random _random;
 
-        private const int GRID_SIZE = 10;
-        private const int OFFSET_THRESHOLD = 4;
+        private const int GRID_SIZE = 5+2; // territory size + separation
+        private const int OFFSET_THRESHOLD = 1;
         private const int CONNECTION_MINIMUM = 2;
         private const double CONNECTION_CHANCE = 0.75;
         private const int CONNECTION_THRESHOLD = GRID_SIZE * 2;

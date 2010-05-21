@@ -37,8 +37,8 @@ namespace Strategy
         {
             base.Initialize();
 
-            _generator = new MapGenerator();
-            ShowMap(_generator.Generate(12, 3));
+            _generator = new GridMapGenerator();
+            ShowMap(_generator.Generate(20, 4));
         }
 
         protected override void LoadContent()
@@ -54,14 +54,14 @@ namespace Strategy
             _isoBatch = new IsometricBatch(_spriteBatch);
         }
 
-        private void ShowMap(Map map)
+        private void ShowMap(GridMap map)
         {
             _sprites.Clear();
             _spritesLow.Clear();
-            foreach (Territory territory in map.Territories)
+            foreach (GridTerritory territory in map.Territories)
             {
                 _sprites.AddRange(ShowTerritory(territory));
-                foreach (Territory other in territory.Adjacent)
+                foreach (GridTerritory other in territory.Adjacent)
                 {
                     _spritesLow.AddRange(ShowConnection(territory, other));
                 }
@@ -72,88 +72,33 @@ namespace Strategy
         const int ROY = 11;
         const int COX = 20;
         const int COY = -10;
+        const int BASEX = 100;
+        const int BASEY = 300;
 
-        private List<IsometricSprite> ShowTerritory(Territory territory)
+        private List<IsometricSprite> ShowTerritory(GridTerritory territory)
         {
             List<IsometricSprite> tileSprites = new List<IsometricSprite>(25);
-            bool[,] layout = GenerateTerritoryLayout();
-
-            int tr = (int)territory.Position.X - 2;
-            int tc = (int)territory.Position.Y - 2;
-
-            for (int r = 0; r < layout.GetLength(0); r++)
+            foreach (Point p in territory.Area)
             {
-                for (int c = 0; c < layout.GetLength(1); c++)
-                {
-                    if (layout[r, c])
-                    {
-                        IsometricSprite sprite = new IsometricSprite(_tile);
-                        sprite.X = (tr + r) * ROX + (tc + c) * COX + 500;
-                        sprite.Y = (tr + r) * ROY + (tc + c) * COY + 150;
-                        tileSprites.Add(sprite);
-                    }
-                }
+                IsometricSprite sprite = new IsometricSprite(_tile);
+                sprite.X = p.X * ROX + p.Y * COX + BASEX;
+                sprite.Y = p.X * ROY + p.Y * COY + BASEY;
+                tileSprites.Add(sprite);
             }
-
             return tileSprites;
         }
 
-        private List<IsometricSprite> ShowConnection(Territory a, Territory b)
+        private List<IsometricSprite> ShowConnection(GridTerritory a, GridTerritory b)
         {
             List<IsometricSprite> sprites = new List<IsometricSprite>(25);
-            foreach (Vector2 v in BresenhamIterator.GetPointsOnLine((int)a.Position.X, (int)a.Position.Y, (int)b.Position.X, (int)b.Position.Y))
+            foreach (Point p in BresenhamIterator.GetPointsOnLine(a.Location.X, a.Location.Y, b.Location.X, b.Location.Y))
             {
                 IsometricSprite sprite = new IsometricSprite(_conn);
-                sprite.X = (v.X) * ROX + (v.Y) * COX + 500;
-                sprite.Y = (v.X) * ROY + (v.Y) * COY + 150;
+                sprite.X = (p.X) * ROX + (p.Y) * COX + BASEX;
+                sprite.Y = (p.X) * ROY + (p.Y) * COY + BASEY;
                 sprites.Add(sprite);
             }
             return sprites;
-        }
-
-        private bool[,] GenerateTerritoryLayout()
-        {
-            bool[,] layout = new bool[5, 5];
-
-            const int CENTER_START = 1;
-            const int CENTER_END = 4;
-
-            // fill in the center for the piece tiles
-            for (int r = CENTER_START; r < CENTER_END; r++)
-            {
-                for (int c = CENTER_START; c < CENTER_END; c++)
-                {
-                    layout[r, c] = true;
-                }
-            }
-            
-            // add randomized decoration
-            for (int d = 0; d < 5; d++)
-            {
-                int baseRow = random.Next(CENTER_START, CENTER_END);
-                int deltaRows = random.Next(-5, 5);
-                int startRow = Math.Min(baseRow, baseRow + deltaRows);
-                int endRow = Math.Max(baseRow, baseRow + deltaRows);
-
-                int baseCol = random.Next(CENTER_START, CENTER_END);
-                int deltaCols = random.Next(-5, 5);
-                int startCol = Math.Min(baseCol, baseCol + deltaCols);
-                int endCol = Math.Max(baseCol, baseCol + deltaCols);
-
-                for (int r = startRow; r <= endRow; r++)
-                {
-                    for (int c = startCol; c <= endCol; c++)
-                    {
-                        if (r >= 0 && r < layout.GetLength(0) &&
-                            c >= 0 && c < layout.GetLength(1))
-                        {
-                            layout[r, c] = true;
-                        }
-                    }
-                }
-            }
-
-            return layout;
         }
 
         /// <summary>
@@ -176,7 +121,7 @@ namespace Strategy
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.R) && _rWasDown)
             {
-                ShowMap(_generator.Generate(12, 3));
+                ShowMap(_generator.Generate(16, 3));
                 _rWasDown = false;
             }
             base.Update(gameTime);
@@ -222,7 +167,7 @@ namespace Strategy
 
         Random random = new Random();
 
-        private MapGenerator _generator;
+        private GridMapGenerator _generator;
 
         private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;
