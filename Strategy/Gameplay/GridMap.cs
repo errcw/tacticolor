@@ -33,7 +33,7 @@ namespace Strategy.Gameplay
         /// <summary>
         /// Creates a new territory.
         /// </summary>
-        public GridTerritory(IEnumerable<Point> area)
+        public GridTerritory()
         {
             Area = new List<Point>();
             Adjacent = new List<GridTerritory>();

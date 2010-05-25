@@ -36,11 +36,13 @@ namespace Strategy.Gameplay
         {
             GridTerritory[] territories = new GridTerritory[numTerritories];
 
-            int rows = (int)(Math.Floor(Math.Sqrt(numTerritories)) * 1.2 * (TERRITORY_SIZE + 2 * TERRITORY_GAP_SIZE));
-            int cols = (int)(Math.Ceiling(Math.Sqrt(numTerritories)) * 1.2 * (TERRITORY_SIZE + 2 * TERRITORY_GAP_SIZE));
-            int[,] map = new int[rows, cols];
+            const int EXPANSION = TERRITORY_SIZE + 2 * TERRITORY_GAP_SIZE + 1;
+            int terrRows = (int)Math.Floor(Math.Sqrt(numTerritories));
+            int terrCols = (int)Math.Ceiling(Math.Sqrt(numTerritories));
+            int gridRows = terrRows * EXPANSION;
+            int gridCols = terrCols * EXPANSION;
+            int[,] map = new int[gridRows, gridCols];
 
-        Restart:
             PlayerId? owner = null;
             int numUnownedTerritories = numTerritories - territoriesPerPlayer * 4;
             int numAssignedTerritories = 0;
@@ -48,12 +50,11 @@ namespace Strategy.Gameplay
             // place the territories
             for (int t = 0; t < numTerritories; t++)
             {
-                territories[t] = new GridTerritory(null);
-                if (!PlaceTerritory(map, territories[t]))
-                {
-                    Array.Clear(map, 0, rows * cols);
-                    goto Restart;
-                }
+                territories[t] = new GridTerritory();
+
+                int row = (t / terrCols) * EXPANSION;
+                int col = (t % terrCols) * EXPANSION;
+                PlaceTerritory(map, row, col, territories[t]);
 
                 // assign the next territories to the next player after reaching the quota
                 numAssignedTerritories += 1;
@@ -77,22 +78,17 @@ namespace Strategy.Gameplay
         /// a suitable location was found in a reasonable number of tries;
         /// otherwise, false.
         /// </summary>
-        private bool PlaceTerritory(int[,] map, GridTerritory territory)
+        private void PlaceTerritory(int[,] map, int anchorRow, int anchorCol, GridTerritory territory)
         {
             bool[,] layout = GenerateTerritoryLayout();
             int row, col;
-            int tries = 0;
 
             // find a free location
             do
             {
-                if (tries++ >= 100)
-                {
-                    return false;
-                }
-                row = _random.Next(0, map.GetLength(0) - layout.GetLength(0));
-                col = _random.Next(0, map.GetLength(1) - layout.GetLength(1));
-            } while (!CanPlaceTerritoryAt(map, layout, row, col) && tries++ <= 100);
+                row = _random.Next(anchorRow - TERRITORY_SIZE / 2, anchorRow + TERRITORY_SIZE / 2);
+                col = _random.Next(anchorCol - TERRITORY_SIZE / 2, anchorCol + TERRITORY_SIZE / 2);
+            } while (!CanPlaceTerritoryAt(map, layout, row, col));
 
             // find the center of the territory
             territory.Location = new Point(
@@ -114,8 +110,6 @@ namespace Strategy.Gameplay
                     }
                 }
             }
-
-            return true;
         }
 
         /// <summary>
