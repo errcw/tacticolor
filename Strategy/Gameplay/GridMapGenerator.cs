@@ -39,8 +39,8 @@ namespace Strategy.Gameplay
             const int EXPANSION = TERRITORY_SIZE + 2 * TERRITORY_GAP_SIZE + 1;
             int terrRows = (int)Math.Floor(Math.Sqrt(numTerritories));
             int terrCols = (int)Math.Ceiling(Math.Sqrt(numTerritories));
-            int gridRows = terrRows * EXPANSION;
-            int gridCols = terrCols * EXPANSION;
+            int gridRows = terrRows * EXPANSION + EXPANSION;
+            int gridCols = terrCols * EXPANSION + EXPANSION + EXPANSION;
             int[,] map = new int[gridRows, gridCols];
 
             PlayerId? owner = null;
@@ -52,8 +52,13 @@ namespace Strategy.Gameplay
             {
                 territories[t] = new GridTerritory();
 
-                int row = (t / terrCols) * EXPANSION;
-                int col = (t % terrCols) * EXPANSION;
+                int row = (t / terrCols) * EXPANSION + EXPANSION / 2;
+                int col = (t % terrCols) * EXPANSION + EXPANSION / 2;
+                if ((t / terrCols) % 2 != 0)
+                {
+                    // offset the columns to break the grid pattern
+                    col += EXPANSION / 2;
+                }
                 PlaceTerritory(map, row, col, territories[t]);
 
                 // assign the next territories to the next player after reaching the quota

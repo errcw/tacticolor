@@ -72,7 +72,7 @@ namespace Strategy
         const int ROY = 11;
         const int COX = 20;
         const int COY = -10;
-        const int BASEX = 100;
+        const int BASEX = 0;
         const int BASEY = 300;
 
         private List<IsometricSprite> ShowTerritory(GridTerritory territory)
