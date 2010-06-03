@@ -31,6 +31,8 @@ namespace Strategy
             Window.Title = Resources.StrategyGame;
 
             Content.RootDirectory = "Content";
+
+            //Components.Add(new TitleSafeAreaOverlayComponent(this));
         }
 
         protected override void Initialize()
@@ -38,7 +40,7 @@ namespace Strategy
             base.Initialize();
 
             _generator = new GridMapGenerator();
-            ShowMap(_generator.Generate(20, 4));
+            ShowMap(_generator.Generate(20, 5));
         }
 
         protected override void LoadContent()
@@ -72,7 +74,7 @@ namespace Strategy
         const int ROY = 11;
         const int COX = 20;
         const int COY = -10;
-        const int BASEX = 0;
+        const int BASEX = -100;
         const int BASEY = 300;
 
         private List<IsometricSprite> ShowTerritory(GridTerritory territory)
@@ -83,6 +85,7 @@ namespace Strategy
                 IsometricSprite sprite = new IsometricSprite(_tile);
                 sprite.X = p.X * ROX + p.Y * COX + BASEX;
                 sprite.Y = p.X * ROY + p.Y * COY + BASEY;
+                sprite.Tint = GetPlayerColor(territory.Owner);
                 tileSprites.Add(sprite);
             }
             return tileSprites;
@@ -121,7 +124,7 @@ namespace Strategy
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.R) && _rWasDown)
             {
-                ShowMap(_generator.Generate(16, 3));
+                ShowMap(_generator.Generate(16, 4));
                 _rWasDown = false;
             }
             base.Update(gameTime);
@@ -156,12 +159,12 @@ namespace Strategy
         {
             switch (player)
             {
-                case PlayerId.A: return Color.Red;
-                case PlayerId.B: return Color.Blue;
-                case PlayerId.C: return Color.Green;
-                case PlayerId.D: return Color.Orange;
-                case null: return Color.Black;
-                default: return Color.Black;
+                case PlayerId.A: return Color.Tomato;
+                case PlayerId.B: return Color.SkyBlue;
+                case PlayerId.C: return Color.SeaGreen;
+                case PlayerId.D: return Color.SandyBrown;
+                case null: return Color.White;
+                default: return Color.White;
             }
         }
 

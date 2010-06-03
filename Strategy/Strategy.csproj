@@ -93,6 +93,7 @@
     <Compile Include="Interface\IsometricBatch.cs" />
     <Compile Include="Interface\IsometricSprite.cs" />
     <Compile Include="Library\BresenhamIterator.cs" />
+    <Compile Include="Library\TitleSafeAreaOverlayComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

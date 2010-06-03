@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 
+using Strategy.Library;
+
 namespace Strategy.Gameplay
 {
     /// <summary>
@@ -36,42 +38,76 @@ namespace Strategy.Gameplay
         {
             GridTerritory[] territories = new GridTerritory[numTerritories];
 
-            const int EXPANSION = TERRITORY_SIZE + 2 * TERRITORY_GAP_SIZE + 1;
+            const int TERRITORY_GRID_AREA = TERRITORY_SIZE + 2 * TERRITORY_GAP_SIZE + 1;
+            const int BORDER = 2;
             int terrRows = (int)Math.Floor(Math.Sqrt(numTerritories));
             int terrCols = (int)Math.Ceiling(Math.Sqrt(numTerritories));
-            int gridRows = terrRows * EXPANSION + EXPANSION;
-            int gridCols = terrCols * EXPANSION + EXPANSION + EXPANSION;
-            int[,] map = new int[gridRows, gridCols];
+            int gridRows = terrRows * TERRITORY_GRID_AREA + BORDER * 2;
+            int gridCols = terrCols * TERRITORY_GRID_AREA + BORDER * 2 + TERRITORY_GRID_AREA;
+            GridTerritory[,] map = new GridTerritory[gridRows, gridCols];
 
-            PlayerId? owner = null;
-            int numUnownedTerritories = numTerritories - territoriesPerPlayer * 4;
-            int numAssignedTerritories = 0;
-
-            // place the territories
+            // create and place the territories
             for (int t = 0; t < numTerritories; t++)
             {
                 territories[t] = new GridTerritory();
 
-                int row = (t / terrCols) * EXPANSION + EXPANSION / 2;
-                int col = (t % terrCols) * EXPANSION + EXPANSION / 2;
+                int row = (t / terrCols) * TERRITORY_GRID_AREA + BORDER;
+                int col = (t % terrCols) * TERRITORY_GRID_AREA + BORDER;
                 if ((t / terrCols) % 2 != 0)
                 {
                     // offset the columns to break the grid pattern
-                    col += EXPANSION / 2;
+                    col += TERRITORY_GRID_AREA / 2;
                 }
                 PlaceTerritory(map, row, col, territories[t]);
+            }
 
-                // assign the next territories to the next player after reaching the quota
-                numAssignedTerritories += 1;
-                if (owner == null && numAssignedTerritories == numUnownedTerritories)
+            // assign owners to the territories
+            for (PlayerId p = PlayerId.A; p <= PlayerId.D; p++)
+            {
+                for (int i = 0; i < territoriesPerPlayer; i++)
                 {
-                    owner = PlayerId.A;
-                    numAssignedTerritories = 0;
+                    while (true)
+                    {
+                        int t = _random.Next(numTerritories);
+                        if (territories[t].Owner == null)
+                        {
+                            territories[t].Owner = p;
+                            break;
+                        }
+                    }
                 }
-                else if (owner != null && numAssignedTerritories == territoriesPerPlayer)
+            }
+
+            // connect the territories
+            foreach (GridTerritory ta in territories)
+            {
+                // find all the candidate territories
+                List<GridTerritory> potentialNeighbors = new List<GridTerritory>(numTerritories);
+                foreach (GridTerritory tb in territories)
                 {
-                    owner += 1;
-                    numAssignedTerritories = 0;
+                    if (CanConnectTerritoryTo(map, ta, tb))
+                    {
+                        potentialNeighbors.Add(tb);
+                    }
+                }
+                //System.Diagnostics.Debug.Assert(potentialNeighbors.Count + ta.Adjacent.Count >= CONNECTION_MIN_NUM);
+                // add the minimum number of connections
+                while (ta.Adjacent.Count < CONNECTION_MIN_NUM)
+                {
+                    for (int i = 0; i < potentialNeighbors.Count; i++)
+                    {
+                        GridTerritory tb = potentialNeighbors[i];
+                        if (tb == null)
+                        {
+                            continue;
+                        }
+                        if (_random.NextDouble() < CONNECTION_CHANCE)
+                        {
+                            ta.Adjacent.Add(tb);
+                            tb.Adjacent.Add(ta);
+                            potentialNeighbors[i] = null;
+                        }
+                    }
                 }
             }
 
@@ -83,7 +119,7 @@ namespace Strategy.Gameplay
         /// a suitable location was found in a reasonable number of tries;
         /// otherwise, false.
         /// </summary>
-        private void PlaceTerritory(int[,] map, int anchorRow, int anchorCol, GridTerritory territory)
+        private void PlaceTerritory(GridTerritory[,] map, int anchorRow, int anchorCol, GridTerritory territory)
         {
             bool[,] layout = GenerateTerritoryLayout();
             int row, col;
@@ -107,7 +143,7 @@ namespace Strategy.Gameplay
                 {
                     if (layout[r - row, c - col])
                     {
-                        map[r, c] = 1;
+                        map[r, c] = territory;
 
                         int rr = r; // need a copy to avoid aliasing
                         int cc = c;
@@ -119,18 +155,53 @@ namespace Strategy.Gameplay
 
         /// <summary>
         /// Returns true if the territory can be placed at the given location
-        /// without overlapping any territory already placed.
+        /// without overlapping any territory already placed; otherwise, false.
         /// </summary>
-        private bool CanPlaceTerritoryAt(int[,] map, bool[,] territory, int row, int col)
+        private bool CanPlaceTerritoryAt(GridTerritory[,] map, bool[,] territory, int row, int col)
         {
             for (int r = row - TERRITORY_GAP_SIZE; r <= row + territory.GetLength(0) + TERRITORY_GAP_SIZE; r++)
             {
                 for (int c = col - TERRITORY_GAP_SIZE; c <= col + territory.GetLength(1) + TERRITORY_GAP_SIZE; c++)
                 {
-                    if (r < 0 || r >= map.GetLength(0) || c < 0 || c >= map.GetLength(1) || map[r, c] != 0)
+                    if (r < 0 || r >= map.GetLength(0) || c < 0 || c >= map.GetLength(1) || map[r, c] != null)
                     {
                         return false;
                     }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Returns true if the two territories can be connected without the
+        /// connection crossing another territory; otherwise, false.
+        /// </summary>
+        private bool CanConnectTerritoryTo(GridTerritory[,] map, GridTerritory src, GridTerritory dst)
+        {
+            // no self-connections
+            if (src == dst)
+            {
+                return false;
+            }
+            // no duplicate connections
+            if (src.Adjacent.Contains(dst) || dst.Adjacent.Contains(src))
+            {
+                return false;
+            }
+            // no far connections
+            float d2 = (src.Location.X - dst.Location.X) * (src.Location.X - dst.Location.X) +
+                       (src.Location.Y - dst.Location.Y) * (src.Location.Y - dst.Location.Y);
+            if (d2 > CONNECTION_MAX_DISTANCE_2)
+            {
+                return false;
+            }
+            // no non-planar connections
+            foreach (Point point in BresenhamIterator.GetPointsOnLine(src.Location.X, src.Location.Y, dst.Location.X, dst.Location.Y))
+            {
+                GridTerritory t = map[point.Y, point.X];
+                if (t != null && t != src && t != dst)
+                {
+                    return false;
                 }
             }
             return true;
@@ -187,7 +258,10 @@ namespace Strategy.Gameplay
 
         private const int TERRITORY_BASE_SIZE = 3;
         private const int TERRITORY_FRILL_SIZE = 1;
-        private const int TERRITORY_GAP_SIZE = 1;
+        private const int TERRITORY_GAP_SIZE = 0;
         private const int TERRITORY_SIZE = TERRITORY_BASE_SIZE + 2 * TERRITORY_FRILL_SIZE;
+        private const int CONNECTION_MIN_NUM = 2;
+        private const int CONNECTION_MAX_DISTANCE_2 = 15 * 15;
+        private const double CONNECTION_CHANCE = 0.5;
     }
 }

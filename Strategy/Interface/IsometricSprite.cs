@@ -26,14 +26,17 @@ namespace Strategy.Interface
 
         public Vector2 Origin { get; set; }
 
+        public Color Tint { get; set; }
+
         public IsometricSprite(Texture2D texture)
         {
             _texture = texture;
+            Tint = Color.White;
         }
 
         public void Draw(SpriteBatch batch)
         {
-            batch.Draw(_texture, Position - Origin, Color.White);
+            batch.Draw(_texture, Position - Origin, Tint);
         }
 
         private Texture2D _texture;
