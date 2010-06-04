@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
 
@@ -38,12 +39,10 @@ namespace Strategy.Gameplay
         {
             GridTerritory[] territories = new GridTerritory[numTerritories];
 
-            const int TERRITORY_GRID_AREA = TERRITORY_SIZE + 2 * TERRITORY_GAP_SIZE + 1;
-            const int BORDER = 2;
             int terrRows = (int)Math.Floor(Math.Sqrt(numTerritories));
             int terrCols = (int)Math.Ceiling(Math.Sqrt(numTerritories));
-            int gridRows = terrRows * TERRITORY_GRID_AREA + BORDER * 2;
-            int gridCols = terrCols * TERRITORY_GRID_AREA + BORDER * 2 + TERRITORY_GRID_AREA;
+            int gridRows = terrRows * TERRITORY_SIZE * 2;
+            int gridCols = terrCols * TERRITORY_SIZE * 2;
             GridTerritory[,] map = new GridTerritory[gridRows, gridCols];
 
             // create and place the territories
@@ -69,7 +68,6 @@ namespace Strategy.Gameplay
                     }
                 }
             }
-            territories[0].Owner = null;
 
             // connect the territories
             /*foreach (GridTerritory ta in territories)
@@ -120,9 +118,9 @@ namespace Strategy.Gameplay
             // find a free location
             do
             {
-                row = _random.Next(1, map.GetLength(0) - TERRITORY_SIZE - 1);
-                col = _random.Next(1, map.GetLength(1) - TERRITORY_SIZE - 1);
-            } while (!CanPlaceTerritoryAt(map, layout, row, col, first));
+                row = _random.Next(2, map.GetLength(0) - layout.GetLength(0) - 2);
+                col = _random.Next(2, map.GetLength(1) - layout.GetLength(1) - 2);
+            } while (!CanPlaceTerritoryAt(map, layout, row, col, first, territory));
 
             // find the center of the territory
             territory.Location = new Point(
@@ -140,7 +138,7 @@ namespace Strategy.Gameplay
 
                         int rr = r; // need a copy to avoid aliasing
                         int cc = c;
-                        territory.Area.Add(new Point(cc, rr));
+                        territory.Area.Add(new Point(c, r));
                     }
                 }
             }
@@ -150,12 +148,12 @@ namespace Strategy.Gameplay
         /// Returns true if the territory can be placed at the given location
         /// without overlapping any territory already placed; otherwise, false.
         /// </summary>
-        private bool CanPlaceTerritoryAt(GridTerritory[,] map, bool[,] territory, int row, int col, bool first)
+        private bool CanPlaceTerritoryAt(GridTerritory[,] map, bool[,] territory, int row, int col, bool first, GridTerritory t)
         {
             // check for overlap
-            for (int r = row; r < row + territory.GetLength(0); r++)
+            for (int r = row - TERRITORY_GAP_SIZE; r < row + territory.GetLength(0) + TERRITORY_GAP_SIZE; r++)
             {
-                for (int c = col; c < col + territory.GetLength(1); c++)
+                for (int c = col - TERRITORY_GAP_SIZE; c < col + territory.GetLength(1) + TERRITORY_GAP_SIZE; c++)
                 {
                     if (r < 0 || r >= map.GetLength(0) || c < 0 || c >= map.GetLength(1) || map[r, c] != null)
                     {
@@ -163,39 +161,50 @@ namespace Strategy.Gameplay
                     }
                 }
             }
+
             // check for connectedness
             if (!first)
             {
-                bool connected = false;
-                for (int r = 0; r < territory.GetLength(0) && !connected; r++)
+                List<GridTerritory> neighbors = new List<GridTerritory>(8);
+                for (int r = 0; r < territory.GetLength(0); r++)
                 {
                     // check to the left
-                    if (map[row + r, col - 1] != null && territory[r, 0])
+                    if (map[row + r, col - TERRITORY_GAP_SIZE - 1] != null && territory[r, 0])
                     {
-                        connected = true;
+                        neighbors.Add(map[row + r, col - TERRITORY_GAP_SIZE - 1]);
                     }
                     // check to the right
-                    if (map[row + r, col + territory.GetLength(1)] != null && territory[r, territory.GetLength(1) - 1])
+                    if (map[row + r, col + territory.GetLength(1) + TERRITORY_GAP_SIZE] != null && territory[r, territory.GetLength(1) - 1])
                     {
-                        connected = true;
+                        neighbors.Add(map[row + r, col + territory.GetLength(1) + TERRITORY_GAP_SIZE]);
                     }
                 }
-                for (int c = 0; c < territory.GetLength(1) && !connected; c++)
+                for (int c = 0; c < territory.GetLength(1); c++)
                 {
                     // check above
-                    if (map[row - 1, col + c] != null && territory[0, c])
+                    if (map[row - 1 - TERRITORY_GAP_SIZE, col + c] != null && territory[0, c])
                     {
-                        connected = true;
+                        neighbors.Add(map[row - 1 - TERRITORY_GAP_SIZE, col + c]);
                     }
                     // check below
-                    if (map[row + territory.GetLength(0), col + c] != null && territory[territory.GetLength(0) - 1, c])
+                    if (map[row + territory.GetLength(0) + TERRITORY_GAP_SIZE, col + c] != null && territory[territory.GetLength(0) - 1, c])
                     {
-                        connected = true;
+                        neighbors.Add(map[row + territory.GetLength(0) + TERRITORY_GAP_SIZE, col + c]);
                     }
                 }
-                return connected;
+                int count = 0;
+                foreach (GridTerritory tt in neighbors.Distinct())
+                {
+                    t.Adjacent.Add(tt);
+                    tt.Adjacent.Add(t);
+                    count += 1;
+                }
+                return count > 0;
             }
-            return true;
+            else
+            {
+                return true; // first territory has no connections
+            }
         }
 
         /// <summary>
@@ -284,7 +293,7 @@ namespace Strategy.Gameplay
 
         private const int TERRITORY_BASE_SIZE = 3;
         private const int TERRITORY_FRILL_SIZE = 1;
-        private const int TERRITORY_GAP_SIZE = 0;
+        private const int TERRITORY_GAP_SIZE = 1;
         private const int TERRITORY_SIZE = TERRITORY_BASE_SIZE + 2 * TERRITORY_FRILL_SIZE;
         private const int CONNECTION_MIN_NUM = 0;
         private const int CONNECTION_MAX_DISTANCE_2 = 15 * 15;

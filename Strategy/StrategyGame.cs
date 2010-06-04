@@ -94,7 +94,7 @@ namespace Strategy
         private List<IsometricSprite> ShowConnection(GridTerritory a, GridTerritory b)
         {
             List<IsometricSprite> sprites = new List<IsometricSprite>(25);
-            foreach (Point p in BresenhamIterator.GetPointsOnLine(a.Location.X, a.Location.Y, b.Location.X, b.Location.Y))
+            foreach (Point p in BresenhamIterator.GetPointsOnLine(a.Location.Y, a.Location.X, b.Location.Y, b.Location.X))
             {
                 IsometricSprite sprite = new IsometricSprite(_conn);
                 sprite.X = p.X * ROX + p.Y * COX + BASEX;
