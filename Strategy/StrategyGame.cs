@@ -39,7 +39,7 @@ namespace Strategy
         {
             base.Initialize();
 
-            _generator = new GridMapGenerator();
+            _generator = new MapGenerator();
             ShowMap(_generator.Generate(20, 5));
         }
 
@@ -47,7 +47,6 @@ namespace Strategy
         {
             base.LoadContent();
 
-            _colourable = Content.Load<Texture2D>("Colourable");
             _tile = Content.Load<Texture2D>("TileSmall");
             _piece = Content.Load<Texture2D>("Piece");
             _conn = Content.Load<Texture2D>("Connection");
@@ -56,14 +55,14 @@ namespace Strategy
             _isoBatch = new IsometricBatch(_spriteBatch);
         }
 
-        private void ShowMap(GridMap map)
+        private void ShowMap(Map map)
         {
             _sprites.Clear();
             _spritesLow.Clear();
-            foreach (GridTerritory territory in map.Territories)
+            foreach (Territory territory in map.Territories)
             {
                 _sprites.AddRange(ShowTerritory(territory));
-                foreach (GridTerritory other in territory.Adjacent)
+                foreach (Territory other in territory.Adjacent)
                 {
                     _spritesLow.AddRange(ShowConnection(territory, other));
                 }
@@ -77,24 +76,41 @@ namespace Strategy
         const int BASEX = 0;
         const int BASEY = 300;
 
-        private List<IsometricSprite> ShowTerritory(GridTerritory territory)
+        private List<IsometricSprite> ShowTerritory(Territory territory)
         {
             List<IsometricSprite> tileSprites = new List<IsometricSprite>(25);
-            foreach (Point p in territory.Area)
+            foreach (Cell p in territory.Area)
             {
                 IsometricSprite sprite = new IsometricSprite(_tile);
-                sprite.X = p.Y * ROX + p.X * COX + BASEX;
-                sprite.Y = p.Y * ROY + p.X * COY + BASEY;
+                sprite.X = p.Row * ROX + p.Col * COX + BASEX;
+                sprite.Y = p.Row * ROY + p.Col * COY + BASEY;
                 sprite.Tint = GetPlayerColor(territory.Owner);
                 tileSprites.Add(sprite);
             }
             return tileSprites;
         }
 
-        private List<IsometricSprite> ShowConnection(GridTerritory a, GridTerritory b)
+        private List<IsometricSprite> ShowConnection(Territory a, Territory b)
         {
+            Cell closestA = a.Area[0], closestB = b.Area[0];
+            int closestDist2 = int.MaxValue;
+
+            foreach (Cell ca in a.Area)
+            {
+                foreach (Cell cb in b.Area)
+                {
+                    int d2 = (ca.Row - cb.Row) * (ca.Row - cb.Row) + (ca.Col - cb.Col) * (ca.Col - cb.Col);
+                    if (d2 < closestDist2)
+                    {
+                        closestA = ca;
+                        closestB = cb;
+                        closestDist2 = d2;
+                    }
+                }
+            }
+
             List<IsometricSprite> sprites = new List<IsometricSprite>(25);
-            foreach (Point p in BresenhamIterator.GetPointsOnLine(a.Location.Y, a.Location.X, b.Location.Y, b.Location.X))
+            foreach (Point p in BresenhamIterator.GetPointsOnLine(closestA.Row, closestA.Col, closestB.Row, closestB.Col))
             {
                 IsometricSprite sprite = new IsometricSprite(_conn);
                 sprite.X = p.X * ROX + p.Y * COX + BASEX;
@@ -124,7 +140,7 @@ namespace Strategy
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.R) && _rWasDown)
             {
-                ShowMap(_generator.Generate(16, 4));
+                ShowMap(_generator.Generate(16, 2));
                 _rWasDown = false;
             }
             base.Update(gameTime);
@@ -170,11 +186,10 @@ namespace Strategy
 
         Random random = new Random();
 
-        private GridMapGenerator _generator;
+        private MapGenerator _generator;
 
         private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;
-        private Texture2D _colourable;
         private Texture2D _tile;
         private Texture2D _piece;
         private Texture2D _conn;

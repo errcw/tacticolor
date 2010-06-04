@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
+
+using Strategy.Library;
 
 namespace Strategy.Gameplay
 {
@@ -36,25 +39,23 @@ namespace Strategy.Gameplay
         {
             Territory[] territories = new Territory[numTerritories];
 
-            int rows = (int)Math.Floor(Math.Sqrt(numTerritories));
-            int cols = (int)Math.Ceiling(Math.Sqrt(numTerritories));
-            System.Diagnostics.Debug.Assert(rows * cols == numTerritories);
+            int terrRows = (int)Math.Floor(Math.Sqrt(numTerritories));
+            int terrCols = (int)Math.Ceiling(Math.Sqrt(numTerritories));
+            int gridRows = (int)(terrRows * TERRITORY_SIZE * 1.6);
+            int gridCols = (int)(terrCols * TERRITORY_SIZE * 1.6);
+            Territory[,] map = new Territory[gridRows, gridCols];
 
-            // generate the territory locations
-            for (int r = 0; r < rows; r++)
+            // create and place the territories
+        RetryPlacement:
+            for (int t = 0; t < numTerritories; t++)
             {
-                for (int c = 0; c < cols; c++)
+                territories[t] = new Territory();
+                if (!PlaceTerritory(map, territories[t], t == 0))
                 {
-                    int xoffset = 0;
-                    if (r % 2 != 0)
-                    {
-                        xoffset = GRID_SIZE / 2;
-                    }
-
-                    int x = c * GRID_SIZE + xoffset + _random.Next(-OFFSET_THRESHOLD, OFFSET_THRESHOLD);
-                    int y = r * GRID_SIZE + _random.Next(-OFFSET_THRESHOLD, OFFSET_THRESHOLD);
-
-                    territories[r * cols + c] = new Territory(x, y);
+                    // generated a map where no further territories may be
+                    // placed, so try again with a new configuration
+                    Array.Clear(map, 0, map.Length);
+                    goto RetryPlacement;
                 }
             }
 
@@ -75,101 +76,174 @@ namespace Strategy.Gameplay
                 }
             }
 
-            // connect the territories
-            List<LineSegment> segments = new List<LineSegment>(numTerritories * numTerritories);
-            foreach (Territory ta in territories)
-            {
-                // find all the candidate territories
-                List<Territory> neighbors = new List<Territory>(numTerritories);
-                foreach (Territory tb in territories)
-                {
-                    if (ta != tb &&
-                        !tb.Adjacent.Contains(ta) &&
-                        !WouldIntersect(segments, new LineSegment(ta.Position, tb.Position)) &&
-                        Vector2.Distance(ta.Position, tb.Position) < CONNECTION_THRESHOLD)
-                    {
-                        neighbors.Add(tb);
-                    }
-                }
-                // add the minimum number of connections
-                while (ta.Adjacent.Count < CONNECTION_MINIMUM)
-                {
-                    for (int i = 0; i < neighbors.Count; i++)
-                    {
-                        Territory tb = neighbors[i];
-                        if (tb == null)
-                        {
-                            continue;
-                        }
-                        if (_random.NextDouble() < CONNECTION_CHANCE)
-                        {
-                            ta.Adjacent.Add(tb);
-                            tb.Adjacent.Add(ta);
-                            segments.Add(new LineSegment(ta.Position, tb.Position));
-                            neighbors[i] = null;
-                        }
-                    }
-                }
-            }
-
             return new Map(territories);
         }
 
         /// <summary>
-        /// Determines if a given line segment intersects any other in a set of segments.
+        /// Places a territory at a random location on the map. Returns true if
+        /// a suitable location was found in a reasonable number of tries;
+        /// otherwise, false.
         /// </summary>
-        private bool WouldIntersect(IEnumerable<LineSegment> segments, LineSegment segment)
+        private bool PlaceTerritory(Territory[,] map, Territory territory, bool firstPlacement)
         {
-            foreach (LineSegment s in segments)
+            const int MAX_PLACE_TRIES = 100;
+
+            bool[,] layout = GenerateTerritoryLayout();
+            int row = 1, col = 1;
+            int tries;
+
+            // find a free location
+            for (tries = 0; !PlaceTerritoryAt(map, territory, layout, row, col, firstPlacement) && tries < MAX_PLACE_TRIES; tries++)
             {
-                // segment: x1y1 to x2y2
-                // s: x3y3 to x4y4
-                float y21 = segment.End.Y - segment.Start.Y;
-                float y43 = s.End.Y - s.Start.Y;
-                float x21 = segment.End.X - segment.Start.X;
-                float x43 = s.End.X - s.Start.X;
+                row = _random.Next(2, map.GetLength(0) - layout.GetLength(0) - 2);
+                col = _random.Next(2, map.GetLength(1) - layout.GetLength(1) - 2);
+            }
+            if (tries >= MAX_PLACE_TRIES)
+            {
+                return false;
+            }
 
-                float denom = y43 * x21 - x43 * y21;
-                if (denom == 0)
+            // find the center of the territory
+            territory.Location = new Cell(
+                row + layout.GetLength(0) / 2,
+                col + layout.GetLength(1) / 2);
+
+            // mark the area as used
+            for (int r = row; r < row + layout.GetLength(0); r++)
+            {
+                for (int c = col; c < col + layout.GetLength(1); c++)
                 {
-                    continue; // parallel or coincident
-                }
-
-                float y13 = segment.Start.Y - s.Start.Y;
-                float x13 = segment.Start.X - s.Start.X;
-
-                float tseg = (x43 * y13 - y43 * x13) / denom;
-                float ts = (x21 * y13 - y21 * x13) / denom;
-
-                if (tseg > 0 && tseg < 1 && ts > 0 && ts < 1)
-                {
-                    return true; // interior intersection
+                    if (layout[r - row, c - col])
+                    {
+                        map[r, c] = territory;
+                        territory.Area.Add(new Cell(r, c));
+                    }
                 }
             }
-            return false;
+
+            return true;
         }
 
         /// <summary>
-        /// A line segment.
+        /// Returns true if the territory can be placed at the given location
+        /// touching at least one other territory and without overlapping any
+        /// territory already placed; otherwise, false.
         /// </summary>
-        private struct LineSegment
+        private bool PlaceTerritoryAt(Territory[,] map, Territory territory, bool[,] layout, int row, int col, bool firstPlacement)
         {
-            public Vector2 Start;
-            public Vector2 End;
+            int tr = layout.GetLength(0);
+            int tc = layout.GetLength(1);
 
-            public LineSegment(Vector2 start, Vector2 end)
+            // check for overlap
+            for (int r = row - TERRITORY_GAP_SIZE; r < row + tr + TERRITORY_GAP_SIZE; r++)
             {
-                Start = start;
-                End = end;
+                for (int c = col - TERRITORY_GAP_SIZE; c < col + tc + TERRITORY_GAP_SIZE; c++)
+                {
+                    if (map[r, c] != null)
+                    {
+                        return false;
+                    }
+                }
             }
+
+            // check for connectedness
+            if (!firstPlacement)
+            {
+                List<Territory> neighbors = new List<Territory>(8);
+                for (int r = 0; r < tr; r++)
+                {
+                    // check to the left
+                    if (map[row + r, col - TERRITORY_GAP_SIZE - 1] != null && layout[r, 0])
+                    {
+                        neighbors.Add(map[row + r, col - TERRITORY_GAP_SIZE - 1]);
+                    }
+                    // check to the right
+                    if (map[row + r, col + tc + TERRITORY_GAP_SIZE] != null && layout[r, tc - 1])
+                    {
+                        neighbors.Add(map[row + r, col + tc + TERRITORY_GAP_SIZE]);
+                    }
+                }
+                for (int c = 0; c < tc; c++)
+                {
+                    // check above
+                    if (map[row - TERRITORY_GAP_SIZE - 1, col + c] != null && layout[0, c])
+                    {
+                        neighbors.Add(map[row - TERRITORY_GAP_SIZE - 1, col + c]);
+                    }
+                    // check below
+                    if (map[row + tr + TERRITORY_GAP_SIZE, col + c] != null && layout[tr - 1, c])
+                    {
+                        neighbors.Add(map[row + tr + TERRITORY_GAP_SIZE, col + c]);
+                    }
+                }
+                // track the neighbors
+                int count = 0;
+                foreach (Territory neighbor in neighbors.Distinct())
+                {
+                    territory.Adjacent.Add(neighbor);
+                    neighbor.Adjacent.Add(territory);
+                    count += 1;
+                }
+                return count > 0;
+            }
+            else
+            {
+                return true; // first territory has nothing to connect to
+            }
+        }
+
+        /// <summary>
+        /// Generates a random territory grid layout.
+        /// </summary>
+        private bool[,] GenerateTerritoryLayout()
+        {
+            const int BASE_START = TERRITORY_FRILL_SIZE;
+            const int BASE_END = BASE_START + TERRITORY_BASE_SIZE;
+
+            bool[,] layout = new bool[TERRITORY_SIZE, TERRITORY_SIZE];
+
+            // fill in the center for the piece tiles
+            for (int r = BASE_START; r < BASE_END; r++)
+            {
+                for (int c = BASE_START; c < BASE_END; c++)
+                {
+                    layout[r, c] = true;
+                }
+            }
+
+            // add randomized decoration
+            for (int d = 0; d < 5; d++)
+            {
+                int baseRow = _random.Next(BASE_START, BASE_END);
+                int deltaRows = _random.Next(-TERRITORY_SIZE, TERRITORY_SIZE);
+                int startRow = Math.Min(baseRow, baseRow + deltaRows);
+                int endRow = Math.Max(baseRow, baseRow + deltaRows);
+
+                int baseCol = _random.Next(BASE_START, BASE_END);
+                int deltaCols = _random.Next(-TERRITORY_SIZE, TERRITORY_SIZE);
+                int startCol = Math.Min(baseCol, baseCol + deltaCols);
+                int endCol = Math.Max(baseCol, baseCol + deltaCols);
+
+                for (int r = startRow; r <= endRow; r++)
+                {
+                    for (int c = startCol; c <= endCol; c++)
+                    {
+                        if (r >= 0 && r < TERRITORY_SIZE && c >= 0 && c < TERRITORY_SIZE)
+                        {
+                            layout[r, c] = true;
+                        }
+                    }
+                }
+            }
+
+            return layout;
         }
 
         private Random _random;
 
-        private const int GRID_SIZE = 5+2; // territory size + separation
-        private const int OFFSET_THRESHOLD = 1;
-        private const int CONNECTION_MINIMUM = 2;
-        private const double CONNECTION_CHANCE = 0.75;
-        private const int CONNECTION_THRESHOLD = GRID_SIZE * 2;
+        private const int TERRITORY_BASE_SIZE = 3;
+        private const int TERRITORY_FRILL_SIZE = 1;
+        private const int TERRITORY_GAP_SIZE = 1;
+        private const int TERRITORY_SIZE = TERRITORY_BASE_SIZE + 2 * TERRITORY_FRILL_SIZE;
     }
 }

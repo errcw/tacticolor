@@ -6,17 +6,49 @@ using Microsoft.Xna.Framework;
 namespace Strategy.Gameplay
 {
     /// <summary>
-    /// A region of the map.
+    /// A single grid cell in the map.
+    /// </summary>
+    public struct Cell
+    {
+        /// <summary>
+        /// The row of the cell.
+        /// </summary>
+        public int Row;
+
+        /// <summary>
+        /// The column of the cell.
+        /// </summary>
+        public int Col;
+
+        /// <summary>
+        /// Creates a new grid cell.
+        /// </summary>
+        /// <param name="row">The row of the cell.</param>
+        /// <param name="col">The col of the cell.</param>
+        public Cell(int row, int col)
+        {
+            Row = row;
+            Col = col;
+        }
+    }
+
+    /// <summary>
+    /// A contiguous region on a map.
     /// </summary>
     public class Territory
     {
         /// <summary>
-        /// The location of this territory.
+        /// The center of the territory.
         /// </summary>
-        public Vector2 Position { get; private set; }
+        public Cell Location { get; set; }
 
         /// <summary>
-        /// The territories adjacent to this one.
+        /// The grid cells occupied by this territory.
+        /// </summary>
+        public IList<Cell> Area { get; private set; }
+
+        /// <summary>
+        /// The territories adjacent to this territory.
         /// </summary>
         public IList<Territory> Adjacent { get; private set; }
 
@@ -26,13 +58,11 @@ namespace Strategy.Gameplay
         public PlayerId? Owner { get; set; }
 
         /// <summary>
-        /// Creates a new territory at a fixed location.
+        /// Creates a new territory.
         /// </summary>
-        /// <param name="x">The x coordinate of the center.</param>
-        /// <param name="y">The y coordinate of the center.</param>
-        public Territory(int x, int y)
+        public Territory()
         {
-            Position = new Vector2(x, y);
+            Area = new List<Cell>();
             Adjacent = new List<Territory>();
         }
     }
