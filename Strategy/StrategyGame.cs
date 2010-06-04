@@ -74,7 +74,7 @@ namespace Strategy
         const int ROY = 11;
         const int COX = 20;
         const int COY = -10;
-        const int BASEX = -100;
+        const int BASEX = 0;
         const int BASEY = 300;
 
         private List<IsometricSprite> ShowTerritory(GridTerritory territory)
@@ -83,8 +83,8 @@ namespace Strategy
             foreach (Point p in territory.Area)
             {
                 IsometricSprite sprite = new IsometricSprite(_tile);
-                sprite.X = p.X * ROX + p.Y * COX + BASEX;
-                sprite.Y = p.X * ROY + p.Y * COY + BASEY;
+                sprite.X = p.Y * ROX + p.X * COX + BASEX;
+                sprite.Y = p.Y * ROY + p.X * COY + BASEY;
                 sprite.Tint = GetPlayerColor(territory.Owner);
                 tileSprites.Add(sprite);
             }
@@ -97,8 +97,8 @@ namespace Strategy
             foreach (Point p in BresenhamIterator.GetPointsOnLine(a.Location.X, a.Location.Y, b.Location.X, b.Location.Y))
             {
                 IsometricSprite sprite = new IsometricSprite(_conn);
-                sprite.X = (p.X) * ROX + (p.Y) * COX + BASEX;
-                sprite.Y = (p.X) * ROY + (p.Y) * COY + BASEY;
+                sprite.X = p.X * ROX + p.Y * COX + BASEX;
+                sprite.Y = p.X * ROY + p.Y * COY + BASEY;
                 sprites.Add(sprite);
             }
             return sprites;
@@ -160,9 +160,9 @@ namespace Strategy
             switch (player)
             {
                 case PlayerId.A: return Color.Tomato;
-                case PlayerId.B: return Color.SkyBlue;
+                case PlayerId.B: return Color.RoyalBlue;
                 case PlayerId.C: return Color.SeaGreen;
-                case PlayerId.D: return Color.SandyBrown;
+                case PlayerId.D: return Color.Crimson;
                 case null: return Color.White;
                 default: return Color.White;
             }
