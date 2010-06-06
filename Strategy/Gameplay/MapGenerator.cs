@@ -39,23 +39,20 @@ namespace Strategy.Gameplay
         {
             Territory[] territories = new Territory[numTerritories];
 
-            int terrRows = (int)Math.Floor(Math.Sqrt(numTerritories));
-            int terrCols = (int)Math.Ceiling(Math.Sqrt(numTerritories));
-            int gridRows = (int)(terrRows * TERRITORY_SIZE * 1.6);
-            int gridCols = (int)(terrCols * TERRITORY_SIZE * 1.6);
-            Territory[,] map = new Territory[gridRows, gridCols];
+            int gridSize = (int)(Math.Sqrt(numTerritories) * TERRITORY_SIZE * 1.6);
+            Territory[,] map = new Territory[gridSize, gridSize];
 
             // create and place the territories
-        RetryPlacement:
+        DoPlacement:
             for (int t = 0; t < numTerritories; t++)
             {
                 territories[t] = new Territory();
                 if (!PlaceTerritory(map, territories[t], t == 0))
                 {
                     // generated a map where no further territories may be
-                    // placed, so try again with a new configuration
+                    // placed, so try again with a new configuration (ugh)
                     Array.Clear(map, 0, map.Length);
-                    goto RetryPlacement;
+                    goto DoPlacement;
                 }
             }
 
