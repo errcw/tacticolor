@@ -1,0 +1,37 @@
+To Do
+-----
+
+- Select a territory
+- Move pieces between territories
+- Move active pieces between territories
+- Attack territories
+- Place new pieces
+
+- Show map centered
+- Show tiles for pieces
+- Show pieces
+- Show activity timer on pieces
+
+Thoughts
+--------
+
+- 2- and 4-player modes
+- Per-game options
+  + 2 or 4 players
+  + which players are CPU-controlled
+  + difficulity of CPU-controlled players
+  + map size
+  + territories all or partially assigned
+  + local or networked
+- Game options
+  + music on/off
+  + sound effects on/off
+  + storage device
+- Quick start single player game
+- In-game pop-up instructions
+- Awardments
+  + finish a game in under 1, 2 minutes
+  + win 5, 20 games in a row
+  + win a game under every configuration
+  + play 100 games
+
