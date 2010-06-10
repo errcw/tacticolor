@@ -57,6 +57,8 @@ namespace Strategy
 
         private void ShowMap(Map map)
         {
+            // BASEX = (1280 - ((map.MaxExtent.Col - map.MinExtent.Col + 1) * (_tile.Width - 2))) / 2;
+            // BASEY = (720 - ((map.MaxExtent.Row - map.MinExtent.Row + 1) * (_tile.Height - 7))) / 2;
             _sprites.Clear();
             _spritesLow.Clear();
             foreach (Territory territory in map.Territories)
@@ -69,12 +71,12 @@ namespace Strategy
             }
         }
 
-        const int ROX = 22;
-        const int ROY = 11;
+        const int ROX = 20;
+        const int ROY = 10;
         const int COX = 20;
         const int COY = -10;
-        const int BASEX = 0;
-        const int BASEY = 300;
+        int BASEX = 0;
+        int BASEY = 300;
 
         private List<IsometricSprite> ShowTerritory(Territory territory)
         {
