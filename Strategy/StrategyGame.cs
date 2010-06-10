@@ -17,7 +17,7 @@ namespace Strategy
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class StrategyGame : Microsoft.Xna.Framework.Game
+    public class StrategyGame : Game
     {
         public StrategyGame()
         {
@@ -44,6 +44,7 @@ namespace Strategy
             base.LoadContent();
 
             _tile = Content.Load<Texture2D>("TileSmall");
+            _tileHolder = Content.Load<Texture2D>("TileSmallHolder");
             _piece = Content.Load<Texture2D>("Piece");
             _conn = Content.Load<Texture2D>("Connection");
 
@@ -110,11 +111,22 @@ namespace Strategy
         private List<IsometricSprite> ShowTerritory(Territory territory)
         {
             List<IsometricSprite> tileSprites = new List<IsometricSprite>(25);
-            foreach (Cell p in territory.Area)
+            foreach (Cell cell in territory.Area)
             {
-                IsometricSprite sprite = new IsometricSprite(_tile);
-                sprite.X = p.Row * ROX + p.Col * COX + BASEX;
-                sprite.Y = p.Row * ROY + p.Col * COY + BASEY;
+                int dr = Math.Abs(cell.Row - territory.Location.Row);
+                int dc = Math.Abs(cell.Col - territory.Location.Col);
+                Texture2D spriteImage = null;
+                if (dr <= 1 && dc <= 1)
+                {
+                    spriteImage = _tileHolder;
+                }
+                else
+                {
+                    spriteImage = _tile;
+                }
+                IsometricSprite sprite = new IsometricSprite(spriteImage);
+                sprite.X = cell.Row * ROX + cell.Col * COX + BASEX;
+                sprite.Y = cell.Row * ROY + cell.Col * COY + BASEY;
                 sprite.Tint = GetPlayerColor(territory.Owner);
                 tileSprites.Add(sprite);
             }
@@ -171,7 +183,7 @@ namespace Strategy
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.R) && _rWasDown)
             {
-                ShowMap(_generator.Generate(8, 1));
+                ShowMap(_generator.Generate(20, 2));
                 _rWasDown = false;
             }
             base.Update(gameTime);
@@ -222,6 +234,7 @@ namespace Strategy
         private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;
         private Texture2D _tile;
+        private Texture2D _tileHolder;
         private Texture2D _piece;
         private Texture2D _conn;
         private List<IsometricSprite> _sprites = new List<IsometricSprite>();
