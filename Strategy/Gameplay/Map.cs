@@ -79,71 +79,12 @@ namespace Strategy.Gameplay
         public IEnumerable<Territory> Territories { get; private set; }
 
         /// <summary>
-        /// The minimum row and column in this map.
-        /// </summary>
-        public Cell MinExtent { get; private set; }
-
-        /// <summary>
-        /// The maximum row and column in this map.
-        /// </summary>
-        public Cell MaxExtent { get; private set; }
-
-        /// <summary>
         /// Creates a new map with a fixed set of territories.
         /// </summary>
         /// <param name="territories">The territories on the map.</param>
         public Map(Territory[] territories)
         {
             Territories = territories;
-            CalculateExtents();
-        }
-
-        /// <summary>
-        /// Finds the extents of this map.
-        /// </summary>
-        private void CalculateExtents()
-        {
-            int minRow = int.MaxValue, minCol = int.MaxValue;
-            int maxRow = int.MinValue, maxCol = int.MinValue;
-            foreach (Territory t in Territories)
-            {
-                foreach (Cell c in t.Area)
-                {
-                    if (c.Row < minRow)
-                    {
-                        minRow = c.Row;
-                    }
-                    if (c.Row > maxRow)
-                    {
-                        maxRow = c.Row;
-                    }
-                    if (c.Col < minCol)
-                    {
-                        minCol = c.Col;
-                    }
-                    if (c.Col > maxCol)
-                    {
-                        maxCol = c.Col;
-                    }
-                }
-            }
-            MinExtent = new Cell(minRow, minCol);
-            MaxExtent = new Cell(maxRow, maxCol);
-        }
-
-        /// <summary>
-        /// Iterates over all the territory area in the map.
-        /// </summary>
-        private IEnumerable<Cell> GetArea()
-        {
-            foreach (Territory t in Territories)
-            {
-                foreach (Cell c in t.Area)
-                {
-                    yield return c;
-                }
-            }
-            yield break;
         }
     }
 }

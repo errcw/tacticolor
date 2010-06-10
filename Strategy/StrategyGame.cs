@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using Microsoft.Xna.Framework.Net;
-using Microsoft.Xna.Framework.Storage;
 
 using Strategy.Gameplay;
 using Strategy.Interface;
@@ -57,8 +53,10 @@ namespace Strategy
 
         private void ShowMap(Map map)
         {
-            // BASEX = (1280 - ((map.MaxExtent.Col - map.MinExtent.Col + 1) * (_tile.Width - 2))) / 2;
-            // BASEY = (720 - ((map.MaxExtent.Row - map.MinExtent.Row + 1) * (_tile.Height - 7))) / 2;
+            Rectangle r = CalculatePixelExtents(map);
+            BASEX = (1280 - r.Width) / 2 - r.X;
+            BASEY = (720 - r.Height) / 2 - r.Y;
+
             _sprites.Clear();
             _spritesLow.Clear();
             foreach (Territory territory in map.Territories)
@@ -77,6 +75,37 @@ namespace Strategy
         const int COY = -10;
         int BASEX = 0;
         int BASEY = 300;
+
+        private Rectangle CalculatePixelExtents(Map map)
+        {
+            int minX = int.MaxValue, minY = int.MaxValue;
+            int maxX = int.MinValue, maxY = int.MinValue;
+            foreach (Territory territory in map.Territories)
+            {
+                foreach (Cell cell in territory.Area)
+                {
+                    int x = cell.Row * ROX + cell.Col * COX;
+                    int y = cell.Row * ROY + cell.Col * COY;
+                    if (x < minX)
+                    {
+                        minX = x;
+                    }
+                    if (x > maxX)
+                    {
+                        maxX = x;
+                    }
+                    if (y < minY)
+                    {
+                        minY = y;
+                    }
+                    if (y > maxY)
+                    {
+                        maxY = y;
+                    }
+                }
+            }
+            return new Rectangle(minX, minY, maxX - minX + _tile.Width, maxY - minY + _tile.Height);
+        }
 
         private List<IsometricSprite> ShowTerritory(Territory territory)
         {
@@ -142,7 +171,7 @@ namespace Strategy
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.R) && _rWasDown)
             {
-                ShowMap(_generator.Generate(16, 2));
+                ShowMap(_generator.Generate(8, 1));
                 _rWasDown = false;
             }
             base.Update(gameTime);
