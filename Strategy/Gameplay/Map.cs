@@ -51,7 +51,17 @@ namespace Strategy.Gameplay
         /// <summary>
         /// The territories adjacent to this territory.
         /// </summary>
-        public IList<Territory> Adjacent { get; private set; }
+        public IList<Territory> Neighbors { get; private set; }
+
+        /// <summary>
+        /// The maximum number of pieces that may be in the territory.
+        /// </summary>
+        public int Capacity { get; set; }
+
+        /// <summary>
+        /// The number of pieces currently in the territory.
+        /// </summary>
+        public int Occupancy { get; set; }
 
         /// <summary>
         /// The player owning this territory.
@@ -64,7 +74,7 @@ namespace Strategy.Gameplay
         public Territory()
         {
             Area = new List<Cell>();
-            Adjacent = new List<Territory>();
+            Neighbors = new List<Territory>();
         }
     }
 

@@ -47,7 +47,10 @@ namespace Strategy.Gameplay
             for (int t = 0; t < numTerritories; t++)
             {
                 territories[t] = new Territory();
-                if (!PlaceTerritory(map, territories[t], t == 0))
+                territories[t].Capacity = GenerateTerritoryCapacity();
+
+                bool placed = PlaceTerritory(map, territories[t], t == 0);
+                if (!placed)
                 {
                     // generated a map where no further territories may be
                     // placed, so try again with a new configuration (ugh)
@@ -177,8 +180,8 @@ namespace Strategy.Gameplay
                 int count = 0;
                 foreach (Territory neighbor in neighbors.Distinct())
                 {
-                    territory.Adjacent.Add(neighbor);
-                    neighbor.Adjacent.Add(territory);
+                    territory.Neighbors.Add(neighbor);
+                    neighbor.Neighbors.Add(territory);
                     count += 1;
                 }
                 return count > 0;
@@ -234,6 +237,26 @@ namespace Strategy.Gameplay
             }
 
             return layout;
+        }
+
+        /// <summary>
+        /// Generates a random capacity for a territory.
+        /// </summary>
+        private int GenerateTerritoryCapacity()
+        {
+            double rand = _random.NextDouble();
+            if (rand <= 0.3)
+            {
+                return 5;
+            }
+            else if (rand <= 0.9)
+            {
+                return 7;
+            }
+            else
+            {
+                return 9;
+            }
         }
 
         private Random _random;
