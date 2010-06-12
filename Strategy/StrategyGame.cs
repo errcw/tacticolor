@@ -63,7 +63,7 @@ namespace Strategy
             foreach (Territory territory in map.Territories)
             {
                 _sprites.AddRange(ShowTerritory(territory));
-                foreach (Territory other in territory.Adjacent)
+                foreach (Territory other in territory.Neighbors)
                 {
                     _spritesLow.AddRange(ShowConnection(territory, other));
                 }
@@ -113,17 +113,7 @@ namespace Strategy
             List<IsometricSprite> tileSprites = new List<IsometricSprite>(25);
             foreach (Cell cell in territory.Area)
             {
-                int dr = Math.Abs(cell.Row - territory.Location.Row);
-                int dc = Math.Abs(cell.Col - territory.Location.Col);
-                Texture2D spriteImage = null;
-                if (dr <= 1 && dc <= 1)
-                {
-                    spriteImage = _tileHolder;
-                }
-                else
-                {
-                    spriteImage = _tile;
-                }
+                Texture2D spriteImage = IsHolder(territory, cell) ? _tileHolder : _tile;
                 IsometricSprite sprite = new IsometricSprite(spriteImage);
                 sprite.X = cell.Row * ROX + cell.Col * COX + BASEX;
                 sprite.Y = cell.Row * ROY + cell.Col * COY + BASEY;
@@ -131,6 +121,25 @@ namespace Strategy
                 tileSprites.Add(sprite);
             }
             return tileSprites;
+        }
+
+        private bool IsHolder(Territory territory, Cell cell)
+        {
+            int dr = cell.Row - territory.Location.Row;
+            int dc = cell.Col - territory.Location.Col;
+            if (territory.Capacity == 9 && Math.Abs(dr) <= 1 && Math.Abs(dc) <= 1)
+            {
+                return true;
+            }
+            if (territory.Capacity == 7 && (dc == -1 && dr == 1 || dc == 1 && dr == -1))
+            {
+                return true;
+            }
+            if (dc == 0 && Math.Abs(dr) <= 1 || dr == 0 && Math.Abs(dc) <= 1)
+            {
+                return true;
+            }
+            return false;
         }
 
         private List<IsometricSprite> ShowConnection(Territory a, Territory b)

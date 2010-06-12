@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="Gameplay\Map.cs" />
     <Compile Include="Gameplay\MapGenerator.cs" />
+    <Compile Include="Gameplay\Match.cs" />
     <Compile Include="Gameplay\Player.cs" />
     <Compile Include="Interface\IsometricBatch.cs" />
     <Compile Include="Interface\IsometricSprite.cs" />
