@@ -84,6 +84,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Gameplay\Command.cs" />
     <Compile Include="Gameplay\Map.cs" />
     <Compile Include="Gameplay\MapGenerator.cs" />
     <Compile Include="Gameplay\Match.cs" />

@@ -70,6 +70,7 @@ namespace Strategy.Gameplay
                         if (territories[t].Owner == null)
                         {
                             territories[t].Owner = p;
+                            territories[t].Occupancy = TERRITORY_INITIAL_OCCUPANCY;
                             break;
                         }
                     }
@@ -265,5 +266,7 @@ namespace Strategy.Gameplay
         private const int TERRITORY_FRILL_SIZE = 1;
         private const int TERRITORY_GAP_SIZE = 1;
         private const int TERRITORY_SIZE = TERRITORY_BASE_SIZE + 2 * TERRITORY_FRILL_SIZE;
+
+        private const int TERRITORY_INITIAL_OCCUPANCY = 2;
     }
 }

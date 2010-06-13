@@ -42,27 +42,29 @@ namespace Strategy.Interface
             {
                 return 0;
             }
-            if (a.Y < b.Y)
+            Vector2 apos = a.Position + a.Origin;
+            Vector2 bpos = b.Position + b.Origin;
+            if (apos.Y < bpos.Y)
             {
                 return -1;
             }
-            else if (a.Y > b.Y)
+            else if (apos.Y > bpos.Y)
             {
                 return 1;
             }
             else
             {
-                if (a.X < b.X)
+                if (apos.X < bpos.X)
                 {
                     return -1;
                 }
-                else if (a.X > b.X)
+                else if (apos.X > bpos.X)
                 {
                     return 1;
                 }
                 else
                 {
-                    return a.GetHashCode() < b.GetHashCode() ? 1 : -1; // consistent ordering
+                    return apos.GetHashCode() < bpos.GetHashCode() ? 1 : -1; // consistent ordering
                 }
             }
         }

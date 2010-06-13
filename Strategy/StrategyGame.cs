@@ -45,7 +45,7 @@ namespace Strategy
 
             _tile = Content.Load<Texture2D>("TileSmall");
             _tileHolder = Content.Load<Texture2D>("TileSmallHolder");
-            _piece = Content.Load<Texture2D>("Piece");
+            _piece = Content.Load<Texture2D>("PieceSmall");
             _conn = Content.Load<Texture2D>("Connection");
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -110,16 +110,33 @@ namespace Strategy
 
         private List<IsometricSprite> ShowTerritory(Territory territory)
         {
+            int piecesToShow = territory.Occupancy;
             List<IsometricSprite> tileSprites = new List<IsometricSprite>(25);
+
             foreach (Cell cell in territory.Area)
             {
-                Texture2D spriteImage = IsHolder(territory, cell) ? _tileHolder : _tile;
-                IsometricSprite sprite = new IsometricSprite(spriteImage);
-                sprite.X = cell.Row * ROX + cell.Col * COX + BASEX;
-                sprite.Y = cell.Row * ROY + cell.Col * COY + BASEY;
-                sprite.Tint = GetPlayerColor(territory.Owner);
-                tileSprites.Add(sprite);
+                bool isHolder = IsHolder(territory, cell);
+
+                Texture2D spriteImage = isHolder ? _tileHolder : _tile;
+                IsometricSprite tileSprite = new IsometricSprite(spriteImage);
+                tileSprite.X = cell.Row * ROX + cell.Col * COX + BASEX;
+                tileSprite.Y = cell.Row * ROY + cell.Col * COY + BASEY;
+                tileSprite.Color = GetPlayerColor(territory.Owner);
+                tileSprites.Add(tileSprite);
+
+                if (isHolder && piecesToShow > 0)
+                {
+                    IsometricSprite pieceSprite = new IsometricSprite(_piece);
+                    pieceSprite.X = cell.Row * ROX + cell.Col * COX + BASEX;
+                    pieceSprite.Y = cell.Row * ROY + cell.Col * COY + BASEY;
+                    pieceSprite.Position += new Vector2(10, 10); // offset to tile
+                    pieceSprite.Origin = new Vector2(0, 14); // base
+                    tileSprites.Add(pieceSprite);
+
+                    piecesToShow -= 1;
+                }
             }
+
             return tileSprites;
         }
 
