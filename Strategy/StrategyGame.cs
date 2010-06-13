@@ -36,7 +36,7 @@ namespace Strategy
             base.Initialize();
 
             _generator = new MapGenerator();
-            ShowMap(_generator.Generate(20, 5));
+            ShowMap(_generator.Generate(16, 4, 10));
         }
 
         protected override void LoadContent()
@@ -129,8 +129,8 @@ namespace Strategy
                     IsometricSprite pieceSprite = new IsometricSprite(_piece);
                     pieceSprite.X = cell.Row * ROX + cell.Col * COX + BASEX;
                     pieceSprite.Y = cell.Row * ROY + cell.Col * COY + BASEY;
-                    pieceSprite.Position += new Vector2(10, 10); // offset to tile
-                    pieceSprite.Origin = new Vector2(0, 14); // base
+                    pieceSprite.Position += new Vector2(10, 10); // offset in tile
+                    pieceSprite.Origin = new Vector2(0, 14); // offset to bottom
                     tileSprites.Add(pieceSprite);
 
                     piecesToShow -= 1;
@@ -209,7 +209,7 @@ namespace Strategy
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.R) && _rWasDown)
             {
-                ShowMap(_generator.Generate(20, 2));
+                ShowMap(_generator.Generate(20, 1, 2));
                 _rWasDown = false;
             }
             base.Update(gameTime);

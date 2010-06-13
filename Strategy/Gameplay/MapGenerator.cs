@@ -34,8 +34,9 @@ namespace Strategy.Gameplay
         /// </summary>
         /// <param name="numTerritories">The number of territories on the map.</param>
         /// <param name="territoriesPerPlayer">The number of territories per player.</param>
+        /// <param name="piecesPerPlayer">The number of pieces per player.</param>
         /// <returns>The generated map.</returns>
-        public Map Generate(int numTerritories, int territoriesPerPlayer)
+        public Map Generate(int numTerritories, int territoriesPerPlayer, int piecesPerPlayer)
         {
             Territory[] territories = new Territory[numTerritories];
 
@@ -59,7 +60,9 @@ namespace Strategy.Gameplay
                 }
             }
 
-            // assign owners to the territories
+            // assign owners and pieces to the territories
+            int piecesPerTerritory = piecesPerPlayer / territoriesPerPlayer;
+            int piecesPerTerritoryLeftover = piecesPerPlayer % territoriesPerPlayer;
             for (PlayerId p = PlayerId.A; p <= PlayerId.D; p++)
             {
                 for (int i = 0; i < territoriesPerPlayer; i++)
@@ -70,7 +73,11 @@ namespace Strategy.Gameplay
                         if (territories[t].Owner == null)
                         {
                             territories[t].Owner = p;
-                            territories[t].Occupancy = TERRITORY_INITIAL_OCCUPANCY;
+                            territories[t].Occupancy = piecesPerTerritory;
+                            if (i == 0)
+                            {
+                                territories[t].Occupancy += piecesPerTerritoryLeftover;
+                            }
                             break;
                         }
                     }
