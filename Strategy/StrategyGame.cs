@@ -36,7 +36,10 @@ namespace Strategy
             base.Initialize();
 
             _generator = new MapGenerator();
-            ShowMap(_generator.Generate(16, 4, 10));
+            _map = _generator.Generate(16, 4, 10);
+            ShowMap(_map);
+            _current = _map.Territories.First();
+            Navigate();
         }
 
         protected override void LoadContent()
@@ -50,6 +53,10 @@ namespace Strategy
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _isoBatch = new IsometricBatch(_spriteBatch);
+
+            _cursor = new IsometricSprite(_piece);
+            _cursor.Color = Color.SlateGray;
+            _cursor.Origin = new Vector2(0, 14);
         }
 
         private void ShowMap(Map map)
@@ -189,6 +196,49 @@ namespace Strategy
             return sprites;
         }
 
+        private void Navigate()
+        {
+            GamePadState state = GamePad.GetState(PlayerIndex.One);
+            Vector2 direction = state.ThumbSticks.Left;
+            bool canMove = direction.Length() > 0.5;
+            if (canMove && !_moved)
+            {
+                Territory next = null;
+
+                double minAngle = double.MaxValue;
+                Vector2 curLoc = new Vector2(_current.Location.Col, _current.Location.Row);
+                foreach (Territory other in _current.Neighbors)
+                {
+                    Vector2 otherLoc = new Vector2(other.Location.Col, other.Location.Row);
+                    Vector2 toOtherLoc = otherLoc - curLoc;
+                    double angle = Math.Atan2(toOtherLoc.Y - direction.Y, toOtherLoc.X - direction.X);
+                    Console.WriteLine("Considering angle {0}", angle);
+                    if (angle < minAngle)
+                    {
+                        minAngle = angle;
+                        next = other;
+                    }
+                }
+                Console.WriteLine("-");
+
+                if (next != null)
+                {
+                    _current = next;
+
+                    Cell ccell = _current.Area[0];
+                    _cursor.X = ccell.Row * ROX + ccell.Col * COX + BASEX;
+                    _cursor.Y = ccell.Row * ROY + ccell.Col * COY + BASEY;
+                    _cursor.Position += new Vector2(10, 10); // offset in tile
+
+                    _moved = true;
+                }
+            }
+            else if (!canMove)
+            {
+                _moved = false;
+            }
+        }
+
         /// <summary>
         /// Updates the game state.
         /// </summary>
@@ -197,10 +247,6 @@ namespace Strategy
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
-                for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
-                {
-                    System.Console.WriteLine(GamePad.GetState(p).IsConnected);
-                }
                 Exit();
             }
             if (Keyboard.GetState().IsKeyDown(Keys.R))
@@ -212,6 +258,7 @@ namespace Strategy
                 ShowMap(_generator.Generate(20, 1, 2));
                 _rWasDown = false;
             }
+            Navigate();
             base.Update(gameTime);
         }
 
@@ -235,6 +282,7 @@ namespace Strategy
             {
                 _isoBatch.Draw(sprite);
             }
+            _isoBatch.Draw(_cursor);
             _isoBatch.End();
 
             base.Draw(gameTime);
@@ -253,9 +301,12 @@ namespace Strategy
             }
         }
 
-        Random random = new Random();
+        private Territory _current;
+        private IsometricSprite _cursor;
+        private bool _moved;
 
         private MapGenerator _generator;
+        private Map _map;
 
         private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;
