@@ -38,7 +38,7 @@ namespace Strategy
             _generator = new MapGenerator();
             _map = _generator.Generate(16, 4, 10);
             ShowMap(_map);
-            _current = _map.Territories.First();
+            _selected = _map.Territories.First();
             Navigate();
         }
 
@@ -198,34 +198,44 @@ namespace Strategy
 
         private void Navigate()
         {
+            float THRESHOLD = MathHelper.ToRadians(90);
             GamePadState state = GamePad.GetState(PlayerIndex.One);
             Vector2 direction = state.ThumbSticks.Left;
+            direction.Y = -direction.Y;
             bool canMove = direction.Length() > 0.5;
             if (canMove && !_moved)
             {
-                Territory next = null;
+                Territory newSelected = null;
 
-                double minAngle = double.MaxValue;
-                Vector2 curLoc = new Vector2(_current.Location.Col, _current.Location.Row);
-                foreach (Territory other in _current.Neighbors)
+                float minAngle = float.MaxValue;
+
+                Vector2 curLoc = new Vector2(
+                    _selected.Location.Row * ROX + _selected.Location.Col * COX + BASEX,
+                    _selected.Location.Row * ROY + _selected.Location.Col * COY + BASEY);
+
+                foreach (Territory other in _selected.Neighbors)
                 {
-                    Vector2 otherLoc = new Vector2(other.Location.Col, other.Location.Row);
+                    Vector2 otherLoc = new Vector2(
+                        other.Location.Row * ROX + other.Location.Col * COX + BASEX,
+                        other.Location.Row * ROY + other.Location.Col * COY + BASEY);
                     Vector2 toOtherLoc = otherLoc - curLoc;
-                    double angle = Math.Atan2(toOtherLoc.Y - direction.Y, toOtherLoc.X - direction.X);
-                    Console.WriteLine("Considering angle {0}", angle);
-                    if (angle < minAngle)
+
+                    float dot = Vector2.Dot(direction, toOtherLoc);
+                    float crossMag = direction.X * toOtherLoc.Y - direction.Y * toOtherLoc.X;
+                    float angle = (float)Math.Abs(Math.Atan2(crossMag, dot));
+
+                    if (angle < THRESHOLD && angle < minAngle)
                     {
                         minAngle = angle;
-                        next = other;
+                        newSelected = other;
                     }
                 }
-                Console.WriteLine("-");
 
-                if (next != null)
+                if (newSelected != null)
                 {
-                    _current = next;
+                    _selected = newSelected;
 
-                    Cell ccell = _current.Area[0];
+                    Cell ccell = _selected.Area[0];
                     _cursor.X = ccell.Row * ROX + ccell.Col * COX + BASEX;
                     _cursor.Y = ccell.Row * ROY + ccell.Col * COY + BASEY;
                     _cursor.Position += new Vector2(10, 10); // offset in tile
@@ -301,7 +311,7 @@ namespace Strategy
             }
         }
 
-        private Territory _current;
+        private Territory _selected;
         private IsometricSprite _cursor;
         private bool _moved;
 
