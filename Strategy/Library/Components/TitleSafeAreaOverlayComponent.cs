@@ -3,7 +3,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Strategy.Library
+namespace Strategy.Library.Components
 {
     /// <summary>
     /// Renders the unsafe screen areas for any content (10%) and for action or text (20%).

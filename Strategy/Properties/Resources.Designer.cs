@@ -61,6 +61,105 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exception: {0}.
+        /// </summary>
+        internal static string ExceptionException {
+            get {
+                return ResourceManager.GetString("ExceptionException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press Back to Exit..
+        /// </summary>
+        internal static string ExceptionExitPrompt {
+            get {
+                return ResourceManager.GetString("ExceptionExitPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EXCEPTION DETAILS.
+        /// </summary>
+        internal static string ExceptionHeader {
+            get {
+                return ResourceManager.GetString("ExceptionHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The game experienced an unexpected error and had to end..
+        /// </summary>
+        internal static string ExceptionMessage {
+            get {
+                return ResourceManager.GetString("ExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View Error Details.
+        /// </summary>
+        internal static string ExceptionMessageDebug {
+            get {
+                return ResourceManager.GetString("ExceptionMessageDebug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exit to Dashboard.
+        /// </summary>
+        internal static string ExceptionMessageExit {
+            get {
+                return ResourceManager.GetString("ExceptionMessageExit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected Error.
+        /// </summary>
+        internal static string ExceptionMessageTitle {
+            get {
+                return ResourceManager.GetString("ExceptionMessageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stack Trace: {0}.
+        /// </summary>
+        internal static string ExceptionTrace {
+            get {
+                return ResourceManager.GetString("ExceptionTrace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        internal static string PurchaseFailedButton {
+            get {
+                return ResourceManager.GetString("PurchaseFailedButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are not signed in, or you cannot purchase content..
+        /// </summary>
+        internal static string PurchaseFailedText {
+            get {
+                return ResourceManager.GetString("PurchaseFailedText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot Purchase.
+        /// </summary>
+        internal static string PurchaseFailedTitle {
+            get {
+                return ResourceManager.GetString("PurchaseFailedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Strategy.
         /// </summary>
         internal static string StrategyGame {

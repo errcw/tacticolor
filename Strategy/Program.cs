@@ -1,4 +1,5 @@
 using System;
+using Strategy.Library.Extensions;
 
 namespace Strategy
 {
@@ -9,10 +10,7 @@ namespace Strategy
         /// </summary>
         static void Main(string[] args)
         {
-            using (StrategyGame game = new StrategyGame())
-            {
-                game.Run();
-            }
+            GameExtensions.Run<StrategyGame>();
         }
     }
 }

@@ -117,6 +117,39 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ExceptionException" xml:space="preserve">
+    <value>Exception: {0}</value>
+  </data>
+  <data name="ExceptionExitPrompt" xml:space="preserve">
+    <value>Press Back to Exit.</value>
+  </data>
+  <data name="ExceptionHeader" xml:space="preserve">
+    <value>EXCEPTION DETAILS</value>
+  </data>
+  <data name="ExceptionMessage" xml:space="preserve">
+    <value>The game experienced an unexpected error and had to end.</value>
+  </data>
+  <data name="ExceptionMessageDebug" xml:space="preserve">
+    <value>View Error Details</value>
+  </data>
+  <data name="ExceptionMessageExit" xml:space="preserve">
+    <value>Exit to Dashboard</value>
+  </data>
+  <data name="ExceptionMessageTitle" xml:space="preserve">
+    <value>Unexpected Error</value>
+  </data>
+  <data name="ExceptionTrace" xml:space="preserve">
+    <value>Stack Trace: {0}</value>
+  </data>
+  <data name="PurchaseFailedButton" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="PurchaseFailedText" xml:space="preserve">
+    <value>You are not signed in, or you cannot purchase content.</value>
+  </data>
+  <data name="PurchaseFailedTitle" xml:space="preserve">
+    <value>Cannot Purchase</value>
+  </data>
   <data name="StrategyGame" xml:space="preserve">
     <value>Strategy</value>
   </data>
