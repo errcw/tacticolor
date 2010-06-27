@@ -10,6 +10,9 @@ using Microsoft.Xna.Framework.Input;
 using Strategy.Gameplay;
 using Strategy.Interface;
 using Strategy.Library;
+using Strategy.Library.Components;
+using Strategy.Library.Extensions;
+using Strategy.Library.Input;
 using Strategy.Properties;
 
 namespace Strategy
@@ -29,6 +32,10 @@ namespace Strategy
             Content.RootDirectory = "Content";
 
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
+
+            _input = new PlayerInput(this);
+            _input.Controller = PlayerIndex.One;
+            Components.Add(_input);
         }
 
         protected override void Initialize()
@@ -199,12 +206,11 @@ namespace Strategy
         private void Navigate()
         {
             float THRESHOLD = MathHelper.ToRadians(90);
-            GamePadState state = GamePad.GetState(PlayerIndex.One);
-            Vector2 direction = state.ThumbSticks.Left;
-            direction.Y = -direction.Y;
-            bool canMove = direction.Length() > 0.5;
-            if (canMove && !_moved)
+            if (_input.Move.Pressed)
             {
+                Vector2 direction = _input.MoveDirection.Position;
+                direction.Y = -direction.Y;
+
                 Territory newSelected = null;
 
                 float minAngle = float.MaxValue;
@@ -239,13 +245,7 @@ namespace Strategy
                     _cursor.X = ccell.Row * ROX + ccell.Col * COX + BASEX;
                     _cursor.Y = ccell.Row * ROY + ccell.Col * COY + BASEY;
                     _cursor.Position += new Vector2(10, 10); // offset in tile
-
-                    _moved = true;
                 }
-            }
-            else if (!canMove)
-            {
-                _moved = false;
             }
         }
 
@@ -259,14 +259,9 @@ namespace Strategy
             {
                 Exit();
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.R))
-            {
-                _rWasDown = true;
-            }
-            else if (Keyboard.GetState().IsKeyUp(Keys.R) && _rWasDown)
+            if (_input.Debug.Pressed)
             {
                 ShowMap(_generator.Generate(20, 1, 2));
-                _rWasDown = false;
             }
             Navigate();
             base.Update(gameTime);
@@ -313,10 +308,11 @@ namespace Strategy
 
         private Territory _selected;
         private IsometricSprite _cursor;
-        private bool _moved;
 
         private MapGenerator _generator;
         private Map _map;
+
+        private PlayerInput _input;
 
         private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;
@@ -326,7 +322,31 @@ namespace Strategy
         private Texture2D _conn;
         private List<IsometricSprite> _sprites = new List<IsometricSprite>();
         private List<IsometricSprite> _spritesLow = new List<IsometricSprite>();
+    }
 
-        private bool _rWasDown;
+    public class PlayerInput : Input
+    {
+        public readonly ControlState Move = new ControlState() { RepeatEnabled = true };
+        public readonly ControlPosition MoveDirection = new ControlPosition();
+
+        public readonly ControlState Debug = new ControlState();
+
+        public PlayerInput(Game game) : base(game)
+        {
+            Register(Move, (state) => state.ThumbSticks.Left.LengthSquared() >= MoveTolerance);
+            Register(MoveDirection, Polling.LeftThumbStick);
+            Register(Debug, Polling.All(Polling.One(Buttons.LeftShoulder), Polling.One(Buttons.RightShoulder)));
+        }
+
+        /// <summary>
+        /// Polls for the controller with the Start button pressed.
+        /// </summary>
+        /// <returns>True if a controller was found; otherwise, false.</returns>
+        public bool FindActiveController()
+        {
+            return FindActiveController(Polling.One(Buttons.Start));
+        }
+
+        private const float MoveTolerance = 0.5f * 0.5f;
     }
 }

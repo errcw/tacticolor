@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 using Microsoft.Xna.Framework;
 
-using Library.Components;
+using Strategy.Library.Components;
 
 namespace Strategy.Library.Extensions
 {

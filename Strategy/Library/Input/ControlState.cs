@@ -18,11 +18,11 @@ namespace Strategy.Library.Input
         }
 
         /// <summary>
-        /// If the control was pressed this frame.
+        /// If the control was pressed (physically or virtually with autorepeat) this frame.
         /// </summary>
         public bool Pressed
         {
-            get { return !_wasDown && _isDown; }
+            get { return (!_wasDown && _isDown) || (RepeatEnabled && _repeatState != AutoRepeatState.Idle && _repeatElapsed == 0f); }
         }
 
         /// <summary>
@@ -34,12 +34,9 @@ namespace Strategy.Library.Input
         }
 
         /// <summary>
-        /// If the control was pressed (physically or virtually with autorepeat) this frame.
+        /// If autorepeat is enabled.
         /// </summary>
-        public bool PressedRepeat
-        {
-            get { return (_repeatState != AutoRepeatState.Idle && _repeatElapsed == 0f); }
-        }
+        public bool RepeatEnabled { get; set; }
 
         /// <summary>
         /// Updates this control.

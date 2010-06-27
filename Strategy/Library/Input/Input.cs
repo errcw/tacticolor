@@ -16,7 +16,7 @@ namespace Strategy.Library.Input
         /// <summary>
         /// The currently active controller (i.e., the one being polled).
         /// </summary>
-        public PlayerIndex? Controller { get; protected set; }
+        public PlayerIndex? Controller { get; set; }
 
         /// <summary>
         /// An event triggered when the active controller is disconnected.
@@ -133,7 +133,8 @@ namespace Strategy.Library.Input
         private void UpdateVibration(float time)
         {
             Vector2 vibration = Vector2.Zero;
-            _vibration.RemoveAll(delegate(Vibration v) {
+            _vibration.RemoveAll(delegate(Vibration v)
+            {
                 Vector2? amount = v(time);
                 if (amount != null)
                 {
@@ -197,19 +198,23 @@ namespace Strategy.Library.Input
             {
 #if WINDOWS // on windows fabricate the state
                 KeyboardState kbd = Keyboard.GetState();
-                MouseState ms = Mouse.GetState();
                 Buttons buttons = 0;
+                Vector2 leftStick = Vector2.Zero;
+                if (kbd.IsKeyDown(Keys.W)) leftStick.Y = -1;
+                else if (kbd.IsKeyDown(Keys.S)) leftStick.Y = 1;
+                if (kbd.IsKeyDown(Keys.A)) leftStick.X = -1;
+                else if (kbd.IsKeyDown(Keys.D)) leftStick.X = 1;
                 if (kbd.IsKeyDown(Keys.Up)) buttons |= Buttons.DPadUp;
                 if (kbd.IsKeyDown(Keys.Down)) buttons |= Buttons.DPadDown;
                 if (kbd.IsKeyDown(Keys.Left)) buttons |= Buttons.DPadLeft;
                 if (kbd.IsKeyDown(Keys.Right)) buttons |= Buttons.DPadRight;
-                if (kbd.IsKeyDown(Keys.A) || ms.LeftButton == ButtonState.Pressed) buttons |= Buttons.A;
-                if (kbd.IsKeyDown(Keys.B) || ms.RightButton == ButtonState.Pressed) buttons |= Buttons.B;
+                if (kbd.IsKeyDown(Keys.A)) buttons |= Buttons.A;
+                if (kbd.IsKeyDown(Keys.B)) buttons |= Buttons.B;
                 if (kbd.IsKeyDown(Keys.X)) buttons |= Buttons.X;
                 if (kbd.IsKeyDown(Keys.Y)) buttons |= Buttons.Y;
                 if (kbd.IsKeyDown(Keys.Enter)) buttons |= Buttons.Start;
                 if (kbd.IsKeyDown(Keys.RightShift)) buttons |= Buttons.Back;
-                return new GamePadState(Vector2.Zero, Vector2.Zero, 0f, 0f, buttons);
+                return new GamePadState(leftStick, Vector2.Zero, 0f, 0f, buttons);
 #endif
             }
         }
