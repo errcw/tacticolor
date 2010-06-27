@@ -72,12 +72,16 @@ namespace Strategy.Gameplay
                         int t = _random.Next(numTerritories);
                         if (territories[t].Owner == null)
                         {
-                            territories[t].Owner = p;
-                            territories[t].Occupancy = piecesPerTerritory;
+                            int occupancy = piecesPerTerritory;
                             if (i == 0)
                             {
-                                territories[t].Occupancy += piecesPerTerritoryLeftover;
+                                occupancy += piecesPerTerritoryLeftover;
                             }
+                            for (int j = 0; j < occupancy; j++)
+                            {
+                                territories[t].Pieces.Add(new Piece(true));
+                            }
+                            territories[t].Owner = p;
                             break;
                         }
                     }

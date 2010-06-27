@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Library.Extensions;
 
-namespace Library.Components
+namespace Strategy.Library.Components
 {
     /// <summary>
     /// Displays the number of frames rendered per second.

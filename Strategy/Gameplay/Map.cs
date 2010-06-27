@@ -59,9 +59,9 @@ namespace Strategy.Gameplay
         public int Capacity { get; set; }
 
         /// <summary>
-        /// The number of pieces currently in the territory.
+        /// The pieces currently in the territory.
         /// </summary>
-        public int Occupancy { get; set; }
+        public IList<Piece> Pieces { get; set; }
 
         /// <summary>
         /// The player owning this territory.
@@ -75,6 +75,7 @@ namespace Strategy.Gameplay
         {
             Area = new List<Cell>();
             Neighbors = new List<Territory>();
+            Pieces = new List<Piece>();
         }
     }
 

@@ -32,8 +32,9 @@ namespace Strategy
             Content.RootDirectory = "Content";
 
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
+            Components.Add(new FPSOverlay(this));
 
-            _input = new PlayerInput(this);
+            _input = new LocalInput(this);
             _input.Controller = PlayerIndex.One;
             Components.Add(_input);
         }
@@ -41,12 +42,9 @@ namespace Strategy
         protected override void Initialize()
         {
             base.Initialize();
-
-            _generator = new MapGenerator();
-            _map = _generator.Generate(16, 4, 10);
-            ShowMap(_map);
-            _selected = _map.Territories.First();
-            Navigate();
+            _random = new Random();
+            _generator = new MapGenerator(_random);
+            StartNewMatch();
         }
 
         protected override void LoadContent()
@@ -64,6 +62,18 @@ namespace Strategy
             _cursor = new IsometricSprite(_piece);
             _cursor.Color = Color.SlateGray;
             _cursor.Origin = new Vector2(0, 14);
+        }
+
+        private void StartNewMatch()
+        {
+            _map = _generator.Generate(16, 4, 10);
+            _match = new Match(_map, _random);
+
+            ShowMap(_map);
+            _selected = _map.Territories.First();
+            ShowSelected();
+
+            _pendingAction = false;
         }
 
         private void ShowMap(Map map)
@@ -124,31 +134,35 @@ namespace Strategy
 
         private List<IsometricSprite> ShowTerritory(Territory territory)
         {
-            int piecesToShow = territory.Occupancy;
             List<IsometricSprite> tileSprites = new List<IsometricSprite>(25);
+            Color playerColor = GetPlayerColor(territory.Owner);
 
             foreach (Cell cell in territory.Area)
             {
-                bool isHolder = IsHolder(territory, cell);
-
-                Texture2D spriteImage = isHolder ? _tileHolder : _tile;
+                Texture2D spriteImage = IsHolder(territory, cell) ? _tileHolder : _tile;
                 IsometricSprite tileSprite = new IsometricSprite(spriteImage);
                 tileSprite.X = cell.Row * ROX + cell.Col * COX + BASEX;
                 tileSprite.Y = cell.Row * ROY + cell.Col * COY + BASEY;
                 tileSprite.Color = GetPlayerColor(territory.Owner);
                 tileSprites.Add(tileSprite);
+            }
 
-                if (isHolder && piecesToShow > 0)
-                {
-                    IsometricSprite pieceSprite = new IsometricSprite(_piece);
-                    pieceSprite.X = cell.Row * ROX + cell.Col * COX + BASEX;
-                    pieceSprite.Y = cell.Row * ROY + cell.Col * COY + BASEY;
-                    pieceSprite.Position += new Vector2(10, 10); // offset in tile
-                    pieceSprite.Origin = new Vector2(0, 14); // offset to bottom
-                    tileSprites.Add(pieceSprite);
+            for (int i = 0; i < territory.Pieces.Count; i++)
+            {
+                Piece piece = territory.Pieces[i];
 
-                    piecesToShow -= 1;
-                }
+                Cell offset = MapPieceOrdinalToOffset(i);
+                Cell cell = new Cell(territory.Location.Row + offset.Row, territory.Location.Col + offset.Col);
+
+                IsometricSprite pieceSprite = new IsometricSprite(_piece);
+                pieceSprite.X = cell.Row * ROX + cell.Col * COX + BASEX;
+                pieceSprite.Y = cell.Row * ROY + cell.Col * COY + BASEY;
+                pieceSprite.Position += new Vector2(10, 10); // offset in tile
+                pieceSprite.Origin = new Vector2(0, 14); // offset to bottom
+
+                pieceSprite.Color = Interpolation.InterpolateColor(Easing.Uniform)(Color.White, playerColor, (float)piece.TimerValue / piece.TimerMax);
+
+                tileSprites.Add(pieceSprite);
             }
 
             return tileSprites;
@@ -171,6 +185,23 @@ namespace Strategy
                 return true;
             }
             return false;
+        }
+
+        private Cell MapPieceOrdinalToOffset(int ordinal)
+        {
+            switch (ordinal)
+            {
+                case 0: return new Cell(0, 0);
+                case 1: return new Cell(-1, 0);
+                case 2: return new Cell(1, 0);
+                case 3: return new Cell(0, -1);
+                case 4: return new Cell(0, 1);
+                case 5: return new Cell(1, 1);
+                case 6: return new Cell(-1, -1);
+                case 7: return new Cell(1, -1);
+                case 8: return new Cell(-1, 1);
+                default: throw new ArgumentException("Invalid piece ordinal " + ordinal);
+            }
         }
 
         private List<IsometricSprite> ShowConnection(Territory a, Territory b)
@@ -240,13 +271,17 @@ namespace Strategy
                 if (newSelected != null)
                 {
                     _selected = newSelected;
-
-                    Cell ccell = _selected.Area[0];
-                    _cursor.X = ccell.Row * ROX + ccell.Col * COX + BASEX;
-                    _cursor.Y = ccell.Row * ROY + ccell.Col * COY + BASEY;
-                    _cursor.Position += new Vector2(10, 10); // offset in tile
+                    ShowSelected();
                 }
             }
+        }
+
+        private void ShowSelected()
+        {
+            Cell ccell = _selected.Area[0];
+            _cursor.X = ccell.Row * ROX + ccell.Col * COX + BASEX;
+            _cursor.Y = ccell.Row * ROY + ccell.Col * COY + BASEY;
+            _cursor.Position += new Vector2(10, 10); // offset in tile
         }
 
         /// <summary>
@@ -261,9 +296,38 @@ namespace Strategy
             }
             if (_input.Debug.Pressed)
             {
-                ShowMap(_generator.Generate(20, 1, 2));
+                StartNewMatch();
             }
+            _match.Update(gameTime.GetElapsedSeconds());
             Navigate();
+            if (_input.Action.Pressed)
+            {
+                if (_pendingAction)
+                {
+                    Territory dstTerritory = _selected;
+                    if (_match.CanMove(_srcTerritory, dstTerritory))
+                    {
+                        _match.Move(_srcTerritory, dstTerritory);
+                        _pendingAction = false;
+                    }
+                    else if (_match.CanAttack(_srcTerritory, dstTerritory))
+                    {
+                        _match.Attack(_srcTerritory, dstTerritory);
+                        _pendingAction = false;
+                    }
+                }
+                else
+                {
+                    _srcTerritory = _selected;
+                    _pendingAction = true;
+                }
+            }
+            else if (_input.Cancel.Pressed)
+            {
+                _pendingAction = false;
+                _srcTerritory = null;
+            }
+            ShowMap(_map); // brute force the new map (oh so ugly)
             base.Update(gameTime);
         }
 
@@ -308,11 +372,15 @@ namespace Strategy
 
         private Territory _selected;
         private IsometricSprite _cursor;
+        private bool _pendingAction;
+        private Territory _srcTerritory;
 
+        private Random _random;
         private MapGenerator _generator;
+        private Match _match;
         private Map _map;
 
-        private PlayerInput _input;
+        private LocalInput _input;
 
         private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;
@@ -324,29 +392,4 @@ namespace Strategy
         private List<IsometricSprite> _spritesLow = new List<IsometricSprite>();
     }
 
-    public class PlayerInput : Input
-    {
-        public readonly ControlState Move = new ControlState() { RepeatEnabled = true };
-        public readonly ControlPosition MoveDirection = new ControlPosition();
-
-        public readonly ControlState Debug = new ControlState();
-
-        public PlayerInput(Game game) : base(game)
-        {
-            Register(Move, (state) => state.ThumbSticks.Left.LengthSquared() >= MoveTolerance);
-            Register(MoveDirection, Polling.LeftThumbStick);
-            Register(Debug, Polling.All(Polling.One(Buttons.LeftShoulder), Polling.One(Buttons.RightShoulder)));
-        }
-
-        /// <summary>
-        /// Polls for the controller with the Start button pressed.
-        /// </summary>
-        /// <returns>True if a controller was found; otherwise, false.</returns>
-        public bool FindActiveController()
-        {
-            return FindActiveController(Polling.One(Buttons.Start));
-        }
-
-        private const float MoveTolerance = 0.5f * 0.5f;
-    }
 }
