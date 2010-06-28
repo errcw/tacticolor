@@ -1,14 +1,14 @@
 To Do
 -----
 
-- Select a territory
-- Move pieces between territories
-- Move active pieces between territories
-- Attack territories
-- Place new pieces
-
-- Show pieces
 - Show activity timer on pieces
+- Show pieces available for placement
+- Show selected and hovered territory
+  * Use commander piece with action icon?
+- Fix view logic (...implement view logic)
+
+- Figure out piece generation logic
+- Clean up input handling
 
 Thoughts
 --------
