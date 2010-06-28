@@ -51,7 +51,7 @@ namespace Strategy.Gameplay
             _timer += time;
             if (_timer >= TimerIncrementTime)
             {
-                TimerValue = MathHelperExtensions.Clamp(TimerValue + 1, 0, TimerMax);
+                TimerValue = Math.Min(TimerValue + 1, TimerMax);
                 _timer -= TimerIncrementTime;
             }
         }

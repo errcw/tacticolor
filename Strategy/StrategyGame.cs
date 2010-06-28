@@ -196,10 +196,10 @@ namespace Strategy
                 case 2: return new Cell(1, 0);
                 case 3: return new Cell(0, -1);
                 case 4: return new Cell(0, 1);
-                case 5: return new Cell(1, 1);
-                case 6: return new Cell(-1, -1);
-                case 7: return new Cell(1, -1);
-                case 8: return new Cell(-1, 1);
+                case 5: return new Cell(1, -1);
+                case 6: return new Cell(-1, 1);
+                case 7: return new Cell(1, 1);
+                case 8: return new Cell(-1, -1);
                 default: throw new ArgumentException("Invalid piece ordinal " + ordinal);
             }
         }
@@ -276,6 +276,44 @@ namespace Strategy
             }
         }
 
+        private void HandleInput(PlayerId player, LocalInput input)
+        {
+            if (input.Action.Pressed)
+            {
+                if (_pendingAction)
+                {
+                    Territory dstTerritory = _selected;
+                    if (_match.CanMove(player, _srcTerritory, dstTerritory))
+                    {
+                        _match.Move(_srcTerritory, dstTerritory);
+                        _pendingAction = false;
+                    }
+                    else if (_match.CanAttack(player, _srcTerritory, dstTerritory))
+                    {
+                        _match.Attack(_srcTerritory, dstTerritory);
+                        _pendingAction = false;
+                    }
+                }
+                else
+                {
+                    _srcTerritory = _selected;
+                    _pendingAction = true;
+                }
+            }
+            else if (input.Cancel.Pressed)
+            {
+                _pendingAction = false;
+                _srcTerritory = null;
+            }
+            else if (input.Place.Pressed)
+            {
+                if (_match.CanPlacePiece(player, _selected))
+                {
+                    _match.PlacePiece(_selected);
+                }
+            }
+        }
+
         private void ShowSelected()
         {
             Cell ccell = _selected.Area[0];
@@ -299,34 +337,8 @@ namespace Strategy
                 StartNewMatch();
             }
             _match.Update(gameTime.GetElapsedSeconds());
+            HandleInput(PlayerId.A, _input);
             Navigate();
-            if (_input.Action.Pressed)
-            {
-                if (_pendingAction)
-                {
-                    Territory dstTerritory = _selected;
-                    if (_match.CanMove(_srcTerritory, dstTerritory))
-                    {
-                        _match.Move(_srcTerritory, dstTerritory);
-                        _pendingAction = false;
-                    }
-                    else if (_match.CanAttack(_srcTerritory, dstTerritory))
-                    {
-                        _match.Attack(_srcTerritory, dstTerritory);
-                        _pendingAction = false;
-                    }
-                }
-                else
-                {
-                    _srcTerritory = _selected;
-                    _pendingAction = true;
-                }
-            }
-            else if (_input.Cancel.Pressed)
-            {
-                _pendingAction = false;
-                _srcTerritory = null;
-            }
             ShowMap(_map); // brute force the new map (oh so ugly)
             base.Update(gameTime);
         }
