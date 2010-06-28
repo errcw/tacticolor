@@ -32,6 +32,11 @@ namespace Strategy.Gameplay
         public event EventHandler<MatchEndedEventArgs> Ended;
 
         /// <summary>
+        /// The map this match is played on.
+        /// </summary>
+        public Map Map { get { return _map; } }
+
+        /// <summary>
         /// The number of pieces available to be placed by each player.
         /// </summary>
         public int[] PiecesAvailable { get; private set; }
@@ -159,8 +164,8 @@ namespace Strategy.Gameplay
                 }
 
                 // handle the attacker
-                int perfdiff = Math.Abs(6 * (attackers.Count - defenders.Count) - (attackerSum - defenderSum));
-                int attackersLost = Math.Min(attacker.Pieces.Count - 2, Math.Min(attackers.Count, perfdiff / 3));
+                int baseLost = (int)(3f * (float)defenderSum / attackerSum);
+                int attackersLost = Math.Min(attackers.Count - 2, baseLost);
                 for (int i = 0; i < attackers.Count; i++)
                 {
                     if (i < attackersLost) // remove the killed pieces
@@ -181,8 +186,8 @@ namespace Strategy.Gameplay
             else // attack failed
             {
                 int attackersLost = Math.Min(attacker.Pieces.Count - 1, attackers.Count);
-                int perfdiff = Math.Abs(6 * (defenders.Count - attackers.Count) - (defenderSum - attackerSum));
-                int defendersLost = Math.Min(defender.Pieces.Count - 1, perfdiff / 2);
+                int baseLost = (int)(3f * (float)attackerSum / defenderSum);
+                int defendersLost = Math.Min(defender.Pieces.Count - 1, baseLost);
 
                 // remove the killed defenders
                 for (int i = 0; i < defendersLost; i++)

@@ -34,9 +34,14 @@ namespace Strategy
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
             Components.Add(new FPSOverlay(this));
 
-            _input = new LocalInput(this);
-            _input.Controller = PlayerIndex.One;
-            Components.Add(_input);
+            _inputStateA = new LocalInputState();
+            _inputA = new LocalInput(this);
+            _inputA.Controller = PlayerIndex.One;
+            Components.Add(_inputA);
+            _inputStateB = new LocalInputState();
+            _inputB = new LocalInput(this);
+            _inputB.Controller = PlayerIndex.Two;
+            Components.Add(_inputB);
         }
 
         protected override void Initialize()
@@ -59,18 +64,23 @@ namespace Strategy
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _isoBatch = new IsometricBatch(_spriteBatch);
 
-            _cursor = new IsometricSprite(_piece);
-            _cursor.Color = Color.SlateGray;
-            _cursor.Origin = new Vector2(0, 14);
+            _cursorA = new IsometricSprite(_piece);
+            _cursorA.Color = Color.SlateGray;
+            _cursorA.Origin = new Vector2(0, 14);
+            _cursorB = new IsometricSprite(_piece);
+            _cursorB.Color = Color.SaddleBrown;
+            _cursorB.Origin = new Vector2(0, 14);
         }
 
         private void StartNewMatch()
         {
-            _map = _generator.Generate(16, 4, 10);
+            _map = _generator.Generate(16, 4, 4, 10);
             _match = new Match(_map, _random);
 
             ShowMap(_map);
-            _selected = _map.Territories.First();
+
+            _inputStateA.Hovered = _map.Territories.First();
+            _inputStateB.Hovered = _map.Territories.First();
             ShowSelected();
 
             _pendingAction = false;
@@ -234,23 +244,58 @@ namespace Strategy
             return sprites;
         }
 
-        private void Navigate()
+        private void HandleInput(PlayerId player, LocalInput input, LocalInputState state)
         {
-            float THRESHOLD = MathHelper.ToRadians(90);
-            if (_input.Move.Pressed)
+            if (input.Action.Pressed)
             {
-                Vector2 direction = _input.MoveDirection.Position;
+                if (state.ActionPending)
+                {
+                    if (_match.CanMove(player, state.Selected, state.Hovered))
+                    {
+                        _match.Move(state.Selected, state.Hovered);
+                        state.ActionPending = false;
+                    }
+                    else if (_match.CanAttack(player, state.Selected, state.Hovered))
+                    {
+                        _match.Attack(state.Selected, state.Hovered);
+                        state.ActionPending = false;
+                    }
+                }
+                else
+                {
+                    state.Selected = state.Hovered;
+                    state.ActionPending = true;
+                }
+            }
+            else if (input.Cancel.Pressed)
+            {
+                state.ActionPending = false;
+                state.Selected = null;
+            }
+            else if (input.Place.Pressed)
+            {
+                if (_match.CanPlacePiece(player, state.Hovered))
+                {
+                    _match.PlacePiece(state.Hovered);
+                }
+            }
+            else if (input.Move.Pressed)
+            {
+                const float THRESHOLD = MathHelper.PiOver2;
+
+                Vector2 direction = input.MoveDirection.Position;
                 direction.Y = -direction.Y;
 
-                Territory newSelected = null;
+                Territory hovered = state.Hovered;
+                Territory newHovered = null;
 
                 float minAngle = float.MaxValue;
 
                 Vector2 curLoc = new Vector2(
-                    _selected.Location.Row * ROX + _selected.Location.Col * COX + BASEX,
-                    _selected.Location.Row * ROY + _selected.Location.Col * COY + BASEY);
+                    hovered.Location.Row * ROX + hovered.Location.Col * COX + BASEX,
+                    hovered.Location.Row * ROY + hovered.Location.Col * COY + BASEY);
 
-                foreach (Territory other in _selected.Neighbors)
+                foreach (Territory other in hovered.Neighbors)
                 {
                     Vector2 otherLoc = new Vector2(
                         other.Location.Row * ROX + other.Location.Col * COX + BASEX,
@@ -264,62 +309,33 @@ namespace Strategy
                     if (angle < THRESHOLD && angle < minAngle)
                     {
                         minAngle = angle;
-                        newSelected = other;
+                        newHovered = other;
                     }
                 }
 
-                if (newSelected != null)
+                if (newHovered != null)
                 {
-                    _selected = newSelected;
+                    state.Hovered = newHovered;
                     ShowSelected();
                 }
             }
-        }
-
-        private void HandleInput(PlayerId player, LocalInput input)
-        {
-            if (input.Action.Pressed)
+            else if (input.Debug.Pressed)
             {
-                if (_pendingAction)
-                {
-                    Territory dstTerritory = _selected;
-                    if (_match.CanMove(player, _srcTerritory, dstTerritory))
-                    {
-                        _match.Move(_srcTerritory, dstTerritory);
-                        _pendingAction = false;
-                    }
-                    else if (_match.CanAttack(player, _srcTerritory, dstTerritory))
-                    {
-                        _match.Attack(_srcTerritory, dstTerritory);
-                        _pendingAction = false;
-                    }
-                }
-                else
-                {
-                    _srcTerritory = _selected;
-                    _pendingAction = true;
-                }
-            }
-            else if (input.Cancel.Pressed)
-            {
-                _pendingAction = false;
-                _srcTerritory = null;
-            }
-            else if (input.Place.Pressed)
-            {
-                if (_match.CanPlacePiece(player, _selected))
-                {
-                    _match.PlacePiece(_selected);
-                }
+                StartNewMatch();
             }
         }
 
         private void ShowSelected()
         {
-            Cell ccell = _selected.Area[0];
-            _cursor.X = ccell.Row * ROX + ccell.Col * COX + BASEX;
-            _cursor.Y = ccell.Row * ROY + ccell.Col * COY + BASEY;
-            _cursor.Position += new Vector2(10, 10); // offset in tile
+            Cell cella = _inputStateA.Hovered.Area[0];
+            _cursorA.X = cella.Row * ROX + cella.Col * COX + BASEX;
+            _cursorA.Y = cella.Row * ROY + cella.Col * COY + BASEY;
+            _cursorA.Position += new Vector2(10, 10); // offset in tile
+
+            Cell cellb = _inputStateB.Hovered.Area[1];
+            _cursorB.X = cellb.Row * ROX + cellb.Col * COX + BASEX;
+            _cursorB.Y = cellb.Row * ROY + cellb.Col * COY + BASEY;
+            _cursorB.Position += new Vector2(10, 10); // offset in tile
         }
 
         /// <summary>
@@ -332,13 +348,9 @@ namespace Strategy
             {
                 Exit();
             }
-            if (_input.Debug.Pressed)
-            {
-                StartNewMatch();
-            }
             _match.Update(gameTime.GetElapsedSeconds());
-            HandleInput(PlayerId.A, _input);
-            Navigate();
+            HandleInput(PlayerId.A, _inputA, _inputStateA);
+            HandleInput(PlayerId.B, _inputB, _inputStateB);
             ShowMap(_map); // brute force the new map (oh so ugly)
             base.Update(gameTime);
         }
@@ -363,7 +375,8 @@ namespace Strategy
             {
                 _isoBatch.Draw(sprite);
             }
-            _isoBatch.Draw(_cursor);
+            _isoBatch.Draw(_cursorA);
+            _isoBatch.Draw(_cursorB);
             _isoBatch.End();
 
             base.Draw(gameTime);
@@ -383,7 +396,6 @@ namespace Strategy
         }
 
         private Territory _selected;
-        private IsometricSprite _cursor;
         private bool _pendingAction;
         private Territory _srcTerritory;
 
@@ -392,7 +404,12 @@ namespace Strategy
         private Match _match;
         private Map _map;
 
-        private LocalInput _input;
+        private LocalInput _inputA;
+        private LocalInputState _inputStateA;
+        private IsometricSprite _cursorA;
+        private LocalInput _inputB;
+        private LocalInputState _inputStateB;
+        private IsometricSprite _cursorB;
 
         private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;

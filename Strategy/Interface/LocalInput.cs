@@ -3,6 +3,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
+using Strategy.Gameplay;
 using Strategy.Library.Input;
 
 namespace Strategy.Interface
@@ -41,5 +42,15 @@ namespace Strategy.Interface
         }
 
         private const float MoveTolerance = 0.5f * 0.5f;
+    }
+
+    /// <summary>
+    /// The currently selected state.
+    /// </summary>
+    public class LocalInputState
+    {
+        public Territory Selected;
+        public Territory Hovered;
+        public bool ActionPending;
     }
 }
