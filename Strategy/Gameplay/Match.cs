@@ -102,13 +102,18 @@ namespace Strategy.Gameplay
             {
                 return false;
             }
-            // cannot attack non-adjacent territories
-            if (!attacker.Neighbors.Contains(defender))
+            // cannot attack with fewer than two pieces
+            if (attacker.Pieces.Count < 2)
             {
                 return false;
             }
-            // cannot attack with fewer than two pieces
-            if (attacker.Pieces.Count(piece => piece.Ready) <= 1)
+            // cannot attack if no pieces are ready
+            if (!attacker.Pieces.Any(piece => piece.Ready))
+            {
+                return false;
+            }
+            // cannot attack non-adjacent territories
+            if (!attacker.Neighbors.Contains(defender))
             {
                 return false;
             }
@@ -122,32 +127,35 @@ namespace Strategy.Gameplay
         /// <param name="defender">The territory defending.</param>
         public void Attack(Territory attacker, Territory defender)
         {
+            int attackerTotal = attacker.Pieces.Count;
+            int defenderTotal = defender.Pieces.Count;
+
             // build the set of attacking pieces
-            List<PieceAttackData> attackers = new List<PieceAttackData>(attacker.Pieces.Count);
+            List<PieceAttackData> attackers = new List<PieceAttackData>(attackerTotal);
             int attackerSum = 0;
-            for (int i = 0; i < attacker.Pieces.Count; i++)
+            foreach (Piece piece in attacker.Pieces)
             {
-                if (attacker.Pieces[i].Ready)
+                if (piece.Ready)
                 {
                     PieceAttackData data = new PieceAttackData();
-                    data.Piece = attacker.Pieces[i];
+                    data.Piece = piece;
                     data.Roll = _random.Next(1, 6 + 1);
                     data.Survived = true;
                     attackers.Add(data);
 
                     attackerSum += data.Roll;
 
-                    attacker.Pieces[i].DidPerformAction();
+                    piece.DidPerformAction();
                 }
             }
 
             // build the set of defending pieces
-            List<PieceAttackData> defenders = new List<PieceAttackData>(defender.Pieces.Count);
+            List<PieceAttackData> defenders = new List<PieceAttackData>(defenderTotal);
             int defenderSum = 0;
-            for (int i = 0; i < defender.Pieces.Count; i++)
+            foreach(Piece piece in defender.Pieces)
             {
                 PieceAttackData data = new PieceAttackData();
-                data.Piece = defender.Pieces[i];
+                data.Piece = piece;
                 data.Roll = _random.Next(1, 6 + 1);
                 data.Survived = true;
                 defenders.Add(data);
@@ -166,9 +174,9 @@ namespace Strategy.Gameplay
                     defenders[i].Survived = false;
                 }
 
-                // handle the attacker
-                int baseLost = (int)(3f * (float)defenderSum / attackerSum);
-                int attackersLost = Math.Min(attackers.Count - 2, baseLost);
+                // can lose all the attackers but must have a piece ready to move
+                int attackersLost = (int)(3f * (float)defenderSum / attackerSum);
+                attackersLost = Math.Min(attackerTotal - 1, attackersLost); 
                 for (int i = 0; i < attackers.Count; i++)
                 {
                     if (i < attackersLost) // remove the killed pieces
@@ -176,21 +184,27 @@ namespace Strategy.Gameplay
                         attackers[i].Survived = false;
                         attacker.Pieces.Remove(attackers[i].Piece);
                     }
-                    else if (i != attackers.Count - 1) // move the surviving pieces
+                    else // move the surviving pieces
                     {
-                        attacker.Pieces.Remove(attackers[i].Piece);
-                        defender.Pieces.Add(attackers[i].Piece);
+                        // if every piece was attacking then we must leave one piece behind
+                        if (attackerTotal > attackers.Count || i != attackers.Count - 1)
+                        {
+                            attacker.Pieces.Remove(attackers[i].Piece);
+                            defender.Pieces.Add(attackers[i].Piece);
+                        }
                     }
                 }
 
-                // change the owners
+                // change the owner
                 defender.Owner = attacker.Owner;
             }
             else // attack failed
             {
-                int attackersLost = Math.Min(attacker.Pieces.Count - 1, attackers.Count);
-                int baseLost = (int)(3f * (float)attackerSum / defenderSum);
-                int defendersLost = Math.Min(defender.Pieces.Count - 1, baseLost);
+                // can lose all attackers or defenders but must leave a single piece
+                int attackersLost = attackerTotal;
+                attackersLost = Math.Min(attacker.Pieces.Count - 1, attackersLost);
+                int defendersLost = (int)(3f * (float)attackerSum / defenderSum);
+                defendersLost = Math.Min(defender.Pieces.Count - 1, defendersLost);
 
                 // remove the killed defenders
                 for (int i = 0; i < defendersLost; i++)
@@ -242,17 +256,17 @@ namespace Strategy.Gameplay
                 return false;
             }
             // cannot move if there are fewer than two pieces
-            if (source.Pieces.Count <= 1)
-            {
-                return false;
-            }
-            // cannot move to a non-adjacent territory
-            if (!source.Neighbors.Contains(destination))
+            if (source.Pieces.Count < 2)
             {
                 return false;
             }
             // cannot move if no pieces are ready
             if (!source.Pieces.Any(piece => piece.Ready))
+            {
+                return false;
+            }
+            // cannot move to a non-adjacent territory
+            if (!source.Neighbors.Contains(destination))
             {
                 return false;
             }
@@ -267,19 +281,12 @@ namespace Strategy.Gameplay
         public void Move(Territory source, Territory destination)
         {
             int toMove = Math.Min(destination.Capacity - destination.Pieces.Count, source.Pieces.Count - 1);
-            List<Piece> moved = new List<Piece>(toMove);
-            for (int i = 0; i < toMove; i++)
-            {
-                if (source.Pieces[i].Ready)
-                {
-                    moved.Add(source.Pieces[i]);
-                }
-            }
+            List<Piece> moved = new List<Piece>(source.Pieces.Where(piece => piece.Ready).Take(toMove));
             foreach (Piece piece in moved)
             {
-                piece.DidPerformAction();
                 source.Pieces.Remove(piece);
                 destination.Pieces.Add(piece);
+                piece.DidPerformAction();
             }
             if (moved.Count > 0 && PiecesMoved != null)
             {
