@@ -102,6 +102,11 @@ namespace Strategy.Gameplay
             {
                 return false;
             }
+            // cannot attack non-adjacent territories
+            if (!attacker.Neighbors.Contains(defender))
+            {
+                return false;
+            }
             // cannot attack with fewer than two pieces
             if (attacker.Pieces.Count(piece => piece.Ready) <= 1)
             {
@@ -141,8 +146,6 @@ namespace Strategy.Gameplay
             int defenderSum = 0;
             for (int i = 0; i < defender.Pieces.Count; i++)
             {
-                //TODO use only ready defenders?
-                //TODO should defending reset the action timer?
                 PieceAttackData data = new PieceAttackData();
                 data.Piece = defender.Pieces[i];
                 data.Roll = _random.Next(1, 6 + 1);
@@ -240,6 +243,11 @@ namespace Strategy.Gameplay
             }
             // cannot move if there are fewer than two pieces
             if (source.Pieces.Count <= 1)
+            {
+                return false;
+            }
+            // cannot move to a non-adjacent territory
+            if (!source.Neighbors.Contains(destination))
             {
                 return false;
             }
