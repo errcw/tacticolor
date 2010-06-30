@@ -13,7 +13,7 @@ namespace Strategy.Gameplay
         A,
         B,
         C,
-        D
+        D,
     }
 
     public class Player

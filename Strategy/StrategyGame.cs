@@ -157,11 +157,10 @@ namespace Strategy
                 tileSprites.Add(tileSprite);
             }
 
-            for (int i = 0; i < territory.Pieces.Count; i++)
+            int ordinal = 0;
+            foreach(Piece piece in territory.Pieces)
             {
-                Piece piece = territory.Pieces[i];
-
-                Cell offset = MapPieceOrdinalToOffset(i);
+                Cell offset = MapPieceOrdinalToOffset(ordinal++);
                 Cell cell = new Cell(territory.Location.Row + offset.Row, territory.Location.Col + offset.Col);
 
                 IsometricSprite pieceSprite = new IsometricSprite(_piece);
@@ -216,7 +215,7 @@ namespace Strategy
 
         private List<IsometricSprite> ShowConnection(Territory a, Territory b)
         {
-            Cell closestA = a.Area[0], closestB = b.Area[0];
+            Cell closestA = a.Area.First(), closestB = b.Area.First();
             int closestDist2 = int.MaxValue;
 
             foreach (Cell ca in a.Area)
@@ -327,12 +326,12 @@ namespace Strategy
 
         private void ShowSelected()
         {
-            Cell cella = _inputStateA.Hovered.Area[0];
+            Cell cella = _inputStateA.Hovered.Area.First();
             _cursorA.X = cella.Row * ROX + cella.Col * COX + BASEX;
             _cursorA.Y = cella.Row * ROY + cella.Col * COY + BASEY;
             _cursorA.Position += new Vector2(10, 10); // offset in tile
 
-            Cell cellb = _inputStateB.Hovered.Area[1];
+            Cell cellb = _inputStateB.Hovered.Area.ElementAt(1);
             _cursorB.X = cellb.Row * ROX + cellb.Col * COX + BASEX;
             _cursorB.Y = cellb.Row * ROY + cellb.Col * COY + BASEY;
             _cursorB.Position += new Vector2(10, 10); // offset in tile

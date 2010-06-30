@@ -61,6 +61,7 @@ namespace Strategy.Gameplay
         /// </summary>
         public void DidPerformAction()
         {
+            _timer = 0;
             TimerValue = 0;
         }
 

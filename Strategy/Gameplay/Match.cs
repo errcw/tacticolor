@@ -31,6 +31,7 @@ namespace Strategy.Gameplay
         /// </summary>
         public event EventHandler<MatchEndedEventArgs> Ended;
 
+
         /// <summary>
         /// The map this match is played on.
         /// </summary>
@@ -42,6 +43,13 @@ namespace Strategy.Gameplay
         public int[] PiecesAvailable { get; private set; }
 
         /// <summary>
+        /// The progress towards the next piece (in [0, 1]) for each player. If
+        /// the player has the maximum number of pieces this value is invalid.
+        /// </summary>
+        public float[] PieceCreationProgress { get; private set; }
+
+
+        /// <summary>
         /// Creates a new match.
         /// </summary>
         /// <param name="map">The map on which to play.</param>
@@ -50,7 +58,7 @@ namespace Strategy.Gameplay
         {
             _map = map;
             _random = random;
-            PiecesAvailable = new int[4];
+            SetInitialPieceState();
         }
 
         /// <summary>
@@ -59,24 +67,7 @@ namespace Strategy.Gameplay
         /// <param name="time">The elapsed time, in seconds, since the last update.</param>
         public void Update(float time)
         {
-            // update the piece action timers
-            foreach (Territory territory in _map.Territories)
-            {
-                foreach (Piece piece in territory.Pieces)
-                {
-                    piece.Update(time);
-                }
-            }
-            // update the piece counts
-            _pieceCreationDelta += time;
-            if (_pieceCreationDelta > PieceCreationTime)
-            {
-                for (int p = 0; p < PiecesAvailable.Length; p++)
-                {
-                    PiecesAvailable[p] = Math.Min(PiecesAvailable[p] + 1, MaxPiecesAvailable);
-                }
-                _pieceCreationDelta -= PieceCreationTime;
-            }
+            UpdatePieces(time);
         }
 
         /// <summary>
@@ -196,7 +187,9 @@ namespace Strategy.Gameplay
                 }
 
                 // change the owner
+                PlayerId? previousOwner = defender.Owner;
                 defender.Owner = attacker.Owner;
+                TerritoryDidChangeOwners(defender, previousOwner);
             }
             else // attack failed
             {
@@ -335,13 +328,90 @@ namespace Strategy.Gameplay
             }
         }
 
+        /// <summary>
+        /// Configures the initial piece state.
+        /// </summary>
+        private void SetInitialPieceState()
+        {
+            _pieceCreationElapsed = new float[PlayerCount];
+            _pieceCreationSpeed = new float[PlayerCount];
+            PieceCreationProgress = new float[PlayerCount];
+            PiecesAvailable = new int[PlayerCount];
+
+            for (int p = 0; p < PlayerCount; p++)
+            {
+                _pieceCreationElapsed[p] = 0f;
+                _pieceCreationSpeed[p] = 1f;
+                PieceCreationProgress[p] = 0f;
+                PiecesAvailable[p] = 0;
+            }
+        }
+
+        /// <summary>
+        /// Handles a territory changing owners.
+        /// </summary>
+        private void TerritoryDidChangeOwners(Territory territory, PlayerId? previousOwner)
+        {
+            int ownerIdx = (int)territory.Owner;
+            _numTerritoriesOwned[ownerIdx] += 1;
+            _pieceCreationSpeed[ownerIdx] = Math.Min(1f + _numTerritoriesOwned[ownerIdx] * 0.1f, 2f);
+
+            // might not have a value if territory was unowned
+            if (previousOwner.HasValue)
+            {
+                int prevIdx = (int)previousOwner;
+                _numTerritoriesOwned[prevIdx] -= 1;
+                _pieceCreationSpeed[prevIdx] = Math.Max(1f + _numTerritoriesOwned[prevIdx] * 0.1f, 2f);
+            }
+        }
+
+        /// <summary>
+        /// Updates the state of all the pieces, including generating new ones.
+        /// </summary>
+        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
+        private void UpdatePieces(float time)
+        {
+            // update the piece action timers
+            foreach (Territory territory in _map.Territories)
+            {
+                foreach (Piece piece in territory.Pieces)
+                {
+                    piece.Update(time);
+                }
+            }
+            // update the piece counts
+            for (int p = 0; p < PlayerCount; p++)
+            {
+                if (PiecesAvailable[p] >= MaxPiecesAvailable)
+                {
+                    continue;
+                }
+
+                _pieceCreationElapsed[p] += time * _pieceCreationSpeed[p];
+                PieceCreationProgress[p] = Math.Min(_pieceCreationElapsed[p] / PieceCreationTime, 1f);
+
+                if (_pieceCreationElapsed[p] >= PieceCreationTime)
+                {
+                    PiecesAvailable[p] += 1;
+
+                    _pieceCreationElapsed[p] = 0f;
+                    PieceCreationProgress[p] = 0f;
+                }
+            }
+        }
+
         private Map _map;
         private Random _random;
 
-        private float _pieceCreationDelta;
+        private float[] _pieceCreationElapsed = new float[4];
+        private float[] _pieceCreationSpeed = new float[4];
+
+        private int[] _numTerritoriesOwned;
 
         private const float PieceCreationTime = 3f;
         private const int MaxPiecesAvailable = 5;
+
+        private const int PlayerCount = 4;
     }
 
     /// <summary>
@@ -377,7 +447,7 @@ namespace Strategy.Gameplay
     }
 
     /// <summary>
-    /// Details about an attacking piece.
+    /// Details about an attacking or defending piece.
     /// </summary>
     public class PieceAttackData
     {

@@ -46,12 +46,12 @@ namespace Strategy.Gameplay
         /// <summary>
         /// The grid cells occupied by this territory.
         /// </summary>
-        public IList<Cell> Area { get; private set; }
+        public ICollection<Cell> Area { get; private set; }
 
         /// <summary>
         /// The territories adjacent to this territory.
         /// </summary>
-        public IList<Territory> Neighbors { get; private set; }
+        public ICollection<Territory> Neighbors { get; private set; }
 
         /// <summary>
         /// The maximum number of pieces that may be in the territory.
@@ -61,7 +61,7 @@ namespace Strategy.Gameplay
         /// <summary>
         /// The pieces currently in the territory.
         /// </summary>
-        public IList<Piece> Pieces { get; set; }
+        public ICollection<Piece> Pieces { get; set; }
 
         /// <summary>
         /// The player owning this territory.
@@ -87,7 +87,7 @@ namespace Strategy.Gameplay
         /// <summary>
         /// The territories contained in this map.
         /// </summary>
-        public IEnumerable<Territory> Territories { get; private set; }
+        public ICollection<Territory> Territories { get; private set; }
 
         /// <summary>
         /// Creates a new map with a fixed set of territories.
