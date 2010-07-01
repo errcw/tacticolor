@@ -394,10 +394,6 @@ namespace Strategy
             }
         }
 
-        private Territory _selected;
-        private bool _pendingAction;
-        private Territory _srcTerritory;
-
         private Random _random;
         private MapGenerator _generator;
         private Match _match;
