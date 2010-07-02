@@ -12,9 +12,10 @@ namespace Strategy.Interface
     /// </summary>
     public class MatchView
     {
-        public MatchView(Match match)
+        public MatchView(Match match, InterfaceContext context)
         {
             _match = match;
+            _context = context;
         }
 
         public void Update(float time)
@@ -26,5 +27,6 @@ namespace Strategy.Interface
         }
 
         private Match _match;
+        private InterfaceContext _context;
     }
 }

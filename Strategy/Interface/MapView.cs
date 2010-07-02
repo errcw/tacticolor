@@ -12,9 +12,15 @@ namespace Strategy.Interface
     /// </summary>
     public class MapView
     {
-        public MapView(Map map)
+        /// <summary>
+        /// Calculates the pixel extents of this
+        /// </summary>
+        public Rectangle Extents { get; private set; }
+
+        public MapView(Map map, InterfaceContext context)
         {
             _map = map;
+            _context = context;
         }
 
         public void Update(float time)
@@ -26,5 +32,6 @@ namespace Strategy.Interface
         }
 
         private Map _map;
+        private InterfaceContext _context;
     }
 }

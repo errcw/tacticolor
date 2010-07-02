@@ -12,9 +12,10 @@ namespace Strategy.Interface
     /// </summary>
     public class PieceView
     {
-        public PieceView(Piece piece)
+        public PieceView(Piece piece, InterfaceContext context)
         {
             _piece = piece;
+            _context = context;
         }
 
         public void Update(float time)
@@ -26,5 +27,6 @@ namespace Strategy.Interface
         }
 
         private Piece _piece;
+        private InterfaceContext _context;
     }
 }

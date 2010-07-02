@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -9,48 +10,113 @@ using Strategy.Library.Input;
 namespace Strategy.Interface
 {
     /// <summary>
-    /// Polls for input from a local player.
+    /// Handles input from a local player.
     /// </summary>
-    public class LocalInput : Input
+    public class LocalInput
     {
-        public readonly ControlState Move = new ControlState() { RepeatEnabled = true };
-        public readonly ControlPosition MoveDirection = new ControlPosition();
+        /// <summary>
+        /// The player for this input.
+        /// </summary>
+        public PlayerId Player { get; private set; }
 
-        public readonly ControlState Action = new ControlState();
-        public readonly ControlState Cancel = new ControlState();
-        public readonly ControlState Place = new ControlState();
+        /// <summary>
+        /// The territory currently hovered.
+        /// </summary>
+        public Territory Hovered { get; private set; }
 
-        public readonly ControlState Debug = new ControlState();
+        /// <summary>
+        /// The territory currently selected for an action (null for none).
+        /// </summary>
+        public Territory Selected { get; private set; }
 
-        public LocalInput(Game game) : base(game)
+        public LocalInput(LocalInputPolling input, PlayerId player, Match match, InterfaceContext context)
         {
-            Register(Move, (state) => state.ThumbSticks.Left.LengthSquared() >= MoveTolerance);
-            Register(MoveDirection, Polling.LeftThumbStick);
-            Register(Action, Polling.One(Buttons.A));
-            Register(Cancel, Polling.One(Buttons.B));
-            Register(Place, Polling.One(Buttons.X));
-            Register(Debug, Polling.All(Polling.One(Buttons.LeftShoulder), Polling.One(Buttons.RightShoulder)));
+            _input = input;
+            _match = match;
+            _context = context;
+
+            Player = player;
+            Hovered = match.Map.Territories.First();
+            Selected = null;
         }
 
         /// <summary>
-        /// Polls for the controller with the Start button pressed.
+        /// Updates the input state.
         /// </summary>
-        /// <returns>True if a controller was found; otherwise, false.</returns>
-        public bool FindActiveController()
+        public void Update()
         {
-            return FindActiveController(Polling.One(Buttons.Start));
+            if (_input.Action.Pressed)
+            {
+                if (_actionPending)
+                {
+                    if (_match.CanMove(Player, Selected, Hovered))
+                    {
+                        _match.Move(Selected, Hovered);
+                        _actionPending = false;
+                    }
+                    else if (_match.CanAttack(Player, Selected, Hovered))
+                    {
+                        _match.Attack(Selected, Hovered);
+                        _actionPending = false;
+                    }
+                }
+                else
+                {
+                    Selected = Hovered;
+                    _actionPending = true;
+                }
+            }
+            else if (_input.Cancel.Pressed)
+            {
+                _actionPending = false;
+                Selected = null;
+            }
+            else if (_input.Place.Pressed)
+            {
+                if (_match.CanPlacePiece(Player, Hovered))
+                {
+                    _match.PlacePiece(Hovered);
+                }
+            }
+            else if (_input.Move.Pressed)
+            {
+                Vector2 direction = _input.MoveDirection.Position;
+                direction.Y = -direction.Y;
+
+                Territory newHovered = null;
+                float minAngle = float.MaxValue;
+                Point curLoc = _context.IsoParams.GetPoint(Hovered.Location);
+
+                foreach (Territory other in Hovered.Neighbors)
+                {
+                    Point otherLoc = _context.IsoParams.GetPoint(other.Location);
+                    Vector2 toOtherLoc = new Vector2(otherLoc.X - curLoc.X, otherLoc.Y - curLoc.Y);
+
+                    float dot = Vector2.Dot(direction, toOtherLoc);
+                    float crossMag = direction.X * toOtherLoc.Y - direction.Y * toOtherLoc.X;
+                    float angle = (float)Math.Abs(Math.Atan2(crossMag, dot));
+
+                    if (angle < MoveAngleThreshold && angle < minAngle)
+                    {
+                        minAngle = angle;
+                        newHovered = other;
+                    }
+                }
+
+                if (newHovered != null)
+                {
+                    Hovered = newHovered;
+                }
+            }
+
         }
 
-        private const float MoveTolerance = 0.5f * 0.5f;
-    }
+        private LocalInputPolling _input;
+        private Match _match;
+        private InterfaceContext _context;
 
-    /// <summary>
-    /// The currently selected state.
-    /// </summary>
-    public class LocalInputState
-    {
-        public Territory Selected;
-        public Territory Hovered;
-        public bool ActionPending;
+        private bool _actionPending;
+
+        private const float MoveAngleThreshold = MathHelper.PiOver2;
     }
 }
