@@ -35,10 +35,6 @@ namespace Strategy
             Components.Add(new FPSOverlay(this));
 
             _context = new InterfaceContext(this, Content, new IsometricParameters(20, 10, 20, -10));
-
-            Components.Add(_inputPollingA = new LocalInputPolling(this));
-            Components.Add(_inputPollingB = new LocalInputPolling(this));
-            _inputPollingB.Controller = PlayerIndex.Two;
         }
 
         protected override void Initialize()
@@ -69,9 +65,10 @@ namespace Strategy
 
             ShowMap(_map);
 
-            _inputA = new LocalInput(_inputPollingA, PlayerId.A, _match, _context);
+            _inputA = new LocalInput(PlayerId.A, _match, _context);
             _inputViewA = new LocalInputView(_inputA, _context);
-            _inputB = new LocalInput(_inputPollingB, PlayerId.B, _match, _context);
+            _inputB = new LocalInput(PlayerId.B, _match, _context);
+            _inputB.Controller = PlayerIndex.Two;
             _inputViewB = new LocalInputView(_inputB, _context);
         }
 
@@ -245,12 +242,14 @@ namespace Strategy
                 Exit();
             }
 
-            _match.Update(gameTime.GetElapsedSeconds());
+            float time = gameTime.GetElapsedSeconds();
 
-            _inputA.Update();
-            _inputViewA.Update(gameTime.GetElapsedSeconds());
-            _inputB.Update();
-            _inputViewB.Update(gameTime.GetElapsedSeconds());
+            _match.Update(time);
+
+            _inputA.Update(time);
+            _inputViewA.Update(time);
+            _inputB.Update(time);
+            _inputViewB.Update(time);
 
             ShowMap(_map); // brute force the new map (oh so ugly)
             base.Update(gameTime);
@@ -302,10 +301,8 @@ namespace Strategy
         private Map _map;
         private InterfaceContext _context;
 
-        private LocalInputPolling _inputPollingA;
         private LocalInput _inputA;
         private LocalInputView _inputViewA;
-        private LocalInputPolling _inputPollingB;
         private LocalInput _inputB;
         private LocalInputView _inputViewB;
 

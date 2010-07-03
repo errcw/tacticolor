@@ -15,9 +15,28 @@ namespace Strategy.Interface
     public class LocalInput
     {
         /// <summary>
+        /// Occurs when the currently hovered territory changes.
+        /// </summary>
+        public event EventHandler<EventArgs> HoveredChanged;
+
+        /// <summary>
+        /// Occurs when the currently selected territory changes.
+        /// </summary>
+        public event EventHandler<EventArgs> SelectedChanged;
+
+        /// <summary>
         /// The player for this input.
         /// </summary>
         public PlayerId Player { get; private set; }
+
+        /// <summary>
+        /// The controller polled for this input.
+        /// </summary>
+        public PlayerIndex Controller
+        {
+            get { return _input.Controller.Value; }
+            set { _input.Controller = value; }
+        }
 
         /// <summary>
         /// The territory currently hovered.
@@ -29,23 +48,30 @@ namespace Strategy.Interface
         /// </summary>
         public Territory Selected { get; private set; }
 
-        public LocalInput(LocalInputPolling input, PlayerId player, Match match, InterfaceContext context)
+        public LocalInput(PlayerId player, Match match, InterfaceContext context)
         {
-            _input = input;
+            Player = player;
             _match = match;
             _context = context;
 
-            Player = player;
-            Hovered = match.Map.Territories.First();
-            Selected = null;
+            _input = new Input(context.Game);
+            _input.Register(Move, (state) => state.ThumbSticks.Left.LengthSquared() >= MoveTolerance);
+            _input.Register(MoveDirection, Polling.LeftThumbStick);
+            _input.Register(Action, Polling.One(Buttons.A));
+            _input.Register(Cancel, Polling.One(Buttons.B));
+            _input.Register(Place, Polling.One(Buttons.X));
+
+            SetHovered(_match.Map.Territories.First());
+            SetSelected(null);
         }
 
         /// <summary>
         /// Updates the input state.
         /// </summary>
-        public void Update()
+        public void Update(float time)
         {
-            if (_input.Action.Pressed)
+            _input.Update(time);
+            if (Action.Pressed)
             {
                 if (_actionPending)
                 {
@@ -62,25 +88,28 @@ namespace Strategy.Interface
                 }
                 else
                 {
-                    Selected = Hovered;
-                    _actionPending = true;
+                    if (Hovered.Owner == Player)
+                    {
+                        SetSelected(Hovered);
+                        _actionPending = true;
+                    }
                 }
             }
-            else if (_input.Cancel.Pressed)
+            else if (Cancel.Pressed)
             {
                 _actionPending = false;
-                Selected = null;
+                SetSelected(null);
             }
-            else if (_input.Place.Pressed)
+            else if (Place.Pressed)
             {
                 if (_match.CanPlacePiece(Player, Hovered))
                 {
                     _match.PlacePiece(Hovered);
                 }
             }
-            else if (_input.Move.Pressed)
+            else if (Move.Pressed)
             {
-                Vector2 direction = _input.MoveDirection.Position;
+                Vector2 direction = MoveDirection.Position;
                 direction.Y = -direction.Y;
 
                 Territory newHovered = null;
@@ -89,6 +118,13 @@ namespace Strategy.Interface
 
                 foreach (Territory other in Hovered.Neighbors)
                 {
+                    if (Selected != null &&
+                        Selected != other &&
+                        !_match.CanMove(Player, Selected, other) &&
+                        !_match.CanAttack(Player, Selected, other))
+                    {
+                        continue; // cannot move to invalid territory
+                    }
                     Point otherLoc = _context.IsoParams.GetPoint(other.Location);
                     Vector2 toOtherLoc = new Vector2(otherLoc.X - curLoc.X, otherLoc.Y - curLoc.Y);
 
@@ -105,18 +141,42 @@ namespace Strategy.Interface
 
                 if (newHovered != null)
                 {
-                    Hovered = newHovered;
+                    SetHovered(newHovered);
                 }
             }
-
         }
 
-        private LocalInputPolling _input;
+        private void SetHovered(Territory territory)
+        {
+            Hovered = territory;
+            if (HoveredChanged != null)
+            {
+                HoveredChanged(this, EventArgs.Empty);
+            }
+        }
+
+        private void SetSelected(Territory territory)
+        {
+            Selected = territory;
+            if (SelectedChanged != null)
+            {
+                SelectedChanged(this, EventArgs.Empty);
+            }
+        }
+
         private Match _match;
         private InterfaceContext _context;
 
         private bool _actionPending;
 
+        private Input _input;
+        private readonly ControlState Move = new ControlState() { RepeatEnabled = true };
+        private readonly ControlPosition MoveDirection = new ControlPosition();
+        private readonly ControlState Action = new ControlState();
+        private readonly ControlState Cancel = new ControlState();
+        private readonly ControlState Place = new ControlState();
+
+        private const float MoveTolerance = 0.5f * 0.5f;
         private const float MoveAngleThreshold = MathHelper.PiOver2;
     }
 }

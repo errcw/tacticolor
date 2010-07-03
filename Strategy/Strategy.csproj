@@ -94,7 +94,6 @@
     <Compile Include="Interface\IsometricParameters.cs" />
     <Compile Include="Interface\IsometricSprite.cs" />
     <Compile Include="Interface\LocalInput.cs" />
-    <Compile Include="Interface\LocalInputPolling.cs" />
     <Compile Include="Interface\LocalInputView.cs" />
     <Compile Include="Interface\MapView.cs" />
     <Compile Include="Interface\MatchView.cs" />

@@ -16,5 +16,13 @@ namespace Strategy.Library.Extensions
         {
             return (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
+
+        /// <summary>
+        /// Gets the total number of elapsed milliseconds since the last update.
+        /// </summary>
+        public static int GetElapsedMilliseconds(this GameTime gameTime)
+        {
+            return (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+        }
     }
 }

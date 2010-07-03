@@ -41,7 +41,7 @@ namespace Strategy.Gameplay
         {
             Territory[] territories = new Territory[numTerritories];
 
-            int gridSize = (int)(Math.Sqrt(numTerritories) * TERRITORY_SIZE * 1.6);
+            int gridSize = (int)(Math.Sqrt(numTerritories) * TerritorySize * MapExpansionFactor);
             Territory[,] map = new Territory[gridSize, gridSize];
 
             // create and place the territories
@@ -148,9 +148,9 @@ namespace Strategy.Gameplay
             int tc = layout.GetLength(1);
 
             // check for overlap
-            for (int r = row - TERRITORY_GAP_SIZE; r < row + tr + TERRITORY_GAP_SIZE; r++)
+            for (int r = row - TerritoryGapSize; r < row + tr + TerritoryGapSize; r++)
             {
-                for (int c = col - TERRITORY_GAP_SIZE; c < col + tc + TERRITORY_GAP_SIZE; c++)
+                for (int c = col - TerritoryGapSize; c < col + tc + TerritoryGapSize; c++)
                 {
                     if (map[r, c] != null)
                     {
@@ -166,27 +166,27 @@ namespace Strategy.Gameplay
                 for (int r = 0; r < tr; r++)
                 {
                     // check to the left
-                    if (map[row + r, col - TERRITORY_GAP_SIZE - 1] != null && layout[r, 0])
+                    if (map[row + r, col - TerritoryGapSize - 1] != null && layout[r, 0])
                     {
-                        neighbors.Add(map[row + r, col - TERRITORY_GAP_SIZE - 1]);
+                        neighbors.Add(map[row + r, col - TerritoryGapSize - 1]);
                     }
                     // check to the right
-                    if (map[row + r, col + tc + TERRITORY_GAP_SIZE] != null && layout[r, tc - 1])
+                    if (map[row + r, col + tc + TerritoryGapSize] != null && layout[r, tc - 1])
                     {
-                        neighbors.Add(map[row + r, col + tc + TERRITORY_GAP_SIZE]);
+                        neighbors.Add(map[row + r, col + tc + TerritoryGapSize]);
                     }
                 }
                 for (int c = 0; c < tc; c++)
                 {
                     // check above
-                    if (map[row - TERRITORY_GAP_SIZE - 1, col + c] != null && layout[0, c])
+                    if (map[row - TerritoryGapSize - 1, col + c] != null && layout[0, c])
                     {
-                        neighbors.Add(map[row - TERRITORY_GAP_SIZE - 1, col + c]);
+                        neighbors.Add(map[row - TerritoryGapSize - 1, col + c]);
                     }
                     // check below
-                    if (map[row + tr + TERRITORY_GAP_SIZE, col + c] != null && layout[tr - 1, c])
+                    if (map[row + tr + TerritoryGapSize, col + c] != null && layout[tr - 1, c])
                     {
-                        neighbors.Add(map[row + tr + TERRITORY_GAP_SIZE, col + c]);
+                        neighbors.Add(map[row + tr + TerritoryGapSize, col + c]);
                     }
                 }
                 // track the neighbors
@@ -210,30 +210,31 @@ namespace Strategy.Gameplay
         /// </summary>
         private bool[,] GenerateTerritoryLayout()
         {
-            const int BASE_START = TERRITORY_FRILL_SIZE;
-            const int BASE_END = BASE_START + TERRITORY_BASE_SIZE;
+            const int BaseStart = TerritoryFrillSize;
+            const int BaseEnd = BaseStart + TerritoryBaseSize;
 
-            bool[,] layout = new bool[TERRITORY_SIZE, TERRITORY_SIZE];
+            bool[,] layout = new bool[TerritorySize, TerritorySize];
 
             // fill in the center for the piece tiles
-            for (int r = BASE_START; r < BASE_END; r++)
+            for (int r = BaseStart; r < BaseEnd; r++)
             {
-                for (int c = BASE_START; c < BASE_END; c++)
+                for (int c = BaseStart; c < BaseEnd; c++)
                 {
                     layout[r, c] = true;
                 }
             }
 
             // add randomized decoration
-            for (int d = 0; d < 5; d++)
+            int frills = 0;
+            for (int d = 0; d < 5 || frills < TerritoryFrillMinCount; d++)
             {
-                int baseRow = _random.Next(BASE_START, BASE_END);
-                int deltaRows = _random.Next(-TERRITORY_SIZE, TERRITORY_SIZE);
+                int baseRow = _random.Next(BaseStart, BaseEnd);
+                int deltaRows = _random.Next(-TerritorySize, TerritorySize);
                 int startRow = Math.Min(baseRow, baseRow + deltaRows);
                 int endRow = Math.Max(baseRow, baseRow + deltaRows);
 
-                int baseCol = _random.Next(BASE_START, BASE_END);
-                int deltaCols = _random.Next(-TERRITORY_SIZE, TERRITORY_SIZE);
+                int baseCol = _random.Next(BaseStart, BaseEnd);
+                int deltaCols = _random.Next(-TerritorySize, TerritorySize);
                 int startCol = Math.Min(baseCol, baseCol + deltaCols);
                 int endCol = Math.Max(baseCol, baseCol + deltaCols);
 
@@ -241,9 +242,13 @@ namespace Strategy.Gameplay
                 {
                     for (int c = startCol; c <= endCol; c++)
                     {
-                        if (r >= 0 && r < TERRITORY_SIZE && c >= 0 && c < TERRITORY_SIZE)
+                        if (r >= 0 && r < TerritorySize && c >= 0 && c < TerritorySize)
                         {
-                            layout[r, c] = true;
+                            if (!layout[r, c])
+                            {
+                                layout[r, c] = true;
+                                frills += 1;
+                            }
                         }
                     }
                 }
@@ -274,11 +279,11 @@ namespace Strategy.Gameplay
 
         private Random _random;
 
-        private const int TERRITORY_BASE_SIZE = 3;
-        private const int TERRITORY_FRILL_SIZE = 1;
-        private const int TERRITORY_GAP_SIZE = 1;
-        private const int TERRITORY_SIZE = TERRITORY_BASE_SIZE + 2 * TERRITORY_FRILL_SIZE;
-
-        private const int TERRITORY_INITIAL_OCCUPANCY = 2;
+        private const float MapExpansionFactor = 1.6f;
+        private const int TerritoryBaseSize = 3;
+        private const int TerritoryFrillSize = 1;
+        private const int TerritoryFrillMinCount = 4;
+        private const int TerritoryGapSize = 1;
+        private const int TerritorySize = TerritoryBaseSize + 2 * TerritoryFrillSize;
     }
 }

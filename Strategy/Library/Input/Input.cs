@@ -40,7 +40,7 @@ namespace Strategy.Library.Input
         /// <summary>
         /// Polls the current input state.
         /// </summary>
-        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
+        /// <param name="time">The game time.</param>
         public override void Update(GameTime gameTime)
         {
             PollControllerConnectivity();
@@ -48,6 +48,20 @@ namespace Strategy.Library.Input
             {
                 UpdateControls(gameTime.GetElapsedSeconds());
                 UpdateVibration(gameTime.GetElapsedSeconds());
+            }
+        }
+
+        /// <summary>
+        /// Polls the current input state.
+        /// </summary>
+        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
+        public void Update(float time)
+        {
+            PollControllerConnectivity();
+            if (Controller.HasValue)
+            {
+                UpdateControls(time);
+                UpdateVibration(time);
             }
         }
 
