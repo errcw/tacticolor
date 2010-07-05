@@ -3,12 +3,8 @@ To Do
 
 - Show activity timer on pieces
 - Show pieces available for placement
-- Show selected and hovered territory
-  * Use commander piece with action icon?
 - Fix view logic (...implement view logic)
 
-- Figure out piece generation logic
-- Clean up input handling
 
 Thoughts
 --------
@@ -32,4 +28,6 @@ Thoughts
   + win 5, 20 games in a row
   + win a game under every configuration
   + play 100 games
+- Use commander piece with action icon?
+- Constructor create textures, Layout() use offsets
 
