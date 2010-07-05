@@ -27,9 +27,14 @@ namespace Strategy.Gameplay
         public event EventHandler<TerritoryAttackedEventArgs> TerritoryAttacked;
 
         /// <summary>
+        /// Occurs when one player is eliminated from this match.
+        /// </summary>
+        public event EventHandler<PlayerEventArgs> PlayerEliminated;
+
+        /// <summary>
         /// Occurs when the game is won by a player.
         /// </summary>
-        public event EventHandler<MatchEndedEventArgs> Ended;
+        public event EventHandler<PlayerEventArgs> Ended;
 
 
         /// <summary>
@@ -58,6 +63,9 @@ namespace Strategy.Gameplay
         {
             _map = map;
             _random = random;
+
+            _players = PlayerCount;
+            SetInitialTerritoryState();
             SetInitialPieceState();
         }
 
@@ -67,6 +75,7 @@ namespace Strategy.Gameplay
         /// <param name="time">The elapsed time, in seconds, since the last update.</param>
         public void Update(float time)
         {
+            UpdateTerritories(time);
             UpdatePieces(time);
         }
 
@@ -329,7 +338,21 @@ namespace Strategy.Gameplay
         }
 
         /// <summary>
-        /// Configures the initial piece state.
+        /// Configures the initial territory counts and state.
+        /// </summary>
+        private void SetInitialTerritoryState()
+        {
+            foreach (Territory territory in _map.Territories)
+            {
+                if (territory.Owner.HasValue)
+                {
+                    _numTerritoriesOwned[(int)territory.Owner] += 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Configures the initial piece counts and state.
         /// </summary>
         private void SetInitialPieceState()
         {
@@ -348,21 +371,12 @@ namespace Strategy.Gameplay
         }
 
         /// <summary>
-        /// Handles a territory changing owners.
+        /// Updates the state of all the territories.
         /// </summary>
-        private void TerritoryDidChangeOwners(Territory territory, PlayerId? previousOwner)
+        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
+        private void UpdateTerritories(float time)
         {
-            int ownerIdx = (int)territory.Owner;
-            _numTerritoriesOwned[ownerIdx] += 1;
-            _pieceCreationSpeed[ownerIdx] = Math.Min(1f + _numTerritoriesOwned[ownerIdx] * 0.1f, 2f);
-
-            // might not have a value if territory was unowned
-            if (previousOwner.HasValue)
-            {
-                int prevIdx = (int)previousOwner;
-                _numTerritoriesOwned[prevIdx] -= 1;
-                _pieceCreationSpeed[prevIdx] = Math.Max(1f + _numTerritoriesOwned[prevIdx] * 0.1f, 2f);
-            }
+            //TODO cooldown time
         }
 
         /// <summary>
@@ -400,8 +414,48 @@ namespace Strategy.Gameplay
             }
         }
 
+        /// <summary>
+        /// Handles a territory changing owners.
+        /// </summary>
+        private void TerritoryDidChangeOwners(Territory territory, PlayerId? previousOwner)
+        {
+            int ownerIdx = (int)territory.Owner;
+            _numTerritoriesOwned[ownerIdx] += 1;
+            _pieceCreationSpeed[ownerIdx] = Math.Min(1f + _numTerritoriesOwned[ownerIdx] * 0.1f, 2f);
+
+            // might not have a value if territory was unowned
+            if (previousOwner.HasValue)
+            {
+                int prevIdx = (int)previousOwner;
+                _numTerritoriesOwned[prevIdx] -= 1;
+                if (_numTerritoriesOwned[prevIdx] <= 0)
+                {
+                    PlayerWasEliminated(previousOwner.Value);
+                }
+                _pieceCreationSpeed[prevIdx] = Math.Max(1f + _numTerritoriesOwned[prevIdx] * 0.1f, 2f);
+            }
+        }
+
+        /// <summary>
+        /// Notifies this match that a player was eliminated.
+        /// </summary>
+        private void PlayerWasEliminated(PlayerId player)
+        {
+            _players -= 1;
+            if (PlayerEliminated != null)
+            {
+                PlayerEliminated(this, new PlayerEventArgs(player));
+            }
+            if (_players == 1 && Ended != null)
+            {
+                Ended(this, new PlayerEventArgs(player));
+            }
+        }
+
         private Map _map;
         private Random _random;
+
+        private int _players;
 
         private float[] _pieceCreationElapsed = new float[4];
         private float[] _pieceCreationSpeed = new float[4];
@@ -419,8 +473,8 @@ namespace Strategy.Gameplay
     /// </summary>
     public class PiecePlacedEventArgs : EventArgs
     {
-        public Piece Piece { get; private set; }
-        public Territory Location { get; private set; }
+        public readonly Piece Piece;
+        public readonly Territory Location;
 
         public PiecePlacedEventArgs(Piece piece, Territory location)
         {
@@ -434,9 +488,9 @@ namespace Strategy.Gameplay
     /// </summary>
     public class PiecesMovedEventArgs : EventArgs
     {
-        public Territory Source { get; private set; }
-        public Territory Destination { get; private set; }
-        public ICollection<Piece> Pieces { get; private set; }
+        public readonly Territory Source;
+        public readonly Territory Destination;
+        public readonly ICollection<Piece> Pieces;
 
         public PiecesMovedEventArgs(Territory source, Territory destination, ICollection<Piece> pieces)
         {
@@ -461,10 +515,10 @@ namespace Strategy.Gameplay
     /// </summary>
     public class TerritoryAttackedEventArgs : EventArgs
     {
-        public Territory Attacker { get; private set; }
-        public ICollection<PieceAttackData> Attackers { get; private set; }
-        public Territory Defender { get; private set; }
-        public ICollection<PieceAttackData> Defenders { get; private set; }
+        public readonly Territory Attacker;
+        public readonly ICollection<PieceAttackData> Attackers;
+        public readonly Territory Defender;
+        public readonly ICollection<PieceAttackData> Defenders;
 
         public TerritoryAttackedEventArgs(Territory attacker, ICollection<PieceAttackData> attackers, Territory defender, ICollection<PieceAttackData> defenders)
         {
@@ -476,15 +530,15 @@ namespace Strategy.Gameplay
     }
 
     /// <summary>
-    /// Event data for when the match ends.
+    /// Event data for when a player is eliminated or the match ends.
     /// </summary>
-    public class MatchEndedEventArgs : EventArgs
+    public class PlayerEventArgs : EventArgs
     {
-        public PlayerId Winner { get; private set; }
+        public readonly PlayerId Player;
 
-        public MatchEndedEventArgs(PlayerId winner)
+        public PlayerEventArgs(PlayerId player)
         {
-            Winner = winner;
+            Player = player;
         }
     }
 }

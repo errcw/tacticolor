@@ -66,6 +66,7 @@ namespace Strategy
             ShowMap(_map);
 
             _inputA = new LocalInput(PlayerId.A, _match, _context);
+            _inputA.Controller = PlayerIndex.One;
             _inputViewA = new LocalInputView(_inputA, _context);
             _inputB = new LocalInput(PlayerId.B, _match, _context);
             _inputB.Controller = PlayerIndex.Two;
