@@ -90,6 +90,7 @@
     <Compile Include="Gameplay\Match.cs" />
     <Compile Include="Gameplay\Piece.cs" />
     <Compile Include="Gameplay\Player.cs" />
+    <Compile Include="Interface\ConnectionView.cs" />
     <Compile Include="Interface\IsometricBatch.cs" />
     <Compile Include="Interface\IsometricParameters.cs" />
     <Compile Include="Interface\IsometricSprite.cs" />

@@ -66,6 +66,7 @@ namespace Strategy.Gameplay
             int piecesPerTerritoryLeftover = piecesPerPlayer % territoriesPerPlayer;
             for (int p = 0; p < numPlayers; p++)
             {
+                PlayerId player = (PlayerId)p;
                 for (int i = 0; i < territoriesPerPlayer; i++)
                 {
                     while (true)
@@ -80,9 +81,9 @@ namespace Strategy.Gameplay
                             }
                             for (int j = 0; j < occupancy; j++)
                             {
-                                territories[t].Pieces.Add(new Piece(true));
+                                territories[t].Pieces.Add(new Piece(player, true));
                             }
-                            territories[t].Owner = (PlayerId)p;
+                            territories[t].Owner = player;
                             break;
                         }
                     }

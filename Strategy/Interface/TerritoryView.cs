@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,14 +17,64 @@ namespace Strategy.Interface
         {
             _territory = territory;
             _context = context;
+
+            Texture2D tile = context.Content.Load<Texture2D>("TileSmall");
+            Texture2D tileHolder = context.Content.Load<Texture2D>("TileSmallHolder");
+            Color color = GetPlayerColor(territory.Owner);
+
+            _sprites = new IsometricSprite[_territory.Area.Count];
+            int s = 0;
+            foreach (Cell cell in territory.Area)
+            {
+                Texture2D spriteImage = IsHolder(cell) ? tileHolder : tile;
+                Point spritePosition = context.IsoParams.GetPoint(cell);
+                _sprites[s] = new IsometricSprite(spriteImage);
+                _sprites[s].X = spritePosition.X;
+                _sprites[s].Y = spritePosition.Y;
+                _sprites[s].Color = color;
+                s += 1;
+            }
+
+            InitHolders();
         }
 
         public void Update(float time)
         {
+            // brute force the color (ugh)
+            foreach (IsometricSprite sprite in _sprites)
+            {
+                sprite.Color = GetPlayerColor(_territory.Owner);
+            }
         }
 
-        public void Draw()
+        public void Draw(IsometricBatch isoBatch)
         {
+            foreach (IsometricSprite sprite in _sprites)
+            {
+                isoBatch.Draw(sprite);
+            }
+        }
+
+        /// <summary>
+        /// Notifies this view that a piece was added to the territory.
+        /// </summary>
+        public Cell PieceAdded(Piece piece)
+        {
+            Cell holder = _freeHolders.Pop();
+            _usedHolders.Add(piece, holder);
+            return new Cell(
+                _territory.Location.Row + holder.Row,
+                _territory.Location.Col + holder.Col);
+        }
+
+        /// <summary>
+        /// Notifies this view that a piece was removed from the territory.
+        /// </summary>
+        public void PieceRemoved(Piece piece)
+        {
+            Cell holder = _usedHolders[piece];
+            _usedHolders.Remove(piece);
+            _freeHolders.Push(holder);
         }
 
         /// <summary>
@@ -49,6 +100,24 @@ namespace Strategy.Interface
         }
 
         /// <summary>
+        /// Maps a piece number to a position.
+        /// </summary>
+        private void InitHolders()
+        {
+            _usedHolders = new Dictionary<Piece, Cell>(9);
+            _freeHolders = new Stack<Cell>(9);
+            _freeHolders.Push(new Cell(-1, -1));
+            _freeHolders.Push(new Cell(1, 1));
+            _freeHolders.Push(new Cell(-1, 1));
+            _freeHolders.Push(new Cell(1, -1));
+            _freeHolders.Push(new Cell(0, 1));
+            _freeHolders.Push(new Cell(0, -1));
+            _freeHolders.Push(new Cell(1, 0));
+            _freeHolders.Push(new Cell(-1, 0));
+            _freeHolders.Push(new Cell(0, 0));
+        }
+
+        /// <summary>
         /// Returns the color of the given player.
         /// </summary>
         private Color GetPlayerColor(PlayerId? player)
@@ -60,11 +129,16 @@ namespace Strategy.Interface
                 case PlayerId.C: return Color.SeaGreen;
                 case PlayerId.D: return Color.Crimson;
                 case null: return Color.White;
-                default: return Color.White;
+                default: throw new ArgumentException("Invalid player id " + player);
             }
         }
 
         private Territory _territory;
         private InterfaceContext _context;
+
+        private IsometricSprite[] _sprites;
+
+        private Stack<Cell> _freeHolders;
+        private Dictionary<Piece, Cell> _usedHolders;
     }
 }

@@ -97,6 +97,11 @@ namespace Strategy.Gameplay
             {
                 return false;
             }
+            // cannot attack if the attacker or defender are cooling down
+            if (attacker.Cooldown > 0 || defender.Cooldown > 0)
+            {
+                return false;
+            }
             // cannot attack if the attacker and defender are both owned
             if (attacker.Owner == defender.Owner)
             {
@@ -141,6 +146,7 @@ namespace Strategy.Gameplay
                     data.Piece = piece;
                     data.Roll = _random.Next(1, 6 + 1);
                     data.Survived = true;
+                    data.Moved = false;
                     attackers.Add(data);
 
                     attackerSum += data.Roll;
@@ -158,6 +164,7 @@ namespace Strategy.Gameplay
                 data.Piece = piece;
                 data.Roll = _random.Next(1, 6 + 1);
                 data.Survived = true;
+                data.Moved = false;
                 defenders.Add(data);
 
                 defenderSum += data.Roll;
@@ -165,7 +172,8 @@ namespace Strategy.Gameplay
 
             Console.WriteLine("Attack: {0} Defense: {1}", attackerSum, defenderSum);
 
-            if (attackerSum - defenderSum > 0) // attack succeeded
+            bool success = attackerSum - defenderSum > 0;
+            if (success) // attack succeeded
             {
                 // remove all the killed defenders
                 defender.Pieces.Clear();
@@ -176,7 +184,7 @@ namespace Strategy.Gameplay
 
                 // can lose all the attackers but must have a piece ready to move
                 int attackersLost = (int)(3f * (float)defenderSum / attackerSum);
-                attackersLost = Math.Min(attackerTotal - 1, attackersLost); 
+                attackersLost = Math.Min(attackers.Count - (attackerTotal > attackers.Count ? 1 : 2), attackersLost); 
                 for (int i = 0; i < attackers.Count; i++)
                 {
                     if (i < attackersLost) // remove the killed pieces
@@ -189,6 +197,7 @@ namespace Strategy.Gameplay
                         // if every piece was attacking then we must leave one piece behind
                         if (attackerTotal > attackers.Count || i != attackers.Count - 1)
                         {
+                            attackers[i].Moved = true;
                             attacker.Pieces.Remove(attackers[i].Piece);
                             defender.Pieces.Add(attackers[i].Piece);
                         }
@@ -223,9 +232,13 @@ namespace Strategy.Gameplay
                 }
             }
 
+            // set the cooldowns
+            attacker.Cooldown = CooldownAttack;
+            defender.Cooldown = CooldownAttack;
+
             if (TerritoryAttacked != null)
             {
-                TerritoryAttacked(this, new TerritoryAttackedEventArgs(attacker, attackers, defender, defenders));
+                TerritoryAttacked(this, new TerritoryAttackedEventArgs(attacker, attackers, defender, defenders, success));
             }
         }
 
@@ -249,6 +262,11 @@ namespace Strategy.Gameplay
             }
             // cannot move if the source and destination are not both owned
             if (source.Owner != destination.Owner)
+            {
+                return false;
+            }
+            // cannot move if the source or destination are cooling down
+            if (source.Cooldown > 0 || destination.Cooldown > 0)
             {
                 return false;
             }
@@ -290,6 +308,7 @@ namespace Strategy.Gameplay
                 destination.Pieces.Add(piece);
                 piece.DidPerformAction();
             }
+            destination.Cooldown = CooldownMove;
             if (moved.Count > 0 && PiecesMoved != null)
             {
                 PiecesMoved(this, new PiecesMovedEventArgs(source, destination, moved));
@@ -318,6 +337,11 @@ namespace Strategy.Gameplay
             {
                 return false;
             }
+            // cannot place a piece if territory is cooling down
+            if (location.Cooldown > 0)
+            {
+                return false;
+            }
             return true;
         }
 
@@ -327,7 +351,7 @@ namespace Strategy.Gameplay
         /// <param name="location">The territory where the piece is placed.</param>
         public void PlacePiece(Territory location)
         {
-            Piece added = new Piece();
+            Piece added = new Piece(location.Owner.Value, false);
             location.Pieces.Add(added);
             PiecesAvailable[(int)location.Owner] -= 1;
 
@@ -377,7 +401,10 @@ namespace Strategy.Gameplay
         /// <param name="time">The elapsed time, in milliseconds, since the last update.</param>
         private void UpdateTerritories(int time)
         {
-            //TODO cooldown time
+            foreach (Territory territory in _map.Territories)
+            {
+                territory.Cooldown = Math.Max(territory.Cooldown - time, 0);
+            }
         }
 
         /// <summary>
@@ -476,6 +503,9 @@ namespace Strategy.Gameplay
         private const float PieceCreationMaxSpeed = 2f;
         private const int MaxPiecesAvailable = 5;
 
+        private const int CooldownMove = 1000;
+        private const int CooldownAttack = 3000;
+
         private const int PlayerCount = 4;
     }
 
@@ -519,6 +549,7 @@ namespace Strategy.Gameplay
         public Piece Piece;
         public int Roll;
         public bool Survived;
+        public bool Moved;
     }
 
     /// <summary>
@@ -530,13 +561,15 @@ namespace Strategy.Gameplay
         public readonly ICollection<PieceAttackData> Attackers;
         public readonly Territory Defender;
         public readonly ICollection<PieceAttackData> Defenders;
+        public readonly bool Successful;
 
-        public TerritoryAttackedEventArgs(Territory attacker, ICollection<PieceAttackData> attackers, Territory defender, ICollection<PieceAttackData> defenders)
+        public TerritoryAttackedEventArgs(Territory attacker, ICollection<PieceAttackData> attackers, Territory defender, ICollection<PieceAttackData> defenders, bool successful)
         {
             Attacker = attacker;
             Attackers = attackers;
             Defender = defender;
             Defenders = defenders;
+            Successful = successful;
         }
     }
 

@@ -18,8 +18,8 @@ namespace Strategy.Interface
             _input = input;
             _context = context;
 
-            _input.HoveredChanged += HoveredChanged;
-            _input.SelectedChanged += SelectedChanged;
+            _input.HoveredChanged += OnHoveredChanged;
+            _input.SelectedChanged += OnSelectedChanged;
 
             Texture2D cursorTex = context.Content.Load<Texture2D>("PieceSmall");
 
@@ -32,8 +32,8 @@ namespace Strategy.Interface
             _cursorSelect.Origin = new Vector2(0, 14);
 
             // fake the events to show the initial state
-            HoveredChanged(null, EventArgs.Empty);
-            SelectedChanged(null, EventArgs.Empty);
+            OnHoveredChanged(null, EventArgs.Empty);
+            OnSelectedChanged(null, EventArgs.Empty);
         }
 
         public void Update(float time)
@@ -49,7 +49,7 @@ namespace Strategy.Interface
             }
         }
 
-        private void HoveredChanged(object input, EventArgs args)
+        private void OnHoveredChanged(object input, EventArgs args)
         {
             Cell cell = ChooseCell(_input.Hovered);
             Point point = _context.IsoParams.GetPoint(cell);
@@ -60,7 +60,7 @@ namespace Strategy.Interface
             _showSelect = (_input.Selected != null && _input.Hovered != _input.Selected);
         }
 
-        private void SelectedChanged(object input, EventArgs args)
+        private void OnSelectedChanged(object input, EventArgs args)
         {
             // only show the selection cursor once the hover changes
             _showSelect = false;

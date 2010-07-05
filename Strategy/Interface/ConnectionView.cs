@@ -1,0 +1,63 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
+using Strategy.Gameplay;
+using Strategy.Library;
+
+namespace Strategy.Interface
+{
+    /// <summary>
+    /// Shows a connection between two territories.
+    /// </summary>
+    public class ConnectionView
+    {
+        public ConnectionView(Territory a, Territory b, InterfaceContext context)
+        {
+            // find the closest points to connect
+            Cell closestA = a.Area.First(), closestB = b.Area.First();
+            int closestDist2 = int.MaxValue;
+            foreach (Cell ca in a.Area)
+            {
+                foreach (Cell cb in b.Area)
+                {
+                    int d2 = (ca.Row - cb.Row) * (ca.Row - cb.Row) + (ca.Col - cb.Col) * (ca.Col - cb.Col);
+                    if (d2 < closestDist2)
+                    {
+                        closestA = ca;
+                        closestB = cb;
+                        closestDist2 = d2;
+                    }
+                }
+            }
+
+            // create the connection sprites
+            Texture2D connectionTex = context.Content.Load<Texture2D>("Connection");
+            _sprites = new List<IsometricSprite>(2);
+            foreach (Point p in BresenhamIterator.GetPointsOnLine(closestA.Row, closestA.Col, closestB.Row, closestB.Col))
+            {
+                IsometricSprite sprite = new IsometricSprite(connectionTex);
+                sprite.X = context.IsoParams.GetX(p.X, p.Y);
+                sprite.Y = context.IsoParams.GetY(p.X, p.Y);
+                _sprites.Add(sprite);
+            }
+        }
+
+        public void Update(float time)
+        {
+        }
+
+        public void Draw(IsometricBatch isoBatch)
+        {
+            foreach (IsometricSprite sprite in _sprites)
+            {
+                isoBatch.Draw(sprite);
+            }
+        }
+
+        private ICollection<IsometricSprite> _sprites;
+    }
+}

@@ -61,12 +61,17 @@ namespace Strategy.Gameplay
         /// <summary>
         /// The pieces currently in the territory.
         /// </summary>
-        public ICollection<Piece> Pieces { get; set; }
+        public ICollection<Piece> Pieces { get; private set; }
 
         /// <summary>
-        /// The player owning this territory.
+        /// The player owning this territory (null for unowned).
         /// </summary>
         public PlayerId? Owner { get; set; }
+
+        /// <summary>
+        /// The cooldown time remaining for this territory.
+        /// </summary>
+        public int Cooldown { get; set; }
 
         /// <summary>
         /// Creates a new territory.

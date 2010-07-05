@@ -10,6 +10,11 @@ namespace Strategy.Gameplay
     public class Piece
     {
         /// <summary>
+        /// The owner of this piece.
+        /// </summary>
+        public readonly PlayerId Owner;
+
+        /// <summary>
         /// The current value of the action timer.
         /// </summary>
         public int TimerValue { get; private set; }
@@ -27,16 +32,18 @@ namespace Strategy.Gameplay
         /// <summary>
         /// Creates a new piece that starts unready.
         /// </summary>
-        public Piece() : this(false)
+        public Piece(PlayerId owner) : this(owner, false)
         {
         }
 
         /// <summary>
         /// Creates a new piece.
         /// </summary>
+        /// <param name="owner">The owner of this piece</param>
         /// <param name="startReady">If the piece should start ready.</param>
-        public Piece(bool startReady)
+        public Piece(PlayerId owner, bool startReady)
         {
+            Owner = owner;
             _timer = 0;
             TimerMax = TimerStandardMax;
             TimerValue = startReady ? TimerMax : 0;
