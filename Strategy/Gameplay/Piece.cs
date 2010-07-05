@@ -37,7 +37,7 @@ namespace Strategy.Gameplay
         /// <param name="startReady">If the piece should start ready.</param>
         public Piece(bool startReady)
         {
-            _timer = 0f;
+            _timer = 0;
             TimerMax = TimerStandardMax;
             TimerValue = startReady ? TimerMax : 0;
         }
@@ -45,8 +45,8 @@ namespace Strategy.Gameplay
         /// <summary>
         /// Updates the timer for this piece.
         /// </summary>
-        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
-        public void Update(float time)
+        /// <param name="time">The elapsed time, in milliseconds, since the last update.</param>
+        public void Update(int time)
         {
             _timer += time;
             if (_timer >= TimerIncrementTime)
@@ -65,9 +65,9 @@ namespace Strategy.Gameplay
             TimerValue = 0;
         }
 
-        private float _timer;
+        private int _timer;
 
         private const int TimerStandardMax = 4;
-        private const float TimerIncrementTime = 2f;
+        private const int TimerIncrementTime = 2000;
     }
 }

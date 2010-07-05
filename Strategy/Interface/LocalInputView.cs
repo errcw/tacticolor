@@ -30,6 +30,10 @@ namespace Strategy.Interface
             _cursorSelect = new IsometricSprite(cursorTex);
             _cursorSelect.Color = new Color(GetPlayerColor(input.Player), 128);
             _cursorSelect.Origin = new Vector2(0, 14);
+
+            // fake the events to show the initial state
+            HoveredChanged(null, EventArgs.Empty);
+            SelectedChanged(null, EventArgs.Empty);
         }
 
         public void Update(float time)

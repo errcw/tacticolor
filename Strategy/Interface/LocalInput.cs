@@ -85,6 +85,10 @@ namespace Strategy.Interface
                         _match.Attack(Selected, Hovered);
                         _actionPending = false;
                     }
+                    if (!_actionPending)
+                    {
+                        SetSelected(null);
+                    }
                 }
                 else
                 {

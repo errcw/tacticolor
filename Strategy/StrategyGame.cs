@@ -243,10 +243,9 @@ namespace Strategy
                 Exit();
             }
 
+            _match.Update(gameTime.GetElapsedMilliseconds());
+
             float time = gameTime.GetElapsedSeconds();
-
-            _match.Update(time);
-
             _inputA.Update(time);
             _inputViewA.Update(time);
             _inputB.Update(time);

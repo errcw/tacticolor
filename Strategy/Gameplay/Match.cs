@@ -73,7 +73,7 @@ namespace Strategy.Gameplay
         /// Updates this match for the current frame.
         /// </summary>
         /// <param name="time">The elapsed time, in seconds, since the last update.</param>
-        public void Update(float time)
+        public void Update(int time)
         {
             UpdateTerritories(time);
             UpdatePieces(time);
@@ -342,6 +342,7 @@ namespace Strategy.Gameplay
         /// </summary>
         private void SetInitialTerritoryState()
         {
+            _numTerritoriesOwned = new int[PlayerCount];
             foreach (Territory territory in _map.Territories)
             {
                 if (territory.Owner.HasValue)
@@ -356,15 +357,15 @@ namespace Strategy.Gameplay
         /// </summary>
         private void SetInitialPieceState()
         {
-            _pieceCreationElapsed = new float[PlayerCount];
+            _pieceCreationElapsed = new int[PlayerCount];
             _pieceCreationSpeed = new float[PlayerCount];
             PieceCreationProgress = new float[PlayerCount];
             PiecesAvailable = new int[PlayerCount];
 
             for (int p = 0; p < PlayerCount; p++)
             {
-                _pieceCreationElapsed[p] = 0f;
-                _pieceCreationSpeed[p] = 1f;
+                _pieceCreationElapsed[p] = 0;
+                _pieceCreationSpeed[p] = GetPieceCreationSpeed(_numTerritoriesOwned[p]);
                 PieceCreationProgress[p] = 0f;
                 PiecesAvailable[p] = 0;
             }
@@ -373,8 +374,8 @@ namespace Strategy.Gameplay
         /// <summary>
         /// Updates the state of all the territories.
         /// </summary>
-        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
-        private void UpdateTerritories(float time)
+        /// <param name="time">The elapsed time, in milliseconds, since the last update.</param>
+        private void UpdateTerritories(int time)
         {
             //TODO cooldown time
         }
@@ -382,8 +383,8 @@ namespace Strategy.Gameplay
         /// <summary>
         /// Updates the state of all the pieces, including generating new ones.
         /// </summary>
-        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
-        private void UpdatePieces(float time)
+        /// <param name="time">The elapsed time, in milliseconds, since the last update.</param>
+        private void UpdatePieces(int time)
         {
             // update the piece action timers
             foreach (Territory territory in _map.Territories)
@@ -401,14 +402,14 @@ namespace Strategy.Gameplay
                     continue;
                 }
 
-                _pieceCreationElapsed[p] += time * _pieceCreationSpeed[p];
+                _pieceCreationElapsed[p] += (int)Math.Floor(time * _pieceCreationSpeed[p]);
                 PieceCreationProgress[p] = Math.Min(_pieceCreationElapsed[p] / PieceCreationTime, 1f);
 
                 if (_pieceCreationElapsed[p] >= PieceCreationTime)
                 {
                     PiecesAvailable[p] += 1;
 
-                    _pieceCreationElapsed[p] = 0f;
+                    _pieceCreationElapsed[p] = 0;
                     PieceCreationProgress[p] = 0f;
                 }
             }
@@ -421,7 +422,7 @@ namespace Strategy.Gameplay
         {
             int ownerIdx = (int)territory.Owner;
             _numTerritoriesOwned[ownerIdx] += 1;
-            _pieceCreationSpeed[ownerIdx] = Math.Min(1f + _numTerritoriesOwned[ownerIdx] * 0.1f, 2f);
+            _pieceCreationSpeed[ownerIdx] = GetPieceCreationSpeed(_numTerritoriesOwned[ownerIdx]);
 
             // might not have a value if territory was unowned
             if (previousOwner.HasValue)
@@ -432,7 +433,7 @@ namespace Strategy.Gameplay
                 {
                     PlayerWasEliminated(previousOwner.Value);
                 }
-                _pieceCreationSpeed[prevIdx] = Math.Max(1f + _numTerritoriesOwned[prevIdx] * 0.1f, 2f);
+                _pieceCreationSpeed[prevIdx] = GetPieceCreationSpeed(_numTerritoriesOwned[prevIdx]);
             }
         }
 
@@ -452,17 +453,27 @@ namespace Strategy.Gameplay
             }
         }
 
+        /// <summary>
+        /// Returns a territory creation speed.
+        /// </summary>
+        private float GetPieceCreationSpeed(int numTerritoriesOwned)
+        {
+            return Math.Max(PieceCreationBaseSpeed + numTerritoriesOwned * 0.1f, PieceCreationMaxSpeed);
+        }
+
         private Map _map;
         private Random _random;
 
         private int _players;
 
-        private float[] _pieceCreationElapsed = new float[4];
-        private float[] _pieceCreationSpeed = new float[4];
+        private int[] _pieceCreationElapsed;
+        private float[] _pieceCreationSpeed;
 
         private int[] _numTerritoriesOwned;
 
-        private const float PieceCreationTime = 3f;
+        private const int PieceCreationTime = 3000;
+        private const float PieceCreationBaseSpeed = 1f;
+        private const float PieceCreationMaxSpeed = 2f;
         private const int MaxPiecesAvailable = 5;
 
         private const int PlayerCount = 4;
