@@ -61,7 +61,7 @@ namespace Strategy.Interface
             _input.Register(Cancel, Polling.One(Buttons.B));
             _input.Register(Place, Polling.One(Buttons.X));
 
-            SetHovered(_match.Map.Territories.First());
+            SetHovered(_match.Map.Territories.First(t => t.Owner == Player));
             SetSelected(null);
         }
 
@@ -166,6 +166,10 @@ namespace Strategy.Interface
             {
                 SelectedChanged(this, EventArgs.Empty);
             }
+        }
+
+        private void FindTerritory()
+        {
         }
 
         private Match _match;
