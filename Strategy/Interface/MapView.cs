@@ -148,7 +148,6 @@ namespace Strategy.Interface
                     attackerView.PieceRemoved(data.Piece);
                     Cell cell = defenderView.PieceAdded(data.Piece);
                     pieceView.SetCell(cell);
-                    moved += 1;
                 }
                 else if (!data.Survived) // killed
                 {

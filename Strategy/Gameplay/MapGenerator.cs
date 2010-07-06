@@ -109,8 +109,8 @@ namespace Strategy.Gameplay
             // find a free location
             for (tries = 0; !PlaceTerritoryAt(map, territory, layout, row, col, firstPlacement) && tries < MAX_PLACE_TRIES; tries++)
             {
-                row = _random.Next(2, map.GetLength(0) - layout.GetLength(0) - 2);
-                col = _random.Next(2, map.GetLength(1) - layout.GetLength(1) - 2);
+                row = _random.Next(3, map.GetLength(0) - layout.GetLength(0) - 3);
+                col = _random.Next(3, map.GetLength(1) - layout.GetLength(1) - 3);
             }
             if (tries >= MAX_PLACE_TRIES)
             {
@@ -166,28 +166,34 @@ namespace Strategy.Gameplay
                 List<Territory> neighbors = new List<Territory>(8);
                 for (int r = 0; r < tr; r++)
                 {
-                    // check to the left
-                    if (map[row + r, col - TerritoryGapSize - 1] != null && layout[r, 0])
+                    for (int d = 0; d < TerritoryConnectionDistance; d++)
                     {
-                        neighbors.Add(map[row + r, col - TerritoryGapSize - 1]);
-                    }
-                    // check to the right
-                    if (map[row + r, col + tc + TerritoryGapSize] != null && layout[r, tc - 1])
-                    {
-                        neighbors.Add(map[row + r, col + tc + TerritoryGapSize]);
+                        // check to the left
+                        if (map[row + r, col - TerritoryGapSize - 1 - d] != null && layout[r, 0])
+                        {
+                            neighbors.Add(map[row + r, col - TerritoryGapSize - 1 - d]);
+                        }
+                        // check to the right
+                        if (map[row + r, col + tc + TerritoryGapSize + d] != null && layout[r, tc - 1])
+                        {
+                            neighbors.Add(map[row + r, col + tc + TerritoryGapSize + d]);
+                        }
                     }
                 }
                 for (int c = 0; c < tc; c++)
                 {
-                    // check above
-                    if (map[row - TerritoryGapSize - 1, col + c] != null && layout[0, c])
+                    for (int d = 0; d < TerritoryConnectionDistance; d++)
                     {
-                        neighbors.Add(map[row - TerritoryGapSize - 1, col + c]);
-                    }
-                    // check below
-                    if (map[row + tr + TerritoryGapSize, col + c] != null && layout[tr - 1, c])
-                    {
-                        neighbors.Add(map[row + tr + TerritoryGapSize, col + c]);
+                        // check above
+                        if (map[row - TerritoryGapSize - 1 - d, col + c] != null && layout[0, c])
+                        {
+                            neighbors.Add(map[row - TerritoryGapSize - 1 - d, col + c]);
+                        }
+                        // check below
+                        if (map[row + tr + TerritoryGapSize + d, col + c] != null && layout[tr - 1, c])
+                        {
+                            neighbors.Add(map[row + tr + TerritoryGapSize + d, col + c]);
+                        }
                     }
                 }
                 // track the neighbors
@@ -285,6 +291,7 @@ namespace Strategy.Gameplay
         private const int TerritoryFrillSize = 1;
         private const int TerritoryFrillMinCount = 4;
         private const int TerritoryGapSize = 1;
+        private const int TerritoryConnectionDistance = 2;
         private const int TerritorySize = TerritoryBaseSize + 2 * TerritoryFrillSize;
     }
 }

@@ -25,7 +25,7 @@ namespace Strategy.Interface
                 foreach (Cell cb in b.Area)
                 {
                     int d2 = (ca.Row - cb.Row) * (ca.Row - cb.Row) + (ca.Col - cb.Col) * (ca.Col - cb.Col);
-                    if (d2 < closestDist2)
+                    if (d2 < closestDist2 && (ca.Row == cb.Row || ca.Col == cb.Col))
                     {
                         closestA = ca;
                         closestB = cb;
