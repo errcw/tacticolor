@@ -43,6 +43,11 @@ namespace Strategy.Gameplay
         public Map Map { get { return _map; } }
 
         /// <summary>
+        /// The number of players in this match (counts losers).
+        /// </summary>
+        public int Players { get; private set; }
+
+        /// <summary>
         /// The number of pieces available to be placed by each player.
         /// </summary>
         public int[] PiecesAvailable { get; private set; }
@@ -64,7 +69,9 @@ namespace Strategy.Gameplay
             _map = map;
             _random = random;
 
-            _players = PlayerCount;
+            Players = GetPlayerCount();
+            _playersRemaining = Players;
+
             SetInitialTerritoryState();
             SetInitialPieceState();
         }
@@ -366,9 +373,10 @@ namespace Strategy.Gameplay
         /// </summary>
         private void SetInitialTerritoryState()
         {
-            _numTerritoriesOwned = new int[PlayerCount];
+            _numTerritoriesOwned = new int[Players];
             foreach (Territory territory in _map.Territories)
             {
+                territory.Cooldown = 0;
                 if (territory.Owner.HasValue)
                 {
                     _numTerritoriesOwned[(int)territory.Owner] += 1;
@@ -381,12 +389,12 @@ namespace Strategy.Gameplay
         /// </summary>
         private void SetInitialPieceState()
         {
-            _pieceCreationElapsed = new int[PlayerCount];
-            _pieceCreationSpeed = new float[PlayerCount];
-            PieceCreationProgress = new float[PlayerCount];
-            PiecesAvailable = new int[PlayerCount];
+            _pieceCreationElapsed = new int[Players];
+            _pieceCreationSpeed = new float[Players];
+            PieceCreationProgress = new float[Players];
+            PiecesAvailable = new int[Players];
 
-            for (int p = 0; p < PlayerCount; p++)
+            for (int p = 0; p < Players; p++)
             {
                 _pieceCreationElapsed[p] = 0;
                 _pieceCreationSpeed[p] = GetPieceCreationSpeed(_numTerritoriesOwned[p]);
@@ -422,7 +430,7 @@ namespace Strategy.Gameplay
                 }
             }
             // update the piece counts
-            for (int p = 0; p < PlayerCount; p++)
+            for (int p = 0; p < Players; p++)
             {
                 if (PiecesAvailable[p] >= MaxPiecesAvailable)
                 {
@@ -469,12 +477,12 @@ namespace Strategy.Gameplay
         /// </summary>
         private void PlayerWasEliminated(PlayerId player)
         {
-            _players -= 1;
+            _playersRemaining -= 1;
             if (PlayerEliminated != null)
             {
                 PlayerEliminated(this, new PlayerEventArgs(player));
             }
-            if (_players == 1 && Ended != null)
+            if (_playersRemaining == 1 && Ended != null)
             {
                 Ended(this, new PlayerEventArgs(player));
             }
@@ -488,10 +496,28 @@ namespace Strategy.Gameplay
             return Math.Max(PieceCreationBaseSpeed + numTerritoriesOwned * 0.1f, PieceCreationMaxSpeed);
         }
 
+        /// <summary>
+        /// Returns the number of players owning territories on the map.
+        /// </summary>
+        private int GetPlayerCount()
+        {
+            bool[] sawOwner = new bool[4];
+            int players = 0;
+            foreach (Territory territory in _map.Territories)
+            {
+                if (territory.Owner.HasValue && !sawOwner[(int)territory.Owner])
+                {
+                    players += 1;
+                    sawOwner[(int)territory.Owner] = true;
+                }
+            }
+            return players;
+        }
+
         private Map _map;
         private Random _random;
 
-        private int _players;
+        private int _playersRemaining;
 
         private int[] _pieceCreationElapsed;
         private float[] _pieceCreationSpeed;
@@ -505,8 +531,6 @@ namespace Strategy.Gameplay
 
         private const int CooldownMove = 1000;
         private const int CooldownAttack = 3000;
-
-        private const int PlayerCount = 4;
     }
 
     /// <summary>
