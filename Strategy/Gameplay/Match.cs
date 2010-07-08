@@ -36,6 +36,10 @@ namespace Strategy.Gameplay
         /// </summary>
         public event EventHandler<PlayerEventArgs> Ended;
 
+        /// <summary>
+        /// The maximum number of pieces available to place by a player.
+        /// </summary>
+        public readonly int MaxPiecesAvailable = 5;
 
         /// <summary>
         /// The map this match is played on.
@@ -438,7 +442,7 @@ namespace Strategy.Gameplay
                 }
 
                 _pieceCreationElapsed[p] += (int)Math.Floor(time * _pieceCreationSpeed[p]);
-                PieceCreationProgress[p] = Math.Min(_pieceCreationElapsed[p] / PieceCreationTime, 1f);
+                PieceCreationProgress[p] = Math.Min(_pieceCreationElapsed[p] / (float)PieceCreationTime, 1f);
 
                 if (_pieceCreationElapsed[p] >= PieceCreationTime)
                 {
@@ -527,7 +531,6 @@ namespace Strategy.Gameplay
         private const int PieceCreationTime = 3000;
         private const float PieceCreationBaseSpeed = 1f;
         private const float PieceCreationMaxSpeed = 2f;
-        private const int MaxPiecesAvailable = 5;
 
         private const int CooldownMove = 1000;
         private const int CooldownAttack = 3000;

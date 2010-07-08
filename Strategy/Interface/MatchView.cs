@@ -23,6 +23,7 @@ namespace Strategy.Interface
             {
                 _piecesAvailableViews[i] = new PiecesAvailableView(match, (PlayerId)i, context);
             }
+            _spriteBatch = new SpriteBatch(context.Game.GraphicsDevice);
         }
 
         public void Update(float time)
@@ -37,15 +38,19 @@ namespace Strategy.Interface
         public void Draw()
         {
             _mapView.Draw();
+
+            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Texture, SaveStateMode.None);
             for (int i = 0; i < _piecesAvailableViews.Length; i++)
             {
-                _piecesAvailableViews[i].Draw();
+                _piecesAvailableViews[i].Draw(_spriteBatch);
             }
+            _spriteBatch.End();
         }
 
         private Match _match;
         private InterfaceContext _context;
 
+        private SpriteBatch _spriteBatch;
         private MapView _mapView;
         private PiecesAvailableView[] _piecesAvailableViews;
     }
