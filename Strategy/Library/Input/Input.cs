@@ -204,13 +204,10 @@ namespace Strategy.Library.Input
         private GamePadState PollState(PlayerIndex playerIdx)
         {
             GamePadState state = GamePad.GetState(playerIdx);
-            if (state.IsConnected)
+
+#if WINDOWS // on windows fabricate the state when there is no controller
+            if (!state.IsConnected)
             {
-                return state;
-            }
-            else
-            {
-#if WINDOWS // on windows fabricate the state
                 KeyboardState kbd = Keyboard.GetState();
                 Buttons buttons = 0;
                 Vector2 leftStick = Vector2.Zero;
@@ -228,9 +225,11 @@ namespace Strategy.Library.Input
                 if (kbd.IsKeyDown(Keys.Y)) buttons |= Buttons.Y;
                 if (kbd.IsKeyDown(Keys.Enter)) buttons |= Buttons.Start;
                 if (kbd.IsKeyDown(Keys.RightShift)) buttons |= Buttons.Back;
-                return new GamePadState(leftStick, Vector2.Zero, 0f, 0f, buttons);
-#endif
+                state = new GamePadState(leftStick, Vector2.Zero, 0f, 0f, buttons);
             }
+#endif
+
+            return state;
         }
 
         private List<Vibration> _vibration = new List<Vibration>();
