@@ -286,7 +286,7 @@ namespace Strategy.Gameplay
 
         private Random _random;
 
-        private const float MapExpansionFactor = 1.6f;
+        private const float MapExpansionFactor = 1.75f;
         private const int TerritoryBaseSize = 3;
         private const int TerritoryFrillSize = 1;
         private const int TerritoryFrillMinCount = 4;

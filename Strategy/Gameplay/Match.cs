@@ -497,7 +497,7 @@ namespace Strategy.Gameplay
         /// </summary>
         private float GetPieceCreationSpeed(int numTerritoriesOwned)
         {
-            return Math.Max(PieceCreationBaseSpeed + numTerritoriesOwned * 0.1f, PieceCreationMaxSpeed);
+            return Math.Min(PieceCreationBaseSpeed + numTerritoriesOwned * 0.1f, PieceCreationMaxSpeed);
         }
 
         /// <summary>
@@ -528,7 +528,7 @@ namespace Strategy.Gameplay
 
         private int[] _numTerritoriesOwned;
 
-        private const int PieceCreationTime = 3000;
+        private const int PieceCreationTime = 5000;
         private const float PieceCreationBaseSpeed = 1f;
         private const float PieceCreationMaxSpeed = 2f;
 

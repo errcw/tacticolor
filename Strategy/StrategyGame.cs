@@ -32,7 +32,7 @@ namespace Strategy
             Content.RootDirectory = "Content";
 
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
-            Components.Add(new FPSOverlay(this));
+            //Components.Add(new FPSOverlay(this));
 
             _context = new InterfaceContext(this, Content, new IsometricParameters(20, 10, 20, -10));
         }
@@ -53,7 +53,7 @@ namespace Strategy
 
         private void StartNewMatch()
         {
-            Map map = _generator.Generate(16, 4, 4, 10);
+            Map map = _generator.Generate(16, 4, 2, 10);
             _match = new Match(map, _random);
             _matchView = new MatchView(_match, _context);
 
