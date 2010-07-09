@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Strategy.Library.Sprite;
+
 namespace Strategy.Interface
 {
     public class IsometricBatch
@@ -11,7 +13,7 @@ namespace Strategy.Interface
         public IsometricBatch(SpriteBatch batch)
         {
             _batch = batch;
-            _sprites = new List<IsometricSprite>(32);
+            _sprites = new List<Sprite>(32);
         }
 
         public void Begin()
@@ -24,19 +26,19 @@ namespace Strategy.Interface
             _sprites.Sort(RenderOrderComparison);
 
             _batch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.None);
-            foreach (IsometricSprite sprite in _sprites)
+            foreach (Sprite sprite in _sprites)
             {
                 sprite.Draw(_batch);
             }
             _batch.End();
         }
 
-        public void Draw(IsometricSprite sprite)
+        public void Draw(Sprite sprite)
         {
             _sprites.Add(sprite);
         }
 
-        private int RenderOrderComparison(IsometricSprite a, IsometricSprite b)
+        private int RenderOrderComparison(Sprite a, Sprite b)
         {
             if (a == b)
             {
@@ -69,7 +71,7 @@ namespace Strategy.Interface
             }
         }
 
-        private List<IsometricSprite> _sprites;
+        private List<Sprite> _sprites;
         private SpriteBatch _batch;
     }
 }

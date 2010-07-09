@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
+using Strategy.Library.Sprite;
 
 namespace Strategy.Interface
 {
@@ -23,11 +24,11 @@ namespace Strategy.Interface
 
             Texture2D cursorTex = context.Content.Load<Texture2D>("Piece");
 
-            _cursorHover = new IsometricSprite(cursorTex);
+            _cursorHover = new ImageSprite(cursorTex);
             _cursorHover.Color = GetPlayerColor(input.Player);
             _cursorHover.Origin = new Vector2(0, 14);
 
-            _cursorSelect = new IsometricSprite(cursorTex);
+            _cursorSelect = new ImageSprite(cursorTex);
             _cursorSelect.Color = new Color(GetPlayerColor(input.Player), 128);
             _cursorSelect.Origin = new Vector2(0, 14);
 
@@ -118,8 +119,8 @@ namespace Strategy.Interface
         private LocalInput _input;
         private InterfaceContext _context;
 
-        private IsometricSprite _cursorHover;
-        private IsometricSprite _cursorSelect;
+        private Sprite _cursorHover;
+        private Sprite _cursorSelect;
         private bool _showSelect;
     }
 }

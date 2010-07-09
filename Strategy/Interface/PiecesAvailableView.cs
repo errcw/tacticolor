@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
 using Strategy.Library;
+using Strategy.Library.Sprite;
 
 namespace Strategy.Interface
 {
@@ -21,11 +22,11 @@ namespace Strategy.Interface
 
             Texture2D pieceSprite = context.Content.Load<Texture2D>("Piece");
 
-            _unused = new Stack<IsometricSprite>(_match.MaxPiecesAvailable);
-            _created = new Stack<IsometricSprite>(_match.MaxPiecesAvailable);
+            _unused = new Stack<Sprite>(_match.MaxPiecesAvailable);
+            _created = new Stack<Sprite>(_match.MaxPiecesAvailable);
             for (int p = 0; p < _match.MaxPiecesAvailable; p++)
             {
-                IsometricSprite sprite = new IsometricSprite(pieceSprite);
+                Sprite sprite = new ImageSprite(pieceSprite);
                 sprite.Y = BasePosition.Y + PlayerSpacing.Y * (int)_player;
                 _unused.Push(sprite);
             }
@@ -58,7 +59,7 @@ namespace Strategy.Interface
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach(IsometricSprite sprite in _created)
+            foreach(Sprite sprite in _created)
             {
                 sprite.Draw(spriteBatch);
             }
@@ -92,7 +93,7 @@ namespace Strategy.Interface
             if (args.Location.Owner == _player)
             {
                 // hide the old sprite
-                IsometricSprite used = _created.Pop();
+                Sprite used = _created.Pop();
                 used.Color = Color.TransparentWhite;
                 _unused.Push(used);
 
@@ -126,9 +127,9 @@ namespace Strategy.Interface
 
         private int _lastAvailable;
 
-        private Stack<IsometricSprite> _unused;
-        private Stack<IsometricSprite> _created;
-        private IsometricSprite _creatingSprite;
+        private Stack<Sprite> _unused;
+        private Stack<Sprite> _created;
+        private Sprite _creatingSprite;
         private float _creatingTargetX;
 
         private readonly Vector2 BasePosition = new Vector2(50, 50);

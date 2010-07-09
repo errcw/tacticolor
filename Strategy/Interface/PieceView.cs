@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
 using Strategy.Library;
+using Strategy.Library.Sprite;
 
 namespace Strategy.Interface
 {
@@ -19,7 +20,7 @@ namespace Strategy.Interface
             _context = context;
 
             Texture2D pieceTex = context.Content.Load<Texture2D>("Piece");
-            _sprite = new IsometricSprite(pieceTex);
+            _sprite = new ImageSprite(pieceTex);
             _sprite.Origin = new Vector2(0, 15); // offset to bottom
         }
 
@@ -63,6 +64,6 @@ namespace Strategy.Interface
         private Piece _piece;
         private InterfaceContext _context;
 
-        private IsometricSprite _sprite;
+        private Sprite _sprite;
     }
 }

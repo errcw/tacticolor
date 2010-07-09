@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
+using Strategy.Library.Sprite;
 
 namespace Strategy.Interface
 {
@@ -22,13 +23,13 @@ namespace Strategy.Interface
             Texture2D tileHolder = context.Content.Load<Texture2D>("TileHolder");
             Color color = GetPlayerColor(territory.Owner);
 
-            _sprites = new IsometricSprite[_territory.Area.Count];
+            _sprites = new Sprite[_territory.Area.Count];
             int s = 0;
             foreach (Cell cell in territory.Area)
             {
                 Texture2D spriteImage = IsHolder(cell) ? tileHolder : tile;
                 Point spritePosition = context.IsoParams.GetPoint(cell);
-                _sprites[s] = new IsometricSprite(spriteImage);
+                _sprites[s] = new ImageSprite(spriteImage);
                 _sprites[s].X = spritePosition.X;
                 _sprites[s].Y = spritePosition.Y;
                 _sprites[s].Color = color;
@@ -41,7 +42,7 @@ namespace Strategy.Interface
         public void Update(float time)
         {
             // brute force the color (ugh)
-            foreach (IsometricSprite sprite in _sprites)
+            foreach (Sprite sprite in _sprites)
             {
                 sprite.Color = GetPlayerColor(_territory.Owner);
             }
@@ -49,7 +50,7 @@ namespace Strategy.Interface
 
         public void Draw(IsometricBatch isoBatch)
         {
-            foreach (IsometricSprite sprite in _sprites)
+            foreach (Sprite sprite in _sprites)
             {
                 isoBatch.Draw(sprite);
             }
@@ -136,7 +137,7 @@ namespace Strategy.Interface
         private Territory _territory;
         private InterfaceContext _context;
 
-        private IsometricSprite[] _sprites;
+        private Sprite[] _sprites;
 
         private Stack<Cell> _freeHolders;
         private Dictionary<Piece, Cell> _usedHolders;

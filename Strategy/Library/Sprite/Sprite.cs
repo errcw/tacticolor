@@ -16,6 +16,24 @@ namespace Strategy.Library.Sprite
         public Vector2 Position { get; set; }
 
         /// <summary>
+        /// The X coordinate of the Position.
+        /// </summary>
+        public float X
+        {
+            get { return Position.X; }
+            set { Position = new Vector2(value, Position.Y); } 
+        }
+
+        /// <summary>
+        /// The Y coordinate of the Position.
+        /// </summary>
+        public float Y
+        {
+            get { return Position.Y; }
+            set { Position = new Vector2(Position.X, value); } 
+        }
+
+        /// <summary>
         /// The origin of this sprite. This sprite's rotation, scaling, and
         /// reflection are all interpreted relative to the origin.
         /// </summary>
