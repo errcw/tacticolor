@@ -223,7 +223,7 @@ namespace Strategy.Gameplay
             else // attack failed
             {
                 // can lose all attackers or defenders but must leave a single piece
-                int attackersLost = attackerTotal;
+                int attackersLost = attackers.Count;
                 attackersLost = Math.Min(attacker.Pieces.Count - 1, attackersLost);
                 int defendersLost = (int)(3f * (float)attackerSum / defenderSum);
                 defendersLost = Math.Min(defender.Pieces.Count - 1, defendersLost);
