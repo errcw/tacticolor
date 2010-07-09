@@ -57,12 +57,14 @@ namespace Strategy
             _match = new Match(map, _random);
             _matchView = new MatchView(_match, _context);
 
-            _inputA = new LocalInput(PlayerId.A, _match, _context);
-            _inputA.Controller = PlayerIndex.One;
-            _inputViewA = new LocalInputView(_inputA, _context);
-            _inputB = new LocalInput(PlayerId.B, _match, _context);
-            _inputB.Controller = PlayerIndex.Two;
-            _inputViewB = new LocalInputView(_inputB, _context);
+            _inputs = new LocalInput[DebugPlayers];
+            _inputViews = new LocalInputView[DebugPlayers];
+            for (int p = 0; p < _inputs.Length; p++)
+            {
+                _inputs[p] = new LocalInput((PlayerId)p, _match, _context);
+                _inputs[p].Controller = (PlayerIndex)p;
+                _inputViews[p] = new LocalInputView(_inputs[p], _context);
+            }
         }
 
         /// <summary>
@@ -81,10 +83,11 @@ namespace Strategy
             _match.Update(gameTime.GetElapsedMilliseconds());
             _matchView.Update(time);
 
-            _inputA.Update(time);
-            _inputViewA.Update(time);
-            _inputB.Update(time);
-            _inputViewB.Update(time);
+            for (int p = 0; p < _inputs.Length; p++)
+            {
+                _inputs[p].Update(time);
+                _inputViews[p].Update(time);
+            }
 
             base.Update(gameTime);
         }
@@ -100,8 +103,10 @@ namespace Strategy
             _matchView.Draw();
 
             _isoBatch.Begin();
-            _inputViewA.Draw(_isoBatch);
-            _inputViewB.Draw(_isoBatch);
+            for (int p = 0; p < _inputViews.Length; p++)
+            {
+                _inputViews[p].Draw(_isoBatch);
+            }
             _isoBatch.End();
 
             base.Draw(gameTime);
@@ -115,11 +120,11 @@ namespace Strategy
         private Match _match;
         private MatchView _matchView;
 
-        private LocalInput _inputA;
-        private LocalInputView _inputViewA;
-        private LocalInput _inputB;
-        private LocalInputView _inputViewB;
+        private LocalInput[] _inputs;
+        private LocalInputView[] _inputViews;
 
         private IsometricBatch _isoBatch;
+
+        private const int DebugPlayers = 1;
     }
 }
