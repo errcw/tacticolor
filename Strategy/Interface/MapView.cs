@@ -37,8 +37,8 @@ namespace Strategy.Interface
                 _territoryViews.Add(territory, territoryView);
                 foreach (Piece piece in territory.Pieces)
                 {
-                    PieceView pieceView = new PieceView(piece, _context);
-                    pieceView.SetCell(territoryView.PieceAdded(piece));
+                    Cell holder = territoryView.PieceAdded(piece);
+                    PieceView pieceView = new PieceView(piece, holder, false, _context);
                     _pieceViews.Add(piece, pieceView);
                 }
                 foreach (Territory neighbor in territory.Neighbors)
@@ -98,9 +98,9 @@ namespace Strategy.Interface
         /// </summary>
         public void OnPiecePlaced(object match, PiecePlacedEventArgs args)
         {
-            PieceView pieceView = new PieceView(args.Piece, _context);
             TerritoryView territoryView = _territoryViews[args.Location];
-            pieceView.SetCell(territoryView.PieceAdded(args.Piece));
+            Cell holder = territoryView.PieceAdded(args.Piece);
+            PieceView pieceView = new PieceView(args.Piece, holder, true, _context);
             _pieceViews.Add(args.Piece, pieceView);
         }
 
@@ -116,7 +116,7 @@ namespace Strategy.Interface
                 PieceView pieceView = _pieceViews[piece];
                 sourceView.PieceRemoved(piece);
                 Cell cell = destinationView.PieceAdded(piece);
-                pieceView.SetCell(cell);
+                pieceView.OnMoved(cell);
             }
         }
 
@@ -147,7 +147,7 @@ namespace Strategy.Interface
                 {
                     attackerView.PieceRemoved(data.Piece);
                     Cell cell = defenderView.PieceAdded(data.Piece);
-                    pieceView.SetCell(cell);
+                    pieceView.OnMoved(cell);
                 }
                 else if (!data.Survived) // killed
                 {

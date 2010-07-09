@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
+using Strategy.Library;
 using Strategy.Library.Sprite;
 
 namespace Strategy.Interface
@@ -18,6 +19,8 @@ namespace Strategy.Interface
         {
             _territory = territory;
             _context = context;
+
+            _lastOwner = _territory.Owner;
 
             Texture2D tile = context.Content.Load<Texture2D>("Tile");
             Texture2D tileHolder = context.Content.Load<Texture2D>("TileHolder");
@@ -41,10 +44,31 @@ namespace Strategy.Interface
 
         public void Update(float time)
         {
-            // brute force the color (ugh)
-            foreach (Sprite sprite in _sprites)
+            // detect when the territory changes owners
+            if (_territory.Owner != _lastOwner)
             {
-                sprite.Color = GetPlayerColor(_territory.Owner);
+                Color newColor = GetPlayerColor(_territory.Owner);
+                _colorAnims = new IAnimation[_sprites.Length];
+                for (int i = 0; i < _sprites.Length; i++)
+                {
+                    _colorAnims[i] = new ColorAnimation(_sprites[i], newColor, 1f, Interpolation.InterpolateColor(Easing.Uniform));
+                }
+
+                _lastOwner = _territory.Owner;
+            }
+
+            // update the color animations if any
+            if (_colorAnims != null)
+            {
+                bool running = true;
+                for (int i = 0; i < _colorAnims.Length; i++)
+                {
+                    running &= _colorAnims[i].Update(time);
+                }
+                if (!running)
+                {
+                    _colorAnims = null;
+                }
             }
         }
 
@@ -136,10 +160,13 @@ namespace Strategy.Interface
 
         private Territory _territory;
         private InterfaceContext _context;
+        private PlayerId? _lastOwner;
 
         private Sprite[] _sprites;
 
         private Stack<Cell> _freeHolders;
         private Dictionary<Piece, Cell> _usedHolders;
+
+        private IAnimation[] _colorAnims;
     }
 }
