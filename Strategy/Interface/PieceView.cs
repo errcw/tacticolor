@@ -56,7 +56,7 @@ namespace Strategy.Interface
 
         public void Draw(IsometricBatch isoBatch)
         {
-            isoBatch.Draw(_sprite);
+            //isoBatch.Draw(_sprite);
         }
 
         /// <summary>
