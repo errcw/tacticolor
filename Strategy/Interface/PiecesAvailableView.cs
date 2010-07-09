@@ -19,7 +19,7 @@ namespace Strategy.Interface
             _player = player;
             _context = context;
 
-            Texture2D pieceSprite = context.Content.Load<Texture2D>("PieceSmall");
+            Texture2D pieceSprite = context.Content.Load<Texture2D>("Piece");
 
             _unused = new Stack<IsometricSprite>(_match.MaxPiecesAvailable);
             _created = new Stack<IsometricSprite>(_match.MaxPiecesAvailable);

@@ -88,7 +88,7 @@ namespace Strategy.Interface
             }
             foreach (PieceView pieceView in _pieceViews.Values)
             {
-                //pieceView.Draw(_isoBatch);
+                pieceView.Draw(_isoBatch);
             }
             _isoBatch.End();
         }

@@ -18,17 +18,16 @@ namespace Strategy.Interface
             _piece = piece;
             _context = context;
 
-            Texture2D pieceTex = context.Content.Load<Texture2D>("PieceSmall");
+            Texture2D pieceTex = context.Content.Load<Texture2D>("Piece");
             _sprite = new IsometricSprite(pieceTex);
-            _sprite.Position += new Vector2(10, 10); // offset in tile
-            _sprite.Origin = new Vector2(0, 14); // offset to bottom
+            _sprite.Origin = new Vector2(0, 15); // offset to bottom
         }
 
         public void SetCell(Cell cell)
         {
             Point point = _context.IsoParams.GetPoint(cell);
             _sprite.Position = new Vector2(point.X, point.Y);
-            _sprite.Position += new Vector2(10, 10); // offset in tile
+            _sprite.Position += new Vector2(7, 8); // offset in tile
         }
 
         public void Update(float time)
@@ -50,6 +49,7 @@ namespace Strategy.Interface
         /// </summary>
         private Color GetPlayerColor(PlayerId player)
         {
+            return Color.White;
             switch (player)
             {
                 case PlayerId.A: return Color.Tomato;

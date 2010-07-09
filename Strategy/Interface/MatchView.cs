@@ -47,7 +47,7 @@ namespace Strategy.Interface
             _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Texture, SaveStateMode.None);
             for (int i = 0; i < _piecesAvailableViews.Length; i++)
             {
-                //_piecesAvailableViews[i].Draw(_spriteBatch);
+                _piecesAvailableViews[i].Draw(_spriteBatch);
             }
             _spriteBatch.End();
         }

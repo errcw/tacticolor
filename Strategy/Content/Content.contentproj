@@ -45,34 +45,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TileSmall.png">
-      <Name>TileSmall</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Connection.png">
-      <Name>Connection</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="TileSmallHolder.png">
-      <Name>TileSmallHolder</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="PieceSmall.png">
-      <Name>PieceSmall</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Fonts\TextSmall.spritefont">
       <Name>TextSmall</Name>
       <Importer>FontDescriptionImporter</Importer>
@@ -101,27 +73,22 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TileSlick.png">
-      <Name>TileSlick</Name>
+    <Compile Include="Tile.png">
+      <Name>Tile</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TileSlickHolder.png">
-      <Name>TileSlickHolder</Name>
+    <Compile Include="TileHolder.png">
+      <Name>TileHolder</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectionSlickCol.png">
-      <Name>ConnectionSlickCol</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="ConnectionSlickRow.png">
-      <Name>ConnectionSlickRow</Name>
+    <Compile Include="Piece.png">
+      <Name>Piece</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

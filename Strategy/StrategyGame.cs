@@ -34,7 +34,7 @@ namespace Strategy
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
             //Components.Add(new FPSOverlay(this));
 
-            _context = new InterfaceContext(this, Content, new IsometricParameters(19, 12, 19, -12));
+            _context = new InterfaceContext(this, Content, new IsometricParameters(17, 9, 16, -9));
         }
 
         protected override void Initialize()
@@ -99,10 +99,10 @@ namespace Strategy
 
             _matchView.Draw();
 
-            /*_isoBatch.Begin();
+            _isoBatch.Begin();
             _inputViewA.Draw(_isoBatch);
             _inputViewB.Draw(_isoBatch);
-            _isoBatch.End();*/
+            _isoBatch.End();
 
             base.Draw(gameTime);
         }

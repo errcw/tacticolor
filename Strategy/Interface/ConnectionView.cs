@@ -36,13 +36,14 @@ namespace Strategy.Interface
 
             // create the connection sprites
             bool sameRow = (closestA.Row == closestB.Row);
-            Texture2D connectionTex = context.Content.Load<Texture2D>(sameRow ? "ConnectionSlickRow" : "ConnectionSlickCol");
+            Texture2D connectionTex = context.Content.Load<Texture2D>(sameRow ? "ConnectionRow" : "ConnectionCol");
             _sprites = new List<IsometricSprite>(2);
             foreach (Point p in BresenhamIterator.GetPointsOnLine(closestA.Row, closestA.Col, closestB.Row, closestB.Col))
             {
                 IsometricSprite sprite = new IsometricSprite(connectionTex);
                 sprite.X = context.IsoParams.GetX(p.X, p.Y);
                 sprite.Y = context.IsoParams.GetY(p.X, p.Y);
+                sprite.Color = new Color(200, 200, 200);
                 _sprites.Add(sprite);
             }
         }

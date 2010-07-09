@@ -21,7 +21,7 @@ namespace Strategy.Interface
             _input.HoveredChanged += OnHoveredChanged;
             _input.SelectedChanged += OnSelectedChanged;
 
-            Texture2D cursorTex = context.Content.Load<Texture2D>("PieceSmall");
+            Texture2D cursorTex = context.Content.Load<Texture2D>("Piece");
 
             _cursorHover = new IsometricSprite(cursorTex);
             _cursorHover.Color = GetPlayerColor(input.Player);
@@ -107,11 +107,11 @@ namespace Strategy.Interface
         {
             switch (player)
             {
-                case PlayerId.A: return Color.SlateGray;
-                case PlayerId.B: return Color.Brown;
-                case PlayerId.C: return Color.Coral;
-                case PlayerId.D: return Color.CornflowerBlue;
-                default: return Color.White;
+                case PlayerId.A: return new Color(222, 35, 136);
+                case PlayerId.B: return new Color(33, 157, 221);
+                case PlayerId.C: return new Color(0, 168, 67);
+                case PlayerId.D: return new Color(251, 223, 0);
+                default: throw new ArgumentException("Invalid player id " + player);
             }
         }
 
