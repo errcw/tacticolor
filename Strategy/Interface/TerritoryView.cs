@@ -18,8 +18,8 @@ namespace Strategy.Interface
             _territory = territory;
             _context = context;
 
-            Texture2D tile = context.Content.Load<Texture2D>("TileSmall");
-            Texture2D tileHolder = context.Content.Load<Texture2D>("TileSmallHolder");
+            Texture2D tile = context.Content.Load<Texture2D>("TileSlick");
+            Texture2D tileHolder = context.Content.Load<Texture2D>("TileSlickHolder");
             Color color = GetPlayerColor(territory.Owner);
 
             _sprites = new IsometricSprite[_territory.Area.Count];
@@ -122,7 +122,8 @@ namespace Strategy.Interface
         /// </summary>
         private Color GetPlayerColor(PlayerId? player)
         {
-            switch (player)
+            return Color.White;
+            /*switch (player)
             {
                 case PlayerId.A: return Color.Tomato;
                 case PlayerId.B: return Color.RoyalBlue;
@@ -130,7 +131,7 @@ namespace Strategy.Interface
                 case PlayerId.D: return Color.Crimson;
                 case null: return Color.White;
                 default: throw new ArgumentException("Invalid player id " + player);
-            }
+            }*/
         }
 
         private Territory _territory;
