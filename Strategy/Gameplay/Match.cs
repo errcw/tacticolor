@@ -145,6 +145,7 @@ namespace Strategy.Gameplay
         {
             int attackerTotal = attacker.Pieces.Count;
             int defenderTotal = defender.Pieces.Count;
+            PlayerId? previousOwner = defender.Owner;
 
             // build the set of attacking pieces
             List<PieceAttackData> attackers = new List<PieceAttackData>(attackerTotal);
@@ -216,7 +217,6 @@ namespace Strategy.Gameplay
                 }
 
                 // change the owner
-                PlayerId? previousOwner = defender.Owner;
                 defender.Owner = attacker.Owner;
                 TerritoryDidChangeOwners(defender, previousOwner);
             }
@@ -244,8 +244,15 @@ namespace Strategy.Gameplay
             }
 
             // set the cooldowns
-            attacker.Cooldown = CooldownAttack;
-            defender.Cooldown = CooldownAttack;
+            if (previousOwner != null)
+            {
+                attacker.Cooldown = CooldownAttack;
+                defender.Cooldown = CooldownAttack;
+            }
+            else
+            {
+                defender.Cooldown = CooldownMove; // moved into new territory
+            }
 
             if (TerritoryAttacked != null)
             {
