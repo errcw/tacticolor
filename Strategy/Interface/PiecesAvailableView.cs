@@ -20,11 +20,12 @@ namespace Strategy.Interface
             _player = player;
             _context = context;
 
-            Texture2D pieceSprite = context.Content.Load<Texture2D>("Piece");
+            Texture2D pieceSprite = context.Content.Load<Texture2D>("PieceAlt");
 
-            _unused = new Queue<Sprite>(_match.MaxPiecesAvailable);
-            _created = new Stack<Sprite>(_match.MaxPiecesAvailable);
-            for (int p = 0; p < _match.MaxPiecesAvailable; p++)
+            int sprites = _match.MaxPiecesAvailable + 1;
+            _unused = new Queue<Sprite>(sprites);
+            _created = new Stack<Sprite>(sprites);
+            for (int p = 0; p < sprites; p++)
             {
                 Sprite sprite = new ImageSprite(pieceSprite);
                 sprite.Y = BasePosition.Y + PlayerSpacing.Y * (int)_player;
@@ -107,10 +108,15 @@ namespace Strategy.Interface
             {
                 // hide the old sprite
                 Sprite used = _created.Pop();
-                //_animation = new CompositeAnimation(
-                    //new PositionAnimation(used, used.Position + new Vector2(0, 30), 0.3f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
-                    //new ColorAnimation(used, Color.TransparentWhite, 0.2f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
-                used.Color = Color.TransparentWhite;
+                if (_animation != null)
+                {
+                    // if we are reusing the animation then we need to make sure
+                    // the previous one is finished so fake a large time step
+                    _animation.Update(1f);
+                }
+                _animation = new CompositeAnimation(
+                    new PositionAnimation(used, used.Position + new Vector2(0, 30), 0.3f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
+                    new ColorAnimation(used, Color.TransparentWhite, 0.2f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
                 _unused.Enqueue(used);
 
                 if (_creatingSprite != null)

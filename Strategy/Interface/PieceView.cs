@@ -19,10 +19,10 @@ namespace Strategy.Interface
             _piece = piece;
             _context = context;
 
-            Texture2D pieceTex = context.Content.Load<Texture2D>("Piece");
+            Texture2D pieceTex = context.Content.Load<Texture2D>("PieceAlt");
             _sprite = new ImageSprite(pieceTex);
             _sprite.Position = GetPosition(placement);
-            _sprite.Origin = new Vector2(9, 8);
+            _sprite.Origin = new Vector2(12, 22);
 
             if (wasPlaced)
             {
@@ -66,7 +66,7 @@ namespace Strategy.Interface
         {
             Point point = _context.IsoParams.GetPoint(cell);
             Vector2 position = new Vector2(point.X, point.Y);
-            position += new Vector2(18, 6); // offset in tile
+            position += new Vector2(18, 13); // offset in tile
             return position;
         }
 

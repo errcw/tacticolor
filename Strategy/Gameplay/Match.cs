@@ -226,6 +226,7 @@ namespace Strategy.Gameplay
                 int attackersLost = attackers.Count;
                 attackersLost = Math.Min(attacker.Pieces.Count - 1, attackersLost);
                 int defendersLost = (int)(3f * (float)attackerSum / defenderSum);
+                defendersLost = Math.Max(1, defendersLost);
                 defendersLost = Math.Min(defender.Pieces.Count - 1, defendersLost);
 
                 // remove the killed defenders
