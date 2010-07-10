@@ -110,7 +110,7 @@ namespace Strategy.Interface
                 //_animation = new CompositeAnimation(
                     //new PositionAnimation(used, used.Position + new Vector2(0, 30), 0.3f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
                     //new ColorAnimation(used, Color.TransparentWhite, 0.2f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
-                user = Color.TransparentWhite;
+                used.Color = Color.TransparentWhite;
                 _unused.Enqueue(used);
 
                 if (_creatingSprite != null)

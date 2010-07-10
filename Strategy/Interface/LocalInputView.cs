@@ -22,7 +22,7 @@ namespace Strategy.Interface
             _input.HoveredChanged += OnHoveredChanged;
             _input.SelectedChanged += OnSelectedChanged;
 
-            Texture2D cursorTex = context.Content.Load<Texture2D>("Piece");
+            Texture2D cursorTex = context.Content.Load<Texture2D>("Cursor");
 
             _cursorHover = new ImageSprite(cursorTex);
             _cursorHover.Color = GetPlayerColor(input.Player);
@@ -53,10 +53,7 @@ namespace Strategy.Interface
         private void OnHoveredChanged(object input, EventArgs args)
         {
             Cell cell = ChooseCell(_input.Hovered);
-            Point point = _context.IsoParams.GetPoint(cell);
-            _cursorHover.X = point.X;
-            _cursorHover.Y = point.Y;
-            _cursorHover.Position += new Vector2(10, 10); // offset in tile
+            _cursorHover.Position = GetPosition(cell);
 
             _showSelect = (_input.Selected != null && _input.Hovered != _input.Selected);
         }
@@ -69,10 +66,7 @@ namespace Strategy.Interface
             if (_input.Selected != null)
             {
                 Cell cell = ChooseCell(_input.Selected);
-                Point point = _context.IsoParams.GetPoint(cell);
-                _cursorSelect.X = point.X;
-                _cursorSelect.Y = point.Y;
-                _cursorSelect.Position += new Vector2(10, 10); // offset in tile
+                _cursorSelect.Position = GetPosition(cell);
             }
         }
 
@@ -99,6 +93,17 @@ namespace Strategy.Interface
             }
             // should never reach here
             return territory.Area.First();
+        }
+
+        /// <summary>
+        /// Returns the pixel position mapped for the given tile.
+        /// </summary>
+        private Vector2 GetPosition(Cell cell)
+        {
+            Point point = _context.IsoParams.GetPoint(cell);
+            Vector2 position = new Vector2(point.X, point.Y);
+            position += new Vector2(9, 9); // offset in tile
+            return position;
         }
 
         /// <summary>

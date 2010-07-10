@@ -22,7 +22,7 @@ namespace Strategy.Interface
             Texture2D pieceTex = context.Content.Load<Texture2D>("Piece");
             _sprite = new ImageSprite(pieceTex);
             _sprite.Position = GetPosition(placement);
-            _sprite.Origin = new Vector2(12, 12);
+            _sprite.Origin = new Vector2(9, 8);
 
             if (wasPlaced)
             {
@@ -56,7 +56,7 @@ namespace Strategy.Interface
 
         public void Draw(IsometricBatch isoBatch)
         {
-            //isoBatch.Draw(_sprite);
+            isoBatch.Draw(_sprite);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Strategy.Interface
         {
             Point point = _context.IsoParams.GetPoint(cell);
             Vector2 position = new Vector2(point.X, point.Y);
-            position += new Vector2(18, 5); // offset in tile
+            position += new Vector2(18, 6); // offset in tile
             return position;
         }
 
@@ -75,14 +75,13 @@ namespace Strategy.Interface
         /// </summary>
         private Color GetPlayerColor(PlayerId player)
         {
-            return Color.White;
             switch (player)
             {
-                case PlayerId.A: return Color.Tomato;
-                case PlayerId.B: return Color.RoyalBlue;
-                case PlayerId.C: return Color.SeaGreen;
-                case PlayerId.D: return Color.Crimson;
-                default: return Color.White;
+                case PlayerId.A: return new Color(221, 104, 168);
+                case PlayerId.B: return new Color(103, 180, 219);
+                case PlayerId.C: return new Color(82, 165, 114);
+                case PlayerId.D: return new Color(249, 235, 124);
+                default: throw new ArgumentException("Invalid player id " + player);
             }
         }
 
