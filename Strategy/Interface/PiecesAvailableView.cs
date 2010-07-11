@@ -20,7 +20,10 @@ namespace Strategy.Interface
             _player = player;
             _context = context;
 
-            Texture2D pieceSprite = context.Content.Load<Texture2D>("PieceAlt");
+            SolidColor = GetPlayerColor(_player);
+            TransparentColor = new Color(SolidColor, 0);
+
+            Texture2D pieceSprite = context.Content.Load<Texture2D>("PieceAltAlt");
 
             int sprites = _match.MaxPiecesAvailable + 1;
             _unused = new Queue<Sprite>(sprites);
@@ -29,7 +32,7 @@ namespace Strategy.Interface
             {
                 Sprite sprite = new ImageSprite(pieceSprite);
                 sprite.Y = BasePosition.Y + PlayerSpacing.Y * (int)_player;
-                sprite.Color = Color.TransparentWhite;
+                sprite.Color = TransparentColor;
                 _unused.Enqueue(sprite);
             }
 
@@ -54,15 +57,15 @@ namespace Strategy.Interface
             if (_creatingSprite != null)
             {
                 float progress = _match.PieceCreationProgress[(int)_player];
-                _creatingSprite.Color = new Color(_creatingSprite.Color, (byte)(progress * 255));
+                _creatingSprite.Color = new Color(SolidColor, (byte)(progress * 255));
                 _creatingSprite.X = Interpolation.InterpolateFloat(Easing.Uniform)(_creatingSprite.X, _creatingTargetX, 8f * time);
             }
 
-            if (_animation != null)
+            if (_hideAnimation != null)
             {
-                if (!_animation.Update(time))
+                if (!_hideAnimation.Update(time))
                 {
-                    _animation = null;
+                    _hideAnimation = null;
                 }
             }
         }
@@ -88,7 +91,7 @@ namespace Strategy.Interface
         /// </summary>
         private void OnPieceCreated()
         {
-            _creatingSprite.Color = Color.White;
+            _creatingSprite.Color = SolidColor;
             _creatingSprite.X = _creatingTargetX;
             _created.Push(_creatingSprite);
 
@@ -108,15 +111,15 @@ namespace Strategy.Interface
             {
                 // hide the old sprite
                 Sprite used = _created.Pop();
-                if (_animation != null)
+                if (_hideAnimation != null)
                 {
                     // if we are reusing the animation then we need to make sure
                     // the previous one is finished so fake a large time step
-                    _animation.Update(1f);
+                    _hideAnimation.Update(1f);
                 }
-                _animation = new CompositeAnimation(
+                _hideAnimation = new CompositeAnimation(
                     new PositionAnimation(used, used.Position + new Vector2(0, 30), 0.3f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
-                    new ColorAnimation(used, Color.TransparentWhite, 0.2f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
+                    new ColorAnimation(used, TransparentColor, 0.2f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
                 _unused.Enqueue(used);
 
                 if (_creatingSprite != null)
@@ -138,10 +141,25 @@ namespace Strategy.Interface
         private void SetUpCreatingSprite()
         {
             _creatingSprite = _unused.Dequeue();
-            _creatingSprite.Color = Color.TransparentWhite;
+            _creatingSprite.Color = TransparentColor;
             _creatingSprite.Y = BasePosition.Y + (int)_player * PlayerSpacing.Y;
             _creatingSprite.X = BasePosition.X + _match.PiecesAvailable[(int)_player] * PieceSpacing.X;
             _creatingTargetX = _creatingSprite.X;
+        }
+
+        /// <summary>
+        /// Returns the color of the given player.
+        /// </summary>
+        private Color GetPlayerColor(PlayerId player)
+        {
+            switch (player)
+            {
+                case PlayerId.A: return new Color(221, 104, 168);
+                case PlayerId.B: return new Color(103, 180, 219);
+                case PlayerId.C: return new Color(82, 165, 114);
+                case PlayerId.D: return new Color(249, 235, 124);
+                default: throw new ArgumentException("Invalid player id " + player);
+            }
         }
 
         private Match _match;
@@ -155,7 +173,10 @@ namespace Strategy.Interface
         private Sprite _creatingSprite;
         private float _creatingTargetX;
 
-        private IAnimation _animation;
+        private IAnimation _hideAnimation;
+
+        private readonly Color TransparentColor;
+        private readonly Color SolidColor;
 
         private readonly Vector2 BasePosition = new Vector2(50, 50);
         private readonly Vector2 PlayerSpacing = new Vector2(0, 50);

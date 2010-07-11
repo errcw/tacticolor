@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
 using Strategy.Library;
+using Strategy.Library.Extensions;
 
 namespace Strategy.Interface
 {
@@ -47,6 +48,7 @@ namespace Strategy.Interface
                     _connectionViews.Add(connectionView);
                 }
             }
+            _removedPieces = new List<PieceView>(16);
 
             _isoBatch = new IsometricBatch(new SpriteBatch(context.Game.GraphicsDevice));
         }
@@ -57,14 +59,11 @@ namespace Strategy.Interface
         /// <param name="time">The elapsed time, in seconds, since the last update.</param>
         public void Update(float time)
         {
-            foreach (TerritoryView territoryView in _territoryViews.Values)
-            {
-                territoryView.Update(time);
-            }
-            foreach (PieceView pieceView in _pieceViews.Values)
-            {
-                pieceView.Update(time);
-            }
+            _territoryViews.Values.ForEach(view => view.Update(time));
+            _pieceViews.Values.ForEach(view => view.Update(time));
+
+            _removedPieces.ForEach(view => view.Update(time));
+            _removedPieces.RemoveAll(view => !view.IsVisible);
         }
 
         /// <summary>
@@ -74,22 +73,14 @@ namespace Strategy.Interface
         {
             // draw the connections beneath the map
             _isoBatch.Begin();
-            foreach (ConnectionView connectionView in _connectionViews)
-            {
-                connectionView.Draw(_isoBatch);
-            }
+            _connectionViews.ForEach(view => view.Draw(_isoBatch));
             _isoBatch.End();
 
             // then draw the territories and pieces
             _isoBatch.Begin();
-            foreach (TerritoryView territoryView in _territoryViews.Values)
-            {
-                territoryView.Draw(_isoBatch);
-            }
-            foreach (PieceView pieceView in _pieceViews.Values)
-            {
-                pieceView.Draw(_isoBatch);
-            }
+            _territoryViews.Values.ForEach(view => view.Draw(_isoBatch));
+            _pieceViews.Values.ForEach(view => view.Draw(_isoBatch));
+            _removedPieces.ForEach(view => view.Draw(_isoBatch));
             _isoBatch.End();
         }
 
@@ -134,8 +125,10 @@ namespace Strategy.Interface
                 if (!data.Survived)
                 {
                     PieceView pieceView = _pieceViews[data.Piece];
+                    pieceView.OnDied();
                     defenderView.PieceRemoved(data.Piece);
                     _pieceViews.Remove(data.Piece);
+                    _removedPieces.Add(pieceView);
                 }
             }
 
@@ -151,8 +144,10 @@ namespace Strategy.Interface
                 }
                 else if (!data.Survived) // killed
                 {
+                    pieceView.OnDied();
                     attackerView.PieceRemoved(data.Piece);
                     _pieceViews.Remove(data.Piece);
+                    _removedPieces.Add(pieceView);
                 }
             }
         }
@@ -200,5 +195,6 @@ namespace Strategy.Interface
         private IDictionary<Territory, TerritoryView> _territoryViews;
         private IDictionary<Piece, PieceView> _pieceViews;
         private ICollection<ConnectionView> _connectionViews;
+        private List<PieceView> _removedPieces;
     }
 }

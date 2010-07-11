@@ -14,12 +14,20 @@ namespace Strategy.Interface
     /// </summary>
     public class PieceView
     {
+        /// <summary>
+        /// Returns true if this piece is visible; otherwise, false.
+        /// </summary>
+        public bool IsVisible
+        {
+            get { return _sprite.Color.A > 0; }
+        }
+
         public PieceView(Piece piece, Cell placement, bool wasPlaced, InterfaceContext context)
         {
             _piece = piece;
             _context = context;
 
-            Texture2D pieceTex = context.Content.Load<Texture2D>("PieceAlt");
+            Texture2D pieceTex = context.Content.Load<Texture2D>("Piece");
             _sprite = new ImageSprite(pieceTex);
             _sprite.Position = GetPosition(placement);
             _sprite.Origin = new Vector2(12, 22);
@@ -31,10 +39,24 @@ namespace Strategy.Interface
             }
         }
 
+        /// <summary>
+        /// Notifies this piece that it should animate to a new position.
+        /// </summary>
+        /// <param name="destination">The destination cell on the map.</param>
         public void OnMoved(Cell destination)
         {
             Vector2 newPosition = GetPosition(destination);
             _animation = new PositionAnimation(_sprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
+        }
+
+        /// <summary>
+        /// Notifies this piece that is has died and should disappear.
+        /// </summary>
+        public void OnDied()
+        {
+            _animation = new CompositeAnimation(
+                new ScaleAnimation(_sprite, Vector2.Zero, 0.6f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
+                new ColorAnimation(_sprite, Color.TransparentWhite, 0.5f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
         }
 
         public void Update(float time)
