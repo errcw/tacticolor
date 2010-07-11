@@ -44,7 +44,7 @@ namespace Strategy.Interface
 
             _mapView.Draw();
 
-            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Texture, SaveStateMode.None);
+            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.None);
             for (int i = 0; i < _piecesAvailableViews.Length; i++)
             {
                 _piecesAvailableViews[i].Draw(_spriteBatch);

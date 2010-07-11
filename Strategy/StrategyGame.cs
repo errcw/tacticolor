@@ -4,6 +4,7 @@ using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -33,6 +34,7 @@ namespace Strategy
 
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
             //Components.Add(new FPSOverlay(this));
+            //Components.Add(new GamerServicesComponent(this));
 
             _context = new InterfaceContext(this, Content, new IsometricParameters(17, 9, 16, -9));
         }

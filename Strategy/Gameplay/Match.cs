@@ -147,6 +147,15 @@ namespace Strategy.Gameplay
             int defenderTotal = defender.Pieces.Count;
             PlayerId? previousOwner = defender.Owner;
 
+            // treat this attack like a move if the defender is unowned
+            if (previousOwner == null)
+            {
+                defender.Owner = attacker.Owner;
+                Move(attacker, defender);
+                TerritoryDidChangeOwners(defender, previousOwner);
+                return;
+            }
+
             // build the set of attacking pieces
             List<PieceAttackData> attackers = new List<PieceAttackData>(attackerTotal);
             int attackerSum = 0;
@@ -182,8 +191,6 @@ namespace Strategy.Gameplay
                 defenderSum += data.Roll;
             }
 
-            Console.WriteLine("Attack: {0} Defense: {1}", attackerSum, defenderSum);
-
             bool success = attackerSum - defenderSum > 0;
             if (success) // attack succeeded
             {
@@ -196,7 +203,8 @@ namespace Strategy.Gameplay
 
                 // can lose all the attackers but must have a piece ready to move
                 int attackersLost = (int)(3f * (float)defenderSum / attackerSum);
-                attackersLost = Math.Min(attackers.Count - (attackerTotal > attackers.Count ? 1 : 2), attackersLost); 
+                attackersLost = Math.Min(attackers.Count - (attackerTotal > attackers.Count ? 1 : 2), attackersLost);
+                int attackersMoved = 0;//TODO
                 for (int i = 0; i < attackers.Count; i++)
                 {
                     if (i < attackersLost) // remove the killed pieces
@@ -245,15 +253,8 @@ namespace Strategy.Gameplay
             }
 
             // set the cooldowns
-            if (previousOwner != null)
-            {
-                attacker.Cooldown = CooldownAttack;
-                defender.Cooldown = CooldownAttack;
-            }
-            else
-            {
-                defender.Cooldown = CooldownMove; // moved into new territory
-            }
+            attacker.Cooldown = CooldownAttack;
+            defender.Cooldown = CooldownAttack;
 
             if (TerritoryAttacked != null)
             {

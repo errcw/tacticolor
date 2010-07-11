@@ -109,6 +109,7 @@ namespace Strategy.Interface
                 Cell cell = destinationView.PieceAdded(piece);
                 pieceView.OnMoved(cell);
             }
+            destinationView.MaybeChangedOwners(0f);
         }
 
         /// <summary>
@@ -119,37 +120,45 @@ namespace Strategy.Interface
             TerritoryView attackerView = _territoryViews[args.Attacker];
             TerritoryView defenderView = _territoryViews[args.Defender];
 
-            // handle the killed defenders
-            foreach (PieceAttackData data in args.Defenders)
-            {
-                if (!data.Survived)
-                {
-                    PieceView pieceView = _pieceViews[data.Piece];
-                    pieceView.OnDied();
-                    defenderView.PieceRemoved(data.Piece);
-                    _pieceViews.Remove(data.Piece);
-                    _removedPieces.Add(pieceView);
-                }
-            }
+            const float PieceDelay = 0.1f;
+            float delay = 0f;
+            float totalDelay = (args.Attackers.Count + args.Defenders.Count) * PieceDelay;
 
             // handle the attackers
             foreach (PieceAttackData data in args.Attackers)
             {
                 PieceView pieceView = _pieceViews[data.Piece];
+                Cell? destination = null;
                 if (data.Survived && data.Moved) // moved to new territory
                 {
                     attackerView.PieceRemoved(data.Piece);
-                    Cell cell = defenderView.PieceAdded(data.Piece);
-                    pieceView.OnMoved(cell);
+                    destination = defenderView.PieceAdded(data.Piece);
                 }
                 else if (!data.Survived) // killed
                 {
-                    pieceView.OnDied();
                     attackerView.PieceRemoved(data.Piece);
                     _pieceViews.Remove(data.Piece);
                     _removedPieces.Add(pieceView);
                 }
+                pieceView.OnAttacked(data.Roll, data.Survived, destination, delay, totalDelay - delay + 0.5f);
+                delay += PieceDelay;
             }
+
+            // handle the defenders
+            foreach (PieceAttackData data in args.Defenders)
+            {
+                PieceView pieceView = _pieceViews[data.Piece];
+                pieceView.OnAttacked(data.Roll, data.Survived, null, delay, totalDelay - delay + 0.5f);
+                if (!data.Survived)
+                {
+                    defenderView.PieceRemoved(data.Piece);
+                    _pieceViews.Remove(data.Piece);
+                    _removedPieces.Add(pieceView);
+                }
+                delay += PieceDelay;
+            }
+
+            defenderView.MaybeChangedOwners(totalDelay + 0.5f);
         }
 
         /// <summary>

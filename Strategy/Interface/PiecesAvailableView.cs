@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
 using Strategy.Library;
+using Strategy.Library.Extensions;
 using Strategy.Library.Sprite;
 
 namespace Strategy.Interface
@@ -22,6 +23,16 @@ namespace Strategy.Interface
 
             SolidColor = GetPlayerColor(_player);
             TransparentColor = new Color(SolidColor, 0);
+
+            if (player == PlayerId.A)
+            {
+                SpriteFont font = context.Content.Load<SpriteFont>("Fonts/Gamertag");
+                _name = new TextSprite(font, "errcw");
+                _name.Color = Color.White;
+                _name.OutlineColor = Color.Black;
+                _name.OutlineWidth = 2;
+                _name.Position = BasePosition + PieceSpacing * match.MaxPiecesAvailable + new Vector2(20, 0);
+            }
 
             Texture2D pieceSprite = context.Content.Load<Texture2D>("PieceAltAlt");
 
@@ -72,17 +83,15 @@ namespace Strategy.Interface
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach(Sprite sprite in _created)
-            {
-                sprite.Draw(spriteBatch);
-            }
-            foreach (Sprite sprite in _unused)
-            {
-                sprite.Draw(spriteBatch);
-            }
+            _created.ForEach(sprite => sprite.Draw(spriteBatch));
+            _unused.ForEach(sprite => sprite.Draw(spriteBatch));
             if (_creatingSprite != null)
             {
                 _creatingSprite.Draw(spriteBatch);
+            }
+            if (_name != null)
+            {
+                _name.Draw(spriteBatch);
             }
         }
 
@@ -173,12 +182,14 @@ namespace Strategy.Interface
         private Sprite _creatingSprite;
         private float _creatingTargetX;
 
+        private TextSprite _name;
+
         private IAnimation _hideAnimation;
 
         private readonly Color TransparentColor;
         private readonly Color SolidColor;
 
-        private readonly Vector2 BasePosition = new Vector2(50, 50);
+        private readonly Vector2 BasePosition = new Vector2(80, 50);
         private readonly Vector2 PlayerSpacing = new Vector2(0, 50);
         private readonly Vector2 PieceSpacing = new Vector2(30, 0);
     }

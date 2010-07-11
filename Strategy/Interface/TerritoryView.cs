@@ -22,6 +22,8 @@ namespace Strategy.Interface
 
             _lastOwner = _territory.Owner;
 
+            InitHolders();
+
             Texture2D tile = context.Content.Load<Texture2D>("Tile");
             Texture2D tileHolder = context.Content.Load<Texture2D>("TileHolder");
             Color color = GetPlayerColor(territory.Owner);
@@ -39,25 +41,13 @@ namespace Strategy.Interface
                 s += 1;
             }
 
-            InitHolders();
         }
 
         public void Update(float time)
         {
-            // detect when the territory changes owners
-            if (_territory.Owner != _lastOwner)
-            {
-                Color newColor = GetPlayerColor(_territory.Owner);
-                _colorAnims = new IAnimation[_sprites.Length];
-                for (int i = 0; i < _sprites.Length; i++)
-                {
-                    _colorAnims[i] = new ColorAnimation(_sprites[i], newColor, 1f, Interpolation.InterpolateColor(Easing.Uniform));
-                }
 
-                _lastOwner = _territory.Owner;
-            }
 
-            // update the color animations if any
+            // update the color animations, if any
             if (_colorAnims != null)
             {
                 bool running = true;
@@ -100,6 +90,27 @@ namespace Strategy.Interface
             Cell holder = _usedHolders[piece];
             _usedHolders.Remove(piece);
             _freeHolders.Push(holder);
+        }
+
+        /// <summary>
+        /// Notifies this view that the territory might have changed owners.
+        /// </summary>
+        public void MaybeChangedOwners(float delay)
+        {
+            // detect when the territory changes owners
+            if (_territory.Owner != _lastOwner)
+            {
+                Color newColor = GetPlayerColor(_territory.Owner);
+                _colorAnims = new IAnimation[_sprites.Length];
+                for (int i = 0; i < _sprites.Length; i++)
+                {
+                    _colorAnims[i] = new SequentialAnimation(
+                        new DelayAnimation(delay),
+                        new ColorAnimation(_sprites[i], newColor, 1f, Interpolation.InterpolateColor(Easing.Uniform)));
+                }
+
+                _lastOwner = _territory.Owner;
+            }
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace Strategy.Interface
         {
             _sprites.Sort(RenderOrderComparison);
 
-            _batch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.None);
+            _batch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
             foreach (Sprite sprite in _sprites)
             {
                 sprite.Draw(_batch);
@@ -43,6 +43,10 @@ namespace Strategy.Interface
             if (a == b)
             {
                 return 0;
+            }
+            if (a.Layer != b.Layer)
+            {
+                return -a.Layer.CompareTo(b.Layer);
             }
             Vector2 apos = a.Position + a.Origin;
             Vector2 bpos = b.Position + b.Origin;

@@ -76,7 +76,7 @@ namespace Strategy.Library.Sprite
             Rotation = 0f;
             Scale = Vector2.One;
             Color = Color.White;
-            Layer = 0f;
+            Layer = 0.5f; // middle
         }
 
         /// <summary>
