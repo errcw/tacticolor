@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
+using Strategy.Library;
 using Strategy.Library.Sprite;
 
 namespace Strategy.Interface
@@ -32,13 +33,31 @@ namespace Strategy.Interface
             _cursorSelect.Color = new Color(GetPlayerColor(input.Player), 128);
             _cursorSelect.Origin = new Vector2(0, 14);
 
-            // fake the events to show the initial state
+            // fake the event to show the initial state
             OnHoveredChanged(null, EventArgs.Empty);
-            OnSelectedChanged(null, EventArgs.Empty);
+            // bounce the cursor until the player acts
+            _showAnimation = true;
         }
 
         public void Update(float time)
         {
+            if (_showAnimation)
+            {
+                if (_animation != null)
+                {
+                    if (!_animation.Update(time))
+                    {
+                        _animation = null;
+                    }
+                }
+                if (_animation == null)
+                {
+                    _animation = new SequentialAnimation(
+                        new PositionAnimation(_cursorHover, _cursorHover.Position + new Vector2(0, -10), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
+                        new PositionAnimation(_cursorHover, _cursorHover.Position, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
+                        new DelayAnimation(0.5f));
+                }
+            }
         }
 
         public void Draw(IsometricBatch spriteBatch)
@@ -50,24 +69,44 @@ namespace Strategy.Interface
             }
         }
 
+        /// <summary>
+        /// Updates the view when the hovered territory changes.
+        /// </summary>
         private void OnHoveredChanged(object input, EventArgs args)
         {
             Cell cell = ChooseCell(_input.Hovered);
             _cursorHover.Position = GetPosition(cell);
+            if (_input.Selected != null && _input.Hovered == _input.Selected)
+            {
+                _cursorHover.Position += HoverOffset;
+            }
 
-            _showSelect = (_input.Selected != null && _input.Hovered != _input.Selected);
+            _showAnimation = false;
         }
 
+        /// <summary>
+        /// Updates the view when the selected territory changes.
+        /// </summary>
         private void OnSelectedChanged(object input, EventArgs args)
         {
-            // only show the selection cursor once the hover changes
-            _showSelect = false;
-
             if (_input.Selected != null)
             {
                 Cell cell = ChooseCell(_input.Selected);
                 _cursorSelect.Position = GetPosition(cell);
+                _cursorHover.Position += HoverOffset;
+                _showSelect = true;
+
+                _lastSelected = _input.Selected;
             }
+            else
+            {
+                if (_input.Hovered == _lastSelected)
+                {
+                    _cursorHover.Position -= HoverOffset;
+                }
+                _showSelect = false;
+            }
+            _showAnimation = false;
         }
 
         /// <summary>
@@ -124,8 +163,15 @@ namespace Strategy.Interface
         private LocalInput _input;
         private InterfaceContext _context;
 
+        private Territory _lastSelected;
+
         private Sprite _cursorHover;
         private Sprite _cursorSelect;
         private bool _showSelect;
+
+        private IAnimation _animation;
+        private bool _showAnimation;
+
+        private readonly Vector2 HoverOffset = new Vector2(0, -10);
     }
 }

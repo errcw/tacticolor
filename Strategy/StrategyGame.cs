@@ -55,7 +55,7 @@ namespace Strategy
 
         private void StartNewMatch()
         {
-            Map map = _generator.Generate(16, 4, 2, 10);
+            Map map = _generator.Generate(16, 2, 2, 4);
             _match = new Match(map, _random);
             _matchView = new MatchView(_match, _context);
 
@@ -127,6 +127,6 @@ namespace Strategy
 
         private IsometricBatch _isoBatch;
 
-        private const int DebugPlayers = 1;
+        private const int DebugPlayers = 2;
     }
 }
