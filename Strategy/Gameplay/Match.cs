@@ -204,7 +204,8 @@ namespace Strategy.Gameplay
                 // can lose all the attackers but must have a piece ready to move
                 int attackersLost = (int)(3f * (float)defenderSum / attackerSum);
                 attackersLost = Math.Min(attackers.Count - (attackerTotal > attackers.Count ? 1 : 2), attackersLost);
-                int attackersMoved = 0;//TODO
+                int attackersMoved = attackers.Count - attackersLost - (attackerTotal > attackers.Count ? 0 : 1);
+                attackersMoved = Math.Min(defender.Capacity, attackersMoved);
                 for (int i = 0; i < attackers.Count; i++)
                 {
                     if (i < attackersLost) // remove the killed pieces
@@ -212,15 +213,11 @@ namespace Strategy.Gameplay
                         attackers[i].Survived = false;
                         attacker.Pieces.Remove(attackers[i].Piece);
                     }
-                    else // move the surviving pieces
+                    else if (i < attackersLost + attackersMoved)
                     {
-                        // if every piece was attacking then we must leave one piece behind
-                        if (attackerTotal > attackers.Count || i != attackers.Count - 1)
-                        {
-                            attackers[i].Moved = true;
-                            attacker.Pieces.Remove(attackers[i].Piece);
-                            defender.Pieces.Add(attackers[i].Piece);
-                        }
+                        attackers[i].Moved = true;
+                        attacker.Pieces.Remove(attackers[i].Piece);
+                        defender.Pieces.Add(attackers[i].Piece);
                     }
                 }
 
