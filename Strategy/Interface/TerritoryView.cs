@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -45,16 +46,9 @@ namespace Strategy.Interface
 
         public void Update(float time)
         {
-
-
-            // update the color animations, if any
             if (_colorAnims != null)
             {
-                bool running = true;
-                for (int i = 0; i < _colorAnims.Length; i++)
-                {
-                    running &= _colorAnims[i].Update(time);
-                }
+                bool running = _colorAnims.All(anim => anim.Update(time));
                 if (!running)
                 {
                     _colorAnims = null;

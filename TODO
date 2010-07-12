@@ -1,8 +1,13 @@
 To Do
 -----
 
+-Prototype:
 - Show activity timer on pieces
-- Show attack results
+- Fix up piece/player views (positioning)
+
+- Networking
+
+- AI
 
 
 Thoughts
@@ -20,7 +25,7 @@ Thoughts
   + music on/off
   + sound effects on/off
   + storage device
-- Quick start single player game
+- Quick start single player game?
 - In-game pop-up instructions
 - Awardments
   + finish a game in under 1, 2 minutes
