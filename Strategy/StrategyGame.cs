@@ -55,7 +55,7 @@ namespace Strategy
 
         private void StartNewMatch()
         {
-            Map map = _generator.Generate(16, 2, 8, 16);
+            Map map = _generator.Generate(16, 4, 4, 16);
             _match = new Match(map, _random);
             _matchView = new MatchView(_match, _context);
 
