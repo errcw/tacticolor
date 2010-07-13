@@ -124,7 +124,23 @@ namespace Strategy.Interface
             float delay = 0f;
             float totalDelay = (args.Attackers.Count + args.Defenders.Count) * PieceDelay;
 
+            // handle the defenders
+            delay = args.Attackers.Count * PieceDelay;
+            foreach (PieceAttackData data in args.Defenders)
+            {
+                PieceView pieceView = _pieceViews[data.Piece];
+                pieceView.OnAttacked(data.Roll, data.Survived, null, delay, totalDelay - delay + 0.5f);
+                if (!data.Survived)
+                {
+                    defenderView.PieceRemoved(data.Piece);
+                    _pieceViews.Remove(data.Piece);
+                    _removedPieces.Add(pieceView);
+                }
+                delay += PieceDelay;
+            }
+
             // handle the attackers
+            delay = 0f;
             foreach (PieceAttackData data in args.Attackers)
             {
                 PieceView pieceView = _pieceViews[data.Piece];
@@ -140,21 +156,7 @@ namespace Strategy.Interface
                     _pieceViews.Remove(data.Piece);
                     _removedPieces.Add(pieceView);
                 }
-                pieceView.OnAttacked(data.Roll, data.Survived, true, destination, delay, totalDelay - delay + 0.5f);
-                delay += PieceDelay;
-            }
-
-            // handle the defenders
-            foreach (PieceAttackData data in args.Defenders)
-            {
-                PieceView pieceView = _pieceViews[data.Piece];
-                pieceView.OnAttacked(data.Roll, data.Survived, false, null, delay, totalDelay - delay + 0.5f);
-                if (!data.Survived)
-                {
-                    defenderView.PieceRemoved(data.Piece);
-                    _pieceViews.Remove(data.Piece);
-                    _removedPieces.Add(pieceView);
-                }
+                pieceView.OnAttacked(data.Roll, data.Survived, destination, delay, totalDelay - delay + 0.5f);
                 delay += PieceDelay;
             }
 

@@ -34,7 +34,7 @@ namespace Strategy.Interface
                 _name.Position = BasePosition + PieceSpacing * match.MaxPiecesAvailable + new Vector2(20, 0);
             }
 
-            Texture2D pieceSprite = context.Content.Load<Texture2D>("PieceAvailable");
+            Texture2D pieceSprite = context.Content.Load<Texture2D>("Piece");
 
             int sprites = _match.MaxPiecesAvailable + 1;
             _unused = new Queue<Sprite>(sprites);

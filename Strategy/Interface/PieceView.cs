@@ -28,17 +28,22 @@ namespace Strategy.Interface
             _piece = piece;
             _context = context;
 
+            _playerColor = GetPlayerColor(_piece.Owner);
+            _readyColor = Color.Lerp(_playerColor, Color.White, 0.5f);
+
             Texture2D pieceTex = context.Content.Load<Texture2D>("Piece");
-            _pieceSprite = new ImageSprite(pieceTex);
-            _pieceSprite.Position = GetPosition(placement);
-            _pieceSprite.Origin = new Vector2(12, 22);
-            _pieceSprite.Color = GetPlayerColor(piece.Owner);
+            ImageSprite pieceBase = new ImageSprite(pieceTex);
+            pieceBase.Origin = new Vector2(12, 22);
+            pieceBase.Color = _playerColor;
 
             Texture2D readyTex = context.Content.Load<Texture2D>("PieceReadiness");
             _readySprite = new ImageSprite(readyTex);
-            _readySprite.Position = _pieceSprite.Position;
-            _readySprite.Origin = _pieceSprite.Origin;
+            _readySprite.Origin = pieceBase.Origin;
+            _readySprite.Color = _piece.Ready ? _readyColor : _playerColor;
             _readySprite.Layer = 0.1f;
+
+            _pieceSprite = new CompositeSprite(pieceBase, _readySprite);
+            _pieceSprite.Position = GetPosition(placement);
 
             SpriteFont rollFont = context.Content.Load<SpriteFont>("Fonts/Roll");
             _rollSprite = new TextSprite(rollFont);
@@ -66,7 +71,7 @@ namespace Strategy.Interface
         /// <summary>
         /// Notifies this piece it participated in an attack.
         /// </summary>
-        public void OnAttacked(int roll, bool survived, bool attacker, Cell? destination, float showDelay, float actionDelay)
+        public void OnAttacked(int roll, bool survived, Cell? destination, float showDelay, float actionDelay)
         {
             _rollSprite.Position = _pieceSprite.Position + new Vector2(-5, -20);
             _rollSprite.Text = roll.ToString("D1", CultureInfo.CurrentCulture);
@@ -97,11 +102,13 @@ namespace Strategy.Interface
                     new ScaleAnimation(_pieceSprite, Vector2.Zero, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
                     new ColorAnimation(_pieceSprite, Color.TransparentWhite, 0.45f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
             }
-            if (attacker)
+
+            // keep running the existing animation to completion
+            if (_actionAnimation != null)
             {
                 pieceAction = new CompositeAnimation(
-                    pieceAction, 
-                    new ColorAnimation(_readySprite, Color.White, 0.5f, Interpolation.InterpolateColor(Easing.Uniform)));
+                    _actionAnimation,
+                    pieceAction);
             }
 
             _actionAnimation = new SequentialAnimation(
@@ -113,14 +120,11 @@ namespace Strategy.Interface
 
         public void Update(float time)
         {
+            // only change colours when the piece is idle
             if (_actionAnimation == null)
             {
-                // only change colours when the piece is idle
-                _readySprite.Color =
-                    Interpolation.InterpolateColor(Easing.Uniform)(
-                        Color.White,
-                        GetPlayerColor(_piece.Owner),
-                        _piece.ReadyProgress);
+                Color targetColor = Interpolation.InterpolateColor(Easing.Uniform)(_playerColor, _readyColor, _piece.ReadyProgress);
+                _readySprite.Color = Interpolation.InterpolateColor(Easing.Uniform)(_readySprite.Color, targetColor, 10f * time);
             }
 
             if (_actionAnimation != null)
@@ -135,7 +139,6 @@ namespace Strategy.Interface
         public void Draw(IsometricBatch isoBatch)
         {
             isoBatch.Draw(_pieceSprite);
-            isoBatch.Draw(_readySprite);
             isoBatch.Draw(_rollSprite);
         }
 
@@ -156,11 +159,7 @@ namespace Strategy.Interface
         private IAnimation GetMoveAnimation(Cell destination)
         {
             Vector2 newPosition = GetPosition(destination);
-            //return new PositionAnimation(_pieceSprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
-            return new CompositeAnimation(
-                new PositionAnimation(_pieceSprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
-                new PositionAnimation(_readySprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
-                new ColorAnimation(_readySprite, Color.White, 0.5f, Interpolation.InterpolateColor(Easing.Uniform)));
+            return new PositionAnimation(_pieceSprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
         }
 
         /// <summary>
@@ -184,7 +183,10 @@ namespace Strategy.Interface
         private Sprite _pieceSprite;
         private Sprite _readySprite;
         private TextSprite _rollSprite;
+        private Color _playerColor;
+        private Color _readyColor;
 
         private IAnimation _actionAnimation;
+        private IAnimation _readyAnimation;
     }
 }
