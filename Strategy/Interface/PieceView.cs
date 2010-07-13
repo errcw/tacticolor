@@ -20,7 +20,7 @@ namespace Strategy.Interface
         /// </summary>
         public bool IsVisible
         {
-            get { return _sprite.Color.A > 0; }
+            get { return _pieceSprite.Color.A > 0; }
         }
 
         public PieceView(Piece piece, Cell placement, bool wasPlaced, InterfaceContext context)
@@ -29,21 +29,28 @@ namespace Strategy.Interface
             _context = context;
 
             Texture2D pieceTex = context.Content.Load<Texture2D>("Piece");
-            _sprite = new ImageSprite(pieceTex);
-            _sprite.Position = GetPosition(placement);
-            _sprite.Origin = new Vector2(12, 22);
+            _pieceSprite = new ImageSprite(pieceTex);
+            _pieceSprite.Position = GetPosition(placement);
+            _pieceSprite.Origin = new Vector2(12, 22);
+            _pieceSprite.Color = GetPlayerColor(piece.Owner);
+
+            Texture2D readyTex = context.Content.Load<Texture2D>("PieceReadiness");
+            _readySprite = new ImageSprite(readyTex);
+            _readySprite.Position = _pieceSprite.Position;
+            _readySprite.Origin = _pieceSprite.Origin;
+            _readySprite.Layer = 0.1f;
 
             SpriteFont rollFont = context.Content.Load<SpriteFont>("Fonts/Roll");
-            _roll = new TextSprite(rollFont);
-            _roll.Color = Color.White;
-            _roll.OutlineWidth = 1;
-            _roll.OutlineColor = Color.Black;
-            _roll.Layer = 0f;
+            _rollSprite = new TextSprite(rollFont);
+            _rollSprite.Color = Color.White;
+            _rollSprite.OutlineWidth = 1;
+            _rollSprite.OutlineColor = Color.Black;
+            _rollSprite.Layer = 0f;
 
             if (wasPlaced)
             {
-                _sprite.Scale = Vector2.Zero;
-                _animation = new ScaleAnimation(_sprite, Vector2.One, 0.6f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
+                _pieceSprite.Scale = Vector2.Zero;
+                _actionAnimation = new ScaleAnimation(_pieceSprite, Vector2.One, 0.6f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
             }
         }
 
@@ -53,27 +60,27 @@ namespace Strategy.Interface
         /// <param name="destination">The destination cell on the map.</param>
         public void OnMoved(Cell destination)
         {
-            _animation = GetMoveAnimation(destination);
+            _actionAnimation = GetMoveAnimation(destination);
         }
 
         /// <summary>
         /// Notifies this piece it participated in an attack.
         /// </summary>
-        public void OnAttacked(int roll, bool survived, Cell? destination, float showDelay, float actionDelay)
+        public void OnAttacked(int roll, bool survived, bool attacker, Cell? destination, float showDelay, float actionDelay)
         {
-            _roll.Position = _sprite.Position + new Vector2(-5, -20);
-            _roll.Text = roll.ToString("D1", CultureInfo.CurrentCulture);
-            _roll.Color = Color.TransparentWhite;
+            _rollSprite.Position = _pieceSprite.Position + new Vector2(-5, -20);
+            _rollSprite.Text = roll.ToString("D1", CultureInfo.CurrentCulture);
+            _rollSprite.Color = Color.TransparentWhite;
 
             IAnimation showRoll =
                 new CompositeAnimation(
-                    new ColorAnimation(_roll, Color.White, 0.15f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
-                    new PositionAnimation(_roll, _roll.Position + new Vector2(0, -10), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
+                    new ColorAnimation(_rollSprite, Color.White, 0.15f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
+                    new PositionAnimation(_rollSprite, _rollSprite.Position + new Vector2(0, -10), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
 
             IAnimation hideRoll =
                 new CompositeAnimation(
-                    new ColorAnimation(_roll, Color.TransparentWhite, 0.15f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
-                    new PositionAnimation(_roll, _roll.Position + new Vector2(0, -30), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
+                    new ColorAnimation(_rollSprite, Color.TransparentWhite, 0.15f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
+                    new PositionAnimation(_rollSprite, _rollSprite.Position + new Vector2(0, -30), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
 
             IAnimation pieceAction = null;
             if (survived && destination.HasValue)
@@ -87,11 +94,17 @@ namespace Strategy.Interface
             else
             {
                 pieceAction = new CompositeAnimation(
-                    new ScaleAnimation(_sprite, Vector2.Zero, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
-                    new ColorAnimation(_sprite, Color.TransparentWhite, 0.45f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
+                    new ScaleAnimation(_pieceSprite, Vector2.Zero, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
+                    new ColorAnimation(_pieceSprite, Color.TransparentWhite, 0.45f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
+            }
+            if (attacker)
+            {
+                pieceAction = new CompositeAnimation(
+                    pieceAction, 
+                    new ColorAnimation(_readySprite, Color.White, 0.5f, Interpolation.InterpolateColor(Easing.Uniform)));
             }
 
-            _animation = new SequentialAnimation(
+            _actionAnimation = new SequentialAnimation(
                 new DelayAnimation(showDelay),
                 showRoll,
                 new DelayAnimation(actionDelay),
@@ -100,30 +113,30 @@ namespace Strategy.Interface
 
         public void Update(float time)
         {
-            if (_animation == null)
+            if (_actionAnimation == null)
             {
                 // only change colours when the piece is idle
-                //TODO need a better way to show readiness
-                _sprite.Color =
+                _readySprite.Color =
                     Interpolation.InterpolateColor(Easing.Uniform)(
                         Color.White,
                         GetPlayerColor(_piece.Owner),
-                        (float)_piece.TimerValue / _piece.TimerMax);
+                        _piece.ReadyProgress);
             }
 
-            if (_animation != null)
+            if (_actionAnimation != null)
             {
-                if (!_animation.Update(time))
+                if (!_actionAnimation.Update(time))
                 {
-                    _animation = null;
+                    _actionAnimation = null;
                 }
             }
         }
 
         public void Draw(IsometricBatch isoBatch)
         {
-            isoBatch.Draw(_sprite);
-            isoBatch.Draw(_roll);
+            isoBatch.Draw(_pieceSprite);
+            isoBatch.Draw(_readySprite);
+            isoBatch.Draw(_rollSprite);
         }
 
         /// <summary>
@@ -143,7 +156,11 @@ namespace Strategy.Interface
         private IAnimation GetMoveAnimation(Cell destination)
         {
             Vector2 newPosition = GetPosition(destination);
-            return new PositionAnimation(_sprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
+            //return new PositionAnimation(_pieceSprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
+            return new CompositeAnimation(
+                new PositionAnimation(_pieceSprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
+                new PositionAnimation(_readySprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
+                new ColorAnimation(_readySprite, Color.White, 0.5f, Interpolation.InterpolateColor(Easing.Uniform)));
         }
 
         /// <summary>
@@ -164,8 +181,10 @@ namespace Strategy.Interface
         private Piece _piece;
         private InterfaceContext _context;
 
-        private Sprite _sprite;
-        private TextSprite _roll;
-        private IAnimation _animation;
+        private Sprite _pieceSprite;
+        private Sprite _readySprite;
+        private TextSprite _rollSprite;
+
+        private IAnimation _actionAnimation;
     }
 }

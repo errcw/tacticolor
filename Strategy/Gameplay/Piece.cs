@@ -15,19 +15,14 @@ namespace Strategy.Gameplay
         public readonly PlayerId Owner;
 
         /// <summary>
-        /// The current value of the action timer.
-        /// </summary>
-        public int TimerValue { get; private set; }
-
-        /// <summary>
-        /// The maximum value of the action timer, when the piece will be ready.
-        /// </summary>
-        public int TimerMax { get; private set; }
-
-        /// <summary>
         /// True if this piece can perform an action; otherwise, false.
         /// </summary>
-        public bool Ready { get { return TimerValue >= TimerMax; } }
+        public bool Ready { get { return _timer >= ReadyTime; } }
+
+        /// <summary>
+        /// The progress towards being ready in [0, 1].
+        /// </summary>
+        public float ReadyProgress { get; private set; }
 
         /// <summary>
         /// Creates a new piece that starts unready.
@@ -44,9 +39,16 @@ namespace Strategy.Gameplay
         public Piece(PlayerId owner, bool startReady)
         {
             Owner = owner;
-            _timer = 0;
-            TimerMax = TimerStandardMax;
-            TimerValue = startReady ? TimerMax : 0;
+            if (startReady)
+            {
+                _timer = ReadyTime;
+                ReadyProgress = 1f;
+            }
+            else
+            {
+                _timer = 0;
+                ReadyProgress = 0f;
+            }
         }
 
         /// <summary>
@@ -56,11 +58,7 @@ namespace Strategy.Gameplay
         public void Update(int time)
         {
             _timer += time;
-            if (_timer >= TimerIncrementTime)
-            {
-                TimerValue = Math.Min(TimerValue + 1, TimerMax);
-                _timer -= TimerIncrementTime;
-            }
+            ReadyProgress = Math.Min((float)_timer / ReadyTime, 1f);
         }
 
         /// <summary>
@@ -69,12 +67,10 @@ namespace Strategy.Gameplay
         public void DidPerformAction()
         {
             _timer = 0;
-            TimerValue = 0;
+            ReadyProgress = 0f;
         }
 
         private int _timer;
-
-        private const int TimerStandardMax = 4;
-        private const int TimerIncrementTime = 2000;
+        private const int ReadyTime = 6000;
     }
 }

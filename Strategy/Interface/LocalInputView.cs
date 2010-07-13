@@ -100,11 +100,12 @@ namespace Strategy.Interface
             }
             else
             {
-                if (_input.Hovered == _lastSelected)
+                if (_input.Hovered == _lastSelected && _lastSelected != null)
                 {
                     _cursorHover.Position -= HoverOffset;
                 }
                 _showSelect = false;
+                _lastSelected = null;
             }
             _showAnimation = false;
         }

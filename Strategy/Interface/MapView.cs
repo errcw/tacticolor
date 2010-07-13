@@ -140,7 +140,7 @@ namespace Strategy.Interface
                     _pieceViews.Remove(data.Piece);
                     _removedPieces.Add(pieceView);
                 }
-                pieceView.OnAttacked(data.Roll, data.Survived, destination, delay, totalDelay - delay + 0.5f);
+                pieceView.OnAttacked(data.Roll, data.Survived, true, destination, delay, totalDelay - delay + 0.5f);
                 delay += PieceDelay;
             }
 
@@ -148,7 +148,7 @@ namespace Strategy.Interface
             foreach (PieceAttackData data in args.Defenders)
             {
                 PieceView pieceView = _pieceViews[data.Piece];
-                pieceView.OnAttacked(data.Roll, data.Survived, null, delay, totalDelay - delay + 0.5f);
+                pieceView.OnAttacked(data.Roll, data.Survived, false, null, delay, totalDelay - delay + 0.5f);
                 if (!data.Survived)
                 {
                     defenderView.PieceRemoved(data.Piece);
