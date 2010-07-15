@@ -27,15 +27,18 @@ namespace Strategy.Interface
 
             _cursorHover = new ImageSprite(cursorTex);
             _cursorHover.Color = GetPlayerColor(input.Player);
+            _cursorHover.Position = GetPosition(ChooseCell(_input.Hovered));
             _cursorHover.Origin = new Vector2(0, 14);
 
             _cursorSelect = new ImageSprite(cursorTex);
             _cursorSelect.Color = new Color(GetPlayerColor(input.Player), 128);
             _cursorSelect.Origin = new Vector2(0, 14);
 
-            // fake the event to show the initial state
-            OnHoveredChanged(null, EventArgs.Empty);
             // bounce the cursor until the player acts
+            _animation = new SequentialAnimation(
+                new PositionAnimation(_cursorHover, _cursorHover.Position + new Vector2(0, -10), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
+                new PositionAnimation(_cursorHover, _cursorHover.Position, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
+                new DelayAnimation(0.5f));
             _showAnimation = true;
         }
 
@@ -43,19 +46,9 @@ namespace Strategy.Interface
         {
             if (_showAnimation)
             {
-                if (_animation != null)
+                if (!_animation.Update(time))
                 {
-                    if (!_animation.Update(time))
-                    {
-                        _animation = null;
-                    }
-                }
-                if (_animation == null)
-                {
-                    _animation = new SequentialAnimation(
-                        new PositionAnimation(_cursorHover, _cursorHover.Position + new Vector2(0, -10), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
-                        new PositionAnimation(_cursorHover, _cursorHover.Position, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
-                        new DelayAnimation(0.5f));
+                    _animation.Start();
                 }
             }
         }
@@ -72,7 +65,7 @@ namespace Strategy.Interface
         /// <summary>
         /// Updates the view when the hovered territory changes.
         /// </summary>
-        private void OnHoveredChanged(object input, EventArgs args)
+        private void OnHoveredChanged(object input, InputChangedEventArgs args)
         {
             Cell cell = ChooseCell(_input.Hovered);
             _cursorHover.Position = GetPosition(cell);
@@ -87,7 +80,7 @@ namespace Strategy.Interface
         /// <summary>
         /// Updates the view when the selected territory changes.
         /// </summary>
-        private void OnSelectedChanged(object input, EventArgs args)
+        private void OnSelectedChanged(object input, InputChangedEventArgs args)
         {
             if (_input.Selected != null)
             {
@@ -95,17 +88,14 @@ namespace Strategy.Interface
                 _cursorSelect.Position = GetPosition(cell);
                 _cursorHover.Position += HoverOffset;
                 _showSelect = true;
-
-                _lastSelected = _input.Selected;
             }
             else
             {
-                if (_input.Hovered == _lastSelected && _lastSelected != null)
+                if (_input.Hovered == args.PreviousInput)
                 {
                     _cursorHover.Position -= HoverOffset;
                 }
                 _showSelect = false;
-                _lastSelected = null;
             }
             _showAnimation = false;
         }
@@ -163,8 +153,6 @@ namespace Strategy.Interface
 
         private LocalInput _input;
         private InterfaceContext _context;
-
-        private Territory _lastSelected;
 
         private Sprite _cursorHover;
         private Sprite _cursorSelect;

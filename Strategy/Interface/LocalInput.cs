@@ -17,12 +17,12 @@ namespace Strategy.Interface
         /// <summary>
         /// Occurs when the currently hovered territory changes.
         /// </summary>
-        public event EventHandler<EventArgs> HoveredChanged;
+        public event EventHandler<InputChangedEventArgs> HoveredChanged;
 
         /// <summary>
         /// Occurs when the currently selected territory changes.
         /// </summary>
-        public event EventHandler<EventArgs> SelectedChanged;
+        public event EventHandler<InputChangedEventArgs> SelectedChanged;
 
         /// <summary>
         /// The player for this input.
@@ -152,24 +152,22 @@ namespace Strategy.Interface
 
         private void SetHovered(Territory territory)
         {
+            Territory previous = Hovered;
             Hovered = territory;
-            if (HoveredChanged != null)
+            if (HoveredChanged != null && Hovered != previous)
             {
-                HoveredChanged(this, EventArgs.Empty);
+                HoveredChanged(this, new InputChangedEventArgs(previous));
             }
         }
 
         private void SetSelected(Territory territory)
         {
+            Territory previous = Selected;
             Selected = territory;
-            if (SelectedChanged != null)
+            if (SelectedChanged != null && Selected != previous)
             {
-                SelectedChanged(this, EventArgs.Empty);
+                SelectedChanged(this, new InputChangedEventArgs(previous));
             }
-        }
-
-        private void FindTerritory()
-        {
         }
 
         private Match _match;
@@ -186,5 +184,17 @@ namespace Strategy.Interface
 
         private const float MoveTolerance = 0.5f * 0.5f;
         private const float MoveAngleThreshold = MathHelper.PiOver2;
+    }
+
+    /// <summary>
+    /// Event data for when the hovered or selected territory changes.
+    /// </summary>
+    public class InputChangedEventArgs : EventArgs
+    {
+        public readonly Territory PreviousInput;
+        public InputChangedEventArgs(Territory previousInput)
+        {
+            PreviousInput = previousInput;
+        }
     }
 }
