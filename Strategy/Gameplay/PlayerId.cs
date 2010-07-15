@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Net;
+
+using Strategy.Interface;
 
 namespace Strategy.Gameplay
 {
@@ -14,9 +16,5 @@ namespace Strategy.Gameplay
         B,
         C,
         D,
-    }
-
-    public class Player
-    {
     }
 }

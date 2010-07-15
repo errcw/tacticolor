@@ -24,18 +24,7 @@ namespace Strategy.Interface
             SolidColor = GetPlayerColor(_player);
             TransparentColor = new Color(SolidColor, 0);
 
-            if (player == PlayerId.A)
-            {
-                SpriteFont font = context.Content.Load<SpriteFont>("Fonts/Gamertag");
-                _name = new TextSprite(font, "errcw");
-                _name.Color = Color.White;
-                _name.OutlineColor = Color.Black;
-                _name.OutlineWidth = 2;
-                _name.Position = BasePosition + PieceSpacing * match.MaxPiecesAvailable + new Vector2(20, 0);
-            }
-
             Texture2D pieceSprite = context.Content.Load<Texture2D>("PieceAvailable");
-
             int sprites = _match.MaxPiecesAvailable + 1;
             _unused = new Queue<Sprite>(sprites);
             _created = new Stack<Sprite>(sprites);
@@ -90,10 +79,6 @@ namespace Strategy.Interface
             if (_creatingSprite != null)
             {
                 _creatingSprite.Draw(spriteBatch);
-            }
-            if (_name != null)
-            {
-                _name.Draw(spriteBatch);
             }
         }
 
@@ -183,8 +168,6 @@ namespace Strategy.Interface
         private Stack<Sprite> _created;
         private Sprite _creatingSprite;
         private float _creatingTargetX;
-
-        private TextSprite _name;
 
         private IAnimation _hideAnimation;
 

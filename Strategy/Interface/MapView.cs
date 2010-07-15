@@ -16,7 +16,7 @@ namespace Strategy.Interface
     /// </summary>
     public class MapView
     {
-        public MapView(Map map, Match match, InterfaceContext context)
+        public MapView(Map map, Match match, Player[] players, InterfaceContext context)
         {
             _map = map;
             _context = context;
@@ -24,6 +24,11 @@ namespace Strategy.Interface
             match.PiecePlaced += OnPiecePlaced;
             match.PiecesMoved += OnPiecesMoved;
             match.TerritoryAttacked += OnTerritoryAttacked;
+
+            for (int p = 0; p < players.Length; p++)
+            {
+                players[p].Input.SelectedChanged += OnSelectedChanged;
+            }
 
             Rectangle extents = CalculatePixelExtents();
             _context.IsoParams.OffsetX = (1280 - extents.Width) / 2 - extents.X;
@@ -38,8 +43,8 @@ namespace Strategy.Interface
                 _territoryViews.Add(territory, territoryView);
                 foreach (Piece piece in territory.Pieces)
                 {
-                    Cell holder = territoryView.PieceAdded(piece);
-                    PieceView pieceView = new PieceView(piece, holder, false, _context);
+                    PieceView pieceView = new PieceView(piece, _context);
+                    pieceView.OnPlaced(territoryView.PieceAdded(pieceView), false);
                     _pieceViews.Add(piece, pieceView);
                 }
                 foreach (Territory neighbor in territory.Neighbors)
@@ -90,8 +95,8 @@ namespace Strategy.Interface
         public void OnPiecePlaced(object match, PiecePlacedEventArgs args)
         {
             TerritoryView territoryView = _territoryViews[args.Location];
-            Cell holder = territoryView.PieceAdded(args.Piece);
-            PieceView pieceView = new PieceView(args.Piece, holder, true, _context);
+            PieceView pieceView = new PieceView(args.Piece, _context);
+            pieceView.OnPlaced(territoryView.PieceAdded(pieceView), true);
             _pieceViews.Add(args.Piece, pieceView);
         }
 
@@ -105,8 +110,8 @@ namespace Strategy.Interface
             foreach (Piece piece in args.Pieces)
             {
                 PieceView pieceView = _pieceViews[piece];
-                sourceView.PieceRemoved(piece);
-                Cell cell = destinationView.PieceAdded(piece);
+                sourceView.PieceRemoved(pieceView);
+                Cell cell = destinationView.PieceAdded(pieceView);
                 pieceView.OnMoved(cell);
             }
             destinationView.MaybeChangedOwners(0f);
@@ -132,7 +137,7 @@ namespace Strategy.Interface
                 pieceView.OnAttacked(data.Roll, data.Survived, null, delay, totalDelay - delay + 0.5f);
                 if (!data.Survived)
                 {
-                    defenderView.PieceRemoved(data.Piece);
+                    defenderView.PieceRemoved(pieceView);
                     _pieceViews.Remove(data.Piece);
                     _removedPieces.Add(pieceView);
                 }
@@ -147,12 +152,12 @@ namespace Strategy.Interface
                 Cell? destination = null;
                 if (data.Survived && data.Moved) // moved to new territory
                 {
-                    attackerView.PieceRemoved(data.Piece);
-                    destination = defenderView.PieceAdded(data.Piece);
+                    attackerView.PieceRemoved(pieceView);
+                    destination = defenderView.PieceAdded(pieceView);
                 }
                 else if (!data.Survived) // killed
                 {
-                    attackerView.PieceRemoved(data.Piece);
+                    attackerView.PieceRemoved(pieceView);
                     _pieceViews.Remove(data.Piece);
                     _removedPieces.Add(pieceView);
                 }
@@ -196,6 +201,19 @@ namespace Strategy.Interface
             }
             // hard-coded numbers for tile width and height (ugh)
             return new Rectangle(minX, minY, maxX - minX + 42, maxY - minY + 27);
+        }
+
+        private void OnSelectedChanged(object inputObj, InputChangedEventArgs args)
+        {
+            LocalInput input = (LocalInput)inputObj;
+            if (args.PreviousInput != null)
+            {
+                _territoryViews[args.PreviousInput].IsSelected = false;
+            }
+            if (input.Selected != null)
+            {
+                _territoryViews[input.Selected].IsSelected = true;
+            }
         }
 
         private Map _map;

@@ -55,16 +55,28 @@ namespace Strategy
 
         private void StartNewMatch()
         {
-            Map map = _generator.Generate(16, 4, 4, 16);
+            // create the model
+            Map map = _generator.Generate(16, DebugPlayers, 4, 16);
             _match = new Match(map, _random);
-            _matchView = new MatchView(_match, _context);
-
             _inputs = new LocalInput[DebugPlayers];
-            _inputViews = new LocalInputView[DebugPlayers];
             for (int p = 0; p < _inputs.Length; p++)
             {
                 _inputs[p] = new LocalInput((PlayerId)p, _match, _context);
                 _inputs[p].Controller = (PlayerIndex)p;
+            }
+            Player[] players = new Player[DebugPlayers];
+            for (int p = 0; p < players.Length; p++)
+            {
+                players[p] = new Player();
+                players[p].Id = (PlayerId)p;
+                players[p].Input = _inputs[p];
+            }
+
+            // then the view
+            _matchView = new MatchView(_match, players, _context);
+            _inputViews = new LocalInputView[DebugPlayers];
+            for (int p = 0; p < _inputs.Length; p++)
+            {
                 _inputViews[p] = new LocalInputView(_inputs[p], _context);
             }
         }
@@ -127,6 +139,6 @@ namespace Strategy
 
         private IsometricBatch _isoBatch;
 
-        private const int DebugPlayers = 1;
+        private const int DebugPlayers = 2;
     }
 }

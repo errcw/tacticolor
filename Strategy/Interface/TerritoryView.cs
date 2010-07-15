@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
 using Strategy.Library;
+using Strategy.Library.Extensions;
 using Strategy.Library.Sprite;
 
 namespace Strategy.Interface
@@ -16,6 +17,11 @@ namespace Strategy.Interface
     /// </summary>
     public class TerritoryView
     {
+        /// <summary>
+        /// If a player has selected this territory.
+        /// </summary>
+        public bool IsSelected { get; set; }
+
         public TerritoryView(Territory territory, InterfaceContext context)
         {
             _territory = territory;
@@ -23,7 +29,7 @@ namespace Strategy.Interface
 
             _lastOwner = _territory.Owner;
 
-            InitHolders();
+            CreateHolders();
 
             Texture2D tile = context.Content.Load<Texture2D>("Tile");
             Texture2D tileHolder = context.Content.Load<Texture2D>("TileHolder");
@@ -58,17 +64,15 @@ namespace Strategy.Interface
 
         public void Draw(IsometricBatch isoBatch)
         {
-            foreach (Sprite sprite in _sprites)
-            {
-                isoBatch.Draw(sprite);
-            }
+            _sprites.ForEach(sprite => isoBatch.Draw(sprite));
         }
 
         /// <summary>
         /// Notifies this view that a piece was added to the territory.
         /// </summary>
-        public Cell PieceAdded(Piece piece)
+        public Cell PieceAdded(PieceView piece)
         {
+            piece.SetTerritory(this);
             Cell holder = _freeHolders.Pop();
             _usedHolders.Add(piece, holder);
             return new Cell(
@@ -79,7 +83,7 @@ namespace Strategy.Interface
         /// <summary>
         /// Notifies this view that a piece was removed from the territory.
         /// </summary>
-        public void PieceRemoved(Piece piece)
+        public void PieceRemoved(PieceView piece)
         {
             Cell holder = _usedHolders[piece];
             _usedHolders.Remove(piece);
@@ -89,9 +93,9 @@ namespace Strategy.Interface
         /// <summary>
         /// Notifies this view that the territory might have changed owners.
         /// </summary>
+        /// <param name="delay">The delay to apply before showing the ownership change.</param>
         public void MaybeChangedOwners(float delay)
         {
-            // detect when the territory changes owners
             if (_territory.Owner != _lastOwner)
             {
                 Color newColor = GetPlayerColor(_territory.Owner);
@@ -129,12 +133,9 @@ namespace Strategy.Interface
             return false;
         }
 
-        /// <summary>
-        /// Maps a piece number to a position.
-        /// </summary>
-        private void InitHolders()
+        private void CreateHolders()
         {
-            _usedHolders = new Dictionary<Piece, Cell>(9);
+            _usedHolders = new Dictionary<PieceView, Cell>(9);
             _freeHolders = new Stack<Cell>(9);
             _freeHolders.Push(new Cell(-1, -1));
             _freeHolders.Push(new Cell(1, 1));
@@ -147,9 +148,6 @@ namespace Strategy.Interface
             _freeHolders.Push(new Cell(0, 0));
         }
 
-        /// <summary>
-        /// Returns the color of the given player.
-        /// </summary>
         private Color GetPlayerColor(PlayerId? player)
         {
             switch (player)
@@ -170,7 +168,7 @@ namespace Strategy.Interface
         private Sprite[] _sprites;
 
         private Stack<Cell> _freeHolders;
-        private Dictionary<Piece, Cell> _usedHolders;
+        private Dictionary<PieceView, Cell> _usedHolders;
 
         private IAnimation[] _colorAnims;
     }

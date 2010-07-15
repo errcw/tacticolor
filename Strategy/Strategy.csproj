@@ -89,7 +89,7 @@
     <Compile Include="Gameplay\MapGenerator.cs" />
     <Compile Include="Gameplay\Match.cs" />
     <Compile Include="Gameplay\Piece.cs" />
-    <Compile Include="Gameplay\Player.cs" />
+    <Compile Include="Gameplay\PlayerId.cs" />
     <Compile Include="Interface\BackgroundView.cs" />
     <Compile Include="Interface\ConnectionView.cs" />
     <Compile Include="Interface\IsometricBatch.cs" />
@@ -100,6 +100,8 @@
     <Compile Include="Interface\MatchView.cs" />
     <Compile Include="Interface\PiecesAvailableView.cs" />
     <Compile Include="Interface\PieceView.cs" />
+    <Compile Include="Interface\Player.cs" />
+    <Compile Include="Interface\PlayerView.cs" />
     <Compile Include="Interface\TerritoryView.cs" />
     <Compile Include="Interface\InterfaceContext.cs" />
     <Compile Include="Library\BresenhamIterator.cs" />

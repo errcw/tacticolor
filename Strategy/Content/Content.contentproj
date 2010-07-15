@@ -115,8 +115,22 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PieceReadiness.png">
-      <Name>PieceReadiness</Name>
+    <Compile Include="PieceReadyOverlay.png">
+      <Name>PieceReadyOverlay</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="PieceSelectedOverlay.png">
+      <Name>PieceSelectedOverlay</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="PieceShadow.png">
+      <Name>PieceShadow</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
