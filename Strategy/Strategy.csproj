@@ -84,7 +84,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gameplay\Command.cs" />
     <Compile Include="Gameplay\Map.cs" />
     <Compile Include="Gameplay\MapGenerator.cs" />
     <Compile Include="Gameplay\Match.cs" />
@@ -130,6 +129,7 @@
     <Compile Include="Library\Sprite\Sprite.cs" />
     <Compile Include="Library\Sprite\SpriteAnimation.cs" />
     <Compile Include="Library\Sprite\TextSprite.cs" />
+    <Compile Include="Net\Command.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

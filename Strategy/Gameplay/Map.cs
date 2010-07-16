@@ -102,5 +102,20 @@ namespace Strategy.Gameplay
         {
             Territories = territories;
         }
+
+        /// <summary>
+        /// Returns the territory at the given location, or null if no such territory exists.
+        /// </summary>
+        public Territory GetTerritoryAt(Cell cell)
+        {
+            foreach (Territory territory in Territories)
+            {
+                if (territory.Location.Row == cell.Row && territory.Location.Col == cell.Col)
+                {
+                    return territory;
+                }
+            }
+            return null;
+        }
     }
 }
