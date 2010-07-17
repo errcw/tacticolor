@@ -290,7 +290,7 @@ namespace Strategy.Net
     /// </summary>
     public class CommandReader : PacketReader
     {
-        public Command ReadComman()
+        public Command ReadCommand()
         {
             Command command = null;
 
