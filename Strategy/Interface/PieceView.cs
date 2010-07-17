@@ -90,7 +90,8 @@ namespace Strategy.Interface
         {
             _actionAnimation = new CompositeAnimation(
                 GetMoveAnimation(destination),
-                GetUnreadyAnimation());
+                GetUnreadyAnimation(),
+                GetDeselectedAnimation());
         }
 
         /// <summary>
@@ -115,16 +116,15 @@ namespace Strategy.Interface
 
             // build the piece animations
             IAnimation pieceAction = null;
-            if (survived && destination.HasValue)
+            if (survived && destination.HasValue) // survived and moved
             {
                 pieceAction = GetMoveAnimation(destination.Value);
             }
-            else if (survived)
+            else if (survived) // survived and stayed
             {
-                pieceAction = GetDeselectedAnimation();
-                _wasSelected = false;
+                pieceAction = new DelayAnimation(0.5f);
             }
-            else
+            else // did not survive
             {
                 pieceAction = new CompositeAnimation(
                     new ScaleAnimation(_pieceSprite, Vector2.Zero, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
@@ -132,7 +132,7 @@ namespace Strategy.Interface
                 _dying = true;
             }
 
-            // remove the ready state
+            // hide the ready state if necessary
             if (!_piece.Ready)
             {
                 pieceAction = new CompositeAnimation(
@@ -140,7 +140,15 @@ namespace Strategy.Interface
                     pieceAction);
             }
 
-            // keep running the existing animation to completion
+            // hide the selected state if necessary 
+            if (_showingSelected)
+            {
+                pieceAction = new CompositeAnimation(
+                    GetDeselectedAnimation(),
+                    pieceAction);
+            }
+
+            // keep running any existing animation to completion
             if (_actionAnimation != null)
             {
                 pieceAction = new CompositeAnimation(
@@ -162,18 +170,18 @@ namespace Strategy.Interface
                 // check if the territory holding us changed selected state
                 if (!_wasSelected && _territoryView.IsSelected && _piece.Ready)
                 {
-                    _selectedAnimation = GetSelectedAnimation();
+                    _selectionAnimation = GetSelectedAnimation();
                 }
                 else if (_wasSelected && !_territoryView.IsSelected && _piece.Ready)
                 {
-                    _selectedAnimation = GetDeselectedAnimation();
+                    _selectionAnimation = GetDeselectedAnimation();
                 }
                 _wasSelected = _territoryView.IsSelected;
 
                 // check if we just became ready and the territory is selected
                 if (_piece.Ready && !_wasReady && _territoryView.IsSelected)
                 {
-                    _selectedAnimation = GetSelectedAnimation();
+                    _selectionAnimation = GetSelectedAnimation();
                 }
                 _wasReady = _piece.Ready;
 
@@ -192,11 +200,11 @@ namespace Strategy.Interface
                     _actionAnimation = null;
                 }
             }
-            else if (_selectedAnimation != null)
+            else if (_selectionAnimation != null)
             {
-                if (!_selectedAnimation.Update(time))
+                if (!_selectionAnimation.Update(time))
                 {
-                    _selectedAnimation = null;
+                    _selectionAnimation = null;
                 }
             }
         }
@@ -218,9 +226,7 @@ namespace Strategy.Interface
         private IAnimation GetMoveAnimation(Cell destination)
         {
             Vector2 newPosition = GetPosition(destination);
-            return new CompositeAnimation(
-                new PositionAnimation(_pieceSprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
-                GetDeselectedAnimation());
+            return new PositionAnimation(_pieceSprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
         }
 
         private IAnimation GetUnreadyAnimation()
@@ -230,12 +236,14 @@ namespace Strategy.Interface
 
         private IAnimation GetSelectedAnimation()
         {
-            return new PositionAnimation(_pyramidSprite, _pyramidSprite.Position + SelectionOffset, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn));
+            _showingSelected = true;
+            return new PositionAnimation(_pyramidSprite, SelectionOffset, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn));
         }
 
         private IAnimation GetDeselectedAnimation()
         {
-            return new PositionAnimation(_pyramidSprite, _pyramidSprite.Position - SelectionOffset, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn));
+            _showingSelected = false;
+            return new PositionAnimation(_pyramidSprite, Vector2.Zero, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn));
         }
 
         private Color GetPlayerColor(PlayerId player)
@@ -255,6 +263,7 @@ namespace Strategy.Interface
 
         private bool _wasReady;
         private bool _wasSelected;
+        private bool _showingSelected;
         private bool _dying;
         private TerritoryView _territoryView;
 
@@ -263,7 +272,7 @@ namespace Strategy.Interface
         private TextSprite _rollSprite;
 
         private IAnimation _actionAnimation;
-        private IAnimation _selectedAnimation;
+        private IAnimation _selectionAnimation;
 
         private readonly Color PlayerColor;
         private readonly Color UnreadyColor;
