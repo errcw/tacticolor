@@ -286,6 +286,35 @@ namespace Strategy.Net
     }
 
     /// <summary>
+    /// No action.
+    /// </summary>
+    public class NoOpCommand : Command, IGameCommand
+    {
+        public const byte Code = 5;
+
+        public NoOpCommand() : base(Code)
+        {
+        }
+
+        public NoOpCommand(PlayerId player, long time) : base(Code, player, time)
+        {
+        }
+
+        public bool Execute(Match match)
+        {
+            return true;
+        }
+
+        protected override void ReadImpl(PacketReader reader)
+        {
+        }
+
+        protected override void WriteImpl(PacketWriter writer)
+        {
+        }
+    }
+
+    /// <summary>
     /// Reads commands from packets.
     /// </summary>
     public class CommandReader : PacketReader
@@ -311,6 +340,9 @@ namespace Strategy.Net
                     break;
                 case AttackCommand.Code:
                     command = new AttackCommand();
+                    break;
+                case NoOpCommand.Code:
+                    command = new NoOpCommand();
                     break;
                 default:
                     // invalid/unknown command type

@@ -29,20 +29,24 @@ namespace Strategy.Net
                 command = _reader.ReadCommand();
                 if (command == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("Discarding invalid packet from {0}", sender.Id);
+                    System.Diagnostics.Debug.WriteLine("Discarding invalid packet");
                 }
                 _commands[(int)command.Player] = command;
             }
 
             // check if we have received all the commands for this step
             bool receivedAll = true;
-            for (int i = 0; i < _commands; i++)
+            for (int i = 0; i < _commands.Length; i++)
             {
                 if (_commands[i] == null)
                 {
                     receivedAll = false;
                     break;
                 }
+            }
+
+            if (receivedAll)
+            {
             }
         }
 

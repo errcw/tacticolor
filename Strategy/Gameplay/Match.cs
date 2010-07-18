@@ -62,6 +62,11 @@ namespace Strategy.Gameplay
         /// </summary>
         public float[] PieceCreationProgress { get; private set; }
 
+        /// <summary>
+        /// The current game time.
+        /// </summary>
+        public long Time { get; private set; }
+
 
         /// <summary>
         /// Creates a new match.
@@ -78,6 +83,8 @@ namespace Strategy.Gameplay
 
             SetInitialTerritoryState();
             SetInitialPieceState();
+
+            Time = 0;
         }
 
         /// <summary>
@@ -86,6 +93,7 @@ namespace Strategy.Gameplay
         /// <param name="time">The elapsed time, in seconds, since the last update.</param>
         public void Update(int time)
         {
+            Time += time;
             UpdateTerritories(time);
             UpdatePieces(time);
         }
