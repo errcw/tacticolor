@@ -20,8 +20,8 @@ namespace Strategy.Interface
             _context = context;
 
             _mapView = new MapView(match.Map, match, players, context);
-            _playerViews = new PlayerView[match.Players];
-            _piecesAvailableViews = new PiecesAvailableView[match.Players];
+            _playerViews = new PlayerView[match.PlayerCount];
+            _piecesAvailableViews = new PiecesAvailableView[match.PlayerCount];
             for (int i = 0; i < _piecesAvailableViews.Length; i++)
             {
                 _playerViews[i] = new PlayerView(players[i], context);

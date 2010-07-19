@@ -49,7 +49,7 @@ namespace Strategy.Gameplay
         /// <summary>
         /// The number of players in this match (counts losers).
         /// </summary>
-        public int Players { get; private set; }
+        public int PlayerCount { get; private set; }
 
         /// <summary>
         /// The number of pieces available to be placed by each player.
@@ -78,8 +78,8 @@ namespace Strategy.Gameplay
             _map = map;
             _random = random;
 
-            Players = GetPlayerCount();
-            _playersRemaining = Players;
+            PlayerCount = GetPlayerCount();
+            _playersRemaining = PlayerCount;
 
             SetInitialTerritoryState();
             SetInitialPieceState();
@@ -392,7 +392,7 @@ namespace Strategy.Gameplay
         /// </summary>
         private void SetInitialTerritoryState()
         {
-            _numTerritoriesOwned = new int[Players];
+            _numTerritoriesOwned = new int[PlayerCount];
             foreach (Territory territory in _map.Territories)
             {
                 territory.Cooldown = 0;
@@ -408,12 +408,12 @@ namespace Strategy.Gameplay
         /// </summary>
         private void SetInitialPieceState()
         {
-            _pieceCreationElapsed = new int[Players];
-            _pieceCreationSpeed = new float[Players];
-            PieceCreationProgress = new float[Players];
-            PiecesAvailable = new int[Players];
+            _pieceCreationElapsed = new int[PlayerCount];
+            _pieceCreationSpeed = new float[PlayerCount];
+            PieceCreationProgress = new float[PlayerCount];
+            PiecesAvailable = new int[PlayerCount];
 
-            for (int p = 0; p < Players; p++)
+            for (int p = 0; p < PlayerCount; p++)
             {
                 _pieceCreationElapsed[p] = 0;
                 _pieceCreationSpeed[p] = GetPieceCreationSpeed(_numTerritoriesOwned[p]);
@@ -449,7 +449,7 @@ namespace Strategy.Gameplay
                 }
             }
             // update the piece counts
-            for (int p = 0; p < Players; p++)
+            for (int p = 0; p < PlayerCount; p++)
             {
                 if (PiecesAvailable[p] >= MaxPiecesAvailable)
                 {
