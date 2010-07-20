@@ -28,6 +28,10 @@ namespace Strategy.Net
         {
             _match = match;
             _commands = new List<Command>(match.PlayerCount * 10);
+
+            // initial step is long to wait for the first player input
+            _stepStartTime = 0;
+            _stepEndTime = 2 * SchedulingOffset;
         }
 
         /// <summary>
@@ -53,14 +57,24 @@ namespace Strategy.Net
         /// <param name="elapsed">The elapsed time, in milliseconds, since the last update.</param>
         public void Update(int elapsed)
         {
-            // early out when there is no input expected
-            if (_match.Time < SchedulingOffset)
+            if (_match.Time + elapsed >= _stepEndTime)
             {
-                _match.Update(elapsed);
-                return;
+                if (HaveCommandsForStep(_stepEndTime))
+                {
+                    _stepStartTime = _stepEndTime;
+                    _stepEndTime = _stepStartTime + StepTime;
+                }
+                else
+                {
+                    // if this step is ending but we cannot advance because
+                    // we are missing input then simply return and wait
+                    System.Diagnostics.Debug.WriteLine("Cannot start new step");
+                    return;
+                }
             }
 
-            long stepTime = _match.Time;
+            // feed the update through to the match
+            _match.Update(elapsed);
         }
 
         /// <summary>
@@ -70,17 +84,37 @@ namespace Strategy.Net
         {
             bool[] received = new bool[_match.PlayerCount];
             long stepEndTime = stepStartTime + StepTime;
+
             foreach (Command command in _commands)
             {
+                // commands are in time-sorted order so avoid reading the rest of the list
                 if (command.Time > stepEndTime)
                 {
                     break;
                 }
+                // record the command if it falls in the step
+                if (command.Time >= stepStartTime && command.Time < stepEndTime)
+                {
+                    received[(int)command.Player] = true;
+                }
             }
+
+            bool receivedAll = true;
+            for (int i = 0; i < received.Length; i++)
+            {
+                if (!received[i])
+                {
+                    receivedAll = false;
+                    break;
+                }
+            }
+
+            return receivedAll;
         }
 
         private Match _match;
 
         private List<Command> _commands;
+        private long _stepStartTime, _stepEndTime;
     }
 }
