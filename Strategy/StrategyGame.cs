@@ -92,15 +92,16 @@ namespace Strategy
                 Exit();
             }
 
-            float time = gameTime.GetElapsedSeconds();
+            float seconds = gameTime.GetElapsedSeconds();
+            int milliseconds = gameTime.GetElapsedMilliseconds();
 
-            _match.Update(gameTime.GetElapsedMilliseconds());
-            _matchView.Update(time);
+            _match.Update(milliseconds);
+            _matchView.Update(seconds);
 
             for (int p = 0; p < _inputs.Length; p++)
             {
-                _inputs[p].Update(time);
-                _inputViews[p].Update(time);
+                _inputs[p].Update(milliseconds);
+                _inputViews[p].Update(seconds);
             }
 
             base.Update(gameTime);

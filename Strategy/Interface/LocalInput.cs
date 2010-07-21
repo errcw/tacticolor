@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using Strategy.Gameplay;
+using Strategy.Net;
 using Strategy.Library.Input;
 
 namespace Strategy.Interface
@@ -12,7 +13,7 @@ namespace Strategy.Interface
     /// <summary>
     /// Handles input from a local player.
     /// </summary>
-    public class LocalInput
+    public class LocalInput : ICommandProvider
     {
         /// <summary>
         /// Occurs when the currently hovered territory changes.
@@ -68,9 +69,9 @@ namespace Strategy.Interface
         /// <summary>
         /// Updates the input state.
         /// </summary>
-        public void Update(float time)
+        public Command Update(int time)
         {
-            _input.Update(time);
+            _input.Update(time * 1000f);
             if (Action.Pressed)
             {
                 if (_actionPending)
@@ -148,6 +149,9 @@ namespace Strategy.Interface
                     SetHovered(newHovered);
                 }
             }
+
+            //XXX
+            return null;
         }
 
         private void SetHovered(Territory territory)

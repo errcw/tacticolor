@@ -87,12 +87,11 @@ namespace Strategy.Net
 
             foreach (Command command in _commands)
             {
-                // commands are in time-sorted order so avoid reading the rest of the list
-                if (command.Time > stepEndTime)
+                // commands are in time-sorted order so avoid reading irrelevant commands
+                if (command.Time >= stepEndTime)
                 {
                     break;
                 }
-                // record the command if it falls in the step
                 if (command.Time >= stepStartTime && command.Time < stepEndTime)
                 {
                     received[(int)command.Player] = true;

@@ -27,7 +27,10 @@ namespace Strategy.Interface
 
             for (int p = 0; p < players.Length; p++)
             {
-                players[p].Input.SelectedChanged += OnSelectedChanged;
+                //if (players[p].IsHuman && players[p].Gamer.IsLocal)
+                //{
+                    ((LocalInput)players[p].Input).SelectedChanged += OnSelectedChanged;
+                //}
             }
 
             Rectangle extents = CalculatePixelExtents();
