@@ -27,7 +27,7 @@ namespace Strategy.Net
         public LockstepMatch(Match match)
         {
             _match = match;
-            _commands = new List<Command>(match.PlayerCount * 10);
+            _commands = new List<Command>(match.PlayerCount * 3 * 10);
 
             // initial step is long to wait for the first player input
             _stepStartTime = 0;
@@ -39,15 +39,7 @@ namespace Strategy.Net
         /// </summary>
         public void ScheduleCommand(Command command)
         {
-            int index;
-            for (index = 0; index < _commands.Count; index++)
-            {
-                if (_commands[index].Time > command.Time)
-                {
-                    break;
-                }
-            }
-            _commands.Insert(index, command);
+            _commands.Add(command);
         }
 
         /// <summary>
@@ -68,7 +60,7 @@ namespace Strategy.Net
                 {
                     // if this step is ending but we cannot advance because
                     // we are missing input then simply return and wait
-                    System.Diagnostics.Debug.WriteLine("Cannot start new step");
+                    System.Diagnostics.Debug.WriteLine("Waiting for input before starting step");
                     return;
                 }
             }
@@ -87,11 +79,6 @@ namespace Strategy.Net
 
             foreach (Command command in _commands)
             {
-                // commands are in time-sorted order so avoid reading irrelevant commands
-                if (command.Time >= stepEndTime)
-                {
-                    break;
-                }
                 if (command.Time >= stepStartTime && command.Time < stepEndTime)
                 {
                     received[(int)command.Player] = true;
