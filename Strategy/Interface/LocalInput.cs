@@ -71,7 +71,7 @@ namespace Strategy.Interface
         /// </summary>
         public Command Update(int time)
         {
-            _input.Update(time * 1000f);
+            _input.Update(time / 1000f);
             if (Action.Pressed)
             {
                 if (_actionPending)
