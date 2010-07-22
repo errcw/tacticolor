@@ -80,13 +80,11 @@ namespace Strategy.Interface
                 {
                     if (_match.CanMove(Player, Selected, Hovered))
                     {
-                        _match.Move(Selected, Hovered);
                         command = new MoveCommand(Player, Selected, Hovered);
                         _actionPending = false;
                     }
                     else if (_match.CanAttack(Player, Selected, Hovered))
                     {
-                        _match.Attack(Selected, Hovered);
                         command = new AttackCommand(Player, Selected, Hovered);
                         _actionPending = false;
                     }
@@ -113,7 +111,6 @@ namespace Strategy.Interface
             {
                 if (_match.CanPlacePiece(Player, Hovered))
                 {
-                    _match.PlacePiece(Hovered);
                     command = new PlaceCommand(Player, Hovered);
                 }
             }

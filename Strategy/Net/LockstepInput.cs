@@ -26,7 +26,7 @@ namespace Strategy.Net
             _match = match;
             _players = players;
 
-            _stepEndTime = _match.StepTime;
+            _stepElapsed = 0;
             _sentCommand = new bool[_players.Length];
 
             // find a local player we can use to send and receive messages
@@ -57,20 +57,18 @@ namespace Strategy.Net
                     if (command != null)
                     {
                         command.Time = _match.Match.Time + _match.SchedulingOffset;
-
-                        _match.ScheduleCommand(command);
                         BroadcastCommand(command);
-
                         _sentCommand[(int)player.Id] = true;
                     }
                 }
             }
 
-            if (_match.Match.Time >= _stepEndTime)
+            _stepElapsed += time;
+            if (_stepElapsed > _match.StepTime)
             {
                 SendNetworkCommands();
                 ReadNetworkCommands();
-                _stepEndTime = _stepEndTime + _match.StepTime;
+                _stepElapsed -= _match.StepTime;
             }
         }
 
@@ -80,6 +78,8 @@ namespace Strategy.Net
         /// </summary>
         private void BroadcastCommand(Command command)
         {
+            _match.ScheduleCommand(command);
+            System.Diagnostics.Debug.WriteLine("Broadcasting " + command);
             if (_sendReceiveGamer != null)
             {
                 foreach (Player player in _players)
@@ -100,12 +100,10 @@ namespace Strategy.Net
         {
             for (int i = 0; i < _players.Length; i++)
             {
-                if (!_sentCommand[i])
-                {
-                    NoOpCommand command = new NoOpCommand(_players[i].Id);
-                    command.Time = _match.Match.Time + _match.SchedulingOffset;
-                    BroadcastCommand(command);
-                }
+                // always send a tick command
+                NoOpCommand command = new NoOpCommand(_players[i].Id);
+                command.Time = Math.Max(_match.Match.Time - _match.StepTime / 2 + _match.SchedulingOffset, 0);
+                BroadcastCommand(command);
             }
             Array.Clear(_sentCommand, 0, _sentCommand.Length);
         }
@@ -145,7 +143,7 @@ namespace Strategy.Net
         private CommandWriter _writer;
         private CommandReader _reader;
 
-        private long _stepEndTime;
+        private int _stepElapsed;
         private bool[] _sentCommand;
     }
 }

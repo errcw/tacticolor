@@ -79,6 +79,11 @@ namespace Strategy.Net
             WriteImpl(writer);
         }
 
+        public override string ToString()
+        {
+            return String.Format("Command[Id={0},Player={1},Time={2}]", Id, Player, Time);
+        }
+
         protected abstract void ReadImpl(PacketReader reader);
         protected abstract void WriteImpl(PacketWriter writer);
     }

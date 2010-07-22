@@ -23,7 +23,7 @@ namespace Strategy.Net
         /// <summary>
         /// How far in the future commands issued now should expect to be executed.
         /// </summary>
-        public int SchedulingOffset { get { return 2 * StepTime; } }
+        public int SchedulingOffset { get; set; }
 
         /// <summary>
         /// Creates a new lockstep match for a given game.
@@ -34,10 +34,12 @@ namespace Strategy.Net
             _match = match;
             _commands = new List<Command>(match.PlayerCount * 3 * 10);
 
+            StepTime = 50;
+            SchedulingOffset = 50;
+
             // initial step is long to wait for the first player input
-            StepTime = 100;
             _stepStartTime = 0;
-            _stepEndTime = 2 * SchedulingOffset;
+            _stepEndTime = 2 * StepTime;
         }
 
         /// <summary>
@@ -64,14 +66,11 @@ namespace Strategy.Net
                 }
                 else
                 {
-                    // if this step is ending but we cannot advance because
-                    // we are missing input then simply return and wait
-                    System.Diagnostics.Debug.WriteLine("Waiting for input before starting step");
+                    System.Diagnostics.Debug.WriteLine("Blocked starting step " + _stepEndTime);
                     return;
                 }
             }
 
-            // execute the commands for this frame
             foreach (Command command in _commands)
             {
                 if (command.Time >= _match.Time && command.Time < _match.Time + time)
@@ -79,13 +78,12 @@ namespace Strategy.Net
                     bool executed = command.Execute(_match);
                     if (!executed)
                     {
-                        throw new Exception("Tried to execute invalid command");
+                        System.Diagnostics.Debug.WriteLine("Tried to execute invalid command " + command);
                     }
                 }
             }
             _commands.RemoveAll(c => c.Time >= _match.Time && c.Time < _match.Time + time);
 
-            // feed the update through to the match
             _match.Update(time);
         }
 

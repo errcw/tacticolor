@@ -168,11 +168,11 @@ namespace Strategy.Interface
             if (!_dying)
             {
                 // check if the territory holding us changed selected state
-                if (!_wasSelected && _territoryView.IsSelected && _piece.Ready)
+                if (!_wasSelected && _territoryView.IsSelected && _piece.Ready && !_showingSelected)
                 {
                     _selectionAnimation = GetSelectedAnimation();
                 }
-                else if (_wasSelected && !_territoryView.IsSelected && _piece.Ready)
+                else if (_wasSelected && !_territoryView.IsSelected && _piece.Ready && _showingSelected)
                 {
                     _selectionAnimation = GetDeselectedAnimation();
                 }
@@ -243,7 +243,7 @@ namespace Strategy.Interface
         private IAnimation GetDeselectedAnimation()
         {
             _showingSelected = false;
-            return new PositionAnimation(_pyramidSprite, Vector2.Zero, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn));
+            return new PositionAnimation(_pyramidSprite, Vector2.Zero, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
         }
 
         private Color GetPlayerColor(PlayerId player)
