@@ -25,7 +25,7 @@ namespace Strategy.Net
         /// <summary>
         /// The game time when this command should execute.
         /// </summary>
-        public long Time { get; private set; }
+        public long Time { get; set; }
 
         /// <summary>
         /// A simple constructor for packet reading.
@@ -41,11 +41,22 @@ namespace Strategy.Net
         /// <param name="id">The identifier for the type of command.</param>
         /// <param name="player">The player issuing this command.</param>
         /// <param name="time">The game time when the command should execute.</param>
-        public Command(byte id, PlayerId player, long time)
+        public Command(byte id, PlayerId player)
         {
             Id = id;
             Player = player;
-            Time = time;
+            Time = 0; // filled out later
+        }
+
+        /// <summary>
+        /// Execute this action on the given match.
+        /// </summary>
+        /// <param name="match">The match to operate on.</param>
+        /// <returns>True if the command is valid; otherwise, false.</returns>
+        public virtual bool Execute(Match match)
+        {
+            // by default a command cannot be executed
+            return false;
         }
 
         /// <summary>
@@ -73,19 +84,6 @@ namespace Strategy.Net
     }
 
     /// <summary>
-    /// A command that executes a player action in the match.
-    /// </summary>
-    public interface IGameCommand
-    {
-        /// <summary>
-        /// Execute this action on the given match.
-        /// </summary>
-        /// <param name="match">The match to operate on.</param>
-        /// <returns>True if the command is valid; otherwise, false.</returns>
-        bool Execute(Match match);
-    }
-
-    /// <summary>
     /// Contains data to setup the initial match state.
     /// </summary>
     public class InitializeMatchCommand : Command
@@ -98,7 +96,7 @@ namespace Strategy.Net
         {
         }
 
-        public InitializeMatchCommand(int randomSeed) : base(Code, PlayerId.A, 0)
+        public InitializeMatchCommand(int randomSeed) : base(Code, PlayerId.A)
         {
             RandomSeed = randomSeed;
         }
@@ -125,7 +123,7 @@ namespace Strategy.Net
         {
         }
 
-        public StartMatchCommand(PlayerId player) : base(Code, player, 0)
+        public StartMatchCommand(PlayerId player) : base(Code, player)
         {
         }
 
@@ -141,7 +139,7 @@ namespace Strategy.Net
     /// <summary>
     /// Places a piece on a territory.
     /// </summary>
-    public class PlaceCommand : Command, IGameCommand
+    public class PlaceCommand : Command
     {
         public const byte Code = 2;
 
@@ -149,12 +147,12 @@ namespace Strategy.Net
         {
         }
 
-        public PlaceCommand(PlayerId player, long time, Territory territory) : base(Code, player, time)
+        public PlaceCommand(PlayerId player, Territory territory) : base(Code, player)
         {
             _placementCell = territory.Location;
         }
 
-        public bool Execute(Match match)
+        public override bool Execute(Match match)
         {
             Territory territory = match.Map.GetTerritoryAt(_placementCell);
             if (territory == null || !match.CanPlacePiece(Player, territory))
@@ -184,7 +182,7 @@ namespace Strategy.Net
     /// <summary>
     /// Moves pieces between two territories.
     /// </summary>
-    public class MoveCommand : Command, IGameCommand
+    public class MoveCommand : Command
     {
         public const byte Code = 3;
 
@@ -192,13 +190,13 @@ namespace Strategy.Net
         {
         }
 
-        public MoveCommand(PlayerId player, long time, Territory source, Territory destination) : base(Code, player, time)
+        public MoveCommand(PlayerId player, Territory source, Territory destination) : base(Code, player)
         {
             _sourceCell = source.Location;
             _destinationCell = destination.Location;
         }
 
-        public bool Execute(Match match)
+        public override bool Execute(Match match)
         {
             Territory source = match.Map.GetTerritoryAt(_sourceCell);
             Territory destination = match.Map.GetTerritoryAt(_destinationCell);
@@ -236,7 +234,7 @@ namespace Strategy.Net
     /// <summary>
     /// Attacks from one territory to another.
     /// </summary>
-    public class AttackCommand : Command, IGameCommand
+    public class AttackCommand : Command
     {
         public const byte Code = 4;
 
@@ -244,13 +242,13 @@ namespace Strategy.Net
         {
         }
 
-        public AttackCommand(PlayerId player, long time, Territory attacker, Territory defender) : base(Code, player, time)
+        public AttackCommand(PlayerId player, Territory attacker, Territory defender) : base(Code, player)
         {
             _attackerCell = attacker.Location;
             _defenderCell = defender.Location;
         }
 
-        public bool Execute(Match match)
+        public override bool Execute(Match match)
         {
             Territory attacker = match.Map.GetTerritoryAt(_attackerCell);
             Territory defender = match.Map.GetTerritoryAt(_defenderCell);
@@ -288,7 +286,7 @@ namespace Strategy.Net
     /// <summary>
     /// No action.
     /// </summary>
-    public class NoOpCommand : Command, IGameCommand
+    public class NoOpCommand : Command
     {
         public const byte Code = 5;
 
@@ -296,11 +294,11 @@ namespace Strategy.Net
         {
         }
 
-        public NoOpCommand(PlayerId player, long time) : base(Code, player, time)
+        public NoOpCommand(PlayerId player) : base(Code, player)
         {
         }
 
-        public bool Execute(Match match)
+        public override bool Execute(Match match)
         {
             return true;
         }

@@ -19,7 +19,7 @@ namespace Strategy.Interface
         public PlayerId Id { get; set; }
 
         /// <summary>
-        /// The network id of this player. May be null for AI players.
+        /// The network id of this player. Null for AI players.
         /// </summary>
         public NetworkGamer Gamer { get; set; }
 
@@ -27,10 +27,5 @@ namespace Strategy.Interface
         /// The input handler for this player.
         /// </summary>
         public ICommandProvider Input { get; set; }
-
-        /// <summary>
-        /// If this player is controlled by a human.
-        /// </summary>
-        public bool IsHuman { get { return true; } }
     }
 }

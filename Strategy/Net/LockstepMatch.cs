@@ -11,6 +11,11 @@ namespace Strategy.Net
     public class LockstepMatch
     {
         /// <summary>
+        /// The underlying match running in lockstep.
+        /// </summary>
+        public Match Match { get { return _match; } }
+
+        /// <summary>
         /// The time step time.
         /// </summary>
         public int StepTime { get; set; }
@@ -46,10 +51,10 @@ namespace Strategy.Net
         /// Updates the match for this time step. The match is only updated
         /// when all the commands for a given 
         /// </summary>
-        /// <param name="elapsed">The elapsed time, in milliseconds, since the last update.</param>
-        public void Update(int elapsed)
+        /// <param name="time">The elapsed time, in milliseconds, since the last update.</param>
+        public void Update(int time)
         {
-            if (_match.Time + elapsed >= _stepEndTime)
+            if (_match.Time + time >= _stepEndTime)
             {
                 if (HaveCommandsForStep(_stepEndTime))
                 {
@@ -65,8 +70,22 @@ namespace Strategy.Net
                 }
             }
 
+            // execute the commands for this frame
+            foreach (Command command in _commands)
+            {
+                if (command.Time >= _match.Time && command.Time < _match.Time + time)
+                {
+                    bool executed = command.Execute(_match);
+                    if (!executed)
+                    {
+                        throw new Exception("Tried to execute invalid command");
+                    }
+                }
+            }
+            _commands.RemoveAll(c => c.Time >= _match.Time && c.Time < _match.Time + time);
+
             // feed the update through to the match
-            _match.Update(elapsed);
+            _match.Update(time);
         }
 
         /// <summary>
