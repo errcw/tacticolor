@@ -14,6 +14,7 @@ using Strategy.Library;
 using Strategy.Library.Components;
 using Strategy.Library.Extensions;
 using Strategy.Library.Input;
+using Strategy.Net;
 using Strategy.Properties;
 
 namespace Strategy
@@ -57,27 +58,29 @@ namespace Strategy
         {
             // create the model
             Map map = _generator.Generate(16, DebugPlayers, 4, 16);
-            _match = new Match(map, _random);
-            _inputs = new LocalInput[DebugPlayers];
-            for (int p = 0; p < _inputs.Length; p++)
+            Match match = new Match(map, _random);
+            LocalInput[] inputs = new LocalInput[DebugPlayers];
+            for (int p = 0; p < inputs.Length; p++)
             {
-                _inputs[p] = new LocalInput((PlayerId)p, _match, _context);
-                _inputs[p].Controller = (PlayerIndex)p;
+                inputs[p] = new LocalInput((PlayerId)p, match, _context);
+                inputs[p].Controller = (PlayerIndex)p;
             }
             Player[] players = new Player[DebugPlayers];
             for (int p = 0; p < players.Length; p++)
             {
                 players[p] = new Player();
                 players[p].Id = (PlayerId)p;
-                players[p].Input = _inputs[p];
+                players[p].Input = inputs[p];
             }
+            _lockstepMatch = new LockstepMatch(match);
+            _lockstepInput = new LockstepInput(_lockstepMatch, players);
 
             // then the view
-            _matchView = new MatchView(_match, players, _context);
+            _matchView = new MatchView(match, players, _context);
             _inputViews = new LocalInputView[DebugPlayers];
-            for (int p = 0; p < _inputs.Length; p++)
+            for (int p = 0; p < inputs.Length; p++)
             {
-                _inputViews[p] = new LocalInputView(_inputs[p], _context);
+                _inputViews[p] = new LocalInputView(inputs[p], _context);
             }
         }
 
@@ -95,12 +98,12 @@ namespace Strategy
             float seconds = gameTime.GetElapsedSeconds();
             int milliseconds = gameTime.GetElapsedMilliseconds();
 
-            _match.Update(milliseconds);
-            _matchView.Update(seconds);
+            _lockstepMatch.Update(milliseconds);
+            _lockstepInput.Update(milliseconds);
 
-            for (int p = 0; p < _inputs.Length; p++)
+            _matchView.Update(seconds);
+            for (int p = 0; p < _inputViews.Length; p++)
             {
-                _inputs[p].Update(milliseconds);
                 _inputViews[p].Update(seconds);
             }
 
@@ -132,14 +135,13 @@ namespace Strategy
         private Random _random;
         private MapGenerator _generator;
 
-        private Match _match;
+        private LockstepInput _lockstepInput;
+        private LockstepMatch _lockstepMatch;
+
         private MatchView _matchView;
-
-        private LocalInput[] _inputs;
         private LocalInputView[] _inputViews;
-
         private IsometricBatch _isoBatch;
 
-        private const int DebugPlayers = 2;
+        private const int DebugPlayers = 1;
     }
 }

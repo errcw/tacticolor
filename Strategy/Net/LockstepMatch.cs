@@ -35,6 +35,7 @@ namespace Strategy.Net
             _commands = new List<Command>(match.PlayerCount * 3 * 10);
 
             // initial step is long to wait for the first player input
+            StepTime = 100;
             _stepStartTime = 0;
             _stepEndTime = 2 * SchedulingOffset;
         }
