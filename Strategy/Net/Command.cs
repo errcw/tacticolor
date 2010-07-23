@@ -84,8 +84,8 @@ namespace Strategy.Net
             return String.Format("Command[Id={0},Player={1},Time={2}]", Id, Player, Time);
         }
 
-        protected abstract void ReadImpl(PacketReader reader);
-        protected abstract void WriteImpl(PacketWriter writer);
+        protected virtual void ReadImpl(PacketReader reader) { }
+        protected virtual void WriteImpl(PacketWriter writer) { }
     }
 
     /// <summary>
@@ -131,13 +131,45 @@ namespace Strategy.Net
         public StartMatchCommand(PlayerId player) : base(Code, player)
         {
         }
+    }
+
+    /// <summary>
+    /// Marks a synchronization point at the end of a step.
+    /// </summary>
+    public class SynchronizationCommand : Command
+    {
+        public const byte Code = 2;
+
+        /// <summary>
+        /// A hash of the game state at the end of the current step.
+        /// </summary>
+        public int Hash { get; private set; }
+
+        /// <summary>
+        /// Timing data to tune the step length.
+        /// </summary>
+        public int Timing { get; private set; }
+
+        public SynchronizationCommand() : base(Code)
+        {
+        }
+
+        public SynchronizationCommand(PlayerId player, int hash, int timing) : base(Code, player)
+        {
+            Hash = hash;
+            Timing = timing;
+        }
 
         protected override void ReadImpl(PacketReader reader)
         {
+            Hash = reader.ReadInt32();
+            Timing = reader.ReadInt32();
         }
 
         protected override void WriteImpl(PacketWriter writer)
         {
+            writer.Write(Hash);
+            writer.Write(Timing);
         }
     }
 
@@ -146,7 +178,7 @@ namespace Strategy.Net
     /// </summary>
     public class PlaceCommand : Command
     {
-        public const byte Code = 2;
+        public const byte Code = 3;
 
         public PlaceCommand() : base(Code)
         {
@@ -189,7 +221,7 @@ namespace Strategy.Net
     /// </summary>
     public class MoveCommand : Command
     {
-        public const byte Code = 3;
+        public const byte Code = 4;
 
         public MoveCommand() : base(Code)
         {
@@ -241,7 +273,7 @@ namespace Strategy.Net
     /// </summary>
     public class AttackCommand : Command
     {
-        public const byte Code = 4;
+        public const byte Code = 5;
 
         public AttackCommand() : base(Code)
         {
@@ -293,7 +325,7 @@ namespace Strategy.Net
     /// </summary>
     public class NoOpCommand : Command
     {
-        public const byte Code = 5;
+        public const byte Code = 6;
 
         public NoOpCommand() : base(Code)
         {
@@ -334,6 +366,9 @@ namespace Strategy.Net
                     break;
                 case StartMatchCommand.Code:
                     command = new StartMatchCommand();
+                    break;
+                case SynchronizationCommand.Code:
+                    command = new SynchronizationCommand();
                     break;
                 case PlaceCommand.Code:
                     command = new PlaceCommand();

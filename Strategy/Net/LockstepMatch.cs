@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Strategy.Gameplay;
 
@@ -11,12 +12,22 @@ namespace Strategy.Net
     public class LockstepMatch
     {
         /// <summary>
+        /// Occurs when the current step is finished simulating.
+        /// </summary>
+        public event EventHandler<EventArgs> StepEnded;
+
+        /// <summary>
         /// The underlying match running in lockstep.
         /// </summary>
         public Match Match { get { return _match; } }
 
         /// <summary>
-        /// The time step time.
+        /// The time at which the current step started.
+        /// </summary>
+        public long StepStart { get; private set; }
+
+        /// <summary>
+        /// The duration of the current step. The step runs for [StepStart,StepStart+StepTime).
         /// </summary>
         public int StepTime { get; set; }
 
@@ -34,12 +45,12 @@ namespace Strategy.Net
             _match = match;
             _commands = new List<Command>(match.PlayerCount * 3 * 10);
 
-            StepTime = 50;
-            SchedulingOffset = 50;
+            StepTime = 100;
+            StepStart = 0;
+            _stepEndTime = StepTime;
+            _firstSyncTime = _stepEndTime * 3;
 
-            // initial step is long to wait for the first player input
-            _stepStartTime = 0;
-            _stepEndTime = 2 * StepTime;
+            SchedulingOffset = 2*StepTime;
         }
 
         /// <summary>
@@ -47,7 +58,14 @@ namespace Strategy.Net
         /// </summary>
         public void ScheduleCommand(Command command)
         {
-            _commands.Add(command);
+            if (command is SynchronizationCommand)
+            {
+                SynchronizationCommand sync = (SynchronizationCommand)command;
+            }
+            else
+            {
+            }
+                _commands.Add(command);
         }
 
         /// <summary>
@@ -59,14 +77,18 @@ namespace Strategy.Net
         {
             if (_match.Time + time >= _stepEndTime)
             {
-                if (HaveCommandsForStep(_stepEndTime))
+                if (HaveCommandsForStep(_stepEndTime) || _stepEndTime <= _firstSyncTime)
                 {
-                    _stepStartTime = _stepEndTime;
-                    _stepEndTime = _stepStartTime + StepTime;
+                    if (StepEnded != null)
+                    {
+                        StepEnded(this, EventArgs.Empty);
+                    }
+                    StepStart = _stepEndTime;
+                    _stepEndTime = StepStart + StepTime;
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("Blocked starting step " + _stepEndTime);
+                    Debug.WriteLine("Blocked starting step " + _stepEndTime);
                     return;
                 }
             }
@@ -78,7 +100,7 @@ namespace Strategy.Net
                     bool executed = command.Execute(_match);
                     if (!executed)
                     {
-                        System.Diagnostics.Debug.WriteLine("Tried to execute invalid command " + command);
+                        Debug.WriteLine("Tried to execute invalid command " + command);
                     }
                 }
             }
@@ -119,6 +141,7 @@ namespace Strategy.Net
         private Match _match;
 
         private List<Command> _commands;
-        private long _stepStartTime, _stepEndTime;
+        private long _stepEndTime;
+        private long _firstSyncTime;
     }
 }

@@ -24,10 +24,8 @@ namespace Strategy.Net
         public LockstepInput(LockstepMatch match, Player[] players)
         {
             _match = match;
+            _match.StepEnded += OnStepEnded;
             _players = players;
-
-            _stepElapsed = 0;
-            _sentCommand = new bool[_players.Length];
 
             // find a local player we can use to send and receive messages
             foreach (Player player in _players)
@@ -58,20 +56,28 @@ namespace Strategy.Net
                     {
                         command.Time = _match.Match.Time + _match.SchedulingOffset;
                         BroadcastCommand(command);
-                        _sentCommand[(int)player.Id] = true;
                     }
                 }
             }
 
-            _stepElapsed += time;
-            if (_stepElapsed > _match.StepTime)
-            {
-                SendNetworkCommands();
-                ReadNetworkCommands();
-                _stepElapsed -= _match.StepTime;
-            }
+            ReadNetworkCommands();
         }
 
+        /// <summary>
+        /// Notifies the input the step has ended.
+        /// </summary>
+        private void OnStepEnded(object matchObj, EventArgs args)
+        {
+            // send a synchronization command for each player
+            for (int i = 0; i < _players.Length; i++)
+            {
+                SynchronizationCommand command = new SynchronizationCommand(_players[i].Id, 0, 0);
+                command.Time = _match.StepStart + _match.SchedulingOffset;
+                BroadcastCommand(command);
+            }
+
+            SendNetworkCommands();
+        }
 
         /// <summary>
         /// Sends a command to all remote players.
@@ -94,18 +100,10 @@ namespace Strategy.Net
         }
 
         /// <summary>
-        /// Sends no-op commands for players who have not acted this step.
+        /// Sends all pending commands.
         /// </summary>
         private void SendNetworkCommands()
         {
-            for (int i = 0; i < _players.Length; i++)
-            {
-                // always send a tick command
-                NoOpCommand command = new NoOpCommand(_players[i].Id);
-                command.Time = Math.Max(_match.Match.Time - _match.StepTime / 2 + _match.SchedulingOffset, 0);
-                BroadcastCommand(command);
-            }
-            Array.Clear(_sentCommand, 0, _sentCommand.Length);
         }
 
         /// <summary>
@@ -142,8 +140,5 @@ namespace Strategy.Net
         private LocalNetworkGamer _sendReceiveGamer;
         private CommandWriter _writer;
         private CommandReader _reader;
-
-        private int _stepElapsed;
-        private bool[] _sentCommand;
     }
 }
