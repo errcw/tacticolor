@@ -45,12 +45,11 @@ namespace Strategy.Net
             _match = match;
             _commands = new List<Command>(match.PlayerCount * 3 * 10);
 
-            StepTime = 100;
             StepStart = 0;
+            StepTime = 100;
+            SchedulingOffset = 2 * StepTime;
             _stepEndTime = StepTime;
-            _firstSyncTime = _stepEndTime * 3;
-
-            SchedulingOffset = 2*StepTime;
+            _firstSyncStepTime = _stepEndTime + SchedulingOffset;
         }
 
         /// <summary>
@@ -77,7 +76,7 @@ namespace Strategy.Net
         {
             if (_match.Time + time >= _stepEndTime)
             {
-                if (HaveCommandsForStep(_stepEndTime) || _stepEndTime <= _firstSyncTime)
+                if (HaveCommandsForStep(_stepEndTime) || _stepEndTime <= _firstSyncStepTime)
                 {
                     if (StepEnded != null)
                     {
@@ -142,6 +141,6 @@ namespace Strategy.Net
 
         private List<Command> _commands;
         private long _stepEndTime;
-        private long _firstSyncTime;
+        private long _firstSyncStepTime;
     }
 }
