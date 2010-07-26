@@ -143,7 +143,12 @@ namespace Strategy.Net
         /// <summary>
         /// A hash of the game state at the end of the current step.
         /// </summary>
-        public int Hash { get; private set; }
+        public long Hash { get; private set; }
+
+        /// <summary>
+        /// The time associated with the hash.
+        /// </summary>
+        public long HashTime { get; private set; }
 
         /// <summary>
         /// Timing data to tune the step length.
@@ -154,21 +159,24 @@ namespace Strategy.Net
         {
         }
 
-        public SynchronizationCommand(PlayerId player, int hash, int timing) : base(Code, player)
+        public SynchronizationCommand(PlayerId player, long hash, long hashTime, int timing) : base(Code, player)
         {
             Hash = hash;
+            HashTime = hashTime;
             Timing = timing;
         }
 
         protected override void ReadImpl(PacketReader reader)
         {
-            Hash = reader.ReadInt32();
+            Hash = reader.ReadInt64();
+            HashTime = reader.ReadInt64();
             Timing = reader.ReadInt32();
         }
 
         protected override void WriteImpl(PacketWriter writer)
         {
             writer.Write(Hash);
+            writer.Write(HashTime);
             writer.Write(Timing);
         }
     }

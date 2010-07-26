@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 using Strategy.Gameplay;
 
@@ -45,11 +46,15 @@ namespace Strategy.Net
             _match = match;
             _commands = new List<Command>(match.PlayerCount * 3 * 10);
 
-            StepStart = 0;
             StepTime = 100;
-            SchedulingOffset = 2 * StepTime;
+            StepStart = 0;
             _stepEndTime = StepTime;
-            _firstSyncStepTime = _stepEndTime + SchedulingOffset;
+
+            SchedulingOffset = 1 * StepTime;
+
+            _readyStepStartTime = _stepEndTime + 2 * SchedulingOffset;
+            _readyStepStartTimes = new long[match.PlayerCount];
+            _stepHashes = new Dictionary<long, long>(2);
         }
 
         /// <summary>
@@ -59,12 +64,12 @@ namespace Strategy.Net
         {
             if (command is SynchronizationCommand)
             {
-                SynchronizationCommand sync = (SynchronizationCommand)command;
+                HandleSynchronization((SynchronizationCommand)command);
             }
             else
             {
-            }
                 _commands.Add(command);
+            }
         }
 
         /// <summary>
@@ -76,13 +81,14 @@ namespace Strategy.Net
         {
             if (_match.Time + time >= _stepEndTime)
             {
-                if (HaveCommandsForStep(_stepEndTime) || _stepEndTime <= _firstSyncStepTime)
+                long nextStepStart = _stepEndTime;
+                if (nextStepStart <= _readyStepStartTime)
                 {
                     if (StepEnded != null)
                     {
                         StepEnded(this, EventArgs.Empty);
                     }
-                    StepStart = _stepEndTime;
+                    StepStart = nextStepStart;
                     _stepEndTime = StepStart + StepTime;
                 }
                 else
@@ -99,6 +105,9 @@ namespace Strategy.Net
                     bool executed = command.Execute(_match);
                     if (!executed)
                     {
+                        // do not consider this a fatal error because a player may issue
+                        // more piece placement commands than is possible because she
+                        // does not see the piece assigment reflected immediately
                         Debug.WriteLine("Tried to execute invalid command " + command);
                     }
                 }
@@ -108,39 +117,49 @@ namespace Strategy.Net
             _match.Update(time);
         }
 
-        /// <summary>
-        /// Returns true if we received commands from every player for a time step.
-        /// </summary>
-        private bool HaveCommandsForStep(long stepStartTime)
+        private void HandleSynchronization(SynchronizationCommand command)
         {
-            bool[] received = new bool[_match.PlayerCount];
-            long stepEndTime = stepStartTime + StepTime;
+            // find the next step that is ready to be simulated
+            int playerIdx = (int)command.Player;
+            _readyStepStartTimes[playerIdx] = Math.Max(command.Time, _readyStepStartTimes[playerIdx]);
+            _readyStepStartTime = _readyStepStartTimes.Min();
 
-            foreach (Command command in _commands)
+            // verify that the other players are running as expected
+            if (command.Time > _match.Time + SchedulingOffset)
             {
-                if (command.Time >= stepStartTime && command.Time < stepEndTime)
+                Debug.WriteLine("Got a sync command from " + command.Player + " for time " + command.Time + " but match time is only " + _match.Time);
+                throw new OutOfSyncException("Got a sync command from too far in the future");
+            }
+            long expectedHash;
+            if (_stepHashes.TryGetValue(command.HashTime, out expectedHash))
+            {
+                if (command.Hash != expectedHash)
                 {
-                    received[(int)command.Player] = true;
+                    Debug.WriteLine("Got hash " + command.Hash + " from " + command.Player + " but expected hash " + expectedHash);
+                    throw new OutOfSyncException("Match simulation out of sync");
                 }
             }
-
-            bool receivedAll = true;
-            for (int i = 0; i < received.Length; i++)
+            else
             {
-                if (!received[i])
-                {
-                    receivedAll = false;
-                    break;
-                }
+                _stepHashes[command.HashTime] = command.Hash;
             }
-
-            return receivedAll;
         }
 
         private Match _match;
 
         private List<Command> _commands;
+
         private long _stepEndTime;
-        private long _firstSyncStepTime;
+        private long _readyStepStartTime;
+        private long[] _readyStepStartTimes;
+        private Dictionary<long, long> _stepHashes;
+    }
+
+    /// <summary>
+    /// Signals that the game simulation has drifted out of sync with other clients.
+    /// </summary>
+    public class OutOfSyncException : Exception
+    {
+        public OutOfSyncException(string reason) : base(reason) { }
     }
 }

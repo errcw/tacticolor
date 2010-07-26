@@ -142,6 +142,6 @@ namespace Strategy
         private LocalInputView[] _inputViews;
         private IsometricBatch _isoBatch;
 
-        private const int DebugPlayers = 1;
+        private const int DebugPlayers = 2;
     }
 }

@@ -71,7 +71,7 @@ namespace Strategy.Net
             // send a synchronization command for each player
             for (int i = 0; i < _players.Length; i++)
             {
-                SynchronizationCommand command = new SynchronizationCommand(_players[i].Id, 0, 0);
+                SynchronizationCommand command = new SynchronizationCommand(_players[i].Id, _match.Match.GetStateHash(), _match.StepStart, 0);
                 command.Time = _match.StepStart + _match.SchedulingOffset;
                 BroadcastCommand(command);
             }

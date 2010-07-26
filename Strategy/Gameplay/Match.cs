@@ -388,6 +388,14 @@ namespace Strategy.Gameplay
         }
 
         /// <summary>
+        /// Calculates a hash of the match state.
+        /// </summary>
+        public long GetStateHash()
+        {
+            return 0;
+        }
+
+        /// <summary>
         /// Configures the initial territory counts and state.
         /// </summary>
         private void SetInitialTerritoryState()

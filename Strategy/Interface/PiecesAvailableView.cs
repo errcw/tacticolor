@@ -68,8 +68,6 @@ namespace Strategy.Interface
                     _hideAnimation = null;
                 }
             }
-
-            System.Diagnostics.Debug.Assert(_created.Count == _match.PiecesAvailable[(int)_player]);
         }
 
         public void Draw(SpriteBatch spriteBatch)
