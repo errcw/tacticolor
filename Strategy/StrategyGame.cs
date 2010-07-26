@@ -1,20 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-using Strategy.Gameplay;
 using Strategy.Interface;
+using Strategy.Interface.Screens;
 using Strategy.Library;
 using Strategy.Library.Components;
-using Strategy.Library.Extensions;
-using Strategy.Library.Input;
-using Strategy.Net;
+using Strategy.Library.Screen;
 using Strategy.Properties;
 
 namespace Strategy
@@ -33,56 +28,22 @@ namespace Strategy
 
             Content.RootDirectory = "Content";
 
+            Components.Add(_screens = new ScreenStack(this));
+            Components.Add(_trial = new TrialModeObserverComponent(this));
+
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
             //Components.Add(new FPSOverlay(this));
             //Components.Add(new GamerServicesComponent(this));
-
-            _context = new InterfaceContext(this, Content, new IsometricParameters(17, 9, 16, -9));
-        }
-
-        protected override void Initialize()
-        {
-            base.Initialize();
-            _random = new Random();
-            _generator = new MapGenerator(_random);
-            StartNewMatch();
         }
 
         protected override void LoadContent()
         {
-            _isoBatch = new IsometricBatch(new SpriteBatch(GraphicsDevice));
             base.LoadContent();
+
+            GameplayScreen gameplayScreen = new GameplayScreen(this);
+            _screens.Push(gameplayScreen);
         }
 
-        private void StartNewMatch()
-        {
-            // create the model
-            Map map = _generator.Generate(16, DebugPlayers, 4, 16);
-            Match match = new Match(map, _random);
-            LocalInput[] inputs = new LocalInput[DebugPlayers];
-            for (int p = 0; p < inputs.Length; p++)
-            {
-                inputs[p] = new LocalInput((PlayerId)p, match, _context);
-                inputs[p].Controller = (PlayerIndex)p;
-            }
-            Player[] players = new Player[DebugPlayers];
-            for (int p = 0; p < players.Length; p++)
-            {
-                players[p] = new Player();
-                players[p].Id = (PlayerId)p;
-                players[p].Input = inputs[p];
-            }
-            _lockstepMatch = new LockstepMatch(match);
-            _lockstepInput = new LockstepInput(_lockstepMatch, players);
-
-            // then the view
-            _matchView = new MatchView(match, players, _context);
-            _inputViews = new LocalInputView[DebugPlayers];
-            for (int p = 0; p < inputs.Length; p++)
-            {
-                _inputViews[p] = new LocalInputView(inputs[p], _context);
-            }
-        }
 
         /// <summary>
         /// Updates the game state.
@@ -90,24 +51,18 @@ namespace Strategy
         /// <param name="gameTime">A snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            base.Update(gameTime);
+            if (_screens.ActiveScreen == null)
             {
                 Exit();
             }
 
-            float seconds = gameTime.GetElapsedSeconds();
-            int milliseconds = gameTime.GetElapsedMilliseconds();
-
-            _lockstepMatch.Update(milliseconds);
-            _lockstepInput.Update(milliseconds);
-
-            _matchView.Update(seconds);
-            for (int p = 0; p < _inputViews.Length; p++)
+#if DEBUG
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
-                _inputViews[p].Update(seconds);
+                Exit();
             }
-
-            base.Update(gameTime);
+#endif
         }
 
         /// <summary>
@@ -117,31 +72,10 @@ namespace Strategy
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(new Color(45, 45, 45));
-
-            _matchView.Draw();
-
-            _isoBatch.Begin();
-            for (int p = 0; p < _inputViews.Length; p++)
-            {
-                _inputViews[p].Draw(_isoBatch);
-            }
-            _isoBatch.End();
-
             base.Draw(gameTime);
         }
 
-        private InterfaceContext _context;
-
-        private Random _random;
-        private MapGenerator _generator;
-
-        private LockstepInput _lockstepInput;
-        private LockstepMatch _lockstepMatch;
-
-        private MatchView _matchView;
-        private LocalInputView[] _inputViews;
-        private IsometricBatch _isoBatch;
-
-        private const int DebugPlayers = 2;
+        private ScreenStack _screens;
+        private TrialModeObserverComponent _trial;
     }
 }

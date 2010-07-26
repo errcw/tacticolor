@@ -73,6 +73,7 @@
     <Compile Include="Interface\PieceView.cs" />
     <Compile Include="Interface\Player.cs" />
     <Compile Include="Interface\PlayerView.cs" />
+    <Compile Include="Interface\Screens\GameplayScreen.cs" />
     <Compile Include="Interface\TerritoryView.cs" />
     <Compile Include="Interface\InterfaceContext.cs" />
     <Compile Include="Library\BresenhamIterator.cs" />
@@ -92,6 +93,8 @@
     <Compile Include="Library\Input\Polling.cs" />
     <Compile Include="Library\Input\Vibration.cs" />
     <Compile Include="Library\Interpolation.cs" />
+    <Compile Include="Library\Screen\Screen.cs" />
+    <Compile Include="Library\Screen\ScreenStack.cs" />
     <Compile Include="Library\Sprite\CompositeAnimation.cs" />
     <Compile Include="Library\Sprite\CompositeSprite.cs" />
     <Compile Include="Library\Sprite\DelayAnimation.cs" />

@@ -46,11 +46,11 @@ namespace Strategy.Net
             _match = match;
             _commands = new List<Command>(match.PlayerCount * 3 * 10);
 
-            StepTime = 100;
+            StepTime = 35;
             StepStart = 0;
             _stepEndTime = StepTime;
 
-            SchedulingOffset = 1 * StepTime;
+            SchedulingOffset = 2 * StepTime;
 
             _readyStepStartTime = _stepEndTime + 2 * SchedulingOffset;
             _readyStepStartTimes = new long[match.PlayerCount];

@@ -3,6 +3,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Strategy.Library.Extensions;
 using Strategy.Library.Input;
 
 namespace Strategy.Library.Screen
@@ -65,32 +66,32 @@ namespace Strategy.Library.Screen
         /// <summary>
         /// Updates this screen.
         /// </summary>
-        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
-        public void Update(float time)
+        /// <param name="time">The time since the last update.</param>
+        public void Update(GameTime gameTime)
         {
             switch (State)
             {
                 case ScreenState.Active:
-                    UpdateActive(time);
+                    UpdateActive(gameTime);
                     break;
                 case ScreenState.Inactive:
-                    UpdateInactive(time);
+                    UpdateInactive(gameTime);
                     break;
                 case ScreenState.TransitionOn:
-                    _transitionElapsed += time;
+                    _transitionElapsed += gameTime.GetElapsedSeconds();
                     if (_transitionElapsed > TransitionOnTime)
                     {
                         OnStateChanged(ScreenState.Active);
                     }
-                    UpdateTransitionOn(time, MathHelper.Clamp(_transitionElapsed / TransitionOnTime, 0f, 1f), _transitionStack);
+                    UpdateTransitionOn(gameTime, MathHelper.Clamp(_transitionElapsed / TransitionOnTime, 0f, 1f), _transitionStack);
                     break;
                 case ScreenState.TransitionOff:
-                    _transitionElapsed += time;
+                    _transitionElapsed += gameTime.GetElapsedSeconds();
                     if (_transitionElapsed > TransitionOffTime)
                     {
                         OnStateChanged(ScreenState.Inactive);
                     }
-                    UpdateTransitionOff(time, MathHelper.Clamp(_transitionElapsed / TransitionOffTime, 0f, 1f), _transitionStack);
+                    UpdateTransitionOff(gameTime, MathHelper.Clamp(_transitionElapsed / TransitionOffTime, 0f, 1f), _transitionStack);
                     break;
             }
         }
@@ -151,36 +152,36 @@ namespace Strategy.Library.Screen
         /// <summary>
         /// Updates this screen when it is active.
         /// </summary>
-        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
-        protected virtual void UpdateActive(float time)
+        /// <param name="time">The time since the last update.</param>
+        protected virtual void UpdateActive(GameTime gameTime)
         {
         }
 
         /// <summary>
         /// Updates this scren when it is inactive.
         /// </summary>
-        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
-        protected virtual void UpdateInactive(float time)
+        /// <param name="time">The time since the last update.</param>
+        protected virtual void UpdateInactive(GameTime gameTime)
         {
         }
 
         /// <summary>
         /// Updates this screen when it is transitioning on.
         /// </summary>
-        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
+        /// <param name="time">The time since the last update.</param>
         /// <param name="progress">The percentage completion of the transition.</param>
         /// <param name="pushed">True if the screen was pushed on the stack; otherwise, false.</param>
-        protected virtual void UpdateTransitionOn(float time, float progress, bool pushed)
+        protected virtual void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
         {
         }
 
         /// <summary>
         /// Updates this screen when it is transitioning off.
         /// </summary>
-        /// <param name="time">The elapsed time, in seconds, since the last update.</param>
+        /// <param name="time">The time since the last update.</param>
         /// <param name="progress">The percentage completion of the transition.</param>
         /// <param name="popped">True if the screen was popped from the stack; otherwise, false.</param>
-        protected virtual void UpdateTransitionOff(float time, float progress, bool popped)
+        protected virtual void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
         {
         }
 

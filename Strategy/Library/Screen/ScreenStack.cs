@@ -39,13 +39,12 @@ namespace Strategy.Library.Screen
         /// <param name="gameTime">A snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
-            float time = gameTime.GetElapsedSeconds();
-            if (time <= 0f || !Game.IsActive)
+            if (gameTime.ElapsedGameTime.TotalSeconds <= 0 || !Game.IsActive)
             {
                 return; // discard "empty" updates
             }
-            _stackScreens.ForEach(screen => screen.Update(time));
-            _poppedScreens.ForEach(screen => screen.Update(time));
+            _stackScreens.ForEach(screen => screen.Update(gameTime));
+            _poppedScreens.ForEach(screen => screen.Update(gameTime));
             _poppedScreens.RemoveAll(screen => screen.State == ScreenState.Inactive);
         }
 
