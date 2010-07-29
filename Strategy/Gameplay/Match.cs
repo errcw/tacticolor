@@ -37,6 +37,11 @@ namespace Strategy.Gameplay
         public event EventHandler<PlayerEventArgs> Ended;
 
         /// <summary>
+        /// The maximum number of players in a match.
+        /// </summary>
+        public const int MaxPlayers = 4;
+
+        /// <summary>
         /// The maximum number of pieces available to place by a player.
         /// </summary>
         public readonly int MaxPiecesAvailable = 5;
