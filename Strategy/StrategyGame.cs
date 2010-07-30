@@ -33,7 +33,7 @@ namespace Strategy
 
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
             //Components.Add(new FPSOverlay(this));
-            //Components.Add(new GamerServicesComponent(this));
+            Components.Add(new GamerServicesComponent(this));
         }
 
         protected override void LoadContent()
@@ -41,7 +41,9 @@ namespace Strategy
             base.LoadContent();
 
             GameplayScreen gameplayScreen = new GameplayScreen(this);
-            _screens.Push(gameplayScreen);
+            NetworkScreen networkScreen = new NetworkScreen(this, false);
+            _screens.Push(networkScreen);
+            //_screens.Push(gameplayScreen);
         }
 
 
