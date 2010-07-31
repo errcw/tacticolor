@@ -41,7 +41,7 @@ namespace Strategy
             base.LoadContent();
 
             GameplayScreen gameplayScreen = new GameplayScreen(this);
-            NetworkScreen networkScreen = new NetworkScreen(this, false);
+            LobbyScreen networkScreen = new LobbyScreen(this, false);
             _screens.Push(networkScreen);
             //_screens.Push(gameplayScreen);
         }
