@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Library;
@@ -36,9 +37,9 @@ namespace Strategy.Interface.Screens
                 _workerThread.Start();
 
                 // load the content on the main thread
-                _loader.LoadTextures("Images");
-                _loader.LoadSounds("Sounds");
-                _loader.LoadFonts("Fonts");
+                _loader.Load<Texture2D>("Images");
+                _loader.Load<SoundEffect>("Sounds");
+                _loader.Load<SpriteFont>("Fonts");
 
                 _workerExit.Set();
                 _workerThread.Join();

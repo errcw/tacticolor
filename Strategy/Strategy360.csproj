@@ -77,6 +77,8 @@
     <Compile Include="Interface\Screens\AsyncBusyScreen.cs" />
     <Compile Include="Interface\Screens\GameplayScreen.cs" />
     <Compile Include="Interface\Screens\LobbyScreen.cs" />
+    <Compile Include="Interface\Screens\MainMenuScreen.cs" />
+    <Compile Include="Interface\Screens\TitleScreen.cs" />
     <Compile Include="Interface\TerritoryView.cs" />
     <Compile Include="Interface\InterfaceContext.cs" />
     <Compile Include="Library\BresenhamIterator.cs" />
@@ -84,6 +86,7 @@
     <Compile Include="Library\Components\FPSOverlayComponent.cs" />
     <Compile Include="Library\Components\TrialModeObserverComponent.cs" />
     <Compile Include="Library\Components\TitleSafeAreaOverlayComponent.cs" />
+    <Compile Include="Library\ContentPreloader.cs" />
     <Compile Include="Library\Easing.cs" />
     <Compile Include="Library\Extensions\GameExtensions.cs" />
     <Compile Include="Library\Extensions\GameTimeExtensions.cs" />

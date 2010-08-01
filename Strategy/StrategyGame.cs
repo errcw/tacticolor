@@ -40,9 +40,12 @@ namespace Strategy
         {
             base.LoadContent();
 
+            TitleScreen titleScreen = new TitleScreen(this);
             GameplayScreen gameplayScreen = new GameplayScreen(this);
-            LobbyScreen networkScreen = new LobbyScreen(this, false);
-            _screens.Push(networkScreen);
+            LobbyScreen lobbyScreen = new LobbyScreen(this, false);
+
+            _screens.Push(titleScreen);
+            //_screens.Push(lobbyScreen);
             //_screens.Push(gameplayScreen);
         }
 

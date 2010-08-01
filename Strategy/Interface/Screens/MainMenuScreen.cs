@@ -8,11 +8,11 @@ using Strategy.Library.Screen;
 namespace Strategy.Interface.Screens
 {
     /// <summary>
-    /// Displays the title.
+    /// Displays the main menu.
     /// </summary>
-    public class TitleScreen : Screen
+    public class MainMenuScreen : Screen
     {
-        public TitleScreen(StrategyGame game)
+        public MainMenuScreen(StrategyGame game)
         {
         }
 

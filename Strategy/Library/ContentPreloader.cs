@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Storage;
 
 namespace Strategy.Library
 {
@@ -13,20 +12,20 @@ namespace Strategy.Library
         public ContentPreloader(ContentManager content)
         {
             _content = content;
+            _contentPath = Path.Combine(StorageContainer.TitleLocation, _content.RootDirectory);
         }
 
-        public void LoadTextures(string directory)
+        public void Load<T>(string directory)
         {
-        }
-
-        public void LoadSounds(string directory)
-        {
-        }
-
-        public void LoadFonts(string directory)
-        {
+            string contentFullPath = Path.Combine(_contentPath, directory);
+            foreach (string file in Directory.GetFiles(contentFullPath))
+            {
+                string filePath = Path.Combine(directory, file);
+                _content.Load<T>(filePath);
+            }
         }
 
         private ContentManager _content;
+        private string _contentPath;
     }
 }
