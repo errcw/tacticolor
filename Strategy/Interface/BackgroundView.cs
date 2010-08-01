@@ -15,7 +15,7 @@ namespace Strategy.Interface
     {
         public BackgroundView(InterfaceContext context)
         {
-            _background = context.Content.Load<Texture2D>("Background");
+            _background = context.Content.Load<Texture2D>("Images/Background");
         }
 
         public void Draw(SpriteBatch spriteBatch)

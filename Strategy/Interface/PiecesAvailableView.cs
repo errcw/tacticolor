@@ -24,7 +24,7 @@ namespace Strategy.Interface
             SolidColor = GetPlayerColor(_player);
             TransparentColor = new Color(SolidColor, 0);
 
-            Texture2D pieceSprite = context.Content.Load<Texture2D>("PieceAvailable");
+            Texture2D pieceSprite = context.Content.Load<Texture2D>("Images/PieceAvailable");
             int sprites = _match.MaxPiecesAvailable + 1;
             _unused = new Queue<Sprite>(sprites);
             _created = new Stack<Sprite>(sprites);

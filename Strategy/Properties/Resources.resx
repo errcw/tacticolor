@@ -141,6 +141,9 @@
   <data name="ExceptionTrace" xml:space="preserve">
     <value>Stack Trace: {0}</value>
   </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
   <data name="PurchaseFailedButton" xml:space="preserve">
     <value>OK</value>
   </data>

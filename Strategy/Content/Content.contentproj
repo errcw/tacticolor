@@ -45,49 +45,49 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectionCol.png">
+    <Compile Include="Images\ConnectionCol.png">
       <Name>ConnectionCol</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectionRow.png">
+    <Compile Include="Images\ConnectionRow.png">
       <Name>ConnectionRow</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Background.png">
+    <Compile Include="Images\Background.png">
       <Name>Background</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Tile.png">
+    <Compile Include="Images\Tile.png">
       <Name>Tile</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TileHolder.png">
+    <Compile Include="Images\TileHolder.png">
       <Name>TileHolder</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Piece.png">
+    <Compile Include="Images\Piece.png">
       <Name>Piece</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cursor.png">
+    <Compile Include="Images\Cursor.png">
       <Name>Cursor</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
@@ -108,29 +108,48 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PieceAvailable.png">
+    <Compile Include="Images\PieceAvailable.png">
       <Name>PieceAvailable</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PieceReadyOverlay.png">
+    <Compile Include="Images\PieceReadyOverlay.png">
       <Name>PieceReadyOverlay</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PieceSelectedOverlay.png">
+    <Compile Include="Images\PieceSelectedOverlay.png">
       <Name>PieceSelectedOverlay</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PieceShadow.png">
+    <Compile Include="Images\PieceShadow.png">
       <Name>PieceShadow</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Sounds\MenuMove.wav">
+      <Name>MenuMove</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Sounds\MenuSelect.wav">
+      <Name>MenuSelect</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Title.png">
+      <Name>Title</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

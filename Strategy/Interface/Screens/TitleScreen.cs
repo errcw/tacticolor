@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 
+using Strategy.Properties;
 using Strategy.Library;
 using Strategy.Library.Screen;
 
@@ -23,10 +24,20 @@ namespace Strategy.Interface.Screens
             _workerThread = new Thread(UpdateDrawWorker);
             _workerExit = new ManualResetEvent(false);
             _device = game.GraphicsDevice;
+
+            // load the initial content for the loading screen
+            _background = game.Content.Load<Texture2D>("Images/Background");
+            _title = game.Content.Load<Texture2D>("Images/Title");
+            _loadingFont = game.Content.Load<SpriteFont>("Fonts/TextSmall");
+            _spriteBatch = new SpriteBatch(_device);
         }
 
         public override void Draw()
         {
+            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
+            _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
+            _spriteBatch.Draw(_title, Vector2.Zero, Color.White);
+            _spriteBatch.End();
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -95,7 +106,14 @@ namespace Strategy.Interface.Screens
 
             try
             {
-                _device.Clear(Color.White);
+                _device.Clear(new Color(45, 45, 45));
+
+                _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
+                _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
+                _spriteBatch.Draw(_title, Vector2.Zero, Color.White);
+                _spriteBatch.DrawString(_loadingFont, Resources.Loading, Vector2.Zero, Color.DarkGray);
+                _spriteBatch.End();
+
                 _device.Present();
             }
             catch
@@ -111,6 +129,11 @@ namespace Strategy.Interface.Screens
         private long _lastWorkerUpdateTime;
         private EventWaitHandle _workerExit;
         private GraphicsDevice _device;
+
+        private Texture2D _background;
+        private Texture2D _title;
+        private SpriteFont _loadingFont;
+        private SpriteBatch _spriteBatch;
 
         private const int WorkerUpdateTime = 1000 / 30;
     }

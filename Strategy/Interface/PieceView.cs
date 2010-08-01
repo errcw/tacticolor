@@ -31,17 +31,17 @@ namespace Strategy.Interface
             PlayerColor = GetPlayerColor(_piece.Owner);
             UnreadyColor = Color.Lerp(PlayerColor, Color.White, 0.75f);
 
-            Texture2D pieceTex = context.Content.Load<Texture2D>("Piece");
+            Texture2D pieceTex = context.Content.Load<Texture2D>("Images/Piece");
             ImageSprite pieceBase = new ImageSprite(pieceTex);
             pieceBase.Origin = new Vector2(12, 22);
             pieceBase.Color = PlayerColor;
 
-            Texture2D pieceShadowTex = context.Content.Load<Texture2D>("PieceShadow");
+            Texture2D pieceShadowTex = context.Content.Load<Texture2D>("Images/PieceShadow");
             _shadowSprite = new ImageSprite(pieceShadowTex);
             _shadowSprite.Origin = pieceBase.Origin;
             _shadowSprite.Color = PlayerColor;
 
-            Texture2D readyTex = context.Content.Load<Texture2D>("PieceReadyOverlay");
+            Texture2D readyTex = context.Content.Load<Texture2D>("Images/PieceReadyOverlay");
             _readySprite = new ImageSprite(readyTex);
             _readySprite.Origin = pieceBase.Origin;
             _readySprite.Color = _piece.Ready ? PlayerColor : UnreadyColor;

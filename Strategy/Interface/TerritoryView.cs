@@ -31,8 +31,8 @@ namespace Strategy.Interface
 
             CreateHolders();
 
-            Texture2D tile = context.Content.Load<Texture2D>("Tile");
-            Texture2D tileHolder = context.Content.Load<Texture2D>("TileHolder");
+            Texture2D tile = context.Content.Load<Texture2D>("Images/Tile");
+            Texture2D tileHolder = context.Content.Load<Texture2D>("Images/TileHolder");
             Color color = GetPlayerColor(territory.Owner);
 
             _sprites = new Sprite[_territory.Area.Count];

@@ -23,7 +23,7 @@ namespace Strategy.Interface
             _input.HoveredChanged += OnHoveredChanged;
             _input.SelectedChanged += OnSelectedChanged;
 
-            Texture2D cursorTex = context.Content.Load<Texture2D>("Cursor");
+            Texture2D cursorTex = context.Content.Load<Texture2D>("Images/Cursor");
 
             _cursorHover = new ImageSprite(cursorTex);
             _cursorHover.Color = GetPlayerColor(input.Player);

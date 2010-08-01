@@ -37,7 +37,7 @@ namespace Strategy.Interface.Screens
         {
             if (_image == null)
             {
-                _image = Stack.Game.Content.Load<Texture2D>("PieceAvailable");
+                _image = Stack.Game.Content.Load<Texture2D>("Images/PieceAvailable");
             }
         }
 
