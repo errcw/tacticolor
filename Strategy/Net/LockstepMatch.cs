@@ -54,6 +54,10 @@ namespace Strategy.Net
 
             _readyStepStartTime = _stepEndTime + 2 * SchedulingOffset;
             _readyStepStartTimes = new long[match.PlayerCount];
+            for (int i = 0; i < _readyStepStartTimes.Length; i++)
+            {
+                _readyStepStartTimes[i] = _readyStepStartTime;
+            }
             _stepHashes = new Dictionary<long, long>(2);
         }
 
@@ -115,6 +119,7 @@ namespace Strategy.Net
             _commands.RemoveAll(c => c.Time >= _match.Time && c.Time < _match.Time + time);
 
             _match.Update(time);
+            Debug.Assert(_match.Time <= _readyStepStartTime + StepTime);
         }
 
         private void HandleSynchronization(SynchronizationCommand command)
@@ -123,9 +128,10 @@ namespace Strategy.Net
             int playerIdx = (int)command.Player;
             _readyStepStartTimes[playerIdx] = Math.Max(command.Time, _readyStepStartTimes[playerIdx]);
             _readyStepStartTime = _readyStepStartTimes.Min();
+            Debug.WriteLine("Setting ready time to " + _readyStepStartTime);
 
             // verify that the other players are running as expected
-            if (command.Time > _match.Time + SchedulingOffset)
+            if (command.Time > _match.Time + SchedulingOffset + StepTime)
             {
                 Debug.WriteLine("Got a sync command from " + command.Player + " for time " + command.Time + " but match time is only " + _match.Time);
                 throw new OutOfSyncException("Got a sync command from too far in the future");

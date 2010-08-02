@@ -68,12 +68,15 @@ namespace Strategy.Net
         /// </summary>
         private void OnStepEnded(object matchObj, EventArgs args)
         {
-            // send a synchronization command for each player
+            // send a synchronization command for each local player
             foreach (Player player in _players)
             {
-                SynchronizationCommand command = new SynchronizationCommand(player.Id, _match.Match.GetStateHash(), _match.StepStart, 0);
-                command.Time = _match.StepStart + _match.SchedulingOffset;
-                BroadcastCommand(command);
+                if (player.Gamer == null || player.Gamer.IsLocal)
+                {
+                    SynchronizationCommand command = new SynchronizationCommand(player.Id, _match.Match.GetStateHash(), _match.StepStart, 0);
+                    command.Time = _match.StepStart + _match.SchedulingOffset;
+                    BroadcastCommand(command);
+                }
             }
 
             SendNetworkCommands();

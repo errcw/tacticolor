@@ -46,11 +46,14 @@ namespace Strategy.Interface.Screens
         {
             if (_result != null && _result.IsCompleted)
             {
+                // the callback might want to push new screens so pop first
+                Stack.Pop();
+
                 if (OperationCompleted != null)
                 {
                     OperationCompleted(this, new AsyncOperationCompletedEventArgs(_result));
                 }
-                Stack.Pop();
+
                 _result = null;
             }
         }

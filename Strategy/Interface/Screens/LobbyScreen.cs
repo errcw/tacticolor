@@ -41,14 +41,12 @@ namespace Strategy.Interface.Screens
             }
             else
             {
-                _session.Update();
-
                 ReceiveSeeds();
 
                 _input.Update(gameTime.GetElapsedSeconds());
                 HandleInput();
 
-                if (_session.IsHost && _session.IsEveryoneReady)
+                if (_session.IsHost && _session.IsEveryoneReady && _session.SessionState == NetworkSessionState.Lobby)
                 {
                     _session.StartGame();
                 }
@@ -168,6 +166,7 @@ namespace Strategy.Interface.Screens
             _session.GameStarted += OnGameStarted;
             _session.GameEnded += OnGameEnded;
             _session.SessionEnded += OnSessionEnded;
+            NetworkSessionComponent.Create(Stack.Game, _session);
         }
 
         private void OnGamerJoined(object sender, GamerJoinedEventArgs args)
@@ -221,6 +220,13 @@ namespace Strategy.Interface.Screens
             {
                 _players[p].Id = (PlayerId)p;
             }
+
+            Random gameRandom = new Random(_seed);
+            MapGenerator generator = new MapGenerator(gameRandom);
+            Map map = generator.Generate(16, _players.Count, 1, 2);
+
+            GameplayScreen gameplayScreen = new GameplayScreen((StrategyGame)Stack.Game, _players, map, gameRandom);
+            Stack.Push(gameplayScreen);
         }
 
         private void OnGameEnded(object sender, GameEndedEventArgs args)
@@ -237,6 +243,12 @@ namespace Strategy.Interface.Screens
         {
             Player player = new Player();
             player.Gamer = gamer;
+            // XXX fake the controler
+            if (gamer.IsLocal)
+            {
+                player.Controller = PlayerIndex.One;
+            }
+
             _players.Add(player);
         }
 
@@ -288,6 +300,7 @@ namespace Strategy.Interface.Screens
                         // mark this player as ready
                         if (_seed != 0)
                         {
+                            Debug.WriteLine(player.Gamer.Gamertag + " is ready");
                             player.Gamer.IsReady = true;
                         }
                     }
@@ -312,6 +325,7 @@ namespace Strategy.Interface.Screens
                         if (player.Gamer.IsReady)
                         {
                             // back out of the ready state
+                            Debug.WriteLine(player.Gamer.Gamertag + " is unready");
                             player.Gamer.IsReady = false;
                         }
                         else
