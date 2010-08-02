@@ -31,15 +31,6 @@ namespace Strategy.Interface
         public PlayerId Player { get; private set; }
 
         /// <summary>
-        /// The controller polled for this input.
-        /// </summary>
-        public PlayerIndex Controller
-        {
-            get { return _input.Controller.Value; }
-            set { _input.Controller = value; }
-        }
-
-        /// <summary>
         /// The territory currently hovered.
         /// </summary>
         public Territory Hovered { get; private set; }
@@ -49,13 +40,14 @@ namespace Strategy.Interface
         /// </summary>
         public Territory Selected { get; private set; }
 
-        public LocalInput(PlayerId player, Match match, InterfaceContext context)
+        public LocalInput(PlayerId player, PlayerIndex controller, Match match, InterfaceContext context)
         {
             Player = player;
             _match = match;
             _context = context;
 
             _input = new Input(context.Game);
+            _input.Controller = controller;
             _input.Register(Move, (state) => state.ThumbSticks.Left.LengthSquared() >= MoveTolerance);
             _input.Register(MoveDirection, Polling.LeftThumbStick);
             _input.Register(Action, Polling.One(Buttons.A));

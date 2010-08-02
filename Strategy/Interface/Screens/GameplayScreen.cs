@@ -15,7 +15,9 @@ namespace Strategy.Interface.Screens
     {
         public GameplayScreen(StrategyGame game, ICollection<Player> players, Map map, Random random)
         {
-            _isoBatch = new IsometricBatch(new SpriteBatch(game.GraphicsDevice));
+            _spriteBatch = new SpriteBatch(game.GraphicsDevice);
+            _isoBatch = new IsometricBatch(_spriteBatch);
+
             _context = new InterfaceContext(game, game.Content, new IsometricParameters(17, 9, 16, -9));
 
             // create the model
@@ -25,9 +27,7 @@ namespace Strategy.Interface.Screens
             {
                 if (player.Controller.HasValue)
                 {
-                    LocalInput input = new LocalInput(player.Id, match, _context);
-                    input.Controller = player.Controller.Value;
-                    player.Input = input;
+                    player.Input = new LocalInput(player.Id, player.Controller.Value, match, _context);
                 }
             }
             _lockstepInput = new LockstepInput(_lockstepMatch, players);
@@ -35,8 +35,10 @@ namespace Strategy.Interface.Screens
             // create the view
             _matchView = new MatchView(match, players, _context);
             _inputViews = new List<LocalInputView>(players.Count);
+            _playerViews = new List<PlayerView>(players.Count);
             foreach (Player player in players)
             {
+                _playerViews.Add(new PlayerView(player, _context));
                 LocalInput input = player.Input as LocalInput;
                 if (input != null)
                 {
@@ -45,30 +47,29 @@ namespace Strategy.Interface.Screens
             }
         }
 
-
         protected override void UpdateActive(GameTime gameTime)
         {
             float seconds = gameTime.GetElapsedSeconds();
             int milliseconds = gameTime.GetElapsedMilliseconds();
 
-            _lockstepMatch.Update(milliseconds);
             _lockstepInput.Update(milliseconds);
+            _lockstepMatch.Update(milliseconds);
 
             _matchView.Update(seconds);
-            foreach (LocalInputView inputView in _inputViews)
-            {
-                inputView.Update(seconds);
-            }
+            _inputViews.ForEach(view => view.Update(seconds));
+            _playerViews.ForEach(view => view.Update(seconds));
         }
 
         public override void Draw()
         {
             _matchView.Draw();
+
+            _spriteBatch.Begin();
+            _playerViews.ForEach(view => view.Draw(_spriteBatch));
+            _spriteBatch.End();
+
             _isoBatch.Begin();
-            foreach (LocalInputView inputView in _inputViews)
-            {
-                inputView.Draw(_isoBatch);
-            }
+            _inputViews.ForEach(view => view.Draw(_isoBatch));
             _isoBatch.End();
         }
 
@@ -78,7 +79,10 @@ namespace Strategy.Interface.Screens
         private LockstepMatch _lockstepMatch;
 
         private MatchView _matchView;
-        private List<LocalInputView> _inputViews;
+        private ICollection<LocalInputView> _inputViews;
+        private ICollection<PlayerView> _playerViews;
+
+        private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;
     }
 }

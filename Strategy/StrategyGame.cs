@@ -44,10 +44,10 @@ namespace Strategy
         {
             base.LoadContent();
 
-            //CreateDebugGame();
+            CreateDebugGame();
 
-            TitleScreen titleScreen = new TitleScreen(this);
-            _screens.Push(titleScreen);
+            //TitleScreen titleScreen = new TitleScreen(this);
+            //_screens.Push(titleScreen);
         }
 
 
@@ -73,12 +73,12 @@ namespace Strategy
 
         private void CreateDebugGame()
         {
-            const int DebugPlayers = 2;
+            const int DebugPlayers = 4;
 
             Random random = new Random();
 
             MapGenerator generator = new MapGenerator(random);
-            Map map = generator.Generate(16, 2, 1, 2);
+            Map map = generator.Generate(16, DebugPlayers, 1, 2);
 
             Player[] players = new Player[DebugPlayers];
             for (int p = 0; p < players.Length; p++)
