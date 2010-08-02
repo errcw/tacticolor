@@ -5,10 +5,12 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using Strategy.Gameplay;
 using Strategy.Interface;
 using Strategy.Interface.Screens;
 using Strategy.Library;
 using Strategy.Library.Components;
+using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
 using Strategy.Properties;
 
@@ -34,19 +36,18 @@ namespace Strategy
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
             //Components.Add(new FPSOverlay(this));
             Components.Add(new GamerServicesComponent(this));
+
+            Services.AddService<MenuInput>(new MenuInput(this));
         }
 
         protected override void LoadContent()
         {
             base.LoadContent();
 
-            TitleScreen titleScreen = new TitleScreen(this);
-            GameplayScreen gameplayScreen = new GameplayScreen(this);
-            LobbyScreen lobbyScreen = new LobbyScreen(this, false);
+            CreateDebugGame();
 
-            _screens.Push(titleScreen);
-            //_screens.Push(lobbyScreen);
-            //_screens.Push(gameplayScreen);
+            //TitleScreen titleScreen = new TitleScreen(this);
+            //_screens.Push(titleScreen);
         }
 
 
@@ -68,6 +69,27 @@ namespace Strategy
                 Exit();
             }
 #endif
+        }
+
+        private void CreateDebugGame()
+        {
+            const int DebugPlayers = 2;
+
+            Random random = new Random();
+
+            MapGenerator generator = new MapGenerator(random);
+            Map map = generator.Generate(16, 2, 1, 2);
+
+            Player[] players = new Player[DebugPlayers];
+            for (int p = 0; p < players.Length; p++)
+            {
+                players[p] = new Player();
+                players[p].Id = (PlayerId)p;
+                players[p].Controller = (PlayerIndex)p;
+            }
+
+            GameplayScreen gameplayScreen = new GameplayScreen(this, players, map, random);
+            _screens.Push(gameplayScreen);
         }
 
         /// <summary>

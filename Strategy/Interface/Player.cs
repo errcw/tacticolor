@@ -24,6 +24,11 @@ namespace Strategy.Interface
         public NetworkGamer Gamer { get; set; }
 
         /// <summary>
+        /// The controller used for this player. Valid only for local players.
+        /// </summary>
+        public PlayerIndex? Controller { get; set; }
+
+        /// <summary>
         /// The input handler for this player.
         /// </summary>
         public ICommandProvider Input { get; set; }

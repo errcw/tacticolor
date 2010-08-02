@@ -8,7 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Properties;
 using Strategy.Library;
+using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
+using Strategy.Library.Sprite;
 
 namespace Strategy.Interface.Screens
 {
@@ -25,18 +27,40 @@ namespace Strategy.Interface.Screens
             _workerExit = new ManualResetEvent(false);
             _device = game.GraphicsDevice;
 
+            _input = game.Services.GetService<MenuInput>();
+
             // load the initial content for the loading screen
-            _background = game.Content.Load<Texture2D>("Images/Background");
-            _title = game.Content.Load<Texture2D>("Images/Title");
-            _loadingFont = game.Content.Load<SpriteFont>("Fonts/TextSmall");
+            _background = new ImageSprite(game.Content.Load<Texture2D>("Images/Background"));
+
+            _title = new ImageSprite(game.Content.Load<Texture2D>("Images/Title"));
+            _title.Position = new Vector2((1280 - _title.Size.X) / 2, (720 - _title.Size.Y) / 2);
+
+            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextLarge");
+            Vector2 loadingTextSize = font.MeasureString(Resources.Loading);
+            _loadingText = new TextSprite(font, Resources.Loading);
+            _loadingText.Position = new Vector2((1280 - loadingTextSize.X) / 2, 720 - 200);
+            _loadingText.Color = Color.White;
+            _loadingText.OutlineColor = Color.Black;
+            _loadingText.OutlineWidth = 2;
+
+            Vector2 readyTextSize = font.MeasureString(Resources.PressStart);
+            _readyText = new TextSprite(font, Resources.PressStart);
+            _readyText.Position = new Vector2((1280 - readyTextSize.X) / 2, 720 - 200);
+            _readyText.Color = Color.Black;
+
+            _loadingAnimation = new SequentialAnimation(
+                new ColorAnimation(_loadingText, Color.TransparentWhite, 2f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
+                new ColorAnimation(_loadingText, Color.White, 2f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
+
             _spriteBatch = new SpriteBatch(_device);
         }
 
         public override void Draw()
         {
             _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
-            _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
-            _spriteBatch.Draw(_title, Vector2.Zero, Color.White);
+            _background.Draw(_spriteBatch);
+            _title.Draw(_spriteBatch);
+            _readyText.Draw(_spriteBatch);
             _spriteBatch.End();
         }
 
@@ -59,6 +83,11 @@ namespace Strategy.Interface.Screens
             else
             {
                 // loading has finished, wait for the player to start the game
+                if (_input.FindAndSetActiveController())
+                {
+                    MainMenuScreen menuScreen = new MainMenuScreen((StrategyGame)Stack.Game);
+                    Stack.Push(menuScreen);
+                }
             }
         }
 
@@ -67,25 +96,18 @@ namespace Strategy.Interface.Screens
         /// </summary>
         private void UpdateDrawWorker()
         {
+#if XBOX
             // on the xbox set the processor affinity to move the update
             // code off the core where the loading is happening
-#if XBOX
-            try
-            {
-                _workerThread.SetProcessorAffinity(3);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
+            _workerThread.SetProcessorAffinity(3);
 #endif
 
             _lastWorkerUpdateTime = Stopwatch.GetTimestamp();
 
-            while (_workerExit.WaitOne(WorkerUpdateTime, false))
+            while (!_workerExit.WaitOne(WorkerUpdateTime, false))
             {
                 long currentUpdateTime = Stopwatch.GetTimestamp();
-                long elapsed = currentUpdateTime - _lastWorkerUpdateTime;
+                float elapsed = (currentUpdateTime - _lastWorkerUpdateTime) / (float)Stopwatch.Frequency;
 
                 UpdateDrawLoading(elapsed);
 
@@ -93,11 +115,7 @@ namespace Strategy.Interface.Screens
             }
         }
 
-        /// <summary>
-        /// Updates and draws the loading animation.
-        /// </summary>
-        /// <param name="time">The elapsed time, in milliseconds, since the last update.</param>
-        private void UpdateDrawLoading(long time)
+        private void UpdateDrawLoading(float time)
         {
             if (_device == null || _device.IsDisposed)
             {
@@ -106,12 +124,17 @@ namespace Strategy.Interface.Screens
 
             try
             {
-                _device.Clear(new Color(45, 45, 45));
+                if (!_loadingAnimation.Update(time))
+                {
+                    _loadingAnimation.Start();
+                }
+
+                _device.Clear(Color.White);
 
                 _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
-                _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
-                _spriteBatch.Draw(_title, Vector2.Zero, Color.White);
-                _spriteBatch.DrawString(_loadingFont, Resources.Loading, Vector2.Zero, Color.DarkGray);
+                _background.Draw(_spriteBatch);
+                _title.Draw(_spriteBatch);
+                _loadingText.Draw(_spriteBatch);
                 _spriteBatch.End();
 
                 _device.Present();
@@ -130,10 +153,14 @@ namespace Strategy.Interface.Screens
         private EventWaitHandle _workerExit;
         private GraphicsDevice _device;
 
-        private Texture2D _background;
-        private Texture2D _title;
-        private SpriteFont _loadingFont;
+        private ImageSprite _background;
+        private ImageSprite _title;
+        private TextSprite _loadingText;
+        private TextSprite _readyText;
+        private IAnimation _loadingAnimation;
         private SpriteBatch _spriteBatch;
+
+        private MenuInput _input;
 
         private const int WorkerUpdateTime = 1000 / 30;
     }

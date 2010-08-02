@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,45 +13,38 @@ namespace Strategy.Interface.Screens
 {
     public class GameplayScreen : Screen
     {
-        public GameplayScreen(StrategyGame game)
+        public GameplayScreen(StrategyGame game, ICollection<Player> players, Map map, Random random)
         {
             _isoBatch = new IsometricBatch(new SpriteBatch(game.GraphicsDevice));
             _context = new InterfaceContext(game, game.Content, new IsometricParameters(17, 9, 16, -9));
 
-            _random = new Random();
-            _generator = new MapGenerator(_random);
-            StartNewMatch();
-        }
-
-        private void StartNewMatch()
-        {
             // create the model
-            Map map = _generator.Generate(16, DebugPlayers, 4, 16);
-            Match match = new Match(map, _random);
-            LocalInput[] inputs = new LocalInput[DebugPlayers];
-            for (int p = 0; p < inputs.Length; p++)
-            {
-                inputs[p] = new LocalInput((PlayerId)p, match, _context);
-                inputs[p].Controller = (PlayerIndex)p;
-            }
-            Player[] players = new Player[DebugPlayers];
-            for (int p = 0; p < players.Length; p++)
-            {
-                players[p] = new Player();
-                players[p].Id = (PlayerId)p;
-                players[p].Input = inputs[p];
-            }
+            Match match = new Match(map, random);
             _lockstepMatch = new LockstepMatch(match);
+            foreach (Player player in players)
+            {
+                if (player.Controller.HasValue)
+                {
+                    LocalInput input = new LocalInput(player.Id, match, _context);
+                    input.Controller = player.Controller.Value;
+                    player.Input = input;
+                }
+            }
             _lockstepInput = new LockstepInput(_lockstepMatch, players);
 
-            // then the view
+            // create the view
             _matchView = new MatchView(match, players, _context);
-            _inputViews = new LocalInputView[DebugPlayers];
-            for (int p = 0; p < inputs.Length; p++)
+            _inputViews = new List<LocalInputView>(players.Count);
+            foreach (Player player in players)
             {
-                _inputViews[p] = new LocalInputView(inputs[p], _context);
+                LocalInput input = player.Input as LocalInput;
+                if (input != null)
+                {
+                    _inputViews.Add(new LocalInputView(input, _context));
+                }
             }
         }
+
 
         protected override void UpdateActive(GameTime gameTime)
         {
@@ -61,9 +55,9 @@ namespace Strategy.Interface.Screens
             _lockstepInput.Update(milliseconds);
 
             _matchView.Update(seconds);
-            for (int p = 0; p < _inputViews.Length; p++)
+            foreach (LocalInputView inputView in _inputViews)
             {
-                _inputViews[p].Update(seconds);
+                inputView.Update(seconds);
             }
         }
 
@@ -71,25 +65,20 @@ namespace Strategy.Interface.Screens
         {
             _matchView.Draw();
             _isoBatch.Begin();
-            for (int p = 0; p < _inputViews.Length; p++)
+            foreach (LocalInputView inputView in _inputViews)
             {
-                _inputViews[p].Draw(_isoBatch);
+                inputView.Draw(_isoBatch);
             }
             _isoBatch.End();
         }
 
         private InterfaceContext _context;
 
-        private Random _random;
-        private MapGenerator _generator;
-
         private LockstepInput _lockstepInput;
         private LockstepMatch _lockstepMatch;
 
         private MatchView _matchView;
-        private LocalInputView[] _inputViews;
+        private List<LocalInputView> _inputViews;
         private IsometricBatch _isoBatch;
-
-        private const int DebugPlayers = 2;
     }
 }

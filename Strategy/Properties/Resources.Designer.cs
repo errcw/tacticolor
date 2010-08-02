@@ -142,6 +142,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Press Start.
+        /// </summary>
+        internal static string PressStart {
+            get {
+                return ResourceManager.GetString("PressStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
         internal static string PurchaseFailedButton {

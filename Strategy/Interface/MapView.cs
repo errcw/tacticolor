@@ -16,7 +16,7 @@ namespace Strategy.Interface
     /// </summary>
     public class MapView
     {
-        public MapView(Map map, Match match, Player[] players, InterfaceContext context)
+        public MapView(Map map, Match match, ICollection<Player> players, InterfaceContext context)
         {
             _map = map;
             _context = context;
@@ -25,11 +25,12 @@ namespace Strategy.Interface
             match.PiecesMoved += OnPiecesMoved;
             match.TerritoryAttacked += OnTerritoryAttacked;
 
-            for (int p = 0; p < players.Length; p++)
+            foreach (Player player in players)
             {
-                //if (players[p].Gamer != null && players[p].Gamer.IsLocal)
+                LocalInput input = player.Input as LocalInput;
+                if (input != null)
                 {
-                    ((LocalInput)players[p].Input).SelectedChanged += OnSelectedChanged;
+                    input.SelectedChanged += OnSelectedChanged;
                 }
             }
 

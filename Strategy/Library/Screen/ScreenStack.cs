@@ -126,7 +126,5 @@ namespace Strategy.Library.Screen
 
         private List<Screen> _stackScreens = new List<Screen>();
         private List<Screen> _poppedScreens = new List<Screen>();
-
-        private SpriteBatch _spriteBatch;
     }
 }

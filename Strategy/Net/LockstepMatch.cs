@@ -46,7 +46,7 @@ namespace Strategy.Net
             _match = match;
             _commands = new List<Command>(match.PlayerCount * 3 * 10);
 
-            StepTime = 35;
+            StepTime = 100;
             StepStart = 0;
             _stepEndTime = StepTime;
 

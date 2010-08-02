@@ -38,6 +38,7 @@ namespace Strategy.Interface.Screens
             if (_image == null)
             {
                 _image = Stack.Game.Content.Load<Texture2D>("Images/PieceAvailable");
+                _batch = new SpriteBatch(Stack.Game.GraphicsDevice);
             }
         }
 

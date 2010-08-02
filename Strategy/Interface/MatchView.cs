@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,19 +14,20 @@ namespace Strategy.Interface
     /// </summary>
     public class MatchView
     {
-        public MatchView(Match match, Player[] players, InterfaceContext context)
+        public MatchView(Match match, ICollection<Player> players, InterfaceContext context)
         {
             _match = match;
-            _players = players;
             _context = context;
 
             _mapView = new MapView(match.Map, match, players, context);
             _playerViews = new PlayerView[match.PlayerCount];
             _piecesAvailableViews = new PiecesAvailableView[match.PlayerCount];
-            for (int i = 0; i < _piecesAvailableViews.Length; i++)
+            int i = 0;
+            foreach (Player player in players)
             {
-                _playerViews[i] = new PlayerView(players[i], context);
+                _playerViews[i] = new PlayerView(player, context);
                 _piecesAvailableViews[i] = new PiecesAvailableView(match, (PlayerId)i, context);
+                i += 1;
             }
             _backgroundView = new BackgroundView(context);
             _spriteBatch = new SpriteBatch(context.Game.GraphicsDevice);
@@ -53,7 +55,6 @@ namespace Strategy.Interface
         }
 
         private Match _match;
-        private Player[] _players;
         private InterfaceContext _context;
 
         private SpriteBatch _spriteBatch;

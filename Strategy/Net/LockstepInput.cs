@@ -21,7 +21,7 @@ namespace Strategy.Net
     /// </summary>
     public class LockstepInput
     {
-        public LockstepInput(LockstepMatch match, Player[] players)
+        public LockstepInput(LockstepMatch match, ICollection<Player> players)
         {
             _match = match;
             _match.StepEnded += OnStepEnded;
@@ -69,9 +69,9 @@ namespace Strategy.Net
         private void OnStepEnded(object matchObj, EventArgs args)
         {
             // send a synchronization command for each player
-            for (int i = 0; i < _players.Length; i++)
+            foreach (Player player in _players)
             {
-                SynchronizationCommand command = new SynchronizationCommand(_players[i].Id, _match.Match.GetStateHash(), _match.StepStart, 0);
+                SynchronizationCommand command = new SynchronizationCommand(player.Id, _match.Match.GetStateHash(), _match.StepStart, 0);
                 command.Time = _match.StepStart + _match.SchedulingOffset;
                 BroadcastCommand(command);
             }
@@ -135,7 +135,7 @@ namespace Strategy.Net
         }
 
         private LockstepMatch _match;
-        private Player[] _players;
+        private ICollection<Player> _players;
 
         private LocalNetworkGamer _sendReceiveGamer;
         private CommandWriter _writer;

@@ -117,6 +117,7 @@
     <Compile Include="Library\ContentPreloader.cs" />
     <Compile Include="Library\Easing.cs" />
     <Compile Include="Library\Extensions\GameExtensions.cs" />
+    <Compile Include="Library\Extensions\GameServiceContainerExtensions.cs" />
     <Compile Include="Library\Extensions\GameTimeExtensions.cs" />
     <Compile Include="Library\Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Library\Extensions\MathHelperExtensions.cs" />

@@ -5,11 +5,13 @@ using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.GamerServices;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
 
 using Strategy.Gameplay;
 using Strategy.Net;
 using Strategy.Library.Extensions;
+using Strategy.Library.Input;
 using Strategy.Library.Screen;
 
 namespace Strategy.Interface.Screens
@@ -22,9 +24,7 @@ namespace Strategy.Interface.Screens
         public LobbyScreen(StrategyGame game, bool hosting)
         {
             _game = game;
-
-            _input = new MenuInput(game);
-            _input.Controller = PlayerIndex.One;
+            _input = game.Services.GetService<MenuInput>();
 
             _players = new List<Player>();
         }
@@ -33,24 +33,24 @@ namespace Strategy.Interface.Screens
         {
             if (_session == null)
             {
-                PlayerIndex playerIdx = PlayerIndex.One;
-                if (!playerIdx.IsSignedIn())
-                {
-                    Guide.ShowSignIn(1, false);
-                }
-                if (playerIdx.IsSignedIn())
-                {
-                    CreateSession();
-                }
+#if XBOX
+                CreateSession();
+#else
+                FindSession();
+#endif
             }
             else
             {
                 _session.Update();
+
                 ReceiveSeeds();
 
-                if (_seed != 0 && _input.Action.Released)
+                _input.Update(gameTime.GetElapsedSeconds());
+                HandleInput();
+
+                if (_session.IsHost && _session.IsEveryoneReady)
                 {
-                    _session.LocalGamers[0].IsReady = true;
+                    _session.StartGame();
                 }
             }
         }
@@ -60,7 +60,7 @@ namespace Strategy.Interface.Screens
             try
             {
                 IAsyncResult result = NetworkSession.BeginCreate(
-                    NetworkSessionType.Local,
+                    NetworkSessionType.SystemLink,
                     Match.MaxPlayers,
                     Match.MaxPlayers,
                     null,
@@ -136,7 +136,7 @@ namespace Strategy.Interface.Screens
             Debug.WriteLine("Available sessions:");
             foreach (AvailableNetworkSession session in sessions)
             {
-                Debug.WriteLine(session);
+                Debug.WriteLine(session.HostGamertag);
             }
             return sessions.FirstOrDefault();
         }
@@ -174,10 +174,7 @@ namespace Strategy.Interface.Screens
         {
             Debug.WriteLine(args.Gamer.Gamertag + " joined");
 
-            // track the player
-            Player player = new Player();
-            player.Gamer = args.Gamer;
-            _players.Add(player);
+            AddPlayer(args.Gamer);
 
             // if we're the host then send the initialization data to the new player
             if (_session.IsHost)
@@ -193,7 +190,7 @@ namespace Strategy.Interface.Screens
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
         {
             Debug.WriteLine(args.Gamer.Gamertag + " left");
-            _players.RemoveAll(player => player.Gamer == args.Gamer);
+            RemovePlayer(args.Gamer);
         }
 
         private void OnHostChanged(object sender, HostChangedEventArgs args)
@@ -236,6 +233,23 @@ namespace Strategy.Interface.Screens
             Debug.WriteLine("Session ended");
         }
 
+        private void AddPlayer(NetworkGamer gamer)
+        {
+            Player player = new Player();
+            player.Gamer = gamer;
+            _players.Add(player);
+        }
+
+        private void RemovePlayer(NetworkGamer gamer)
+        {
+            _players.RemoveAll(player => player.Gamer == gamer);
+        }
+
+        private Player FindPlayerByController(PlayerIndex index)
+        {
+            return _players.Find(player => player.Controller == index);
+        }
+
         private void SendSeed(int seed, NetworkGamer gamer)
         {
             LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
@@ -257,6 +271,58 @@ namespace Strategy.Interface.Screens
                     if (command != null)
                     {
                         _seed = command.RandomSeed;
+                    }
+                }
+            }
+        }
+
+        private void HandleInput()
+        {
+            for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
+            {
+                Player player = FindPlayerByController(p);
+                if (_input.Join[(int)p].Released)
+                {
+                    if (player != null)
+                    {
+                        // mark this player as ready
+                        if (_seed != 0)
+                        {
+                            player.Gamer.IsReady = true;
+                        }
+                    }
+                    else
+                    {
+                        // first time we saw this player
+                        if (!p.IsSignedIn())
+                        {
+                            Guide.ShowSignIn(1, false);
+                        }
+                        if (p.IsSignedIn())
+                        {
+                            // join the existing session
+                        }
+                    }
+                }
+                else if (_input.Leave[(int)p].Released)
+                {
+                    // ignore leave requests from non-players
+                    if (player != null)
+                    {
+                        if (player.Gamer.IsReady)
+                        {
+                            // back out of the ready state
+                            player.Gamer.IsReady = false;
+                        }
+                        else
+                        {
+                            // leave the session if the request came from the main controller
+                            if (p == _input.Controller)
+                            {
+                                _session.Dispose();
+                                Stack.Pop();
+                            }
+                        }
                     }
                 }
             }
