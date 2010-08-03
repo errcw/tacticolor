@@ -21,6 +21,7 @@ namespace Strategy.Interface
             _player = player;
             _context = context;
 
+            BasePosition = GetBasePosition(_player);
             SolidColor = GetPlayerColor(_player);
             TransparentColor = new Color(SolidColor, 0);
 
@@ -31,7 +32,7 @@ namespace Strategy.Interface
             for (int p = 0; p < sprites; p++)
             {
                 Sprite sprite = new ImageSprite(pieceSprite);
-                sprite.Y = BasePosition.Y + PlayerSpacing.Y * (int)_player;
+                sprite.Y = BasePosition.Y;
                 sprite.Color = TransparentColor;
                 _unused.Enqueue(sprite);
             }
@@ -68,6 +69,8 @@ namespace Strategy.Interface
                     _hideAnimation = null;
                 }
             }
+
+            System.Diagnostics.Debug.Assert(_created.Count == _match.PiecesAvailable[(int)_player]);
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -104,6 +107,9 @@ namespace Strategy.Interface
             if (args.Location.Owner == _player)
             {
                 // hide the old sprite
+                // XXX what happens when the piece is created according to the model
+                // but the view doesn't know yet? we have to explicitly check for
+                // a new piece first, maybe?
                 Sprite used = _created.Pop();
                 if (_hideAnimation != null)
                 {
@@ -136,7 +142,7 @@ namespace Strategy.Interface
         {
             _creatingSprite = _unused.Dequeue();
             _creatingSprite.Color = TransparentColor;
-            _creatingSprite.Y = BasePosition.Y + (int)_player * PlayerSpacing.Y;
+            _creatingSprite.Y = BasePosition.Y;
             _creatingSprite.X = BasePosition.X + _match.PiecesAvailable[(int)_player] * PieceSpacing.X;
             _creatingTargetX = _creatingSprite.X;
         }
@@ -152,6 +158,24 @@ namespace Strategy.Interface
                 case PlayerId.B: return new Color(103, 180, 219);
                 case PlayerId.C: return new Color(82, 165, 114);
                 case PlayerId.D: return new Color(249, 235, 124);
+                default: throw new ArgumentException("Invalid player id " + player);
+            }
+        }
+
+        /// <summary>
+        /// Returns the position at which to start drawing.
+        /// </summary>
+        private Vector2 GetBasePosition(PlayerId player)
+        {
+            const int BaseX = 80;
+            const int BaseY = 80;
+            const int SpacingY = 100;
+            switch (player)
+            {
+                case PlayerId.A: return new Vector2(BaseX, BaseY);
+                case PlayerId.B: return new Vector2(BaseX, BaseY + SpacingY);
+                case PlayerId.C: return new Vector2(BaseX, 720 - 25 - BaseY - SpacingY);
+                case PlayerId.D: return new Vector2(BaseX, 720 - 25 - BaseY);
                 default: throw new ArgumentException("Invalid player id " + player);
             }
         }
@@ -172,8 +196,7 @@ namespace Strategy.Interface
         private readonly Color TransparentColor;
         private readonly Color SolidColor;
 
-        private readonly Vector2 BasePosition = new Vector2(80, 50);
-        private readonly Vector2 PlayerSpacing = new Vector2(0, 50);
+        private readonly Vector2 BasePosition;
         private readonly Vector2 PieceSpacing = new Vector2(30, 0);
     }
 }
