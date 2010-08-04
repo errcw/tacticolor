@@ -1,12 +1,6 @@
 To Do
 -----
 
--Prototype:
-- Show activity timer on pieces
-- Fix up piece/player views (positioning)
-
-- Networking
-
 - AI
 
 
@@ -37,4 +31,3 @@ Thoughts
 - Use commander piece with action icon?
 - Constructor create textures, Layout() use offsets
 
-- Use local multiplayer to use always multiplayer code

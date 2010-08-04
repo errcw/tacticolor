@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
+using Strategy.Properties;
 using Strategy.Library;
 using Strategy.Library.Sprite;
 
@@ -90,7 +91,14 @@ namespace Strategy.Interface
             }
             else
             {
-                return "Computer " + player.Id;
+                switch (player.Id)
+                {
+                    case PlayerId.A: return Resources.ComputerA;
+                    case PlayerId.B: return Resources.ComputerB;
+                    case PlayerId.C: return Resources.ComputerC;
+                    case PlayerId.D: return Resources.ComputerD;
+                    default: throw new ArgumentException("Invalid player id " + player);
+                }
             }
         }
 

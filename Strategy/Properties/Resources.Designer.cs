@@ -61,6 +61,42 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Computer A.
+        /// </summary>
+        internal static string ComputerA {
+            get {
+                return ResourceManager.GetString("ComputerA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Computer B.
+        /// </summary>
+        internal static string ComputerB {
+            get {
+                return ResourceManager.GetString("ComputerB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Computer C.
+        /// </summary>
+        internal static string ComputerC {
+            get {
+                return ResourceManager.GetString("ComputerC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Computer D.
+        /// </summary>
+        internal static string ComputerD {
+            get {
+                return ResourceManager.GetString("ComputerD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exception: {0}.
         /// </summary>
         internal static string ExceptionException {

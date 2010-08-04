@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ComputerA" xml:space="preserve">
+    <value>Computer A</value>
+  </data>
+  <data name="ComputerB" xml:space="preserve">
+    <value>Computer B</value>
+  </data>
+  <data name="ComputerC" xml:space="preserve">
+    <value>Computer C</value>
+  </data>
+  <data name="ComputerD" xml:space="preserve">
+    <value>Computer D</value>
+  </data>
   <data name="ExceptionException" xml:space="preserve">
     <value>Exception: {0}</value>
   </data>
