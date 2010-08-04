@@ -106,6 +106,8 @@ namespace Strategy.Interface
         {
             if (args.Location.Owner == _player)
             {
+                System.Diagnostics.Debug.Assert(_created.Count-1 == _match.PiecesAvailable[(int)_player]);
+
                 // hide the old sprite
                 // XXX what happens when the piece is created according to the model
                 // but the view doesn't know yet? we have to explicitly check for

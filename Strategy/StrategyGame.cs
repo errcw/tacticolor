@@ -44,10 +44,9 @@ namespace Strategy
         {
             base.LoadContent();
 
-            //CreateDebugGame();
-
-            TitleScreen titleScreen = new TitleScreen(this);
-            _screens.Push(titleScreen);
+            CreateDebugGame();
+            //TitleScreen titleScreen = new TitleScreen(this);
+            //_screens.Push(titleScreen);
         }
 
 

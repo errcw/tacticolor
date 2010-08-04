@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,6 +23,9 @@ namespace Strategy.Interface.Screens
 
             // create the model
             Match match = new Match(map, random);
+            match.PlayerEliminated += OnPlayerEliminated;
+            match.Ended += OnMatchEnded;
+
             _lockstepMatch = new LockstepMatch(match);
             foreach (Player player in players)
             {
@@ -32,7 +36,7 @@ namespace Strategy.Interface.Screens
             }
             _lockstepInput = new LockstepInput(_lockstepMatch, players);
 
-            // create the view
+            // create the views
             _matchView = new MatchView(match, players, _context);
             _inputViews = new List<LocalInputView>(players.Count);
             _playerViews = new List<PlayerView>(players.Count);
@@ -71,6 +75,18 @@ namespace Strategy.Interface.Screens
             _isoBatch.Begin();
             _inputViews.ForEach(view => view.Draw(_isoBatch));
             _isoBatch.End();
+        }
+
+        private void OnPlayerEliminated(object matchObj, PlayerEventArgs args)
+        {
+            PlayerView playerView = _playerViews.First(view => view.Player.Id == args.Player);
+            playerView.ShowEliminated();
+        }
+
+        private void OnMatchEnded(object matchObj, PlayerEventArgs args)
+        {
+            MatchOverScreen matchOverScreen = new MatchOverScreen((StrategyGame)Stack.Game, args.Player);
+            Stack.Push(matchOverScreen);
         }
 
         private InterfaceContext _context;
