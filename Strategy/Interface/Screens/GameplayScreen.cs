@@ -4,6 +4,7 @@ using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Net;
 
 using Strategy.Gameplay;
 using Strategy.Net;
@@ -14,8 +15,10 @@ namespace Strategy.Interface.Screens
 {
     public class GameplayScreen : Screen
     {
-        public GameplayScreen(StrategyGame game, ICollection<Player> players, Map map, Random random)
+        public GameplayScreen(StrategyGame game, NetworkSession session, ICollection<Player> players, Map map, Random random)
         {
+            _session = session;
+
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
             _isoBatch = new IsometricBatch(_spriteBatch);
 
@@ -53,6 +56,11 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateActive(GameTime gameTime)
         {
+            if (_session != null)
+            {
+                _session.Update();
+            }
+
             float seconds = gameTime.GetElapsedSeconds();
             int milliseconds = gameTime.GetElapsedMilliseconds();
 
@@ -88,6 +96,8 @@ namespace Strategy.Interface.Screens
             MatchOverScreen matchOverScreen = new MatchOverScreen((StrategyGame)Stack.Game, args.Player);
             Stack.Push(matchOverScreen);
         }
+
+        private NetworkSession _session;
 
         private InterfaceContext _context;
 

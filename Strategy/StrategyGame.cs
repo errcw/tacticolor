@@ -44,9 +44,9 @@ namespace Strategy
         {
             base.LoadContent();
 
-            CreateDebugGame();
-            //TitleScreen titleScreen = new TitleScreen(this);
-            //_screens.Push(titleScreen);
+            //CreateDebugGame();
+            TitleScreen titleScreen = new TitleScreen(this);
+            _screens.Push(titleScreen);
         }
 
 
@@ -87,7 +87,7 @@ namespace Strategy
                 players[p].Controller = (PlayerIndex)p;
             }
 
-            GameplayScreen gameplayScreen = new GameplayScreen(this, players, map, random);
+            GameplayScreen gameplayScreen = new GameplayScreen(this, null, players, map, random);
             _screens.Push(gameplayScreen);
         }
 

@@ -51,7 +51,7 @@ namespace Strategy.Interface
             }
             if (Player.Gamer != null && Player.Gamer.HasVoice)
             {
-                int alpha = Player.Gamer.IsTalking ? 255 : Player.Gamer.IsMutedByLocalUser ? 32 : 128;
+                int alpha = Player.Gamer.IsTalking ? 255 : Player.Gamer.IsMutedByLocalUser ? 32 : 64;
                 _voiceSprite.Color = new Color(Color.White, alpha);
             }
             else

@@ -31,6 +31,14 @@ namespace Strategy.Library.Extensions
         }
 
         /// <summary>
+        /// Returns the signed in gamer associated with the specified index.
+        /// </summary>
+        public static SignedInGamer GetSignedInGamer(this PlayerIndex player)
+        {
+            return Gamer.SignedInGamers[player];
+        }
+
+        /// <summary>
         /// Returns true if this player can purchase content; otherwise, false.
         /// </summary>
         public static bool CanPurchaseContent(this PlayerIndex player)

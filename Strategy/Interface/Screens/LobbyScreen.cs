@@ -21,139 +21,12 @@ namespace Strategy.Interface.Screens
     /// </summary>
     public class LobbyScreen : Screen
     {
-        public LobbyScreen(StrategyGame game, bool hosting)
+        public LobbyScreen(StrategyGame game, NetworkSession session)
         {
             _game = game;
-            _input = game.Services.GetService<MenuInput>();
-
+            _input = _game.Services.GetService<MenuInput>();
             _players = new List<Player>();
-        }
 
-        protected override void UpdateActive(GameTime gameTime)
-        {
-            if (_session == null)
-            {
-#if XBOX
-                CreateSession();
-#else
-                FindSession();
-#endif
-            }
-            else
-            {
-                ReceiveSeeds();
-
-                _input.Update(gameTime.GetElapsedSeconds());
-                HandleInput();
-
-                if (_session.IsHost && _session.IsEveryoneReady && _session.SessionState == NetworkSessionState.Lobby)
-                {
-                    _session.StartGame();
-                }
-            }
-        }
-
-        private void CreateSession()
-        {
-            try
-            {
-                IAsyncResult result = NetworkSession.BeginCreate(
-                    NetworkSessionType.SystemLink,
-                    Match.MaxPlayers,
-                    Match.MaxPlayers,
-                    null,
-                    null);
-                AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
-                busyScreen.OperationCompleted += OnSessionCreated;
-                Stack.Push(busyScreen);
-            }
-            catch (Exception e)
-            {
-                Debug.Write(e);
-            }
-        }
-
-        private void FindSession()
-        {
-            try
-            {
-                IAsyncResult result = NetworkSession.BeginFind(
-                    NetworkSessionType.SystemLink,
-                    Match.MaxPlayers,
-                    null,
-                    null,
-                    null);
-                AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
-                busyScreen.OperationCompleted += OnSessionsFound;
-                Stack.Push(busyScreen);
-            }
-            catch (Exception e)
-            {
-                Debug.Write(e);
-            }
-        }
-
-        private void OnSessionCreated(object sender, AsyncOperationCompletedEventArgs args)
-        {
-            try
-            {
-                NetworkSession session = NetworkSession.EndCreate(args.AsyncResult);
-                InitSession(session);
-            }
-            catch (Exception e)
-            {
-                Debug.Write(e);
-            }
-        }
-
-        private void OnSessionsFound(object sender, AsyncOperationCompletedEventArgs args)
-        {
-            try
-            {
-                AvailableNetworkSessionCollection sessions =  NetworkSession.EndFind(args.AsyncResult);
-                AvailableNetworkSession session = SelectSession(sessions);
-                if (session != null)
-                {
-                    IAsyncResult result = NetworkSession.BeginJoin(
-                        session,
-                        null,
-                        null);
-                    AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
-                    busyScreen.OperationCompleted += OnSessionJoined;
-                    Stack.Push(busyScreen);
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.Write(e);
-            }
-        }
-
-        private AvailableNetworkSession SelectSession(AvailableNetworkSessionCollection sessions)
-        {
-            Debug.WriteLine("Available sessions:");
-            foreach (AvailableNetworkSession session in sessions)
-            {
-                Debug.WriteLine(session.HostGamertag);
-            }
-            return sessions.FirstOrDefault();
-        }
-
-        private void OnSessionJoined(object sender, AsyncOperationCompletedEventArgs args)
-        {
-            try
-            {
-                NetworkSession session = NetworkSession.EndJoin(args.AsyncResult);
-                InitSession(session);
-            }
-            catch (Exception e)
-            {
-                Debug.Write(e);
-            }
-        }
-
-        private void InitSession(NetworkSession session)
-        {
             _session = session;
             if (_session.IsHost)
             {
@@ -166,7 +39,28 @@ namespace Strategy.Interface.Screens
             _session.GameStarted += OnGameStarted;
             _session.GameEnded += OnGameEnded;
             _session.SessionEnded += OnSessionEnded;
-            NetworkSessionComponent.Create(Stack.Game, _session);
+        }
+
+        protected override void UpdateActive(GameTime gameTime)
+        {
+            _session.Update();
+            ReceiveSeeds();
+            if (_session.IsHost && _session.IsEveryoneReady && _session.SessionState == NetworkSessionState.Lobby)
+            {
+                _session.StartGame();
+            }
+
+            _input.Update(gameTime.GetElapsedSeconds());
+            HandleInput();
+        }
+
+        protected override void UpdateInactive(GameTime gameTime)
+        {
+            // continue updating the session even if other temporary screens are on top
+            if (_session != null)
+            {
+                _session.Update();
+            }
         }
 
         private void OnGamerJoined(object sender, GamerJoinedEventArgs args)
@@ -225,18 +119,20 @@ namespace Strategy.Interface.Screens
             MapGenerator generator = new MapGenerator(gameRandom);
             Map map = generator.Generate(16, _players.Count, 1, 2);
 
-            GameplayScreen gameplayScreen = new GameplayScreen((StrategyGame)Stack.Game, _players, map, gameRandom);
+            GameplayScreen gameplayScreen = new GameplayScreen((StrategyGame)Stack.Game, _session, _players, map, gameRandom);
             Stack.Push(gameplayScreen);
         }
 
         private void OnGameEnded(object sender, GameEndedEventArgs args)
         {
             Debug.WriteLine("Game ended");
+            // should never encounter this case
         }
 
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
         {
             Debug.WriteLine("Session ended");
+            // should never encounter this case?
         }
 
         private void AddPlayer(NetworkGamer gamer)
@@ -262,6 +158,9 @@ namespace Strategy.Interface.Screens
             return _players.Find(player => player.Controller == index);
         }
 
+        /// <summary>
+        /// Broadcasts the game seed to every player in the session.
+        /// </summary>
         private void SendSeed(int seed, NetworkGamer gamer)
         {
             LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
@@ -270,6 +169,9 @@ namespace Strategy.Interface.Screens
             sender.SendData(writer, SendDataOptions.Reliable);
         }
 
+        /// <summary>
+        /// Receives seeds.
+        /// </summary>
         private void ReceiveSeeds()
         {
             CommandReader reader = new CommandReader();
@@ -288,6 +190,9 @@ namespace Strategy.Interface.Screens
             }
         }
 
+        /// <summary>
+        /// Handle input for every local player in the lobby.
+        /// </summary>
         private void HandleInput()
         {
             for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
@@ -307,7 +212,7 @@ namespace Strategy.Interface.Screens
                     else
                     {
                         // first time we saw this player
-                        if (!p.IsSignedIn())
+                        if (!p.IsSignedIn() && !Guide.IsVisible)
                         {
                             Guide.ShowSignIn(1, false);
                         }
