@@ -56,7 +56,7 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateActive(GameTime gameTime)
         {
-            Update(gameTime);
+            UpdateInternal(gameTime);
         }
 
         protected override void UpdateInactive(GameTime gameTime)
@@ -68,10 +68,10 @@ namespace Strategy.Interface.Screens
             }
 
             // for networked games we can never pause
-            Update(gameTime);
+            UpdateInternal(gameTime);
         }
 
-        private void Update(GameTime gameTime)
+        private void UpdateInternal(GameTime gameTime)
         {
             if (_session != null)
             {

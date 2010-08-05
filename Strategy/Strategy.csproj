@@ -144,9 +144,7 @@
     <Compile Include="Net\Command.cs" />
     <Compile Include="Net\LockstepInput.cs" />
     <Compile Include="Net\LockstepMatch.cs" />
-    <Compile Include="Net\NetworkSessionComponent.cs" />
-    <Compile Include="Net\NetworkSessionSelector.cs" />
-    <Compile Include="Net\SessionCreator.cs" />
+    <Compile Include="Net\NetworkSessionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

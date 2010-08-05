@@ -34,35 +34,40 @@ namespace Strategy.Interface.Screens
             {
                 Guide.ShowSignIn(4, false);
             }
-            if (_input.Controller.HasValue && _input.Controller.Value.IsSignedIn() && _creator == null)
+            if (_input.Controller.HasValue && _input.Controller.Value.IsSignedIn())
             {
-                _creator = new SessionCreator();
-                _creator.SesssionCreated += OnSessionCreated;
-                //_creator.CreateSession(NetworkSessionType.Local, _input.Controller.Value.GetSignedInGamer());
-
+                SignedInGamer gamer = _input.Controller.Value.GetSignedInGamer();
+                IAsyncResult result =
 #if WINDOWS
-                _creator.FindSession(NetworkSessionType.SystemLink, _input.Controller.Value.GetSignedInGamer());
+                    NetworkSessionProvider.BeginCreate(NetworkSessionType.Local, gamer, OnSessionProvided, false);
 #else
-                _creator.CreateSession(NetworkSessionType.SystemLink, _input.Controller.Value.GetSignedInGamer());
+                    NetworkSessionProvider.BeginCreate(NetworkSessionType.SystemLink, gamer, OnSessionProvided, true);
 #endif
 
-                AsyncBusyScreen busyScreen = new AsyncBusyScreen(null);
+                AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
                 Stack.Push(busyScreen);
             }
         }
 
-        private void OnSessionCreated(object creatorObj, EventArgs args)
+        private void OnSessionProvided(IAsyncResult result)
         {
-            Stack.Pop(); // pop the busy screen
-            if (_creator.Session != null)
+            NetworkSession session = null;
+            Boolean isCreating = (Boolean)result.AsyncState;
+            if (isCreating)
             {
-                LobbyScreen lobbyScreen = new LobbyScreen((StrategyGame)Stack.Game, _creator.Session);
+                session = NetworkSessionProvider.EndCreate(result);
+            }
+            else
+            {
+                session = NetworkSessionProvider.EndFindAndJoin(result);
+            }
+            if (session != null)
+            {
+                LobbyScreen lobbyScreen = new LobbyScreen((StrategyGame)Stack.Game, session);
                 Stack.Push(lobbyScreen);
             }
-            _creator = null;
         }
 
         private MenuInput _input;
-        private SessionCreator _creator;
     }
 }
