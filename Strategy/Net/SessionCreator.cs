@@ -29,11 +29,6 @@ namespace Strategy.Net
         /// Notifies listeners that the session creation is finished.
         /// </summary>
         public event EventHandler<EventArgs> SesssionCreated;
-
-        public SessionCreator(ScreenStack stack)
-        {
-            _stack = stack;
-        }
         
         /// <summary>
         /// Creates a new network session.
@@ -44,17 +39,14 @@ namespace Strategy.Net
         {
             try
             {
-                IAsyncResult result = NetworkSession.BeginCreate(
+                NetworkSession.BeginCreate(
                     type,
                     Enumerable.Repeat(creator, 1),
                     Match.MaxPlayers,
                     0,
                     null,
-                    null,
+                    OnSessionCreated,
                     null);
-                AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
-                busyScreen.OperationCompleted += OnSessionCreated;
-                _stack.Push(busyScreen);
             }
             catch (Exception e)
             {
@@ -64,7 +56,7 @@ namespace Strategy.Net
         }
 
         /// <summary>
-        /// Joins an existing network session.
+        /// Finds an existing network session to join.
         /// </summary>
         /// <param name="type">The type of network session to join.</param>
         /// <param name="joiner">The gamer joining the session.</param>
@@ -72,15 +64,12 @@ namespace Strategy.Net
         {
             try
             {
-                IAsyncResult result = NetworkSession.BeginFind(
+                NetworkSession.BeginFind(
                     type,
                     Enumerable.Repeat(joiner, 1),
                     null,
-                    null,
+                    OnSessionsFound,
                     null);
-                AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
-                busyScreen.OperationCompleted += OnSessionsFound;
-                _stack.Push(busyScreen);
             }
             catch (Exception e)
             {
@@ -89,18 +78,30 @@ namespace Strategy.Net
             }
         }
 
-        private void OnSessionsFound(object sender, AsyncOperationCompletedEventArgs args)
+        private void OnSessionCreated(IAsyncResult result)
         {
             try
             {
-                AvailableNetworkSessionCollection sessions = NetworkSession.EndFind(args.AsyncResult);
-                IAsyncResult result = Selector.BeginInvoke(
+                NetworkSession session = NetworkSession.EndCreate(result);
+                SetSession(session);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                SetSession(null);
+            }
+        }
+
+        private void OnSessionsFound(IAsyncResult result)
+        {
+            try
+            {
+                AvailableNetworkSessionCollection sessions = NetworkSession.EndFind(result);
+                NetworkSessionSelector.BeginSelect(
                     sessions,
-                    null,
+                    2000,
+                    OnSessionSelected,
                     null);
-                AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
-                busyScreen.OperationCompleted += OnSessionSelected;
-                _stack.Push(busyScreen);
             }
             catch (Exception e)
             {
@@ -109,20 +110,21 @@ namespace Strategy.Net
             }
         }
 
-        private void OnSessionSelected(object sender, AsyncOperationCompletedEventArgs args)
+        private void OnSessionSelected(IAsyncResult result)
         {
             try
             {
-                AvailableNetworkSession session = Selector.EndInvoke(args.AsyncResult);
+                AvailableNetworkSession session = NetworkSessionSelector.EndSelect(result);
                 if (session != null)
                 {
-                    IAsyncResult result = NetworkSession.BeginJoin(
+                    NetworkSession.BeginJoin(
                         session,
-                        null,
+                        OnSessionJoined,
                         null);
-                    AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
-                    busyScreen.OperationCompleted += OnSessionCreated;
-                    _stack.Push(busyScreen);
+                }
+                else
+                {
+                    SetSession(null);
                 }
             }
             catch (Exception e)
@@ -132,11 +134,11 @@ namespace Strategy.Net
             }
         }
 
-        private void OnSessionCreated(object sender, AsyncOperationCompletedEventArgs args)
+        private void OnSessionJoined(IAsyncResult result)
         {
             try
             {
-                NetworkSession session = NetworkSession.EndCreate(args.AsyncResult);
+                NetworkSession session = NetworkSession.EndJoin(result);
                 SetSession(session);
             }
             catch (Exception e)
@@ -154,57 +156,5 @@ namespace Strategy.Net
                 SesssionCreated(this, EventArgs.Empty);
             }
         }
-
-        private static AvailableNetworkSession SelectSession(AvailableNetworkSessionCollection sessions)
-        {
-            var openSessions = sessions.Where(session => session.OpenPublicGamerSlots > 0);
-
-            // if there are zero or one sessions return null or the first, respectively
-            if (openSessions.Count() <= 1)
-            {
-                return openSessions.FirstOrDefault();
-            }
-
-            // wait for QOS data
-            bool allAvailable = true;
-            for (int tries = 0; tries < 10 || allAvailable; tries++)
-            {
-                allAvailable = true;
-                foreach (AvailableNetworkSession session in openSessions)
-                {
-                    if (!session.QualityOfService.IsAvailable)
-                    {
-                        allAvailable = false;
-                        break;
-                    }
-                }
-                Thread.Sleep(200);
-            }
-
-            // select the session with the lowest ping
-            TimeSpan lowestRoundtripTime = TimeSpan.MaxValue;
-            AvailableNetworkSession bestSession = null;
-            foreach (AvailableNetworkSession session in openSessions)
-            {
-                if (session.QualityOfService.IsAvailable && session.QualityOfService.AverageRoundtripTime < lowestRoundtripTime)
-                {
-                    lowestRoundtripTime = session.QualityOfService.AverageRoundtripTime;
-                    bestSession = session;
-                }
-            }
-
-            // no QOS data available
-            if (bestSession == null)
-            {
-                bestSession = openSessions.FirstOrDefault();
-            }
-
-            return bestSession;
-        }
-
-        private delegate AvailableNetworkSession SessionSelector(AvailableNetworkSessionCollection collection);
-        private SessionSelector Selector = new SessionSelector(SelectSession);
-
-        private ScreenStack _stack;
     }
 }

@@ -56,6 +56,23 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateActive(GameTime gameTime)
         {
+            Update(gameTime);
+        }
+
+        protected override void UpdateInactive(GameTime gameTime)
+        {
+            // for local games pause
+            if (_session.IsLocalSession())
+            {
+                return;
+            }
+
+            // for networked games we can never pause
+            Update(gameTime);
+        }
+
+        private void Update(GameTime gameTime)
+        {
             if (_session != null)
             {
                 _session.Update();
