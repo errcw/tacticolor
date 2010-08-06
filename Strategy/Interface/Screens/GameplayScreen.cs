@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using Microsoft.Xna.Framework;
@@ -18,6 +19,11 @@ namespace Strategy.Interface.Screens
         public GameplayScreen(StrategyGame game, NetworkSession session, ICollection<Player> players, Map map, Random random)
         {
             _session = session;
+            _session.GamerJoined += OnGamerJoined;
+            _session.GamerLeft += OnGamerLeft;
+            _session.GameStarted += OnGameStarted;
+            _session.GameEnded += OnGameEnded;
+            _session.SessionEnded += OnSessionEnded;
 
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
             _isoBatch = new IsometricBatch(_spriteBatch);
@@ -112,15 +118,52 @@ namespace Strategy.Interface.Screens
         {
             MatchOverScreen matchOverScreen = new MatchOverScreen((StrategyGame)Stack.Game, args.Player);
             Stack.Push(matchOverScreen);
+
+            // dispose the session after the match over screen is done
+        }
+
+        private void OnGamerJoined(object sender, GamerJoinedEventArgs args)
+        {
+            Debug.WriteLine(args.Gamer.Gamertag + " joined while gameplay screen active");
+            HandleNetworkError();
+        }
+
+        private void OnGamerLeft(object sender, GamerLeftEventArgs args)
+        {
+            // handle a player leaving
+        }
+
+        private void OnGameStarted(object sender, GameStartedEventArgs args)
+        {
+            Debug.WriteLine("Game started while gameplay screen active");
+            HandleNetworkError();
+        }
+
+        private void OnGameEnded(object sender, GameEndedEventArgs args)
+        {
+            Debug.WriteLine("Game ended while gameplay screen active");
+            HandleNetworkError();
+        }
+
+        private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
+        {
+            // if the session ended before the game is over then we encountered an error
+            HandleNetworkError();
+        }
+
+        private void HandleNetworkError()
+        {
+            // show an error screen
         }
 
         private NetworkSession _session;
 
-        private InterfaceContext _context;
+        private MenuInput _input;
 
         private LockstepInput _lockstepInput;
         private LockstepMatch _lockstepMatch;
 
+        private InterfaceContext _context;
         private MatchView _matchView;
         private ICollection<LocalInputView> _inputViews;
         private ICollection<PlayerView> _playerViews;

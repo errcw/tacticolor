@@ -88,7 +88,7 @@ namespace Strategy.Interface.Screens
 
         private void OnHostChanged(object sender, HostChangedEventArgs args)
         {
-            Debug.WriteLine(args.NewHost.Gamertag + " is now host");
+            Debug.WriteLine(args.NewHost.Gamertag + " is now host (was " + args.OldHost.Gamertag + ")");
 
             // the host might have backed out before every player received
             // the seed data so broadcast a new seed to every player
@@ -139,10 +139,23 @@ namespace Strategy.Interface.Screens
         {
             Player player = new Player();
             player.Gamer = gamer;
-            // XXX fake the controler
+
+            // for local players find the local controller
             if (gamer.IsLocal)
             {
-                player.Controller = PlayerIndex.One;
+                for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
+                {
+                    if (Gamer.SignedInGamers[p].Gamertag == gamer.Gamertag)
+                    {
+                        player.Controller = p;
+                        break;
+                    }
+                }
+                if (!player.Controller.HasValue)
+                {
+                    Debug.WriteLine("Local player with no controller! Falling back to controller one.");
+                    player.Controller = PlayerIndex.One;
+                }
             }
 
             _players.Add(player);
@@ -151,6 +164,11 @@ namespace Strategy.Interface.Screens
         private void RemovePlayer(NetworkGamer gamer)
         {
             _players.RemoveAll(player => player.Gamer == gamer);
+            if (_players.Count == 0)
+            {
+                // lost all the players, back out to the main menu
+                Stack.Pop();
+            }
         }
 
         private Player FindPlayerByController(PlayerIndex index)

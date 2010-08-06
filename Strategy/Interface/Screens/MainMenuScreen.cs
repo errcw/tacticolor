@@ -43,7 +43,6 @@ namespace Strategy.Interface.Screens
 #else
                     NetworkSessionProvider.BeginCreate(NetworkSessionType.SystemLink, gamer, OnSessionProvided, true);
 #endif
-
                 AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
                 Stack.Push(busyScreen);
             }
@@ -65,6 +64,10 @@ namespace Strategy.Interface.Screens
             {
                 LobbyScreen lobbyScreen = new LobbyScreen((StrategyGame)Stack.Game, session);
                 Stack.Push(lobbyScreen);
+            }
+            else
+            {
+                // show error screen
             }
         }
 
