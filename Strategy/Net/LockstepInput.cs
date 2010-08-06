@@ -88,7 +88,6 @@ namespace Strategy.Net
         private void BroadcastCommand(Command command)
         {
             _match.ScheduleCommand(command);
-            System.Diagnostics.Debug.WriteLine("Broadcasting " + command);
             if (_sendReceiveGamer != null)
             {
                 foreach (Player player in _players)

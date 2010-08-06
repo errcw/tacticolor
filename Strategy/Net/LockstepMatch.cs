@@ -66,6 +66,7 @@ namespace Strategy.Net
         /// </summary>
         public void ScheduleCommand(Command command)
         {
+            Log("Scheduling " + command);
             if (command is SynchronizationCommand)
             {
                 HandleSynchronization((SynchronizationCommand)command);
@@ -93,11 +94,12 @@ namespace Strategy.Net
                         StepEnded(this, EventArgs.Empty);
                     }
                     StepStart = nextStepStart;
+                    Log("Starting step " + StepStart);
                     _stepEndTime = StepStart + StepTime;
                 }
                 else
                 {
-                    Debug.WriteLine("Blocked starting step " + _stepEndTime);
+                    Log("Blocked starting step " + _stepEndTime);
                     return;
                 }
             }
@@ -112,7 +114,7 @@ namespace Strategy.Net
                         // do not consider this a fatal error because a player may issue
                         // more piece placement commands than is possible because she
                         // does not see the piece assigment reflected immediately
-                        Debug.WriteLine("Tried to execute invalid command " + command);
+                        Log("Tried to execute invalid command " + command);
                     }
                 }
             }
@@ -128,12 +130,12 @@ namespace Strategy.Net
             int playerIdx = (int)command.Player;
             _readyStepStartTimes[playerIdx] = Math.Max(command.Time, _readyStepStartTimes[playerIdx]);
             _readyStepStartTime = _readyStepStartTimes.Min();
-            Debug.WriteLine("Setting ready time to " + _readyStepStartTime);
+            Log("Setting ready time to " + _readyStepStartTime);
 
             // verify that the other players are running as expected
             if (command.Time > _match.Time + SchedulingOffset + StepTime)
             {
-                Debug.WriteLine("Got a sync command from " + command.Player + " for time " + command.Time + " but match time is only " + _match.Time);
+                Log("Got a sync command from " + command.Player + " for time " + command.Time + " but match time is only " + _match.Time);
                 throw new OutOfSyncException("Got a sync command from too far in the future");
             }
             long expectedHash;
@@ -141,7 +143,7 @@ namespace Strategy.Net
             {
                 if (command.Hash != expectedHash)
                 {
-                    Debug.WriteLine("Got hash " + command.Hash + " from " + command.Player + " but expected hash " + expectedHash);
+                    Log("Got hash " + command.Hash + " from " + command.Player + " but expected hash " + expectedHash);
                     throw new OutOfSyncException("Match simulation out of sync");
                 }
             }
@@ -149,6 +151,15 @@ namespace Strategy.Net
             {
                 _stepHashes[command.HashTime] = command.Hash;
             }
+        }
+
+        private void Log(string message)
+        {
+#if XBOX
+            Debug.WriteLine("X " + message);
+#else
+            Debug.WriteLine("C " + message);
+#endif
         }
 
         private Match _match;

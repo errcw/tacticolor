@@ -81,7 +81,7 @@ namespace Strategy.Net
 
         public override string ToString()
         {
-            return String.Format("Command[Id={0},Player={1},Time={2}]", Id, Player, Time);
+            return String.Format("{0}[Id={1},Player={2},Time={3}]", GetType().Name, Id, Player, Time);
         }
 
         protected virtual void ReadImpl(PacketReader reader) { }
