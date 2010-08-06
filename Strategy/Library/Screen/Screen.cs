@@ -150,6 +150,15 @@ namespace Strategy.Library.Screen
         }
 
         /// <summary>
+        /// Updates this screen forced into an inactive state.
+        /// </summary>
+        /// <param name="gameTime">The time since the last update.</param>
+        internal void UpdateForceInactive(GameTime gameTime)
+        {
+            UpdateInactive(gameTime);
+        }
+
+        /// <summary>
         /// Updates this screen when it is active.
         /// </summary>
         /// <param name="time">The time since the last update.</param>

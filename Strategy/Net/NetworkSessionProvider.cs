@@ -18,6 +18,11 @@ namespace Strategy.Net
     public class NetworkSessionProvider
     {
         /// <summary>
+        /// The current active network session, if any.
+        /// </summary>
+        public static NetworkSession CurrentSession { get; private set; }
+
+        /// <summary>
         /// Starts an asynchronous operation to create a network session.
         /// </summary>
         /// <param name="type">The type of network session to create.</param>
@@ -104,6 +109,15 @@ namespace Strategy.Net
         }
 
         /// <summary>
+        /// Sets the current global session.
+        /// </summary>
+        private static void SetCurrentSession(NetworkSession session)
+        {
+            CurrentSession = session;
+            CurrentSession.SessionEnded += (s,a) => CurrentSession = null;
+        }
+
+        /// <summary>
         /// Creates a worker thread function for creating a session.
         /// </summary>
         private static WaitCallback CreateSessionWorker(NetworkSessionType type, SignedInGamer creator, SessionAsyncResult result)
@@ -118,6 +132,7 @@ namespace Strategy.Net
                         Match.MaxPlayers,
                         0,
                         null);
+                    SetCurrentSession(session);
                     result.Complete(session, false);
                 }
                 catch
@@ -177,6 +192,7 @@ namespace Strategy.Net
                         try
                         {
                             joinedSession = NetworkSession.Join(availableSession);
+                            SetCurrentSession(joinedSession);
                             break;
                         }
                         catch
@@ -204,6 +220,7 @@ namespace Strategy.Net
                 try
                 {
                     NetworkSession session = NetworkSession.JoinInvited(Enumerable.Repeat(accepter, 1));
+                    SetCurrentSession(session);
                     result.Complete(session, false);
                 }
                 catch

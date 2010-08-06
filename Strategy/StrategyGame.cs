@@ -89,9 +89,6 @@ namespace Strategy
             base.Draw(gameTime);
         }
 
-        /// <summary>
-        /// Notifies the game that all the content was loaded.
-        /// </summary>
         private void OnContentLoaded(object sender, EventArgs args)
         {
             // wire up the invite method only when the game has loaded
@@ -99,26 +96,33 @@ namespace Strategy
             NetworkSession.InviteAccepted += OnInviteAccepted;
         }
 
-        /// <summary>
-        /// Notifies the game that an invite was accepted.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
         private void OnInviteAccepted(object sender, InviteAcceptedEventArgs args)
         {
-            // destroy the current state
-
             if (args.IsCurrentSession)
             {
-                // grab and attach to the current session
+                // attach to the current session
+                System.Diagnostics.Debug.Assert(NetworkSessionProvider.CurrentSession.SessionState == NetworkSessionState.Lobby);
+                NetworkSessionProvider.CurrentSession.AddLocalGamer(args.Gamer);
             }
             else
             {
                 // dispose the current session if one exists
+                if (NetworkSessionProvider.CurrentSession != null)
+                {
+                    NetworkSessionProvider.CurrentSession.Dispose();
+                }
+
+                // destroy the current game state
+                while (!(_screens.ActiveScreen is MainMenuScreen) && !(_screens.ActiveScreen is TitleScreen))
+                {
+                    _screens.Pop();
+                }
+
+                //XXX use args.Gamer.PlayerIndex?
 
                 IAsyncResult result = NetworkSessionProvider.BeginJoinInvited(
                     args.Gamer,
-                    null,
+                    OnInviteSessionCreated,
                     null);
                 AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
                 _screens.Push(busyScreen);
@@ -130,7 +134,14 @@ namespace Strategy
             NetworkSession session = NetworkSessionProvider.EndJoinInvited(result);
             if (session != null)
             {
-                //XXX check if the game has started and reject the invite?
+                // if the invite was accepted before the game started
+                // ensure we have a menu screen to return to
+                if (_screens.ActiveScreen is TitleScreen)
+                {
+                    MainMenuScreen menuScreen = new MainMenuScreen(this);
+                    _screens.Push(menuScreen);
+                }
+
                 LobbyScreen lobbyScreen = new LobbyScreen(this, session);
                 _screens.Push(lobbyScreen);
             }
