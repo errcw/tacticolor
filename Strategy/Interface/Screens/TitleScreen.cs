@@ -19,6 +19,11 @@ namespace Strategy.Interface.Screens
     /// </summary>
     public class TitleScreen : Screen
     {
+        /// <summary>
+        /// Occurs when the game has finished preloading its content.
+        /// </summary>
+        public event EventHandler<EventArgs> ContentLoaded;
+
         public TitleScreen(StrategyGame game)
         {
             _loader = new ContentPreloader(game.Content);
@@ -79,6 +84,11 @@ namespace Strategy.Interface.Screens
                 _workerExit.Set();
                 _workerThread.Join();
                 _workerThread = null;
+
+                if (ContentLoaded != null)
+                {
+                    ContentLoaded(this, EventArgs.Empty);
+                }
             }
             else
             {

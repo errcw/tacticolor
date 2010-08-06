@@ -1,13 +1,16 @@
 using System;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Net;
 
 using Strategy.Gameplay;
 using Strategy.Interface;
 using Strategy.Interface.Screens;
+using Strategy.Net;
 using Strategy.Library;
 using Strategy.Library.Components;
 using Strategy.Library.Extensions;
@@ -37,18 +40,21 @@ namespace Strategy
             //Components.Add(new FPSOverlay(this));
             Components.Add(new GamerServicesComponent(this));
 
-            Services.AddService<MenuInput>(new MenuInput(this));
+            Services.AddService<MenuInput>(_input = new MenuInput(this));
         }
 
-        protected override void LoadContent()
+        /// <summary>
+        /// Sets up the initial screen.
+        /// </summary>
+        protected override void Initialize()
         {
-            base.LoadContent();
+            base.Initialize();
 
             //CreateDebugGame();
             TitleScreen titleScreen = new TitleScreen(this);
+            titleScreen.ContentLoaded += OnContentLoaded;
             _screens.Push(titleScreen);
         }
-
 
         /// <summary>
         /// Updates the game state.
@@ -57,10 +63,8 @@ namespace Strategy
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            if (_screens.ActiveScreen == null)
-            {
-                Exit();
-            }
+
+            //XXX? _input.Update(gameTime.GetElapsedSeconds());
 
 #if DEBUG
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -68,6 +72,72 @@ namespace Strategy
                 Exit();
             }
 #endif
+
+            if (_screens.ActiveScreen == null)
+            {
+                Exit();
+            }
+        }
+
+        /// <summary>
+        /// Draws the game to the screen.
+        /// </summary>
+        /// <param name="gameTime">A snapshot of timing values.</param>     
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(new Color(45, 45, 45));
+            base.Draw(gameTime);
+        }
+
+        /// <summary>
+        /// Notifies the game that all the content was loaded.
+        /// </summary>
+        private void OnContentLoaded(object sender, EventArgs args)
+        {
+            // wire up the invite method only when the game has loaded
+            // lest we receive an invitation before initialization
+            NetworkSession.InviteAccepted += OnInviteAccepted;
+        }
+
+        /// <summary>
+        /// Notifies the game that an invite was accepted.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnInviteAccepted(object sender, InviteAcceptedEventArgs args)
+        {
+            // destroy the current state
+
+            if (args.IsCurrentSession)
+            {
+                // grab and attach to the current session
+            }
+            else
+            {
+                // dispose the current session if one exists
+
+                IAsyncResult result = NetworkSessionProvider.BeginJoinInvited(
+                    args.Gamer,
+                    null,
+                    null);
+                AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
+                _screens.Push(busyScreen);
+            }
+        }
+
+        private void OnInviteSessionCreated(IAsyncResult result)
+        {
+            NetworkSession session = NetworkSessionProvider.EndJoinInvited(result);
+            if (session != null)
+            {
+                //XXX check if the game has started and reject the invite?
+                LobbyScreen lobbyScreen = new LobbyScreen(this, session);
+                _screens.Push(lobbyScreen);
+            }
+            else
+            {
+                // show an error message
+            }
         }
 
         private void CreateDebugGame()
@@ -91,17 +161,8 @@ namespace Strategy
             _screens.Push(gameplayScreen);
         }
 
-        /// <summary>
-        /// Draws the game to the screen.
-        /// </summary>
-        /// <param name="gameTime">A snapshot of timing values.</param>     
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(new Color(45, 45, 45));
-            base.Draw(gameTime);
-        }
-
         private ScreenStack _screens;
+        private MenuInput _input;
         private TrialModeObserverComponent _trial;
     }
 }

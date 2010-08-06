@@ -17,5 +17,14 @@ namespace Strategy.Library.Extensions
         {
             return session.SessionType == NetworkSessionType.Local;
         }
+
+        /// <summary>
+        /// Checks if SessionType is NetworkSessionType.PlayerMatch or NetworkSessionType.Ranked.
+        /// </summary>
+        public static bool IsOnlineSession(this NetworkSession session)
+        {
+            return session.SessionType == NetworkSessionType.PlayerMatch ||
+                   session.SessionType == NetworkSessionType.Ranked;
+        }
     }
 }

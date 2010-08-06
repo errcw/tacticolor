@@ -39,6 +39,15 @@ namespace Strategy.Library.Extensions
         }
 
         /// <summary>
+        /// Returns true if this player can play online; otherwise, false.
+        /// </summary>
+        public static bool CanPlayOnline(this PlayerIndex player)
+        {
+            SignedInGamer gamer = Gamer.SignedInGamers[player];
+            return gamer != null && gamer.IsSignedInToLive && gamer.Privileges.AllowOnlineSessions;
+        }
+
+        /// <summary>
         /// Returns true if this player can purchase content; otherwise, false.
         /// </summary>
         public static bool CanPurchaseContent(this PlayerIndex player)

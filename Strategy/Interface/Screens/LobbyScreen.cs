@@ -232,11 +232,21 @@ namespace Strategy.Interface.Screens
                         // first time we saw this player
                         if (!p.IsSignedIn() && !Guide.IsVisible)
                         {
-                            Guide.ShowSignIn(1, false);
+                            // prompt the player to sign in
+                            Guide.ShowSignIn(1, !_session.IsLocalSession());
                         }
                         if (p.IsSignedIn())
                         {
-                            // join the existing session
+                            if (_session.IsOnlineSession() && !p.CanPlayOnline())
+                            {
+                                // cannot join this online session
+                                //XXX error message
+                            }
+                            else
+                            {
+                                // join the existing session
+                                _session.AddLocalGamer(p.GetSignedInGamer());
+                            }
                         }
                     }
                 }
@@ -257,6 +267,7 @@ namespace Strategy.Interface.Screens
                             if (p == _input.Controller)
                             {
                                 _session.Dispose();
+                                _session = null;
                                 Stack.Pop();
                             }
                         }

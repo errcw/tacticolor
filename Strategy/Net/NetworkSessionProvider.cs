@@ -66,6 +66,29 @@ namespace Strategy.Net
         }
 
         /// <summary>
+        /// Starts an asynchronous operation to join an invited network session.
+        /// </summary>
+        /// <param name="accepter">The gamer accepting the invite for the session.</param>
+        /// <param name="callback">The method to be called once the asynchronous operation has finished.</param>
+        /// <param name="asyncState">State of the asynchronous operation.</param>
+        /// <returns>An IAsyncResult used to track the progress of the operation.</returns>
+        public static IAsyncResult BeginJoinInvited(SignedInGamer accepter, AsyncCallback callback, object asyncState)
+        {
+            SessionAsyncResult result = new SessionAsyncResult(callback, asyncState);
+            ThreadPool.QueueUserWorkItem(JoinInvitedWorker(accepter, result));
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the result from a BeginJoinInvited asynchronous call.
+        /// </summary>
+        /// <param name="result">An IAsyncResult used to track the progress of the operation.</param>
+        public static NetworkSession EndJoinInvited(IAsyncResult result)
+        {
+            return HandleResult(result);
+        }
+
+        /// <summary>
         /// Handles an asynchronous result passed back from an End call.
         /// </summary>
         /// <param name="result"></param>
@@ -163,6 +186,25 @@ namespace Strategy.Net
                     }
 
                     result.Complete(joinedSession, false);
+                }
+                catch
+                {
+                    result.Complete(null, false);
+                }
+            };
+        }
+
+        /// <summary>
+        /// Creates a worker thread function for accepting an invite.
+        /// </summary>
+        private static WaitCallback JoinInvitedWorker(SignedInGamer accepter, SessionAsyncResult result)
+        {
+            return delegate(object dummyParam)
+            {
+                try
+                {
+                    NetworkSession session = NetworkSession.JoinInvited(Enumerable.Repeat(accepter, 1));
+                    result.Complete(session, false);
                 }
                 catch
                 {

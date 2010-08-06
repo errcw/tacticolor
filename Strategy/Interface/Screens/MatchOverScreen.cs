@@ -25,8 +25,6 @@ namespace Strategy.Interface.Screens
 
         public override void Draw()
         {
-            _batch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
-            _batch.End();
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -41,6 +39,5 @@ namespace Strategy.Interface.Screens
         }
 
         private MenuInput _input;
-        private SpriteBatch _batch;
     }
 }
