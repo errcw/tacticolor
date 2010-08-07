@@ -132,6 +132,9 @@ namespace Strategy.Net
                         Match.MaxPlayers,
                         0,
                         null);
+                    session.AllowHostMigration = true;
+                    session.AllowJoinInProgress = false;
+
                     SetCurrentSession(session);
                     result.Complete(session, false);
                 }

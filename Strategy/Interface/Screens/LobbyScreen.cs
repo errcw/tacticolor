@@ -28,54 +28,44 @@ namespace Strategy.Interface.Screens
             _players = new List<Player>();
 
             _session = session;
-            if (_session.IsHost)
-            {
-                _session.AllowHostMigration = true;
-                _session.AllowJoinInProgress = false;
-            }
             _session.GamerJoined += OnGamerJoined;
             _session.GamerLeft += OnGamerLeft;
             _session.HostChanged += OnHostChanged;
             _session.GameStarted += OnGameStarted;
             _session.GameEnded += OnGameEnded;
             _session.SessionEnded += OnSessionEnded;
+
+            if (_session.IsHost)
+            {
+                _seed = _random.Next(1, int.MaxValue);
+            }
         }
 
         protected override void UpdateActive(GameTime gameTime)
         {
             _session.Update();
-            ReceiveSeeds();
+            HandleNetworkInput();
+            HandleLocalInput();
+
             if (_session.IsHost && _session.IsEveryoneReady && _session.SessionState == NetworkSessionState.Lobby)
             {
                 _session.StartGame();
             }
-
-            _input.Update(gameTime.GetElapsedSeconds());
-            HandleInput();
         }
 
         protected override void UpdateInactive(GameTime gameTime)
         {
-            // continue updating the session even if other temporary screens are on top
-            if (_session != null)
-            {
-                _session.Update();
-            }
+            // continue updating the network session even if other temporary screens are on top
+            _session.Update();
+            HandleNetworkInput();
         }
 
         private void OnGamerJoined(object sender, GamerJoinedEventArgs args)
         {
             Debug.WriteLine(args.Gamer.Gamertag + " joined");
-
             AddPlayer(args.Gamer);
-
-            // if we're the host then send the initialization data to the new player
             if (_session.IsHost)
             {
-                if (_seed == 0)
-                {
-                    _seed = _random.Next(1, int.MaxValue);
-                }
                 SendSeed(_seed, args.Gamer);
             }
         }
@@ -95,7 +85,7 @@ namespace Strategy.Interface.Screens
             if (_session.IsHost)
             {
                 _seed = _random.Next(1, int.MaxValue);
-                foreach (NetworkGamer gamer in _session.AllGamers)
+                foreach (NetworkGamer gamer in _session.RemoteGamers)
                 {
                     SendSeed(_seed, gamer);
                 }
@@ -190,7 +180,7 @@ namespace Strategy.Interface.Screens
         /// <summary>
         /// Receives seeds.
         /// </summary>
-        private void ReceiveSeeds()
+        private void HandleNetworkInput()
         {
             CommandReader reader = new CommandReader();
             foreach (LocalNetworkGamer gamer in _session.LocalGamers)
@@ -211,7 +201,7 @@ namespace Strategy.Interface.Screens
         /// <summary>
         /// Handle input for every local player in the lobby.
         /// </summary>
-        private void HandleInput()
+        private void HandleLocalInput()
         {
             for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
             {

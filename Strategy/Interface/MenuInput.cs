@@ -7,7 +7,7 @@ using Strategy.Library.Input;
 
 namespace Strategy.Interface
 {
-    public class MenuInput
+    public class MenuInput : GameComponent
     {
         public PlayerIndex? Controller
         {
@@ -23,7 +23,7 @@ namespace Strategy.Interface
         public readonly ControlState[] Join;
         public readonly ControlState[] Leave;
 
-        public MenuInput(Game game)
+        public MenuInput(Game game) : base(game)
         {
             // register the primary input methods
             _input = new Input(game);
@@ -48,12 +48,12 @@ namespace Strategy.Interface
             }
         }
 
-        public void Update(float time)
+        public override void Update(GameTime gameTime)
         {
-            _input.Update(time);
+            _input.Update(gameTime);
             foreach (Input input in _inputs)
             {
-                input.Update(time);
+                input.Update(gameTime);
             }
         }
 

@@ -19,11 +19,14 @@ namespace Strategy.Interface.Screens
         public GameplayScreen(StrategyGame game, NetworkSession session, ICollection<Player> players, Map map, Random random)
         {
             _session = session;
-            _session.GamerJoined += OnGamerJoined;
-            _session.GamerLeft += OnGamerLeft;
-            _session.GameStarted += OnGameStarted;
-            _session.GameEnded += OnGameEnded;
-            _session.SessionEnded += OnSessionEnded;
+            if (_session != null)
+            {
+                _session.GamerJoined += OnGamerJoined;
+                _session.GamerLeft += OnGamerLeft;
+                _session.GameStarted += OnGameStarted;
+                _session.GameEnded += OnGameEnded;
+                _session.SessionEnded += OnSessionEnded;
+            }
 
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
             _isoBatch = new IsometricBatch(_spriteBatch);
@@ -68,7 +71,7 @@ namespace Strategy.Interface.Screens
         protected override void UpdateInactive(GameTime gameTime)
         {
             // for local games pause
-            if (_session.IsLocalSession())
+            if (_session == null || _session.IsLocalSession())
             {
                 return;
             }

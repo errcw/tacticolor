@@ -34,13 +34,14 @@ namespace Strategy
             Content.RootDirectory = "Content";
 
             Components.Add(_screens = new ScreenStack(this));
+            Components.Add(_input = new MenuInput(this));
             Components.Add(_trial = new TrialModeObserverComponent(this));
 
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
             //Components.Add(new FPSOverlay(this));
             Components.Add(new GamerServicesComponent(this));
 
-            Services.AddService<MenuInput>(_input = new MenuInput(this));
+            Services.AddService<MenuInput>(_input);
         }
 
         /// <summary>
@@ -50,10 +51,10 @@ namespace Strategy
         {
             base.Initialize();
 
-            //CreateDebugGame();
-            TitleScreen titleScreen = new TitleScreen(this);
+            CreateDebugGame();
+            /*TitleScreen titleScreen = new TitleScreen(this);
             titleScreen.ContentLoaded += OnContentLoaded;
-            _screens.Push(titleScreen);
+            _screens.Push(titleScreen);*/
         }
 
         /// <summary>
@@ -101,7 +102,6 @@ namespace Strategy
             if (args.IsCurrentSession)
             {
                 // attach to the current session
-                System.Diagnostics.Debug.Assert(NetworkSessionProvider.CurrentSession.SessionState == NetworkSessionState.Lobby);
                 NetworkSessionProvider.CurrentSession.AddLocalGamer(args.Gamer);
             }
             else
@@ -118,7 +118,8 @@ namespace Strategy
                     _screens.Pop();
                 }
 
-                //XXX use args.Gamer.PlayerIndex?
+                // transfer control to the gamer that initiated the action
+                _input.Controller = args.Gamer.PlayerIndex;
 
                 IAsyncResult result = NetworkSessionProvider.BeginJoinInvited(
                     args.Gamer,
