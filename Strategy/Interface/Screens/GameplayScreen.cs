@@ -47,7 +47,7 @@ namespace Strategy.Interface.Screens
 
             // create the views
             _backgroundView = new BackgroundView(_context);
-            _mapView = new MapView(map, match, players, _context);
+            _mapView = new MapView(match, _context);
 
             _inputViews = new List<LocalInputView>(players.Count);
             _playerViews = new List<PlayerView>(players.Count);
@@ -59,6 +59,7 @@ namespace Strategy.Interface.Screens
                 LocalInput input = player.Input as LocalInput;
                 if (input != null)
                 {
+                    input.SelectedChanged += OnSelectionChanged;
                     _inputViews.Add(new LocalInputView(input, _context));
                 }
             }
@@ -115,6 +116,12 @@ namespace Strategy.Interface.Screens
             _inputViews.ForEach(view => view.Draw(_isoBatch));
             _mapView.Draw(_isoBatch);
             _isoBatch.End();
+        }
+
+        private void OnSelectionChanged(object inputObj, InputChangedEventArgs args)
+        {
+            LocalInput input = (LocalInput)inputObj;
+            _mapView.ShowSelectionChanged(args.PreviousInput, input.Selected);
         }
 
         private void OnPlayerEliminated(object matchObj, PlayerEventArgs args)

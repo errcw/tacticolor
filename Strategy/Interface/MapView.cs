@@ -16,23 +16,14 @@ namespace Strategy.Interface
     /// </summary>
     public class MapView
     {
-        public MapView(Map map, Match match, ICollection<Player> players, InterfaceContext context)
+        public MapView(Match match, InterfaceContext context)
         {
-            _map = map;
+            _map = match.Map;
             _context = context;
 
             match.PiecePlaced += OnPiecePlaced;
             match.PiecesMoved += OnPiecesMoved;
             match.TerritoryAttacked += OnTerritoryAttacked;
-
-            foreach (Player player in players)
-            {
-                LocalInput input = player.Input as LocalInput;
-                if (input != null)
-                {
-                    input.SelectedChanged += OnSelectedChanged;
-                }
-            }
 
             Rectangle extents = CalculatePixelExtents();
             _context.IsoParams.OffsetX = (1280 - extents.Width) / 2 - extents.X;
@@ -85,9 +76,24 @@ namespace Strategy.Interface
         }
 
         /// <summary>
+        /// Notifies this view that a local selection changed.
+        /// </summary>
+        public void ShowSelectionChanged(Territory previousSelection, Territory currentSelection)
+        {
+            if (previousSelection != null)
+            {
+                _territoryViews[previousSelection].IsSelected = false;
+            }
+            if (currentSelection != null)
+            {
+                _territoryViews[currentSelection].IsSelected = true;
+            }
+        }
+
+        /// <summary>
         /// Notifies this view that a piece was placed on the map.
         /// </summary>
-        public void OnPiecePlaced(object match, PiecePlacedEventArgs args)
+        private void OnPiecePlaced(object match, PiecePlacedEventArgs args)
         {
             TerritoryView territoryView = _territoryViews[args.Location];
             PieceView pieceView = new PieceView(args.Piece, _context);
@@ -98,7 +104,7 @@ namespace Strategy.Interface
         /// <summary>
         /// Notifies this view that pieces were moved on the map.
         /// </summary>
-        public void OnPiecesMoved(object match, PiecesMovedEventArgs args)
+        private void OnPiecesMoved(object match, PiecesMovedEventArgs args)
         {
             TerritoryView sourceView = _territoryViews[args.Source];
             TerritoryView destinationView = _territoryViews[args.Destination];
@@ -115,7 +121,7 @@ namespace Strategy.Interface
         /// <summary>
         /// Notifies this view that a territory was attacked on the map.
         /// </summary>
-        public void OnTerritoryAttacked(object match, TerritoryAttackedEventArgs args)
+        private void OnTerritoryAttacked(object match, TerritoryAttackedEventArgs args)
         {
             TerritoryView attackerView = _territoryViews[args.Attacker];
             TerritoryView defenderView = _territoryViews[args.Defender];
@@ -196,19 +202,6 @@ namespace Strategy.Interface
             }
             // hard-coded numbers for tile width and height (ugh)
             return new Rectangle(minX, minY, maxX - minX + 42, maxY - minY + 27);
-        }
-
-        private void OnSelectedChanged(object inputObj, InputChangedEventArgs args)
-        {
-            LocalInput input = (LocalInput)inputObj;
-            if (args.PreviousInput != null)
-            {
-                _territoryViews[args.PreviousInput].IsSelected = false;
-            }
-            if (input.Selected != null)
-            {
-                _territoryViews[input.Selected].IsSelected = true;
-            }
         }
 
         private Map _map;
