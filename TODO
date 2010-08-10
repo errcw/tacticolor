@@ -1,18 +1,63 @@
 To Do
 -----
 
-- AI
+* AI
+* Networking
+  - Fix resuming the game after a player drops
+  - Handle network failures (dump to main menu)
+  - Handle returning to the lobby after a match
+* Menu
+* Tutorial
+* Awardments
 
-- Networking
-  * Invites
-  * Private games?
-  * Settings?
+
+Menu Structure
+--------------
+
+* Single Player
+  - Quick Match
+  - Custom Match
+* Multiplayer
+  - LIVE
+    + Create Match
+    + Join Match
+  - System Link
+    + Create Match
+    + Join Match
+* Awardments
+* Help & Options
+  - How to Play
+  - Controls
+    + A to select then move/attack
+    + B to cancel selection
+    + X to place a piece
+    + Start to open menu
+  - Options
+    + Music on/off
+    + Sound on/off
+    + Change storage device
+* Get Full Version
+* Exit to Dashboard
+
+! Where to set game options (difficulty, players, map size)?
+
+
+Tutorial
+--------
+
+* Only for first (completed?) game
+* Only for local matches
+* Demonstate
+  - Selecting pieces
+  - Deselecting pieces
+  - Moving pieces
+  - Attacking territories
+  - Placing pieces
 
 
 Thoughts
 --------
 
-- 2- and 4-player modes
 - Per-game options
   + 2 or 4 players
   + which players are CPU-controlled
@@ -33,6 +78,4 @@ Thoughts
   + play 100 games
   + play a game with the developer,
     or someone who has this awardment
-- Use commander piece with action icon?
-- Constructor create textures, Layout() use offsets
 

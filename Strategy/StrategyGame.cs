@@ -65,8 +65,6 @@ namespace Strategy
         {
             base.Update(gameTime);
 
-            //XXX? _input.Update(gameTime.GetElapsedSeconds());
-
 #if DEBUG
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
