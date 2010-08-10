@@ -30,8 +30,8 @@ namespace Strategy.Interface
             _context.IsoParams.OffsetY = (720 - extents.Height) / 2 - extents.Y;
 
             _territoryViews = new Dictionary<Territory, TerritoryView>(_map.Territories.Count);
-            _pieceViews = new Dictionary<Piece, PieceView>(map.Territories.Count * 9);
-            _connectionViews = new List<ConnectionView>(map.Territories.Count * 3);
+            _pieceViews = new Dictionary<Piece, PieceView>(_map.Territories.Count * 9);
+            _connectionViews = new List<ConnectionView>(_map.Territories.Count * 3);
             foreach (Territory territory in _map.Territories)
             {
                 TerritoryView territoryView = new TerritoryView(territory, _context);

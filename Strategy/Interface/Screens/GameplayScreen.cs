@@ -47,8 +47,7 @@ namespace Strategy.Interface.Screens
 
             // create the views
             _backgroundView = new BackgroundView(_context);
-            _mapView = new MapView(match, _context);
-
+            _mapView = new MapView(match, _context); // created first to center subsequent views
             _inputViews = new List<LocalInputView>(players.Count);
             _playerViews = new List<PlayerView>(players.Count);
             _piecesAvailableViews = new List<PiecesAvailableView>(players.Count);
