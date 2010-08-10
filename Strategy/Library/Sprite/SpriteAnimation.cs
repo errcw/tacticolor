@@ -162,4 +162,42 @@ namespace Strategy.Library.Sprite
             set { _controllee.Color = value; }
         }
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class TextAnimation : IAnimation
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="controllee"></param>
+        /// <param name="text"></param>
+        public TextAnimation(TextSprite controllee, string text)
+        {
+            _controllee = controllee;
+            _text = text;
+        }
+
+        /// <summary>
+        /// Starts this animation. No operation.
+        /// </summary>
+        public void Start()
+        {
+        }
+
+        /// <summary>
+        /// Sets the text of the sprite to its new value.
+        /// </summary>
+        /// <param name="time">The elapsed time, in seconds, since the last update. Unused.</param>
+        /// <returns>Always returns false.</returns>
+        public bool Update(float time)
+        {
+            _controllee.Text = _text;
+            return false;
+        }
+
+        private TextSprite _controllee;
+        private string _text;
+    }
 }

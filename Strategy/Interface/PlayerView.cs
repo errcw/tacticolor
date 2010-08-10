@@ -81,6 +81,24 @@ namespace Strategy.Interface
         }
 
         /// <summary>
+        /// Shows that this previously human player was dropped from the match.
+        /// </summary>
+        public void ShowDropped()
+        {
+            string name = GetDisplayName(Player);
+
+            _nameAnimation = new SequentialAnimation(
+                new CompositeAnimation(
+                    new ColorAnimation(_name, Color.TransparentWhite, 1f, Interpolation.InterpolateColor(Easing.Uniform)),
+                    new ColorAnimation(_nameShadow, Color.TransparentWhite, 1f, Interpolation.InterpolateColor(Easing.Uniform))),
+                new DelayAnimation(0.1f),
+                new CompositeAnimation(),
+                new CompositeAnimation(
+                    new ColorAnimation(_name, Color.White, 1f, Interpolation.InterpolateColor(Easing.Uniform)),
+                    new ColorAnimation(_nameShadow, new Color(30, 30, 30, 160), 1f, Interpolation.InterpolateColor(Easing.Uniform))));
+        }
+
+        /// <summary>
         /// Returns a name to display for a player.
         /// </summary>
         private string GetDisplayName(Player player)

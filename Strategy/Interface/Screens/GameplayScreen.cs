@@ -21,17 +21,11 @@ namespace Strategy.Interface.Screens
             _session = session;
             if (_session != null)
             {
-                _session.GamerJoined += OnGamerJoined;
                 _session.GamerLeft += OnGamerLeft;
-                _session.GameStarted += OnGameStarted;
-                _session.GameEnded += OnGameEnded;
                 _session.SessionEnded += OnSessionEnded;
             }
 
-            _spriteBatch = new SpriteBatch(game.GraphicsDevice);
-            _isoBatch = new IsometricBatch(_spriteBatch);
-
-            _context = new InterfaceContext(game, game.Content, new IsometricParameters(17, 9, 16, -9));
+            _players = players;
 
             // create the model
             Match match = new Match(map, random);
@@ -49,6 +43,7 @@ namespace Strategy.Interface.Screens
             _lockstepInput = new LockstepInput(_lockstepMatch, players);
 
             // create the views
+            _context = new InterfaceContext(game, game.Content, new IsometricParameters(17, 9, 16, -9));
             _matchView = new MatchView(match, players, _context);
             _inputViews = new List<LocalInputView>(players.Count);
             _playerViews = new List<PlayerView>(players.Count);
@@ -61,6 +56,9 @@ namespace Strategy.Interface.Screens
                     _inputViews.Add(new LocalInputView(input, _context));
                 }
             }
+
+            _spriteBatch = new SpriteBatch(game.GraphicsDevice);
+            _isoBatch = new IsometricBatch(_spriteBatch);
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -125,44 +123,32 @@ namespace Strategy.Interface.Screens
             // dispose the session after the match over screen is done
         }
 
-        private void OnGamerJoined(object sender, GamerJoinedEventArgs args)
-        {
-            Debug.WriteLine(args.Gamer.Gamertag + " joined while gameplay screen active");
-            HandleNetworkError();
-        }
-
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
         {
-            // handle a player leaving
-        }
+            // make the player locally controlled by an AI player
+            Player player = _players.Where(player.Gamer == args.Gamer).First();
+            player.Gamer = null;
+            player.Controller = null;
+            player.Input = new AIInput();
 
-        private void OnGameStarted(object sender, GameStartedEventArgs args)
-        {
-            Debug.WriteLine("Game started while gameplay screen active");
-            HandleNetworkError();
-        }
+            // remove the local input view
+            _inputViews.RemoveAll(view => view.Input.Player == player);
 
-        private void OnGameEnded(object sender, GameEndedEventArgs args)
-        {
-            Debug.WriteLine("Game ended while gameplay screen active");
-            HandleNetworkError();
+            // update the player view
+            PlayerView playerView = _playerViews.Where(view => view.Player == player);
+            playerView.ShowDropped();
         }
 
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
         {
             // if the session ended before the game is over then we encountered an error
-            HandleNetworkError();
-        }
-
-        private void HandleNetworkError()
-        {
-            // show an error screen
         }
 
         private NetworkSession _session;
 
         private MenuInput _input;
 
+        private ICollection<Player> _players;
         private LockstepInput _lockstepInput;
         private LockstepMatch _lockstepMatch;
 

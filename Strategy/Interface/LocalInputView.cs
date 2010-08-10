@@ -15,19 +15,21 @@ namespace Strategy.Interface
     /// </summary>
     public class LocalInputView
     {
+        public LocalInput Input { get; private set; }
+
         public LocalInputView(LocalInput input, InterfaceContext context)
         {
-            _input = input;
+            Input = input;
             _context = context;
 
-            _input.HoveredChanged += OnHoveredChanged;
-            _input.SelectedChanged += OnSelectedChanged;
+            Input.HoveredChanged += OnHoveredChanged;
+            Input.SelectedChanged += OnSelectedChanged;
 
             Texture2D cursorTex = context.Content.Load<Texture2D>("Images/Cursor");
 
             _cursorHover = new ImageSprite(cursorTex);
             _cursorHover.Color = GetPlayerColor(input.Player);
-            _cursorHover.Position = GetPosition(ChooseCell(_input.Hovered));
+            _cursorHover.Position = GetPosition(ChooseCell(Input.Hovered));
             _cursorHover.Origin = new Vector2(0, 14);
 
             _cursorSelect = new ImageSprite(cursorTex);
@@ -67,9 +69,9 @@ namespace Strategy.Interface
         /// </summary>
         private void OnHoveredChanged(object input, InputChangedEventArgs args)
         {
-            Cell cell = ChooseCell(_input.Hovered);
+            Cell cell = ChooseCell(Input.Hovered);
             _cursorHover.Position = GetPosition(cell);
-            if (_input.Selected != null && _input.Hovered == _input.Selected)
+            if (Input.Selected != null && Input.Hovered == Input.Selected)
             {
                 _cursorHover.Position += HoverOffset;
             }
@@ -82,16 +84,16 @@ namespace Strategy.Interface
         /// </summary>
         private void OnSelectedChanged(object input, InputChangedEventArgs args)
         {
-            if (_input.Selected != null)
+            if (Input.Selected != null)
             {
-                Cell cell = ChooseCell(_input.Selected);
+                Cell cell = ChooseCell(Input.Selected);
                 _cursorSelect.Position = GetPosition(cell);
                 _cursorHover.Position += HoverOffset;
                 _showSelect = true;
             }
             else
             {
-                if (_input.Hovered == args.PreviousInput)
+                if (Input.Hovered == args.PreviousInput)
                 {
                     _cursorHover.Position -= HoverOffset;
                 }
@@ -105,7 +107,7 @@ namespace Strategy.Interface
         /// </summary>
         private Cell ChooseCell(Territory territory)
         {
-            int playerIndex = (int)_input.Player;
+            int playerIndex = (int)Input.Player;
             int cellIndex = 0;
             foreach (Cell cell in territory.Area)
             {
@@ -151,7 +153,6 @@ namespace Strategy.Interface
             }
         }
 
-        private LocalInput _input;
         private InterfaceContext _context;
 
         private Sprite _cursorHover;
