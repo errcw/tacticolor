@@ -46,12 +46,16 @@ namespace Strategy.Interface.Screens
             _lockstepInput = new LockstepInput(_lockstepMatch, players);
 
             // create the views
-            _matchView = new MatchView(match, players, _context);
+            _backgroundView = new BackgroundView(_context);
+            _mapView = new MapView(map, match, players, _context);
+
             _inputViews = new List<LocalInputView>(players.Count);
             _playerViews = new List<PlayerView>(players.Count);
+            _piecesAvailableViews = new List<PiecesAvailableView>(players.Count);
             foreach (Player player in players)
             {
                 _playerViews.Add(new PlayerView(player, _context));
+                _piecesAvailableViews.Add(new PiecesAvailableView(match, player.Id, _context));
                 LocalInput input = player.Input as LocalInput;
                 if (input != null)
                 {
@@ -93,21 +97,23 @@ namespace Strategy.Interface.Screens
             _lockstepInput.Update(milliseconds);
             _lockstepMatch.Update(milliseconds);
 
-            _matchView.Update(seconds);
+            _mapView.Update(seconds);
             _inputViews.ForEach(view => view.Update(seconds));
             _playerViews.ForEach(view => view.Update(seconds));
+            _piecesAvailableViews.ForEach(view => view.Update(seconds));
         }
 
         public override void Draw()
         {
-            _matchView.Draw();
-
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
+            _backgroundView.Draw(_spriteBatch);
             _playerViews.ForEach(view => view.Draw(_spriteBatch));
+            _piecesAvailableViews.ForEach(view => view.Draw(_spriteBatch));
             _spriteBatch.End();
 
             _isoBatch.Begin();
             _inputViews.ForEach(view => view.Draw(_isoBatch));
+            _mapView.Draw(_isoBatch);
             _isoBatch.End();
         }
 
@@ -121,24 +127,22 @@ namespace Strategy.Interface.Screens
         {
             MatchOverScreen matchOverScreen = new MatchOverScreen((StrategyGame)Stack.Game, args.Player);
             Stack.Push(matchOverScreen);
-
-            // dispose the session after the match over screen is done
         }
 
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
         {
             // make the player locally controlled by an AI player
-            Player player = _players.Where(p => p.Gamer.Equals(args.Gamer)).First();
+            Player player = _players.First(p => p.Gamer == args.Gamer);
             player.Gamer = null;
             player.Controller = null;
             player.Input = new AIInput();
 
             // update the player view
-            PlayerView playerView = _playerViews.Where(view => view.Player == player).First();
+            PlayerView playerView = _playerViews.Find(view => view.Player == player);
             playerView.ShowDropped();
 
             // remove the local input view
-            LocalInputView inputView = _inputViews.Where(view => view.Input.Player == player.Id).FirstOrDefault();
+            LocalInputView inputView = _inputViews.Find(view => view.Input.Player == player.Id);
             if (inputView != null)
             {
                 _inputViews.Remove(inputView);
@@ -159,9 +163,11 @@ namespace Strategy.Interface.Screens
         private LockstepMatch _lockstepMatch;
 
         private InterfaceContext _context;
-        private MatchView _matchView;
-        private ICollection<LocalInputView> _inputViews;
-        private ICollection<PlayerView> _playerViews;
+        private BackgroundView _backgroundView;
+        private MapView _mapView;
+        private List<LocalInputView> _inputViews;
+        private List<PlayerView> _playerViews;
+        private List<PiecesAvailableView> _piecesAvailableViews;
 
         private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;

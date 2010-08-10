@@ -97,7 +97,6 @@
     <Compile Include="Interface\LocalInput.cs" />
     <Compile Include="Interface\LocalInputView.cs" />
     <Compile Include="Interface\MapView.cs" />
-    <Compile Include="Interface\MatchView.cs" />
     <Compile Include="Interface\MenuInput.cs" />
     <Compile Include="Interface\PiecesAvailableView.cs" />
     <Compile Include="Interface\PieceView.cs" />

@@ -58,8 +58,6 @@ namespace Strategy.Interface
                 }
             }
             _removedPieces = new List<PieceView>(16);
-
-            _isoBatch = new IsometricBatch(new SpriteBatch(context.Game.GraphicsDevice));
         }
 
         /// <summary>
@@ -78,19 +76,12 @@ namespace Strategy.Interface
         /// <summary>
         /// Draws all the elements of the map.
         /// </summary>
-        public void Draw()
+        public void Draw(IsometricBatch isoBatch)
         {
-            // draw the connections beneath the map
-            _isoBatch.Begin();
-            _connectionViews.ForEach(view => view.Draw(_isoBatch));
-            _isoBatch.End();
-
-            // then draw the territories and pieces
-            _isoBatch.Begin();
-            _territoryViews.Values.ForEach(view => view.Draw(_isoBatch));
-            _pieceViews.Values.ForEach(view => view.Draw(_isoBatch));
-            _removedPieces.ForEach(view => view.Draw(_isoBatch));
-            _isoBatch.End();
+            _connectionViews.ForEach(view => view.Draw(isoBatch));
+            _territoryViews.Values.ForEach(view => view.Draw(isoBatch));
+            _pieceViews.Values.ForEach(view => view.Draw(isoBatch));
+            _removedPieces.ForEach(view => view.Draw(isoBatch));
         }
 
         /// <summary>
@@ -221,13 +212,11 @@ namespace Strategy.Interface
         }
 
         private Map _map;
+
         private InterfaceContext _context;
-
-        private IsometricBatch _isoBatch;
-
-        private IDictionary<Territory, TerritoryView> _territoryViews;
-        private IDictionary<Piece, PieceView> _pieceViews;
-        private ICollection<ConnectionView> _connectionViews;
+        private Dictionary<Territory, TerritoryView> _territoryViews;
+        private Dictionary<Piece, PieceView> _pieceViews;
+        private List<ConnectionView> _connectionViews;
         private List<PieceView> _removedPieces;
     }
 }

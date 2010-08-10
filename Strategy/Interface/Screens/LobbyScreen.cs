@@ -45,8 +45,11 @@ namespace Strategy.Interface.Screens
         protected override void UpdateInactive(GameTime gameTime)
         {
             // continue updating the network session even if other temporary screens are on top
-            _session.Update();
-            HandleNetworkInput();
+            if (_session.SessionState == NetworkSessionState.Lobby)
+            {
+                _session.Update();
+                HandleNetworkInput();
+            }
         }
 
         protected internal override void Show(bool pushed)
@@ -68,6 +71,10 @@ namespace Strategy.Interface.Screens
             _session.GameStarted -= OnGameStarted;
             _session.GameEnded -= OnGameEnded;
             _session.SessionEnded -= OnSessionEnded;
+            if (popped)
+            {
+                _session.Dispose();
+            }
             base.Hide(popped);
         }
 
