@@ -56,6 +56,7 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AI\AIInput.cs" />
     <Compile Include="Gameplay\Map.cs" />
     <Compile Include="Gameplay\MapGenerator.cs" />
     <Compile Include="Gameplay\Match.cs" />

@@ -28,17 +28,6 @@ namespace Strategy.Interface.Screens
             _players = new List<Player>();
 
             _session = session;
-            _session.GamerJoined += OnGamerJoined;
-            _session.GamerLeft += OnGamerLeft;
-            _session.HostChanged += OnHostChanged;
-            _session.GameStarted += OnGameStarted;
-            _session.GameEnded += OnGameEnded;
-            _session.SessionEnded += OnSessionEnded;
-
-            if (_session.IsHost)
-            {
-                _seed = _random.Next(1, int.MaxValue);
-            }
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -60,12 +49,38 @@ namespace Strategy.Interface.Screens
             HandleNetworkInput();
         }
 
+        protected internal override void Show(bool pushed)
+        {
+            _session.GamerJoined += OnGamerJoined;
+            _session.GamerLeft += OnGamerLeft;
+            _session.HostChanged += OnHostChanged;
+            _session.GameStarted += OnGameStarted;
+            _session.GameEnded += OnGameEnded;
+            _session.SessionEnded += OnSessionEnded;
+            base.Show(pushed);
+        }
+
+        protected internal override void Hide(bool popped)
+        {
+            _session.GamerJoined -= OnGamerJoined;
+            _session.GamerLeft -= OnGamerLeft;
+            _session.HostChanged -= OnHostChanged;
+            _session.GameStarted -= OnGameStarted;
+            _session.GameEnded -= OnGameEnded;
+            _session.SessionEnded -= OnSessionEnded;
+            base.Hide(popped);
+        }
+
         private void OnGamerJoined(object sender, GamerJoinedEventArgs args)
         {
             Debug.WriteLine(args.Gamer.Gamertag + " joined");
             AddPlayer(args.Gamer);
             if (_session.IsHost)
             {
+                if (_seed == 0)
+                {
+                    _seed = _random.Next(1, int.MaxValue);
+                }
                 SendSeed(_seed, args.Gamer);
             }
         }

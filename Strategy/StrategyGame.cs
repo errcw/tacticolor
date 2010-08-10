@@ -51,10 +51,10 @@ namespace Strategy
         {
             base.Initialize();
 
-            CreateDebugGame();
-            /*TitleScreen titleScreen = new TitleScreen(this);
+            //CreateDebugGame();
+            TitleScreen titleScreen = new TitleScreen(this);
             titleScreen.ContentLoaded += OnContentLoaded;
-            _screens.Push(titleScreen);*/
+            _screens.Push(titleScreen);
         }
 
         /// <summary>

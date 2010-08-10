@@ -27,6 +27,9 @@ namespace Strategy.Interface.Screens
 
             _players = players;
 
+            // isometric context
+            _context = new InterfaceContext(game, game.Content, new IsometricParameters(17, 9, 16, -9));
+
             // create the model
             Match match = new Match(map, random);
             match.PlayerEliminated += OnPlayerEliminated;
@@ -43,7 +46,6 @@ namespace Strategy.Interface.Screens
             _lockstepInput = new LockstepInput(_lockstepMatch, players);
 
             // create the views
-            _context = new InterfaceContext(game, game.Content, new IsometricParameters(17, 9, 16, -9));
             _matchView = new MatchView(match, players, _context);
             _inputViews = new List<LocalInputView>(players.Count);
             _playerViews = new List<PlayerView>(players.Count);
@@ -126,17 +128,21 @@ namespace Strategy.Interface.Screens
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
         {
             // make the player locally controlled by an AI player
-            Player player = _players.Where(player.Gamer == args.Gamer).First();
+            Player player = _players.Where(p => p.Gamer.Equals(args.Gamer)).First();
             player.Gamer = null;
             player.Controller = null;
             player.Input = new AIInput();
 
-            // remove the local input view
-            _inputViews.RemoveAll(view => view.Input.Player == player);
-
             // update the player view
-            PlayerView playerView = _playerViews.Where(view => view.Player == player);
+            PlayerView playerView = _playerViews.Where(view => view.Player == player).First();
             playerView.ShowDropped();
+
+            // remove the local input view
+            LocalInputView inputView = _inputViews.Where(view => view.Input.Player == player.Id).FirstOrDefault();
+            if (inputView != null)
+            {
+                _inputViews.Remove(inputView);
+            }
         }
 
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)

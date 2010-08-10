@@ -164,15 +164,15 @@ namespace Strategy.Library.Sprite
     }
 
     /// <summary>
-    /// 
+    /// Animates the text of a text sprite.
     /// </summary>
     public class TextAnimation : IAnimation
     {
         /// <summary>
-        /// 
+        /// Creates a new text animation.
         /// </summary>
-        /// <param name="controllee"></param>
-        /// <param name="text"></param>
+        /// <param name="controllee">The text sprite to animate.</param>
+        /// <param name="text">The new text to set on the sprite.</param>
         public TextAnimation(TextSprite controllee, string text)
         {
             _controllee = controllee;
