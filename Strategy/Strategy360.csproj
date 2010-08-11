@@ -79,6 +79,7 @@
     <Compile Include="Interface\Screens\LobbyScreen.cs" />
     <Compile Include="Interface\Screens\MainMenuScreen.cs" />
     <Compile Include="Interface\Screens\MatchOverScreen.cs" />
+    <Compile Include="Interface\Screens\MessageScreen.cs" />
     <Compile Include="Interface\Screens\TitleScreen.cs" />
     <Compile Include="Interface\TerritoryView.cs" />
     <Compile Include="Interface\InterfaceContext.cs" />

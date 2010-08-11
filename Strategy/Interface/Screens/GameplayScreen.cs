@@ -97,6 +97,11 @@ namespace Strategy.Interface.Screens
             _lockstepInput.Update(milliseconds);
             _lockstepMatch.Update(milliseconds);
 
+            if (_lockstepMatch.Match.Time > 3000)
+            {
+                OnSessionEnded(this, null);
+            }
+
             _mapView.Update(seconds);
             _inputViews.ForEach(view => view.Update(seconds));
             _playerViews.ForEach(view => view.Update(seconds));
@@ -158,11 +163,11 @@ namespace Strategy.Interface.Screens
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
         {
             // if the session ended before the game is over then we encountered an error
+            MessageScreen messageScreen = new MessageScreen(_context.Game, "The session has ended unexpectedly.");
+            Stack.Push(messageScreen);
         }
 
         private NetworkSession _session;
-
-        private MenuInput _input;
 
         private ICollection<Player> _players;
         private LockstepInput _lockstepInput;
