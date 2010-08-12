@@ -16,9 +16,14 @@ namespace Strategy.Interface.Screens
     /// </summary>
     public class MessageScreen : Screen
     {
-        public MessageScreen(Game game, string messageText)
+        public MessageScreen(Game game, string messageText) : this(game, messageText, typeof(MainMenuScreen))
+        {
+        }
+
+        public MessageScreen(Game game, string messageText, Type popUntilScreen)
         {
             _input = game.Services.GetService<MenuInput>();
+            _popUntilScreen = popUntilScreen;
 
             ImageSprite background = new ImageSprite(game.Content.Load<Texture2D>("Images/Colourable"));
             background.Scale = new Vector2(1280, 720);
@@ -74,7 +79,7 @@ namespace Strategy.Interface.Screens
         {
             if (_input.Action.Released)
             {
-                while (!(Stack.ActiveScreen is MainMenuScreen))
+                while (!_popUntilScreen.IsInstanceOfType(Stack.ActiveScreen))
                 {
                     Stack.Pop();
                 }
@@ -122,6 +127,8 @@ namespace Strategy.Interface.Screens
         }
 
         private MenuInput _input;
+
+        private Type _popUntilScreen;
 
         private Sprite _sprite;
         private SpriteBatch _spriteBatch;

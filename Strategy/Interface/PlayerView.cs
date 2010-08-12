@@ -85,8 +85,7 @@ namespace Strategy.Interface
         /// </summary>
         public void ShowDropped()
         {
-            string newDisplayName = GetDisplayName(Player);
-
+            string newDisplayName = Player.DisplayName;
             _nameAnimation = new SequentialAnimation(
                 new CompositeAnimation(
                     new ColorAnimation(_name, Color.TransparentWhite, 1f, Interpolation.InterpolateColor(Easing.Uniform)),

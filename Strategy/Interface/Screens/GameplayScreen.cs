@@ -148,9 +148,9 @@ namespace Strategy.Interface.Screens
 
         private void OnMatchEnded(object matchObj, PlayerEventArgs args)
         {
-            Player player = _players.First(p => p.Id == args.Player.Id);
+            Player player = _players.First(p => p.Id == args.Player);
             string message = string.Format(Resources.GameWon, player.DisplayName);
-            MessageScreen messageScreen = new MessageScreen(Stack.Game, message);
+            MessageScreen messageScreen = new MessageScreen(Stack.Game, message, typeof(LobbyScreen));
             Stack.Push(messageScreen);
         }
 
