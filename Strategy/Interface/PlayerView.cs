@@ -22,8 +22,8 @@ namespace Strategy.Interface
             Player = player;
 
             Vector2 position = GetBasePosition(Player.Id);
-            string name = GetDisplayName(Player);
             SpriteFont font = context.Content.Load<SpriteFont>("Fonts/Gamertag");
+            string name = Player.DisplayName;
             float nameWidth = font.MeasureString(name).X;
 
             _name = new TextSprite(font, name);
@@ -98,28 +98,6 @@ namespace Strategy.Interface
                 new CompositeAnimation(
                     new ColorAnimation(_name, Color.White, 1f, Interpolation.InterpolateColor(Easing.Uniform)),
                     new ColorAnimation(_nameShadow, new Color(30, 30, 30, 160), 1f, Interpolation.InterpolateColor(Easing.Uniform))));
-        }
-
-        /// <summary>
-        /// Returns a name to display for a player.
-        /// </summary>
-        private string GetDisplayName(Player player)
-        {
-            if (player.Gamer != null)
-            {
-                return player.Gamer.Gamertag;
-            }
-            else
-            {
-                switch (player.Id)
-                {
-                    case PlayerId.A: return Resources.ComputerA;
-                    case PlayerId.B: return Resources.ComputerB;
-                    case PlayerId.C: return Resources.ComputerC;
-                    case PlayerId.D: return Resources.ComputerD;
-                    default: throw new ArgumentException("Invalid player id " + player);
-                }
-            }
         }
 
         /// <summary>

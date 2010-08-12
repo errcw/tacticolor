@@ -124,6 +124,16 @@ namespace Strategy.Interface.Screens
             _isoBatch.End();
         }
 
+        protected internal override void Hide(bool popped)
+        {
+            // unwire the handlers once this screen is disappears
+            if (_session != null && popped)
+            {
+                _session.GamerLeft -= OnGamerLeft;
+                _session.SessionEnded -= OnSessionEnded;
+            }
+        }
+
         private void OnSelectionChanged(object inputObj, InputChangedEventArgs args)
         {
             LocalInput input = (LocalInput)inputObj;
@@ -138,8 +148,10 @@ namespace Strategy.Interface.Screens
 
         private void OnMatchEnded(object matchObj, PlayerEventArgs args)
         {
-            MatchOverScreen matchOverScreen = new MatchOverScreen((StrategyGame)Stack.Game, args.Player);
-            Stack.Push(matchOverScreen);
+            Player player = _players.First(p => p.Id == args.Player.Id);
+            string message = string.Format(Resources.GameWon, player.DisplayName);
+            MessageScreen messageScreen = new MessageScreen(Stack.Game, message);
+            Stack.Push(messageScreen);
         }
 
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Net;
 
 using Strategy.Gameplay;
 using Strategy.Net;
+using Strategy.Properties;
 
 namespace Strategy.Interface
 {
@@ -32,5 +33,30 @@ namespace Strategy.Interface
         /// The input handler for this player.
         /// </summary>
         public ICommandProvider Input { get; set; }
+
+        /// <summary>
+        /// The name used to display this player.
+        /// </summary>
+        public string DisplayName
+        {
+            get
+            {
+                if (Gamer != null)
+                {
+                    return Gamer.Gamertag;
+                }
+                else
+                {
+                    switch (Id)
+                    {
+                        case PlayerId.A: return Resources.ComputerA;
+                        case PlayerId.B: return Resources.ComputerB;
+                        case PlayerId.C: return Resources.ComputerC;
+                        case PlayerId.D: return Resources.ComputerD;
+                        default: return Resources.ComputerA;
+                    }
+                }
+            }
+        }
     }
 }
