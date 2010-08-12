@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Net;
 
 using Strategy.Gameplay;
 using Strategy.Net;
+using Strategy.Properties;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
 
@@ -164,7 +165,7 @@ namespace Strategy.Interface.Screens
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
         {
             // if the session ended before the game is over then we encountered an error
-            MessageScreen messageScreen = new MessageScreen(_context.Game, "The session has ended unexpectedly.");
+            MessageScreen messageScreen = new MessageScreen(_context.Game, Resources.NetworkError);
             Stack.Push(messageScreen);
         }
 

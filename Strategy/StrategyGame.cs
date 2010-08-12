@@ -116,6 +116,14 @@ namespace Strategy
                     _screens.Pop();
                 }
 
+                // if the invite was accepted before the game started
+                // ensure we have a menu screen to return to
+                if (_screens.ActiveScreen is TitleScreen)
+                {
+                    MainMenuScreen menuScreen = new MainMenuScreen(this);
+                    _screens.Push(menuScreen);
+                }
+
                 // transfer control to the gamer that initiated the action
                 _input.Controller = args.Gamer.PlayerIndex;
 
@@ -133,20 +141,14 @@ namespace Strategy
             NetworkSession session = NetworkSessionProvider.EndJoinInvited(result);
             if (session != null)
             {
-                // if the invite was accepted before the game started
-                // ensure we have a menu screen to return to
-                if (_screens.ActiveScreen is TitleScreen)
-                {
-                    MainMenuScreen menuScreen = new MainMenuScreen(this);
-                    _screens.Push(menuScreen);
-                }
 
                 LobbyScreen lobbyScreen = new LobbyScreen(this, session);
                 _screens.Push(lobbyScreen);
             }
             else
             {
-                // show an error message
+                MessageScreen messageScreen = new MessageScreen(this, Resources.NetworkErrorAcceptInvite);
+                _screens.Push(messageScreen);
             }
         }
 
