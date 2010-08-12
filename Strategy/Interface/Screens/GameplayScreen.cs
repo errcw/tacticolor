@@ -97,7 +97,8 @@ namespace Strategy.Interface.Screens
             _lockstepInput.Update(milliseconds);
             _lockstepMatch.Update(milliseconds);
 
-            if (_lockstepMatch.Match.Time > 3000)
+            MenuInput i = Stack.Game.Services.GetService<MenuInput>();
+            if (i.Action.Released)
             {
                 OnSessionEnded(this, null);
             }

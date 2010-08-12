@@ -167,6 +167,8 @@ namespace Strategy
                 players[p].Controller = (PlayerIndex)p;
             }
 
+            _input.Controller = PlayerIndex.One;
+
             GameplayScreen gameplayScreen = new GameplayScreen(this, null, players, map, random);
             _screens.Push(gameplayScreen);
         }
