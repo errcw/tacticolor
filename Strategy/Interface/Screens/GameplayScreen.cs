@@ -98,12 +98,6 @@ namespace Strategy.Interface.Screens
             _lockstepInput.Update(milliseconds);
             _lockstepMatch.Update(milliseconds);
 
-            MenuInput i = Stack.Game.Services.GetService<MenuInput>();
-            if (i.Action.Released)
-            {
-                OnSessionEnded(this, null);
-            }
-
             _mapView.Update(seconds);
             _inputViews.ForEach(view => view.Update(seconds));
             _playerViews.ForEach(view => view.Update(seconds));
@@ -156,11 +150,11 @@ namespace Strategy.Interface.Screens
 
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
         {
-            // make the player locally controlled by an AI player
+            // have the player sit idle
             Player player = _players.First(p => p.Gamer == args.Gamer);
             player.Gamer = null;
             player.Controller = null;
-            player.Input = new AIInput();
+            player.Input = null;
 
             // update the player view
             PlayerView playerView = _playerViews.Find(view => view.Player == player);

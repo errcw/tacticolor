@@ -99,7 +99,7 @@ namespace Strategy.Interface.Screens
         private string[] SplitLines(string message, float lineWidth, SpriteFont font)
         {
             List<string> lines = new List<string>();
-            string[] words = message.Split(new string[]{" "}, StringSplitOptions.RemoveEmptyEntries);
+            string[] words = message.Split(' ');
 
             StringBuilder currentLine = new StringBuilder(message.Length);
             float currentLineWidth = 0f;
