@@ -165,6 +165,9 @@
   <data name="NetworkErrorAcceptInvite" xml:space="preserve">
     <value>Failed to accept invite.</value>
   </data>
+  <data name="NetworkErrorCannotPlayOnline" xml:space="preserve">
+    <value>The signed in gamer cannot play online.</value>
+  </data>
   <data name="NetworkErrorDisconnected" xml:space="preserve">
     <value>Lost connection to the match.</value>
   </data>

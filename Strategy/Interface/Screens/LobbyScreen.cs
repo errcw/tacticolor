@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Net;
 
 using Strategy.Gameplay;
 using Strategy.Net;
+using Strategy.Properties;
 using Strategy.Library.Extensions;
 using Strategy.Library.Input;
 using Strategy.Library.Screen;
@@ -74,6 +75,7 @@ namespace Strategy.Interface.Screens
             if (popped)
             {
                 _session.Dispose();
+                _session = null;
             }
             base.Hide(popped);
         }
@@ -138,13 +140,13 @@ namespace Strategy.Interface.Screens
         private void OnGameEnded(object sender, GameEndedEventArgs args)
         {
             Debug.WriteLine("Game ended");
-            // should never encounter this case
         }
 
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
         {
-            Debug.WriteLine("Session ended");
-            // should never encounter this case?
+            // if the session ended before the game started then we encountered an error
+            MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
+            Stack.Push(messageScreen);
         }
 
         private void AddPlayer(NetworkGamer gamer)
@@ -252,7 +254,8 @@ namespace Strategy.Interface.Screens
                             if (_session.IsOnlineSession() && !p.CanPlayOnline())
                             {
                                 // cannot join this online session
-                                //XXX error message
+                                MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkErrorCannotPlayOnline);
+                                Stack.Push(messageScreen);
                             }
                             else
                             {
@@ -278,8 +281,6 @@ namespace Strategy.Interface.Screens
                             // leave the session if the request came from the main controller
                             if (p == _input.Controller)
                             {
-                                _session.Dispose();
-                                _session = null;
                                 Stack.Pop();
                             }
                         }

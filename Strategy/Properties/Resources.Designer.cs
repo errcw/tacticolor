@@ -205,6 +205,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The signed in gamer cannot play online..
+        /// </summary>
+        internal static string NetworkErrorCannotPlayOnline {
+            get {
+                return ResourceManager.GetString("NetworkErrorCannotPlayOnline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lost connection to the match..
         /// </summary>
         internal static string NetworkErrorDisconnected {

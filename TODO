@@ -4,8 +4,6 @@ To Do
 * AI
 * Networking
   - Fix resuming the game after a player drops
-  - Handle network failures (dump to main menu)
-  - Handle returning to the lobby after a match
 * Menu
 * Tutorial
 * Awardments

@@ -177,7 +177,7 @@ namespace Strategy.Interface.Screens
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
         {
             // if the session ended before the game is over then we encountered an error
-            MessageScreen messageScreen = new MessageScreen(_context.Game, Resources.NetworkError);
+            MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
             Stack.Push(messageScreen);
         }
 
