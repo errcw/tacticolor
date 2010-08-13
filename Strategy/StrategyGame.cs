@@ -15,6 +15,7 @@ using Strategy.Library;
 using Strategy.Library.Components;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
+using Strategy.Library.Storage;
 using Strategy.Properties;
 
 namespace Strategy
@@ -35,6 +36,7 @@ namespace Strategy
 
             Components.Add(_screens = new ScreenStack(this));
             Components.Add(_input = new MenuInput(this));
+            Components.Add(_storage = new SharedStorage(this, "Strategy"));
             Components.Add(_trial = new TrialModeObserverComponent(this));
 
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
@@ -42,6 +44,7 @@ namespace Strategy
             Components.Add(new GamerServicesComponent(this));
 
             Services.AddService<MenuInput>(_input);
+            Services.AddService<Storage>(_storage);
         }
 
         /// <summary>
@@ -51,10 +54,10 @@ namespace Strategy
         {
             base.Initialize();
 
-            //CreateDebugGame();
-            TitleScreen titleScreen = new TitleScreen(this);
-            titleScreen.ContentLoaded += OnContentLoaded;
-            _screens.Push(titleScreen);
+            CreateDebugGame();
+            //TitleScreen titleScreen = new TitleScreen(this);
+            //titleScreen.ContentLoaded += OnContentLoaded;
+            //_screens.Push(titleScreen);
         }
 
         /// <summary>
@@ -90,6 +93,17 @@ namespace Strategy
 
         private void OnContentLoaded(object sender, EventArgs args)
         {
+            // prompt for the storage device after letting the game load
+            // or wait until the trial mode has ended
+            if (!Guide.IsTrialMode)
+            {
+                _storage.PromptForDevice();
+            }
+            else
+            {
+                _trial.TrialModeEnded += (s, a) => _storage.PromptForDevice();
+            }
+
             // wire up the invite method only when the game has loaded
             // lest we receive an invitation before initialization
             NetworkSession.InviteAccepted += OnInviteAccepted;
@@ -177,6 +191,7 @@ namespace Strategy
 
         private ScreenStack _screens;
         private MenuInput _input;
+        private Storage _storage;
         private TrialModeObserverComponent _trial;
     }
 }

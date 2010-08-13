@@ -190,6 +190,21 @@
   <data name="PurchaseFailedTitle" xml:space="preserve">
     <value>Cannot Purchase</value>
   </data>
+  <data name="StoragePromptReselectCancelled" xml:space="preserve">
+    <value>No storage device selected. Continue without saving?</value>
+  </data>
+  <data name="StoragePromptReselectDisconnected" xml:space="preserve">
+    <value>The selected storage device has been removed. Continue without saving?</value>
+  </data>
+  <data name="StoragePromptReselectNo" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="StoragePromptReselectTitle" xml:space="preserve">
+    <value>Reselect Storage Device?</value>
+  </data>
+  <data name="StoragePromptReselectYes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
   <data name="StrategyGame" xml:space="preserve">
     <value>Strategy</value>
   </data>

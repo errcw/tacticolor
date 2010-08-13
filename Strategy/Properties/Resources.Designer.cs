@@ -277,6 +277,51 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No storage device selected. Continue without saving?.
+        /// </summary>
+        internal static string StoragePromptReselectCancelled {
+            get {
+                return ResourceManager.GetString("StoragePromptReselectCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The selected storage device has been removed. Continue without saving?.
+        /// </summary>
+        internal static string StoragePromptReselectDisconnected {
+            get {
+                return ResourceManager.GetString("StoragePromptReselectDisconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        internal static string StoragePromptReselectNo {
+            get {
+                return ResourceManager.GetString("StoragePromptReselectNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reselect Storage Device?.
+        /// </summary>
+        internal static string StoragePromptReselectTitle {
+            get {
+                return ResourceManager.GetString("StoragePromptReselectTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        internal static string StoragePromptReselectYes {
+            get {
+                return ResourceManager.GetString("StoragePromptReselectYes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Strategy.
         /// </summary>
         internal static string StrategyGame {
