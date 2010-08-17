@@ -65,9 +65,8 @@ namespace Strategy.Gameplay
         /// </summary>
         public event EventHandler<AwardmentEventArgs> AwardmentEarned;
 
-        public Awardments(Game game, Storage storage)
+        public Awardments(Storage storage)
         {
-            _game = game;
             _storage = storage;
             _awardments = new Dictionary<Gamer, List<Awardment>>(Match.MaxPlayerCount);
 
@@ -86,7 +85,6 @@ namespace Strategy.Gameplay
                 {
                     if (_storage.Exists(awardmentXml))
                     {
-                        // offload the load to another thread?
                         _storage.Load(awardmentXml);
                         awardments = new List<Awardment>(awardmentXml.Data);
                         AddMissingAwardments(awardments, AwardmentTypes);
@@ -117,15 +115,17 @@ namespace Strategy.Gameplay
                     }
                 }
             }
+
+            // flush the update awardment state to storage
+            Save();
         }
 
         public void MatchEnded(ICollection<Gamer> players)
         {
+            // for the players still in the game update the awardments with the match end
             foreach (Gamer gamer in players)
             {
                 List<Awardment> awardments = _awardments[gamer];
-
-                // run through the list of awardments
                 foreach (Awardment awardment in awardments)
                 {
                     bool earned = awardment.CheckOnMatchEnded();
@@ -138,8 +138,19 @@ namespace Strategy.Gameplay
                         }
                     }
                 }
+            }
 
-                // save the awardments to storage
+            // flush the update awardment state to storage
+            Save();
+        }
+
+        private void Save()
+        {
+            foreach (KeyValuePair<Gamer, List<Awardment>> entry in _awardments)
+            {
+                Gamer gamer = entry.Key;
+                List<Awardment> awardments = entry.Value;
+
                 XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(GetStorageLocation(gamer));
                 awardmentXml.Data = awardments.ToArray();
                 try
@@ -196,12 +207,14 @@ namespace Strategy.Gameplay
             awardments.AddRange(newAwardments);
         }
 
+        /// <summary>
+        /// Returns the file name where the awardments for the specified gamer are kept.
+        /// </summary>
         private string GetStorageLocation(Gamer gamer)
         {
             return "StrategyAwardments_" + gamer.Gamertag;
         }
 
-        private Game _game;
         private Storage _storage;
 
         private Dictionary<Gamer, List<Awardment>> _awardments;
