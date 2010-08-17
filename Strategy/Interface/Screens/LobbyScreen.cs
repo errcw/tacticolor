@@ -247,7 +247,7 @@ namespace Strategy.Interface.Screens
                         if (!p.IsSignedIn() && !Guide.IsVisible)
                         {
                             // prompt the player to sign in
-                            Guide.ShowSignIn(1, !_session.IsLocalSession());
+                            Guide.ShowSignIn(1, _session.IsOnlineSession());
                         }
                         if (p.IsSignedIn())
                         {
