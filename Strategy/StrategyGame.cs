@@ -84,7 +84,7 @@ namespace Strategy
         /// <summary>
         /// Draws the game to the screen.
         /// </summary>
-        /// <param name="gameTime">A snapshot of timing values.</param>     
+        /// <param name="gameTime">A snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(new Color(45, 45, 45));
@@ -168,19 +168,27 @@ namespace Strategy
 
         private void CreateDebugGame()
         {
-            const int DebugPlayers = 4;
+            const int DebugHuman = 4;
+            const int DebugAI = 0;
 
             Random random = new Random();
 
             MapGenerator generator = new MapGenerator(random);
-            Map map = generator.Generate(16, DebugPlayers, 1, 2);
+            Map map = generator.Generate(16, DebugHuman + DebugAI, 1, 2);
 
-            Player[] players = new Player[DebugPlayers];
+            Player[] players = new Player[DebugHuman + DebugAI];
             for (int p = 0; p < players.Length; p++)
             {
                 players[p] = new Player();
                 players[p].Id = (PlayerId)p;
-                players[p].Controller = (PlayerIndex)p;
+                if (p < DebugHuman)
+                {
+                    players[p].Controller = (PlayerIndex)p;
+                }
+                else
+                {
+                    players[p].Input = new AIInput();
+                }
             }
 
             _input.Controller = PlayerIndex.One;
