@@ -39,7 +39,7 @@ namespace Strategy.Gameplay
         /// <summary>
         /// The maximum number of players in a match.
         /// </summary>
-        public const int MaxPlayers = 4;
+        public const int MaxPlayerCount = 4;
 
         /// <summary>
         /// The maximum number of pieces available to place by a player.

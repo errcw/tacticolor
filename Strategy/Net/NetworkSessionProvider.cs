@@ -129,7 +129,7 @@ namespace Strategy.Net
                     NetworkSession session = NetworkSession.Create(
                         type,
                         Enumerable.Repeat(creator, 1),
-                        Match.MaxPlayers,
+                        Match.MaxPlayerCount,
                         0,
                         null);
                     session.AllowHostMigration = true;

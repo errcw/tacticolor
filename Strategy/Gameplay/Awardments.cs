@@ -69,6 +69,7 @@ namespace Strategy.Gameplay
         {
             _game = game;
             _storage = storage;
+            _awardments = new List<List<Awardment>>(Match.MaxPlayerCount);
 
             AwardmentTypes = GetAwardmentTypes();
         }
@@ -158,6 +159,8 @@ namespace Strategy.Gameplay
         private Game _game;
         private Storage _storage;
 
+        private List<List<Awardment>> _awardments;
+
         private readonly List<Type> AwardmentTypes;
     }
 
@@ -190,7 +193,7 @@ namespace Strategy.Gameplay
         public override bool CheckOnMatchEnded()
         {
             MatchesPlayed += 1;
-            return MatchesPlayed == 100;
+            return MatchesPlayed >= 100;
         }
     }
 }
