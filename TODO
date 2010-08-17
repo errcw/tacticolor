@@ -9,6 +9,11 @@ To Do
   - Save/load from storage
   - Wire up to the match
 
+* Check out
+  - How other games handle storage selectors
+  - How other games handle signing out
+  - How other games handle multiplayer
+
 
 Menu Structure
 --------------
