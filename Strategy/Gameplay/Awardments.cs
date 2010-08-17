@@ -69,17 +69,19 @@ namespace Strategy.Gameplay
         {
             _game = game;
             _storage = storage;
-            _awardments = new List<List<Awardment>>(Match.MaxPlayerCount);
+            _awardments = new Dictionary<Gamer, List<Awardment>>(Match.MaxPlayerCount);
 
             AwardmentTypes = GetAwardmentTypes();
         }
 
         public void MatchStarted(ICollection<Gamer> players)
         {
+            _awardments.Clear();
             foreach (Gamer gamer in players)
             {
-                XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(GetStorageLocation(gamer));
+                // load the awardments from storage if they exist
                 List<Awardment> awardments = null;
+                XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(GetStorageLocation(gamer));
                 try
                 {
                     if (_storage.Exists(awardmentXml))
@@ -99,13 +101,56 @@ namespace Strategy.Gameplay
                 {
                     awardments = CreateAwardments(AwardmentTypes);
                 }
-                // do something useful with the data
+                _awardments.Add(gamer, awardments);
+
+                // run through the list of awardments
+                foreach (Awardment awardment in awardments)
+                {
+                    bool earned = awardment.CheckOnMatchStarted();
+                    if (earned && !awardment.IsEarned)
+                    {
+                        awardment.IsEarned = true;
+                        if (AwardmentEarned != null)
+                        {
+                            AwardmentEarned(this, new AwardmentEventArgs(awardment, gamer));
+                        }
+                    }
+                }
             }
         }
 
-        public void MatchEnded()
+        public void MatchEnded(ICollection<Gamer> players)
         {
-            // offload the save to another thread
+            foreach (Gamer gamer in players)
+            {
+                List<Awardment> awardments = _awardments[gamer];
+
+                // run through the list of awardments
+                foreach (Awardment awardment in awardments)
+                {
+                    bool earned = awardment.CheckOnMatchEnded();
+                    if (earned && !awardment.IsEarned)
+                    {
+                        awardment.IsEarned = true;
+                        if (AwardmentEarned != null)
+                        {
+                            AwardmentEarned(this, new AwardmentEventArgs(awardment, gamer));
+                        }
+                    }
+                }
+
+                // save the awardments to storage
+                XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(GetStorageLocation(gamer));
+                awardmentXml.Data = awardments.ToArray();
+                try
+                {
+                    _storage.Save(awardmentXml);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
+                }
+            }
         }
 
         /// <summary>
@@ -159,7 +204,7 @@ namespace Strategy.Gameplay
         private Game _game;
         private Storage _storage;
 
-        private List<List<Awardment>> _awardments;
+        private Dictionary<Gamer, List<Awardment>> _awardments;
 
         private readonly List<Type> AwardmentTypes;
     }
