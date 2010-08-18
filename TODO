@@ -8,6 +8,7 @@ To Do
   - Display as an overlay
   - Save/load from storage
   - Wire up to the match
+* Handle signing out
 
 * Check out
   - How other games handle storage selectors

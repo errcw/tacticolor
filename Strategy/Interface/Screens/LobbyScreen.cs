@@ -246,8 +246,15 @@ namespace Strategy.Interface.Screens
                         // first time we saw this player
                         if (!p.IsSignedIn() && !Guide.IsVisible)
                         {
-                            // prompt the player to sign in
-                            Guide.ShowSignIn(1, _session.IsOnlineSession());
+                            try
+                            {
+                                // prompt the player to sign in
+                                Guide.ShowSignIn(1, _session.IsOnlineSession());
+                            }
+                            catch
+                            {
+                                // ignore whatever guide errors occur
+                            }
                         }
                         if (p.IsSignedIn())
                         {

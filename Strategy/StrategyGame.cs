@@ -45,6 +45,8 @@ namespace Strategy
 
             Services.AddService<MenuInput>(_input);
             Services.AddService<Storage>(_storage);
+            Services.AddService<Options>(_options = new Options(_storage));
+            Services.AddService<Options>(_awardments = new Awardments(_storage));
         }
 
         /// <summary>
@@ -89,6 +91,19 @@ namespace Strategy
         {
             GraphicsDevice.Clear(new Color(45, 45, 45));
             base.Draw(gameTime);
+        }
+
+        /// <summary>
+        /// Flushes persistent state to storage.
+        /// </summary>
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            if (_storage.IsValid)
+            {
+                _options.Save();
+                _awardments.Save();
+            }
+            base.OnExiting(sender, args);
         }
 
         private void OnContentLoaded(object sender, EventArgs args)
@@ -136,10 +151,10 @@ namespace Strategy
                 {
                     MainMenuScreen menuScreen = new MainMenuScreen(this);
                     _screens.Push(menuScreen);
-                }
 
-                // transfer control to the gamer that initiated the action
-                _input.Controller = args.Gamer.PlayerIndex;
+                    // transfer control to the gamer that initiated the action
+                    _input.Controller = args.Gamer.PlayerIndex;
+                }
 
                 IAsyncResult result = NetworkSessionProvider.BeginJoinInvited(
                     args.Gamer,
@@ -199,7 +214,9 @@ namespace Strategy
 
         private ScreenStack _screens;
         private MenuInput _input;
+        private Options _options;
         private Storage _storage;
+        private Awardments _awardments;
         private TrialModeObserverComponent _trial;
     }
 }

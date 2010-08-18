@@ -75,33 +75,12 @@ namespace Strategy.Gameplay
 
         public void MatchStarted(ICollection<Gamer> players)
         {
-            _awardments.Clear();
+            // load the existing awardment state
+            Load(players);
+
             foreach (Gamer gamer in players)
             {
-                // load the awardments from storage if they exist
-                List<Awardment> awardments = null;
-                XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(GetStorageLocation(gamer));
-                try
-                {
-                    if (_storage.Exists(awardmentXml))
-                    {
-                        _storage.Load(awardmentXml);
-                        awardments = new List<Awardment>(awardmentXml.Data);
-                        AddMissingAwardments(awardments, AwardmentTypes);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e);
-                }
-                // if there is nothing to load then start with a blank list
-                if (awardments == null)
-                {
-                    awardments = CreateAwardments(AwardmentTypes);
-                }
-                _awardments.Add(gamer, awardments);
-
-                // run through the list of awardments
+                List<Awardment> awardments = _awardments[gamer];
                 foreach (Awardment awardment in awardments)
                 {
                     bool earned = awardment.CheckOnMatchStarted();
@@ -116,7 +95,7 @@ namespace Strategy.Gameplay
                 }
             }
 
-            // flush the update awardment state to storage
+            // flush the updated awardment state to storage
             Save();
         }
 
@@ -140,11 +119,43 @@ namespace Strategy.Gameplay
                 }
             }
 
-            // flush the update awardment state to storage
+            // flush the updated awardment state to storage
             Save();
         }
 
-        private void Save()
+        private void Load(ICollection<Gamer> players)
+        {
+            foreach (Gamer gamer in players)
+            {
+                List<Awardment> awardments = null;
+                bool alreadyLoaded = _awardments.TryGetValue(gamer, out awardments);
+                if (!alreadyLoaded)
+                {
+                    XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(GetStorageLocation(gamer));
+                    try
+                    {
+                        if (_storage.Exists(awardmentXml))
+                        {
+                            _storage.Load(awardmentXml);
+                            awardments = new List<Awardment>(awardmentXml.Data);
+                            AddMissingAwardments(awardments, AwardmentTypes);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e);
+                    }
+                    // if there is nothing to load then start with a blank list
+                    if (awardments == null)
+                    {
+                        awardments = CreateAwardments(AwardmentTypes);
+                    }
+                    _awardments.Add(gamer, awardments);
+                }
+            }
+        }
+
+        public void Save()
         {
             foreach (KeyValuePair<Gamer, List<Awardment>> entry in _awardments)
             {

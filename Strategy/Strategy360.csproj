@@ -71,6 +71,7 @@
     <Compile Include="Interface\LocalInputView.cs" />
     <Compile Include="Interface\MapView.cs" />
     <Compile Include="Interface\MenuInput.cs" />
+    <Compile Include="Interface\Options.cs" />
     <Compile Include="Interface\PiecesAvailableView.cs" />
     <Compile Include="Interface\PieceView.cs" />
     <Compile Include="Interface\Player.cs" />
