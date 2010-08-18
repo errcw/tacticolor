@@ -109,15 +109,7 @@ namespace Strategy
         private void OnContentLoaded(object sender, EventArgs args)
         {
             // prompt for the storage device after letting the game load
-            // or wait until the trial mode has ended
-            if (!Guide.IsTrialMode)
-            {
-                _storage.PromptForDevice();
-            }
-            else
-            {
-                _trial.TrialModeEnded += (s, a) => _storage.PromptForDevice();
-            }
+            _storage.PromptForDevice();
 
             // wire up the invite method only when the game has loaded
             // lest we receive an invitation before initialization

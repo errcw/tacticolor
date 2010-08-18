@@ -157,6 +157,12 @@ namespace Strategy.Gameplay
 
         public void Save()
         {
+            // in trial mode do not save earned awardments
+            if (Guide.IsTrialMode)
+            {
+                return;
+            }
+
             foreach (KeyValuePair<Gamer, List<Awardment>> entry in _awardments)
             {
                 Gamer gamer = entry.Key;
