@@ -30,22 +30,15 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateActive(GameTime gameTime)
         {
-            if (!_input.Controller.Value.IsSignedIn())
-            {
-                Guide.ShowSignIn(4, false);
-            }
-            if (_input.Controller.HasValue && _input.Controller.Value.IsSignedIn())
-            {
-                SignedInGamer gamer = _input.Controller.Value.GetSignedInGamer();
-                IAsyncResult result =
+            SignedInGamer gamer = _input.Controller.Value.GetSignedInGamer();
+            IAsyncResult result =
 #if WINDOWS
-                    NetworkSessionProvider.BeginFindAndJoin(NetworkSessionType.SystemLink, gamer, OnSessionProvided, false);
+                NetworkSessionProvider.BeginFindAndJoin(NetworkSessionType.SystemLink, gamer, OnSessionProvided, false);
 #else
-                    NetworkSessionProvider.BeginCreate(NetworkSessionType.SystemLink, gamer, OnSessionProvided, true);
+                NetworkSessionProvider.BeginCreate(NetworkSessionType.SystemLink, gamer, OnSessionProvided, true);
 #endif
-                AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
-                Stack.Push(busyScreen);
-            }
+            AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
+            Stack.Push(busyScreen);
         }
 
         private void OnSessionProvided(IAsyncResult result)
