@@ -108,10 +108,12 @@ namespace Strategy
 
         private void OnContentLoaded(object sender, EventArgs args)
         {
-
             // wire up the invite method only when the game has loaded
             // lest we receive an invitation before initialization
             NetworkSession.InviteAccepted += OnInviteAccepted;
+
+            // wire up the signed out now
+            SignedInGamer.SignedOut += OnGamerSignedOut;
         }
 
         private void OnInviteAccepted(object sender, InviteAcceptedEventArgs args)
@@ -167,6 +169,33 @@ namespace Strategy
             else
             {
                 MessageScreen messageScreen = new MessageScreen(this, Resources.NetworkErrorAcceptInvite);
+                _screens.Push(messageScreen);
+            }
+        }
+
+        private void OnGamerSignedOut(object sender, SignedOutEventArgs args)
+        {
+            bool shouldBail = false;
+            if (NetworkSessionProvider.CurrentSession != null)
+            {
+                foreach (LocalNetworkGamer gamer in NetworkSessionProvider.CurrentSession.LocalGamers)
+                {
+                    if (gamer.Gamertag == args.Gamer.Gamertag)
+                    {
+                        // player that signed out was playing a game
+                        shouldBail = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                // player that signed out was controlling the menus
+                shouldBail = _input.Controller.Value == args.Gamer.PlayerIndex;
+            }
+            if (shouldBail)
+            {
+                MessageScreen messageScreen = new MessageScreen(this, Resources.SignedOutError, typeof(TitleScreen));
                 _screens.Push(messageScreen);
             }
         }

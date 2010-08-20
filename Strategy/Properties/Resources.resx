@@ -196,6 +196,9 @@
   <data name="PurchaseFailedTitle" xml:space="preserve">
     <value>Cannot Purchase</value>
   </data>
+  <data name="SignedOutError" xml:space="preserve">
+    <value>A player signed out. Returning to the title screen.</value>
+  </data>
   <data name="StoragePromptReselectCancelled" xml:space="preserve">
     <value>No storage device selected. Continue without saving?</value>
   </data>

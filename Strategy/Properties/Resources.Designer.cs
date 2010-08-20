@@ -295,6 +295,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A player signed out. Returning to the title screen..
+        /// </summary>
+        internal static string SignedOutError {
+            get {
+                return ResourceManager.GetString("SignedOutError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No storage device selected. Continue without saving?.
         /// </summary>
         internal static string StoragePromptReselectCancelled {
