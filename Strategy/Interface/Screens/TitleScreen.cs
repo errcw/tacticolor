@@ -4,6 +4,7 @@ using System.Threading;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Properties;
@@ -94,6 +95,14 @@ namespace Strategy.Interface.Screens
             {
                 // loading has finished, wait for the player to start the game
                 if (_input.FindAndSetActiveController())
+                {
+                    if (!_input.Controller.Value.IsSignedIn())
+                    {
+                        Guide.ShowSignIn(1, false);
+                    }
+                }
+                // require a signed in profile to continue
+                if (_input.Controller.HasValue && _input.Controller.Value.IsSignedIn())
                 {
                     MainMenuScreen menuScreen = new MainMenuScreen((StrategyGame)Stack.Game);
                     Stack.Push(menuScreen);
