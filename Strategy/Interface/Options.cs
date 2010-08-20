@@ -44,10 +44,8 @@ namespace Strategy.Interface
         /// <summary>
         /// Creates a new set of options with default values.
         /// </summary>
-        public Options(Storage storage)
+        public Options()
         {
-            _storage = storage;
-
             _options = new OptionsData();
             SoundEffectsToggle = true;
             MusicToggle = true;
@@ -56,11 +54,11 @@ namespace Strategy.Interface
         /// <summary>
         /// Loads these options from storage.
         /// </summary>
-        public void Load()
+        public void Load(Storage storage)
         {
             try
             {
-                _storage.Load(_storeableOptions);
+                storage.Load(_storeableOptions);
                 _options = _storeableOptions.Data;
                 SoundEffectsToggle = _options.SoundEffectsToggle;
                 MusicToggle = _options.MusicToggle;
@@ -75,20 +73,18 @@ namespace Strategy.Interface
         /// <summary>
         /// Stores these options.
         /// </summary>
-        public void Save()
+        public void Save(Storage storage)
         {
             try
             {
                 _storeableOptions.Data = _options;
-                _storage.Save(_storeableOptions);
+                storage.Save(_storeableOptions);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
             }
         }
-
-        private Storage _storage;
 
         private OptionsData _options;
         private readonly XmlStoreable<OptionsData> _storeableOptions = new XmlStoreable<OptionsData>("StrategyOptions");

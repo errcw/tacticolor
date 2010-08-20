@@ -45,8 +45,8 @@ namespace Strategy
 
             Services.AddService<MenuInput>(_input);
             Services.AddService<Storage>(_storage);
-            Services.AddService<Options>(_options = new Options(_storage));
-            Services.AddService<Options>(_awardments = new Awardments(_storage));
+            Services.AddService<Options>(_options = new Options());
+            Services.AddService<Awardments>(_awardments = new Awardments(_storage));
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Strategy
         {
             if (_storage.IsValid)
             {
-                _options.Save();
+                _options.Save(_storage);
                 _awardments.Save();
             }
             base.OnExiting(sender, args);
@@ -108,8 +108,6 @@ namespace Strategy
 
         private void OnContentLoaded(object sender, EventArgs args)
         {
-            // prompt for the storage device after letting the game load
-            _storage.PromptForDevice();
 
             // wire up the invite method only when the game has loaded
             // lest we receive an invitation before initialization
