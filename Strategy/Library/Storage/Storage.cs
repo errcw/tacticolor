@@ -61,7 +61,7 @@ namespace Strategy.Library.Storage
         /// <summary>
         /// Occurs when a StorageDevice is selected.
         /// </summary>
-        public event EventHandler DeviceSelected;
+        public event EventHandler<EventArgs> DeviceSelected;
 
         /// <summary>
         /// Occurs when the StorageDevice is disconnected.

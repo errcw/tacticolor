@@ -101,7 +101,7 @@ namespace Strategy
             if (_storage.IsValid)
             {
                 _options.Save(_storage);
-                _awardments.Save();
+                _awardments.Save(_storage);
             }
             base.OnExiting(sender, args);
         }
@@ -114,6 +114,14 @@ namespace Strategy
 
             // wire up the signed out now
             SignedInGamer.SignedOut += OnGamerSignedOut;
+
+            // prompt for the device once the content has been loaded
+            _storage.PromptForDevice();
+            _storage.DeviceSelected += delegate(object s, EventArgs a)
+            {
+                _options.Load(_storage);
+                _awardments.Load(_storage);
+            };
         }
 
         private void OnInviteAccepted(object sender, InviteAcceptedEventArgs args)

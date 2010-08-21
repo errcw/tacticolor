@@ -94,9 +94,6 @@ namespace Strategy.Gameplay
                     }
                 }
             }
-
-            // flush the updated awardment state to storage
-            Save();
         }
 
         public void MatchEnded(ICollection<Gamer> players)
@@ -118,12 +115,9 @@ namespace Strategy.Gameplay
                     }
                 }
             }
-
-            // flush the updated awardment state to storage
-            Save();
         }
 
-        private void Load(ICollection<Gamer> players)
+        public void Load(ICollection<Gamer> players)
         {
             foreach (Gamer gamer in players)
             {
@@ -155,7 +149,11 @@ namespace Strategy.Gameplay
             }
         }
 
-        public void Save()
+        public void Load(Storage storage)
+        {
+        }
+
+        public void Save(Storage storage)
         {
             // in trial mode do not save earned awardments
             if (Guide.IsTrialMode)
@@ -172,7 +170,7 @@ namespace Strategy.Gameplay
                 awardmentXml.Data = awardments.ToArray();
                 try
                 {
-                    _storage.Save(awardmentXml);
+                    storage.Save(awardmentXml);
                 }
                 catch (Exception e)
                 {

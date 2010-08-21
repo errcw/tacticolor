@@ -12,6 +12,7 @@ using Strategy.Library;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
 using Strategy.Library.Sprite;
+using Strategy.Library.Storage;
 
 namespace Strategy.Interface.Screens
 {
