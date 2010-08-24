@@ -35,6 +35,7 @@ namespace Strategy.Interface.Screens
             _device = game.GraphicsDevice;
 
             _input = game.Services.GetService<MenuInput>();
+            _storage = game.Services.GetService<Storage>();
 
             // load the initial content for the loading screen
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/Background"));
@@ -105,6 +106,9 @@ namespace Strategy.Interface.Screens
                 // require a signed in profile to continue
                 if (_input.Controller.HasValue && _input.Controller.Value.IsSignedIn())
                 {
+                    // prompt for storage before continuing
+                    _storage.PromptForDevice();
+
                     MainMenuScreen menuScreen = new MainMenuScreen((StrategyGame)Stack.Game);
                     Stack.Push(menuScreen);
                 }
@@ -181,6 +185,7 @@ namespace Strategy.Interface.Screens
         private SpriteBatch _spriteBatch;
 
         private MenuInput _input;
+        private Storage _storage;
 
         private const int WorkerUpdateTime = 1000 / 30;
     }

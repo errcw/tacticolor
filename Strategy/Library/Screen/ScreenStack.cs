@@ -44,6 +44,7 @@ namespace Strategy.Library.Screen
                 _stackScreens.ForEach(screen => screen.Update(gameTime));
                 _poppedScreens.ForEach(screen => screen.Update(gameTime));
                 _poppedScreens.RemoveAll(screen => screen.State == ScreenState.Inactive);
+                _overlayScreens.ForEach(screen => screen.Update(gameTime));
             }
             else
             {
@@ -75,6 +76,9 @@ namespace Strategy.Library.Screen
 
             // draw the screens transitioning off
             _poppedScreens.ForEach(s => s.Draw());
+
+            // draw the overlays on top of the stack
+            _overlayScreens.ForEach(s => s.Draw());
         }
 
         /// <summary>
@@ -127,7 +131,29 @@ namespace Strategy.Library.Screen
             _stackScreens.Clear();
         }
 
+        /// <summary>
+        /// Adds an overlay screen to be drawn on top of the stack.
+        /// </summary>
+        /// <param name="overlay">The screen to add.</param>
+        public void AddOverlay(Screen overlay)
+        {
+            overlay.Stack = this;
+            overlay.Show(true);
+            _overlayScreens.Add(overlay);
+        }
+
+        /// <summary>
+        /// Removes an overlay screen from the set of overlays.
+        /// </summary>
+        /// <param name="overlay">The screen to remove.</param>
+        /// <returns>True if the screen was successfully removed; otherwise, false.</returns>
+        public bool RemoveOverlay(Screen overlay)
+        {
+            return _overlayScreens.Remove(overlay);
+        }
+
         private List<Screen> _stackScreens = new List<Screen>();
         private List<Screen> _poppedScreens = new List<Screen>();
+        private List<Screen> _overlayScreens = new List<Screen>();
     }
 }

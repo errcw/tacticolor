@@ -210,8 +210,6 @@ namespace Strategy.Gameplay
             awardments.AddRange(newAwardments);
         }
 
-        private Storage _storage;
-
         private Dictionary<string, List<Awardment>> _awardments;
 
         private readonly List<Type> AwardmentTypes;

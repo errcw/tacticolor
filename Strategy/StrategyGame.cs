@@ -56,6 +56,14 @@ namespace Strategy
         {
             base.Initialize();
 
+            _storage.DeviceSelected += delegate(object s, EventArgs a)
+            {
+                _options.Load(_storage);
+                _awardments.Load(_storage);
+            };
+
+            SignedInGamer.SignedOut += OnGamerSignedOut;
+
             CreateDebugGame();
             //TitleScreen titleScreen = new TitleScreen(this);
             //titleScreen.ContentLoaded += OnContentLoaded;
@@ -112,24 +120,8 @@ namespace Strategy
             // lest we receive an invitation before initialization
             NetworkSession.InviteAccepted += OnInviteAccepted;
 
-            // wire up the signed out now
-            SignedInGamer.SignedOut += OnGamerSignedOut;
-
-            // wire up the awardment event now that we have assets to handle it
-            _awardments.AwardmentEarned += OnAwardmentEarned;
-
-            // prompt for the device once the content has been loaded
-            _storage.PromptForDevice();
-            _storage.DeviceSelected += delegate(object s, EventArgs a)
-            {
-                _options.Load(_storage);
-                _awardments.Load(_storage);
-            };
-        }
-
-        private void OnAwardmentEarned(object sender, AwardmentEventArgs args)
-        {
-            // have the awardment overlay display the awardment
+            // wire up the awardments now that we have assets to handle it
+            _screens.AddOverlay(new AwardmentOverlay(this, _awardments));
         }
 
         private void OnInviteAccepted(object sender, InviteAcceptedEventArgs args)
@@ -194,23 +186,17 @@ namespace Strategy
             bool shouldBail = false;
             if (NetworkSessionProvider.CurrentSession != null)
             {
+                // player that signed out was playing a game
                 Gamer player = NetworkSessionProvider.CurrentSession.LocalGamers.AsEnumerable<Gamer>().FirstOrDefault(gamer => gamer.Gamertag == args.Gamer.Gamertag);
                 shouldBail = player != null;
-                foreach (LocalNetworkGamer gamer in NetworkSessionProvider.CurrentSession.LocalGamers)
-                {
-                    if (gamer.Gamertag == args.Gamer.Gamertag)
-                    {
-                        // player that signed out was playing a game
-                        shouldBail = true;
-                        break;
-                    }
-                }
             }
             else
             {
                 // player that signed out was controlling the menus
                 shouldBail = _input.Controller.Value == args.Gamer.PlayerIndex;
             }
+            // only bail if we have passed the title screen
+            shouldBail &= _screens.ActiveScreen is TitleScreen;
             if (shouldBail)
             {
                 MessageScreen messageScreen = new MessageScreen(this, Resources.SignedOutError, typeof(TitleScreen));
