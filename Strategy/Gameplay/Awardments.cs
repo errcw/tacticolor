@@ -203,7 +203,7 @@ namespace Strategy.Gameplay
             List<Awardment> awardments = new List<Awardment>();
             foreach (Type type in types)
             {
-                Awardment awardment = (Awardment)type.GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
+                Awardment awardment = (Awardment)type.GetConstructor(new Type[0]).Invoke(new object[0]);
                 awardments.Add(awardment);
             }
             return awardments;
