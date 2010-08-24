@@ -516,7 +516,8 @@ namespace Strategy.Gameplay
             }
             if (_playersRemaining == 1 && Ended != null)
             {
-                Ended(this, new PlayerEventArgs(player));
+                PlayerId winner = (PlayerId)_numTerritoriesOwned.IndexOf(owned => owned > 0);
+                Ended(this, new PlayerEventArgs(winner));
             }
         }
 
