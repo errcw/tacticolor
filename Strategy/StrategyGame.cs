@@ -115,6 +115,9 @@ namespace Strategy
             // wire up the signed out now
             SignedInGamer.SignedOut += OnGamerSignedOut;
 
+            // wire up the awardment event now that we have assets to handle it
+            _awardments.AwardmentEarned += OnAwardmentEarned;
+
             // prompt for the device once the content has been loaded
             _storage.PromptForDevice();
             _storage.DeviceSelected += delegate(object s, EventArgs a)
@@ -122,6 +125,11 @@ namespace Strategy
                 _options.Load(_storage);
                 _awardments.Load(_storage);
             };
+        }
+
+        private void OnAwardmentEarned(object sender, AwardmentEventArgs args)
+        {
+            // have the awardment overlay display the awardment
         }
 
         private void OnInviteAccepted(object sender, InviteAcceptedEventArgs args)
@@ -186,6 +194,8 @@ namespace Strategy
             bool shouldBail = false;
             if (NetworkSessionProvider.CurrentSession != null)
             {
+                Gamer player = NetworkSessionProvider.CurrentSession.LocalGamers.AsEnumerable<Gamer>().FirstOrDefault(gamer => gamer.Gamertag == args.Gamer.Gamertag);
+                shouldBail = player != null;
                 foreach (LocalNetworkGamer gamer in NetworkSessionProvider.CurrentSession.LocalGamers)
                 {
                     if (gamer.Gamertag == args.Gamer.Gamertag)

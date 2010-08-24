@@ -72,7 +72,7 @@ namespace Strategy.Gameplay
             AwardmentTypes = GetAwardmentTypes();
         }
 
-        public void MatchStarted(ICollection<Gamer> players)
+        public void MatchStarted(IEnumerable<Gamer> players)
         {
             foreach (Gamer gamer in players)
             {
@@ -97,7 +97,7 @@ namespace Strategy.Gameplay
             }
         }
 
-        public void MatchEnded(ICollection<Gamer> players)
+        public void MatchEnded(IEnumerable<Gamer> players, Gamer winner)
         {
             foreach (Gamer gamer in players)
             {

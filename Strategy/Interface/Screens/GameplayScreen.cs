@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Net;
 
@@ -27,6 +28,9 @@ namespace Strategy.Interface.Screens
             }
 
             _players = players;
+
+            _awardments = game.Services.GetService<Awardments>();
+            _awardments.MatchStarted(session.LocalGamers.AsEnumerable<Gamer>());
 
             // isometric context
             _context = new InterfaceContext(game, game.Content, new IsometricParameters(17, 9, 16, -9));
@@ -143,6 +147,9 @@ namespace Strategy.Interface.Screens
         private void OnMatchEnded(object matchObj, PlayerEventArgs args)
         {
             Player player = _players.First(p => p.Id == args.Player);
+
+            _awardments.MatchEnded(_session.LocalGamers.AsEnumerable<Gamer>(), player.Gamer);
+
             string message = string.Format(Resources.GameWon, player.DisplayName);
             MessageScreen messageScreen = new MessageScreen(Stack.Game, message, typeof(LobbyScreen));
             Stack.Push(messageScreen);
@@ -176,6 +183,8 @@ namespace Strategy.Interface.Screens
         }
 
         private NetworkSession _session;
+
+        private Awardments _awardments;
 
         private ICollection<Player> _players;
         private LockstepInput _lockstepInput;
