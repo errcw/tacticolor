@@ -25,6 +25,12 @@ namespace Strategy.Library.Storage
             FileName = fileName;
         }
 
+        public XmlStoreable(string fileName, T data)
+        {
+            FileName = fileName;
+            Data = data;
+        }
+
         public void Save(Stream stream)
         {
             _serializer.Serialize(stream, Data);

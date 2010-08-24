@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Serialization;
@@ -65,22 +66,22 @@ namespace Strategy.Gameplay
         /// </summary>
         public event EventHandler<AwardmentEventArgs> AwardmentEarned;
 
-        public Awardments(Storage storage)
+        public Awardments()
         {
-            _storage = storage;
-            _awardments = new Dictionary<Gamer, List<Awardment>>(Match.MaxPlayerCount);
-
+            _awardments = new Dictionary<string, List<Awardment>>();
             AwardmentTypes = GetAwardmentTypes();
         }
 
         public void MatchStarted(ICollection<Gamer> players)
         {
-            // load the existing awardment state
-            Load(players);
-
             foreach (Gamer gamer in players)
             {
-                List<Awardment> awardments = _awardments[gamer];
+                List<Awardment> awardments = null;
+                if (!_awardments.TryGetValue(gamer.Gamertag, out awardments))
+                {
+                    // no existing awardments for this gamer, create new ones
+                    awardments = CreateAwardments(AwardmentTypes);
+                }
                 foreach (Awardment awardment in awardments)
                 {
                     bool earned = awardment.CheckOnMatchStarted();
@@ -98,10 +99,9 @@ namespace Strategy.Gameplay
 
         public void MatchEnded(ICollection<Gamer> players)
         {
-            // for the players still in the game update the awardments with the match end
             foreach (Gamer gamer in players)
             {
-                List<Awardment> awardments = _awardments[gamer];
+                List<Awardment> awardments = _awardments[gamer.Gamertag];
                 foreach (Awardment awardment in awardments)
                 {
                     bool earned = awardment.CheckOnMatchEnded();
@@ -117,42 +117,32 @@ namespace Strategy.Gameplay
             }
         }
 
-        public void Load(ICollection<Gamer> players)
+        /// <summary>
+        /// Loads the awardment state for all gamers from storage.
+        /// </summary>
+        public void Load(Storage storage)
         {
-            foreach (Gamer gamer in players)
+            foreach (string file in Directory.GetFiles(AwardmentDirectory))
             {
-                List<Awardment> awardments = null;
-                bool alreadyLoaded = _awardments.TryGetValue(gamer, out awardments);
-                if (!alreadyLoaded)
+                XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(file);
+                string gamer = Path.GetFileNameWithoutExtension(file);
+                try
                 {
-                    XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(GetStorageLocation(gamer));
-                    try
-                    {
-                        if (_storage.Exists(awardmentXml))
-                        {
-                            _storage.Load(awardmentXml);
-                            awardments = new List<Awardment>(awardmentXml.Data);
-                            AddMissingAwardments(awardments, AwardmentTypes);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine(e);
-                    }
-                    // if there is nothing to load then start with a blank list
-                    if (awardments == null)
-                    {
-                        awardments = CreateAwardments(AwardmentTypes);
-                    }
+                    storage.Load(awardmentXml);
+                    List<Awardment> awardments = new List<Awardment>(awardmentXml.Data);
+                    AddMissingAwardments(awardments, AwardmentTypes);
                     _awardments.Add(gamer, awardments);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
                 }
             }
         }
 
-        public void Load(Storage storage)
-        {
-        }
-
+        /// <summary>
+        /// Saves the awardment state from all gamers to storage.
+        /// </summary>
         public void Save(Storage storage)
         {
             // in trial mode do not save earned awardments
@@ -161,13 +151,11 @@ namespace Strategy.Gameplay
                 return;
             }
 
-            foreach (KeyValuePair<Gamer, List<Awardment>> entry in _awardments)
+            foreach (KeyValuePair<string, List<Awardment>> entry in _awardments)
             {
-                Gamer gamer = entry.Key;
-                List<Awardment> awardments = entry.Value;
-
-                XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(GetStorageLocation(gamer));
-                awardmentXml.Data = awardments.ToArray();
+                string awardmentPath = Path.Combine(AwardmentDirectory, entry.Key);
+                Awardment[] awardments = entry.Value.ToArray();
+                XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(awardmentPath, awardments);
                 try
                 {
                     storage.Save(awardmentXml);
@@ -222,19 +210,12 @@ namespace Strategy.Gameplay
             awardments.AddRange(newAwardments);
         }
 
-        /// <summary>
-        /// Returns the file name where the awardments for the specified gamer are kept.
-        /// </summary>
-        private string GetStorageLocation(Gamer gamer)
-        {
-            return "StrategyAwardments_" + gamer.Gamertag;
-        }
-
         private Storage _storage;
 
-        private Dictionary<Gamer, List<Awardment>> _awardments;
+        private Dictionary<string, List<Awardment>> _awardments;
 
         private readonly List<Type> AwardmentTypes;
+        private const string AwardmentDirectory = "Awardments";
     }
 
     /// <summary>
