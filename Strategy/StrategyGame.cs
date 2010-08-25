@@ -196,7 +196,7 @@ namespace Strategy
                 shouldBail = _input.Controller.Value == args.Gamer.PlayerIndex;
             }
             // only bail if we have passed the title screen
-            shouldBail &= _screens.ActiveScreen is TitleScreen;
+            shouldBail &= !(_screens.ActiveScreen is TitleScreen);
             if (shouldBail)
             {
                 MessageScreen messageScreen = new MessageScreen(this, Resources.SignedOutError, typeof(TitleScreen));
