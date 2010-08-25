@@ -5,8 +5,9 @@ To Do
 * Menu
 * Tutorial
 * Awardments
-  - Display as an overlay
-  - Wire up to the match
+  - Add the overlay assets and animation
+  - Wire up the parameteres
+  - Handle players who dropped out of the game
 
 
 Menu Structure
@@ -76,4 +77,7 @@ Thoughts
   + play 100 games
   + play a game with the developer,
     or someone who has this awardment
-
+- Game configuration below lobby entries
+  + Panel of four slots for players
+  + Game configuration (map size, AI difficulty) immediately below
+  + Start game below (or ready for multiplayer)
