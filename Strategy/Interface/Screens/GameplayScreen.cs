@@ -124,11 +124,16 @@ namespace Strategy.Interface.Screens
 
         protected internal override void Hide(bool popped)
         {
-            // unwire the handlers once this screen is disappears
+            // unwire the handlers once this screen disappears
             if (_session != null && popped)
             {
                 _session.GamerLeft -= OnGamerLeft;
                 _session.SessionEnded -= OnSessionEnded;
+            }
+            // notify the awardments that the match did not finish
+            if (_lockstepMatch.Match.RemainingPlayerCount > 1 && popped)
+            {
+                _awardments.MatchEnded(_session.LocalGamers.AsEnumerable<Gamer>(), null);
             }
         }
 

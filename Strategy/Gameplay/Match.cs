@@ -57,6 +57,11 @@ namespace Strategy.Gameplay
         public int PlayerCount { get; private set; }
 
         /// <summary>
+        /// The number of live players in this match.
+        /// </summary>
+        public int RemainingPlayerCount { get; private set; }
+
+        /// <summary>
         /// The number of pieces available to be placed by each player.
         /// </summary>
         public int[] PiecesAvailable { get; private set; }
@@ -84,7 +89,7 @@ namespace Strategy.Gameplay
             _random = random;
 
             PlayerCount = GetPlayerCount();
-            _playersRemaining = PlayerCount;
+            RemainingPlayerCount = PlayerCount;
 
             SetInitialTerritoryState();
             SetInitialPieceState();
@@ -509,12 +514,12 @@ namespace Strategy.Gameplay
         /// </summary>
         private void PlayerWasEliminated(PlayerId player)
         {
-            _playersRemaining -= 1;
+            RemainingPlayerCount -= 1;
             if (PlayerEliminated != null)
             {
                 PlayerEliminated(this, new PlayerEventArgs(player));
             }
-            if (_playersRemaining == 1 && Ended != null)
+            if (RemainingPlayerCount == 1 && Ended != null)
             {
                 PlayerId winner = (PlayerId)_numTerritoriesOwned.IndexOf(owned => owned > 0);
                 Ended(this, new PlayerEventArgs(winner));
@@ -549,8 +554,6 @@ namespace Strategy.Gameplay
 
         private Map _map;
         private Random _random;
-
-        private int _playersRemaining;
 
         private int[] _pieceCreationElapsed;
         private float[] _pieceCreationSpeed;
