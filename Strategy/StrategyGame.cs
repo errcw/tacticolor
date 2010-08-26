@@ -109,7 +109,10 @@ namespace Strategy
             if (_storage.IsValid)
             {
                 _options.Save(_storage);
-                _awardments.Save(_storage);
+                if (!Guide.IsTrialMode)
+                {
+                    _awardments.Save(_storage);
+                }
             }
             base.OnExiting(sender, args);
         }

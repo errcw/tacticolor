@@ -6,9 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Serialization;
 
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.GamerServices;
-
 using Strategy.Properties;
 using Strategy.Library.Storage;
 
@@ -156,11 +153,6 @@ namespace Strategy.Gameplay
         /// </summary>
         public void Save(Storage storage)
         {
-            // in trial mode do not save earned awardments
-            if (Guide.IsTrialMode)
-            {
-                return;
-            }
             foreach (var entry in _awardments)
             {
                 string awardmentPath = Path.Combine(AwardmentDirectory, entry.Key);
