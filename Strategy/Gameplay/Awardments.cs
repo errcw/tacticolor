@@ -38,21 +38,40 @@ namespace Strategy.Gameplay
         public bool IsEarned { get; set; }
 
         /// <summary>
+        /// Occurs when this awardments is earned.
+        /// </summary>
+        public event EventHandler<EventArgs> Earned;
+
+        /// <summary>
+        /// The gamertag owning this awardment.
+        /// </summary>
+        [XmlIgnore]
+        public string OwnerGamertag { get; set; }
+
+        /// <summary>
         /// Updates the state of this awardment when a match starts.
         /// </summary>
-        /// <returns>True if this awardment was earned; otherwise, false.</returns>
-        public virtual bool CheckOnMatchStarted()
+        public virtual void MatchStarted(Match match, PlayerId player)
         {
-            return false;
         }
 
         /// <summary>
         /// Updates the state of this awardment when a match ends.
         /// </summary>
-        /// <returns>True if this awardment was earned; otherwise, false.</returns>
-        public virtual bool CheckOnMatchEnded()
+        public virtual void MatchEnded(Match match, PlayerId player, PlayerId winner)
         {
-            return false;
+        }
+
+        /// <summary>
+        /// Notifies this awardment and its listeners that it was earned.
+        /// </summary>
+        protected void NotifyEarned()
+        {
+            IsEarned = true;
+            if (Earned != null)
+            {
+                Earned(this, EventArgs.Empty);
+            }
         }
     }
 
@@ -72,46 +91,38 @@ namespace Strategy.Gameplay
             AwardmentTypes = GetAwardmentTypes();
         }
 
-        public void MatchStarted(IEnumerable<Gamer> players)
+        public void MatchStarted(IDictionary<string, PlayerId> players, Match match)
         {
-            foreach (Gamer gamer in players)
+            _match = match;
+            _players = players;
+            foreach (var player in _players)
             {
                 List<Awardment> awardments = null;
-                if (!_awardments.TryGetValue(gamer.Gamertag, out awardments))
+                if (!_awardments.TryGetValue(player.Key, out awardments))
                 {
                     // no existing awardments for this gamer, create new ones
                     awardments = CreateAwardments(AwardmentTypes);
                 }
                 foreach (Awardment awardment in awardments)
                 {
-                    bool earned = awardment.CheckOnMatchStarted();
-                    if (earned && !awardment.IsEarned)
+                    if (!awardment.IsEarned)
                     {
-                        awardment.IsEarned = true;
-                        if (AwardmentEarned != null)
-                        {
-                            AwardmentEarned(this, new AwardmentEventArgs(awardment, gamer));
-                        }
+                        awardment.MatchStarted(match, player.Value);
                     }
                 }
             }
         }
 
-        public void MatchEnded(IEnumerable<Gamer> players, Gamer winner)
+        public void MatchEnded(PlayerId winner)
         {
-            foreach (Gamer gamer in players)
+            foreach (var player in _players)
             {
-                List<Awardment> awardments = _awardments[gamer.Gamertag];
+                List<Awardment> awardments = _awardments[player.Key];
                 foreach (Awardment awardment in awardments)
                 {
-                    bool earned = awardment.CheckOnMatchEnded();
-                    if (earned && !awardment.IsEarned)
+                    if (!awardment.IsEarned)
                     {
-                        awardment.IsEarned = true;
-                        if (AwardmentEarned != null)
-                        {
-                            AwardmentEarned(this, new AwardmentEventArgs(awardment, gamer));
-                        }
+                        awardment.MatchEnded(_match, player.Value, winner);
                     }
                 }
             }
@@ -125,13 +136,13 @@ namespace Strategy.Gameplay
             foreach (string file in Directory.GetFiles(AwardmentDirectory))
             {
                 XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(file);
-                string gamer = Path.GetFileNameWithoutExtension(file);
+                string gamertag = Path.GetFileNameWithoutExtension(file);
                 try
                 {
                     storage.Load(awardmentXml);
                     List<Awardment> awardments = new List<Awardment>(awardmentXml.Data);
                     AddMissingAwardments(awardments, AwardmentTypes);
-                    _awardments.Add(gamer, awardments);
+                    _awardments.Add(gamertag, awardments);
                 }
                 catch (Exception e)
                 {
@@ -150,8 +161,7 @@ namespace Strategy.Gameplay
             {
                 return;
             }
-
-            foreach (KeyValuePair<string, List<Awardment>> entry in _awardments)
+            foreach (var entry in _awardments)
             {
                 string awardmentPath = Path.Combine(AwardmentDirectory, entry.Key);
                 Awardment[] awardments = entry.Value.ToArray();
@@ -210,7 +220,31 @@ namespace Strategy.Gameplay
             awardments.AddRange(newAwardments);
         }
 
+        /// <summary>
+        /// Adds a listener to propagate the earned event to the aggregate event.
+        /// </summary>
+        private void WireAwardmentEarnedEvents(List<Awardment> awardments, string ownerGamertag)
+        {
+            foreach (Awardment awardment in awardments)
+            {
+                awardment.OwnerGamertag = ownerGamertag;
+                awardment.Earned += OnAwardmentEarned;
+            }
+        }
+
+        private void OnAwardmentEarned(object awardmentObj, EventArgs args)
+        {
+            Awardment awardment = (Awardment)awardmentObj;
+            if (AwardmentEarned != null)
+            {
+                AwardmentEarned(this, new AwardmentEventArgs(awardment));
+            }
+        }
+
         private Dictionary<string, List<Awardment>> _awardments;
+
+        private Match _match;
+        private IDictionary<string, PlayerId> _players;
 
         private readonly List<Type> AwardmentTypes;
         private const string AwardmentDirectory = "Awardments";
@@ -222,12 +256,9 @@ namespace Strategy.Gameplay
     public class AwardmentEventArgs : EventArgs
     {
         public Awardment Awardment { get; private set; }
-        public Gamer Gamer { get; private set; }
-
-        public AwardmentEventArgs(Awardment awardment, Gamer gamer)
+        public AwardmentEventArgs(Awardment awardment)
         {
             Awardment = awardment;
-            Gamer = gamer;
         }
     }
 
@@ -242,10 +273,13 @@ namespace Strategy.Gameplay
             IsEarned = false;
         }
 
-        public override bool CheckOnMatchEnded()
+        public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
         {
             MatchesPlayed += 1;
-            return MatchesPlayed >= 100;
+            if (MatchesPlayed == 100)
+            {
+                NotifyEarned();
+            }
         }
     }
 }

@@ -29,9 +29,6 @@ namespace Strategy.Interface.Screens
 
             _players = players;
 
-            _awardments = game.Services.GetService<Awardments>();
-            _awardments.MatchStarted(session.LocalGamers.AsEnumerable<Gamer>());
-
             // isometric context
             _context = new InterfaceContext(game, game.Content, new IsometricParameters(17, 9, 16, -9));
 
@@ -49,6 +46,17 @@ namespace Strategy.Interface.Screens
                 }
             }
             _lockstepInput = new LockstepInput(_lockstepMatch, players);
+
+            IDictionary<string, PlayerId> awardmentPlayers = new Dictionary<string, PlayerId>(match.PlayerCount);
+            foreach (Player player in players)
+            {
+                if (player.Gamer != null && player.Gamer.IsLocal)
+                {
+                    awardmentPlayers[player.Gamer.Gamertag] = player.Id;
+                }
+            }
+            _awardments = game.Services.GetService<Awardments>();
+            _awardments.MatchStarted(awardmentPlayers, match);
 
             // create the views
             _backgroundView = new BackgroundView(_context);
@@ -130,10 +138,10 @@ namespace Strategy.Interface.Screens
                 _session.GamerLeft -= OnGamerLeft;
                 _session.SessionEnded -= OnSessionEnded;
             }
-            // notify the awardments that the match did not finish
-            if (_lockstepMatch.Match.RemainingPlayerCount > 1 && popped)
+            // unhook listeners to allow garbage collection
+            if (popped)
             {
-                _awardments.MatchEnded(_session.LocalGamers.AsEnumerable<Gamer>(), null);
+                _lockstepMatch.Match.ResetEvents();
             }
         }
 
@@ -153,7 +161,7 @@ namespace Strategy.Interface.Screens
         {
             Player player = _players.First(p => p.Id == args.Player);
 
-            _awardments.MatchEnded(_session.LocalGamers.AsEnumerable<Gamer>(), player.Gamer);
+            _awardments.MatchEnded(player.Id);
 
             string message = string.Format(Resources.GameWon, player.DisplayName);
             MessageScreen messageScreen = new MessageScreen(Stack.Game, message, typeof(LobbyScreen));
