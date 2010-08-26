@@ -61,6 +61,42 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Capture a territory..
+        /// </summary>
+        internal static string AwardmentFirstTerritoryDescription {
+            get {
+                return ResourceManager.GetString("AwardmentFirstTerritoryDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to First Conquest.
+        /// </summary>
+        internal static string AwardmentFirstTerritoryName {
+            get {
+                return ResourceManager.GetString("AwardmentFirstTerritoryName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Win a match..
+        /// </summary>
+        internal static string AwardmentFirstWinDescription {
+            get {
+                return ResourceManager.GetString("AwardmentFirstWinDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to First Domination.
+        /// </summary>
+        internal static string AwardmentFirstWinName {
+            get {
+                return ResourceManager.GetString("AwardmentFirstWinName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Play 100 matches..
         /// </summary>
         internal static string AwardmentManyMatchesDescription {
@@ -345,15 +381,6 @@ namespace Strategy.Properties {
         internal static string StoragePromptReselectYes {
             get {
                 return ResourceManager.GetString("StoragePromptReselectYes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Strategy.
-        /// </summary>
-        internal static string StrategyGame {
-            get {
-                return ResourceManager.GetString("StrategyGame", resourceCulture);
             }
         }
     }

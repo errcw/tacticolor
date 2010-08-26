@@ -30,7 +30,7 @@ namespace Strategy
             GraphicsDeviceManager graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
-            Window.Title = Resources.StrategyGame;
+            Window.Title = Resources.AwardmentFirstWinDescription;
 
             Content.RootDirectory = "Content";
 
@@ -64,10 +64,10 @@ namespace Strategy
 
             SignedInGamer.SignedOut += OnGamerSignedOut;
 
-            CreateDebugGame();
-            //TitleScreen titleScreen = new TitleScreen(this);
-            //titleScreen.ContentLoaded += OnContentLoaded;
-            //_screens.Push(titleScreen);
+            //CreateDebugGame();
+            TitleScreen titleScreen = new TitleScreen(this);
+            titleScreen.ContentLoaded += OnContentLoaded;
+            _screens.Push(titleScreen);
         }
 
         /// <summary>

@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AwardmentFirstTerritoryDescription" xml:space="preserve">
+    <value>Capture a territory.</value>
+  </data>
+  <data name="AwardmentFirstTerritoryName" xml:space="preserve">
+    <value>First Conquest</value>
+  </data>
+  <data name="AwardmentFirstWinDescription" xml:space="preserve">
+    <value>Win a match.</value>
+  </data>
+  <data name="AwardmentFirstWinName" xml:space="preserve">
+    <value>First Domination</value>
+  </data>
   <data name="AwardmentManyMatchesDescription" xml:space="preserve">
     <value>Play 100 matches.</value>
   </data>
@@ -213,8 +225,5 @@
   </data>
   <data name="StoragePromptReselectYes" xml:space="preserve">
     <value>Yes</value>
-  </data>
-  <data name="StrategyGame" xml:space="preserve">
-    <value>Strategy</value>
   </data>
 </root>

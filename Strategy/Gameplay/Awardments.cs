@@ -14,6 +14,8 @@ namespace Strategy.Gameplay
     /// <summary>
     /// An acheivement.
     /// </summary>
+    [XmlInclude(typeof(FirstTerritoryCaptureAwardment))]
+    [XmlInclude(typeof(FirstWinAwardment))]
     [XmlInclude(typeof(ManyMatchesAwardment))]
     public abstract class Awardment
     {
@@ -62,12 +64,15 @@ namespace Strategy.Gameplay
         /// <summary>
         /// Notifies this awardment and its listeners that it was earned.
         /// </summary>
-        protected void NotifyEarned()
+        protected void SetEarned()
         {
-            IsEarned = true;
-            if (Earned != null)
+            if (!IsEarned) // filter multiple earned calls
             {
-                Earned(this, EventArgs.Empty);
+                IsEarned = true;
+                if (Earned != null)
+                {
+                    Earned(this, EventArgs.Empty);
+                }
             }
         }
     }
@@ -99,6 +104,7 @@ namespace Strategy.Gameplay
                 {
                     // no existing awardments for this gamer, create new ones
                     awardments = CreateAwardments(AwardmentTypes);
+                    WireAwardmentEarnedEvents(awardments, player.Key);
                 }
                 foreach (Awardment awardment in awardments)
                 {
@@ -130,6 +136,11 @@ namespace Strategy.Gameplay
         /// </summary>
         public void Load(Storage storage)
         {
+            if (!Directory.Exists(AwardmentDirectory))
+            {
+                // bail early if there are no awardments to load
+                return;
+            }
             foreach (string file in Directory.GetFiles(AwardmentDirectory))
             {
                 XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(file);
@@ -139,7 +150,8 @@ namespace Strategy.Gameplay
                     storage.Load(awardmentXml);
                     List<Awardment> awardments = new List<Awardment>(awardmentXml.Data);
                     AddMissingAwardments(awardments, AwardmentTypes);
-                    _awardments.Add(gamertag, awardments);
+                    WireAwardmentEarnedEvents(awardments, gamertag);
+                    _awardments[gamertag] = awardments;
                 }
                 catch (Exception e)
                 {
@@ -254,6 +266,43 @@ namespace Strategy.Gameplay
         }
     }
 
+    public class FirstWinAwardment : Awardment
+    {
+        public FirstWinAwardment()
+        {
+            Name = Resources.AwardmentFirstWinName;
+            Description = Resources.AwardmentFirstWinDescription;
+        }
+
+        public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
+        {
+            if (player == winner)
+            {
+                SetEarned();
+            }
+        }
+    }
+
+    public class FirstTerritoryCaptureAwardment : Awardment
+    {
+        public FirstTerritoryCaptureAwardment()
+        {
+            Name = Resources.AwardmentFirstTerritoryName;
+            Description = Resources.AwardmentFirstTerritoryDescription;
+        }
+
+        public override void MatchStarted(Match match, PlayerId player)
+        {
+            match.TerritoryAttacked += delegate(object matchObj, TerritoryAttackedEventArgs args)
+            {
+                if (args.Successful && args.Attacker.Owner == player && args.Defender.Owner != null)
+                {
+                    SetEarned();
+                }
+            };
+        }
+    }
+
     public class ManyMatchesAwardment : Awardment
     {
         public int MatchesPlayed { get; set; }
@@ -262,7 +311,6 @@ namespace Strategy.Gameplay
         {
             Name = Resources.AwardmentManyMatchesName;
             Description = Resources.AwardmentManyMatchesDescription;
-            IsEarned = false;
         }
 
         public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
@@ -270,7 +318,7 @@ namespace Strategy.Gameplay
             MatchesPlayed += 1;
             if (MatchesPlayed == 100)
             {
-                NotifyEarned();
+                SetEarned();
             }
         }
     }
