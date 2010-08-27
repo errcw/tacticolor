@@ -226,4 +226,7 @@
   <data name="StoragePromptReselectYes" xml:space="preserve">
     <value>Yes</value>
   </data>
+  <data name="Strategy" xml:space="preserve">
+    <value>Strategy</value>
+  </data>
 </root>

@@ -66,6 +66,7 @@
     <Compile Include="Interface\AwardmentOverlay.cs" />
     <Compile Include="Interface\Gameplay\BackgroundView.cs" />
     <Compile Include="Interface\Gameplay\ConnectionView.cs" />
+    <Compile Include="Interface\Gameplay\InstructionsView.cs" />
     <Compile Include="Interface\Gameplay\InterfaceContext.cs" />
     <Compile Include="Interface\Gameplay\IsometricBatch.cs" />
     <Compile Include="Interface\Gameplay\IsometricParameters.cs" />

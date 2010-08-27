@@ -30,7 +30,7 @@ namespace Strategy
             GraphicsDeviceManager graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
-            Window.Title = Resources.AwardmentFirstWinDescription;
+            Window.Title = Resources.Strategy;
 
             Content.RootDirectory = "Content";
 

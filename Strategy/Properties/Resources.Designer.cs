@@ -383,5 +383,14 @@ namespace Strategy.Properties {
                 return ResourceManager.GetString("StoragePromptReselectYes", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Strategy.
+        /// </summary>
+        internal static string Strategy {
+            get {
+                return ResourceManager.GetString("Strategy", resourceCulture);
+            }
+        }
     }
 }

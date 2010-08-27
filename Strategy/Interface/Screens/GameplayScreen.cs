@@ -76,6 +76,9 @@ namespace Strategy.Interface.Screens
                     _inputViews.Add(new LocalInputView(input, _context));
                 }
             }
+            Gamer primaryGamer = game.Services.GetService<MenuInput>().Controller.Value.GetSignedInGamer();
+            LocalInput primaryInput = (LocalInput)players.First(p => p.Gamer.Gamertag == primaryGamer.Gamertag).Input;
+            _instructionsView = new InstructionsView(null, _context);
 
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
             _isoBatch = new IsometricBatch(_spriteBatch);
@@ -115,6 +118,7 @@ namespace Strategy.Interface.Screens
             _inputViews.ForEach(view => view.Update(seconds));
             _playerViews.ForEach(view => view.Update(seconds));
             _piecesAvailableViews.ForEach(view => view.Update(seconds));
+            _instructionsView.Update(seconds);
         }
 
         public override void Draw()
@@ -123,6 +127,7 @@ namespace Strategy.Interface.Screens
             _backgroundView.Draw(_spriteBatch);
             _playerViews.ForEach(view => view.Draw(_spriteBatch));
             _piecesAvailableViews.ForEach(view => view.Draw(_spriteBatch));
+            _instructionsView.Draw(_spriteBatch);
             _spriteBatch.End();
 
             _isoBatch.Begin();
@@ -210,6 +215,7 @@ namespace Strategy.Interface.Screens
         private List<LocalInputView> _inputViews;
         private List<PlayerView> _playerViews;
         private List<PiecesAvailableView> _piecesAvailableViews;
+        private InstructionsView _instructionsView;
 
         private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;

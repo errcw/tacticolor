@@ -58,6 +58,7 @@ namespace Strategy.Interface
             _options = new OptionsData();
             SoundEffectsToggle = true;
             MusicToggle = true;
+            InstructionsToggle = true;
         }
 
         /// <summary>
