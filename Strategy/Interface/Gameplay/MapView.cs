@@ -9,7 +9,7 @@ using Strategy.Gameplay;
 using Strategy.Library;
 using Strategy.Library.Extensions;
 
-namespace Strategy.Interface
+namespace Strategy.Interface.Gameplay
 {
     /// <summary>
     /// Shows a map.

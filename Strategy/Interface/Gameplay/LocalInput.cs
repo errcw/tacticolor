@@ -8,7 +8,7 @@ using Strategy.Gameplay;
 using Strategy.Net;
 using Strategy.Library.Input;
 
-namespace Strategy.Interface
+namespace Strategy.Interface.Gameplay
 {
     /// <summary>
     /// Handles input from a local player.

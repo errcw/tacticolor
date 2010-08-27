@@ -10,7 +10,7 @@ using Strategy.Library;
 using Strategy.Library.Extensions;
 using Strategy.Library.Sprite;
 
-namespace Strategy.Interface
+namespace Strategy.Interface.Gameplay
 {
     /// <summary>
     /// Shows a territory.

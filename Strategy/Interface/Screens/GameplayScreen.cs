@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Net;
 
 using Strategy.Gameplay;
+using Strategy.Interface.Gameplay;
 using Strategy.Net;
 using Strategy.Properties;
 using Strategy.Library.Extensions;

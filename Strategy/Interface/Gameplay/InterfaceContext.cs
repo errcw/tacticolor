@@ -3,7 +3,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 
-namespace Strategy.Interface
+namespace Strategy.Interface.Gameplay
 {
     /// <summary>
     /// Encapsulates shared interface state.

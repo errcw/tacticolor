@@ -37,8 +37,6 @@ Menu Structure
 * Get Full Version
 * Exit to Dashboard
 
-! Where to set game options (difficulty, players, map size)?
-
 
 Tutorial
 --------
@@ -57,12 +55,9 @@ Thoughts
 --------
 
 - Per-game options
-  + 2 or 4 players
-  + which players are CPU-controlled
   + difficulity of CPU-controlled players
   + map size
   + territories all or partially assigned
-  + local or networked
 - Game options
   + music on/off
   + sound effects on/off

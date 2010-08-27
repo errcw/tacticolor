@@ -3,10 +3,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using Strategy.Gameplay;
-
-
-namespace Strategy.Interface
+namespace Strategy.Interface.Gameplay
 {
     /// <summary>
     /// Shows the background.

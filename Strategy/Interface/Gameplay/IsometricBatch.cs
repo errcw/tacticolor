@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Library.Sprite;
 
-namespace Strategy.Interface
+namespace Strategy.Interface.Gameplay
 {
     public class IsometricBatch
     {

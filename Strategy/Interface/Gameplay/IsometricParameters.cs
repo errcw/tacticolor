@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 using Strategy.Gameplay;
 
-namespace Strategy.Interface
+namespace Strategy.Interface.Gameplay
 {
     /// <summary>
     /// Describes a mapping between an isometric grid and pixels.

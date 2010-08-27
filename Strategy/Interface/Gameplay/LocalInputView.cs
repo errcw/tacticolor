@@ -8,7 +8,7 @@ using Strategy.Gameplay;
 using Strategy.Library;
 using Strategy.Library.Sprite;
 
-namespace Strategy.Interface
+namespace Strategy.Interface.Gameplay
 {
     /// <summary>
     /// Shows the input cursor.

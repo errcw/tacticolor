@@ -8,7 +8,7 @@ using Strategy.Properties;
 using Strategy.Library;
 using Strategy.Library.Sprite;
 
-namespace Strategy.Interface
+namespace Strategy.Interface.Gameplay
 {
     /// <summary>
     /// Shows a player.
