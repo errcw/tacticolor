@@ -42,6 +42,15 @@ namespace Strategy.Interface
         }
 
         /// <summary>
+        /// Turns instructions on or off.
+        /// </summary>
+        public bool InstructionsToggle
+        {
+            get { return _options.InstructionsToggle; }
+            set { _options.InstructionsToggle = value; }
+        }
+
+        /// <summary>
         /// Creates a new set of options with default values.
         /// </summary>
         public Options()
@@ -97,5 +106,6 @@ namespace Strategy.Interface
     {
         public bool SoundEffectsToggle;
         public bool MusicToggle;
+        public bool InstructionsToggle;
     }
 }
