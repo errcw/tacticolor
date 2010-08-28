@@ -266,60 +266,101 @@ namespace Strategy.Gameplay
         }
     }
 
-    public class FirstWinAwardment : Awardment
+    public abstract class MatchesPlayedAwardment : Awardment
     {
-        public FirstWinAwardment()
+        public int MatchCount { get; set; }
+
+        public MatchesPlayedAwardment(int threshold, bool includeLosses)
         {
-            Name = Resources.AwardmentFirstWinName;
-            Description = Resources.AwardmentFirstWinDescription;
+            MatchThreshold = threshold;
+            MatchCountIncludesLosses = includeLosses;
         }
 
         public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
         {
-            if (player == winner)
+            if (player == winner || MatchCountIncludesLosses)
+            {
+                MatchCount += 1;
+            }
+            if (MatchCount >= MatchThreshold)
             {
                 SetEarned();
             }
         }
+
+        private readonly int MatchThreshold;
+        private readonly bool MatchCountIncludesLosses;
     }
 
-    public class FirstTerritoryCaptureAwardment : Awardment
+    public class FirstMatchWonAwardment : MatchesPlayedAwardment
     {
-        public FirstTerritoryCaptureAwardment()
+        public FirstMatchWonAwardment() : base(1, false)
         {
-            Name = Resources.AwardmentFirstTerritoryName;
-            Description = Resources.AwardmentFirstTerritoryDescription;
+            Name = Resources.AwardmentFirstMatchWonName;
+            Description = Resources.AwardmentFirstMatchWonDescription;
+        }
+    }
+
+    public class ManyMatchesWonAwardment : MatchesPlayedAwardment
+    {
+        public ManyMatchesWonAwardment() : base(100, false)
+        {
+            Name = Resources.AwardmentManyMatchesWonName;
+            Description = Resources.AwardmentManyMatchesWonDescription;
+        }
+    }
+
+    public class ManyMatchesPlayedAwardment : MatchesPlayedAwardment
+    {
+        public ManyMatchesPlayedAwardment() : base(100, true)
+        {
+            Name = Resources.AwardmentManyMatchesPlayedName;
+            Description = Resources.AwardmentManyMatchesPlayedName;
+        }
+    }
+
+    public class TerritoryCaptureAwardment : Awardment
+    {
+        public int TerritoriesCaptured { get; set; }
+
+        public TerritoryCaptureAwardment(int threshold)
+        {
+            TerritoryThreshold = threshold;
         }
 
         public override void MatchStarted(Match match, PlayerId player)
         {
             match.TerritoryAttacked += delegate(object matchObj, TerritoryAttackedEventArgs args)
             {
-                if (args.Successful && args.Attacker.Owner == player && args.Defender.Owner != null)
+                if (args.Successful && args.Attacker.Owner == player)
+                {
+                    TerritoriesCaptured += 1;
+                }
+                if (TerritoriesCaptured == TerritoryThreshold)
                 {
                     SetEarned();
                 }
             };
         }
+
+        private readonly int TerritoryThreshold;
     }
 
-    public class ManyMatchesAwardment : Awardment
+    public class FirstTerritoryCapturedAwardment : TerritoryCaptureAwardment
     {
-        public int MatchesPlayed { get; set; }
-
-        public ManyMatchesAwardment()
+        public FirstTerritoryCapturedAwardment() : base(1)
         {
-            Name = Resources.AwardmentManyMatchesName;
-            Description = Resources.AwardmentManyMatchesDescription;
+            Name = Resources.AwardmentFirstTerritoryCapturedName;
+            Description = Resources.AwardmentFirstTerritoryCapturedDescription;
         }
+    }
 
-        public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
+    public class ManyTerritoriesCapturedAwardment : TerritoryCaptureAwardment
+    {
+        public ManyTerritoriesCapturedAwardment() : base(1000)
         {
-            MatchesPlayed += 1;
-            if (MatchesPlayed == 100)
-            {
-                SetEarned();
-            }
+            Name = Resources.AwardmentFirstTerritoryCapturedName;
+            Description = Resources.AwardmentFirstTerritoryCapturedDescription;
         }
     }
 }

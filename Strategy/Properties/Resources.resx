@@ -117,23 +117,35 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AwardmentFirstTerritoryDescription" xml:space="preserve">
-    <value>Capture a territory.</value>
-  </data>
-  <data name="AwardmentFirstTerritoryName" xml:space="preserve">
-    <value>First Conquest</value>
-  </data>
-  <data name="AwardmentFirstWinDescription" xml:space="preserve">
+  <data name="AwardmentFirstMatchWonDescription" xml:space="preserve">
     <value>Win a match.</value>
   </data>
-  <data name="AwardmentFirstWinName" xml:space="preserve">
-    <value>First Domination</value>
+  <data name="AwardmentFirstMatchWonName" xml:space="preserve">
+    <value>Victory</value>
   </data>
-  <data name="AwardmentManyMatchesDescription" xml:space="preserve">
+  <data name="AwardmentFirstTerritoryCapturedDescription" xml:space="preserve">
+    <value>Capture a territory.</value>
+  </data>
+  <data name="AwardmentFirstTerritoryCapturedName" xml:space="preserve">
+    <value>First!</value>
+  </data>
+  <data name="AwardmentManyMatchesPlayedDescription" xml:space="preserve">
     <value>Play 100 matches.</value>
   </data>
-  <data name="AwardmentManyMatchesName" xml:space="preserve">
+  <data name="AwardmentManyMatchesPlayedName" xml:space="preserve">
     <value>Dedicated</value>
+  </data>
+  <data name="AwardmentManyMatchesWonDescription" xml:space="preserve">
+    <value>Win 100 matches.</value>
+  </data>
+  <data name="AwardmentManyMatchesWonName" xml:space="preserve">
+    <value>Epic Win</value>
+  </data>
+  <data name="AwardmentManyTerritoriesCapturedDescription" xml:space="preserve">
+    <value>Capture 1000 territories.</value>
+  </data>
+  <data name="AwardmentManyTerritoriesCapturedName" xml:space="preserve">
+    <value>Conqueror</value>
   </data>
   <data name="ComputerA" xml:space="preserve">
     <value>Computer A</value>

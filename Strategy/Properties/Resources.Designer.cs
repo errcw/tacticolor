@@ -61,56 +61,92 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Capture a territory..
-        /// </summary>
-        internal static string AwardmentFirstTerritoryDescription {
-            get {
-                return ResourceManager.GetString("AwardmentFirstTerritoryDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to First Conquest.
-        /// </summary>
-        internal static string AwardmentFirstTerritoryName {
-            get {
-                return ResourceManager.GetString("AwardmentFirstTerritoryName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Win a match..
         /// </summary>
-        internal static string AwardmentFirstWinDescription {
+        internal static string AwardmentFirstMatchWonDescription {
             get {
-                return ResourceManager.GetString("AwardmentFirstWinDescription", resourceCulture);
+                return ResourceManager.GetString("AwardmentFirstMatchWonDescription", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to First Domination.
+        ///   Looks up a localized string similar to Victory.
         /// </summary>
-        internal static string AwardmentFirstWinName {
+        internal static string AwardmentFirstMatchWonName {
             get {
-                return ResourceManager.GetString("AwardmentFirstWinName", resourceCulture);
+                return ResourceManager.GetString("AwardmentFirstMatchWonName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Capture a territory..
+        /// </summary>
+        internal static string AwardmentFirstTerritoryCapturedDescription {
+            get {
+                return ResourceManager.GetString("AwardmentFirstTerritoryCapturedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to First!.
+        /// </summary>
+        internal static string AwardmentFirstTerritoryCapturedName {
+            get {
+                return ResourceManager.GetString("AwardmentFirstTerritoryCapturedName", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Play 100 matches..
         /// </summary>
-        internal static string AwardmentManyMatchesDescription {
+        internal static string AwardmentManyMatchesPlayedDescription {
             get {
-                return ResourceManager.GetString("AwardmentManyMatchesDescription", resourceCulture);
+                return ResourceManager.GetString("AwardmentManyMatchesPlayedDescription", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Dedicated.
         /// </summary>
-        internal static string AwardmentManyMatchesName {
+        internal static string AwardmentManyMatchesPlayedName {
             get {
-                return ResourceManager.GetString("AwardmentManyMatchesName", resourceCulture);
+                return ResourceManager.GetString("AwardmentManyMatchesPlayedName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Win 100 matches..
+        /// </summary>
+        internal static string AwardmentManyMatchesWonDescription {
+            get {
+                return ResourceManager.GetString("AwardmentManyMatchesWonDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Epic Win.
+        /// </summary>
+        internal static string AwardmentManyMatchesWonName {
+            get {
+                return ResourceManager.GetString("AwardmentManyMatchesWonName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Capture 1000 territories..
+        /// </summary>
+        internal static string AwardmentManyTerritoriesCapturedDescription {
+            get {
+                return ResourceManager.GetString("AwardmentManyTerritoriesCapturedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conqueror.
+        /// </summary>
+        internal static string AwardmentManyTerritoriesCapturedName {
+            get {
+                return ResourceManager.GetString("AwardmentManyTerritoriesCapturedName", resourceCulture);
             }
         }
         
