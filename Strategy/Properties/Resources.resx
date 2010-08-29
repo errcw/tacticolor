@@ -129,6 +129,12 @@
   <data name="AwardmentFirstTerritoryCapturedName" xml:space="preserve">
     <value>First!</value>
   </data>
+  <data name="AwardmentLongStreakDescription" xml:space="preserve">
+    <value>Unstoppable</value>
+  </data>
+  <data name="AwardmentLongStreakName" xml:space="preserve">
+    <value>Win 20 matches in a row.</value>
+  </data>
   <data name="AwardmentManyMatchesPlayedDescription" xml:space="preserve">
     <value>Play 100 matches.</value>
   </data>
@@ -146,6 +152,24 @@
   </data>
   <data name="AwardmentManyTerritoriesCapturedName" xml:space="preserve">
     <value>Conqueror</value>
+  </data>
+  <data name="AwardmentQuickWinDescription" xml:space="preserve">
+    <value>Win a match in under 3 minutes.</value>
+  </data>
+  <data name="AwardmentQuickWinName" xml:space="preserve">
+    <value>Quickly</value>
+  </data>
+  <data name="AwardmentShortStreakDescription" xml:space="preserve">
+    <value>Win 3 matches in a row.</value>
+  </data>
+  <data name="AwardmentShortStreakName" xml:space="preserve">
+    <value>Hat Trick</value>
+  </data>
+  <data name="AwardmentVeryQuickWinDescription" xml:space="preserve">
+    <value>Win a match in under a minute.</value>
+  </data>
+  <data name="AwardmentVeryQuickWinName" xml:space="preserve">
+    <value>Blitz</value>
   </data>
   <data name="ComputerA" xml:space="preserve">
     <value>Computer A</value>

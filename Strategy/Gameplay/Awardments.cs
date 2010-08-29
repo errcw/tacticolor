@@ -14,9 +14,15 @@ namespace Strategy.Gameplay
     /// <summary>
     /// An acheivement.
     /// </summary>
-    [XmlInclude(typeof(FirstTerritoryCaptureAwardment))]
-    [XmlInclude(typeof(FirstWinAwardment))]
-    [XmlInclude(typeof(ManyMatchesAwardment))]
+    [XmlInclude(typeof(FirstMatchWonAwardment))]
+    [XmlInclude(typeof(ManyMatchesWonAwardment))]
+    [XmlInclude(typeof(ManyMatchesPlayedAwardment))]
+    [XmlInclude(typeof(FirstTerritoryCapturedAwardment))]
+    [XmlInclude(typeof(ManyTerritoriesCapturedAwardment))]
+    [XmlInclude(typeof(QuickWinAwardment))]
+    [XmlInclude(typeof(VeryQuickWinAwardment))]
+    [XmlInclude(typeof(MatchShortWinStreakAwardment))]
+    [XmlInclude(typeof(MatchLongWinStreakAwardment))]
     public abstract class Awardment
     {
         /// <summary>
@@ -336,7 +342,7 @@ namespace Strategy.Gameplay
                 {
                     TerritoriesCaptured += 1;
                 }
-                if (TerritoriesCaptured == TerritoryThreshold)
+                if (TerritoriesCaptured >= TerritoryThreshold)
                 {
                     SetEarned();
                 }
@@ -361,6 +367,89 @@ namespace Strategy.Gameplay
         {
             Name = Resources.AwardmentFirstTerritoryCapturedName;
             Description = Resources.AwardmentFirstTerritoryCapturedDescription;
+        }
+    }
+
+    public abstract class MatchTimeAwardment : Awardment
+    {
+        public MatchTimeAwardment(int threshold)
+        {
+            MatchTimeThreshold = threshold;
+        }
+
+        public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
+        {
+            if (match.Time < MatchTimeThreshold && player == winner)
+            {
+                SetEarned();
+            }
+        }
+
+        private readonly int MatchTimeThreshold;
+    }
+
+    public class QuickWinAwardment : MatchTimeAwardment
+    {
+        public QuickWinAwardment() : base(3 * 60 * 1000)
+        {
+            Name = Resources.AwardmentQuickWinName;
+            Description = Resources.AwardmentQuickWinDescription;
+        }
+    }
+
+    public class VeryQuickWinAwardment : MatchTimeAwardment
+    {
+        public VeryQuickWinAwardment() : base(1 * 60 * 1000)
+        {
+            Name = Resources.AwardmentVeryQuickWinName;
+            Description = Resources.AwardmentVeryQuickWinDescription;
+        }
+    }
+
+    public abstract class MatchWinStreakAwardment : Awardment
+    {
+        public int MatchesWon { get; set; }
+
+        public MatchWinStreakAwardment(int threshold)
+        {
+            MatchWinStreakThreshold = threshold;
+        }
+
+        public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
+        {
+            if (player == winner)
+            {
+                MatchesWon += 1;
+                if (MatchesWon >= MatchWinStreakThreshold)
+                {
+                    SetEarned();
+                }
+            }
+            else
+            {
+                // reset the streak
+                MatchesWon = 0;
+            }
+        }
+
+        private readonly int MatchWinStreakThreshold;
+    }
+
+    public class MatchShortWinStreakAwardment : MatchWinStreakAwardment
+    {
+        public MatchShortWinStreakAwardment() : base(3)
+        {
+            Name = Resources.AwardmentShortStreakName;
+            Description = Resources.AwardmentShortStreakDescription;
+        }
+    }
+
+    public class MatchLongWinStreakAwardment : MatchWinStreakAwardment
+    {
+        public MatchLongWinStreakAwardment() : base(20)
+        {
+            Name = Resources.AwardmentLongStreakName;
+            Description = Resources.AwardmentLongStreakDescription;
         }
     }
 }

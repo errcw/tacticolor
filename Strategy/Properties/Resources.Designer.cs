@@ -97,6 +97,24 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unstoppable.
+        /// </summary>
+        internal static string AwardmentLongStreakDescription {
+            get {
+                return ResourceManager.GetString("AwardmentLongStreakDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Win 20 matches in a row..
+        /// </summary>
+        internal static string AwardmentLongStreakName {
+            get {
+                return ResourceManager.GetString("AwardmentLongStreakName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Play 100 matches..
         /// </summary>
         internal static string AwardmentManyMatchesPlayedDescription {
@@ -147,6 +165,60 @@ namespace Strategy.Properties {
         internal static string AwardmentManyTerritoriesCapturedName {
             get {
                 return ResourceManager.GetString("AwardmentManyTerritoriesCapturedName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Win a match in under 3 minutes..
+        /// </summary>
+        internal static string AwardmentQuickWinDescription {
+            get {
+                return ResourceManager.GetString("AwardmentQuickWinDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quickly.
+        /// </summary>
+        internal static string AwardmentQuickWinName {
+            get {
+                return ResourceManager.GetString("AwardmentQuickWinName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Win 3 matches in a row..
+        /// </summary>
+        internal static string AwardmentShortStreakDescription {
+            get {
+                return ResourceManager.GetString("AwardmentShortStreakDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hat Trick.
+        /// </summary>
+        internal static string AwardmentShortStreakName {
+            get {
+                return ResourceManager.GetString("AwardmentShortStreakName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Win a match in under a minute..
+        /// </summary>
+        internal static string AwardmentVeryQuickWinDescription {
+            get {
+                return ResourceManager.GetString("AwardmentVeryQuickWinDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blitz.
+        /// </summary>
+        internal static string AwardmentVeryQuickWinName {
+            get {
+                return ResourceManager.GetString("AwardmentVeryQuickWinName", resourceCulture);
             }
         }
         
