@@ -31,15 +31,20 @@ namespace Strategy.Interface.Gameplay
             _options = context.Game.Services.GetService<Options>();
 
             SpriteFont font = context.Content.Load<SpriteFont>("Fonts/TextLarge");
-            _sprite = new TextSprite(font);
+            _sprite = new TextSprite(font, "");
             _sprite.Color = Color.Black;
             _sprite.Position = Hidden;
 
-            SetState(InstructionState.Idle);
+            _state = InstructionState.Idle;
         }
 
         public void Update(float time)
         {
+            // do not update the instructions if requested by the user
+            if (!_options.InstructionsToggle)
+            {
+                return;
+            }
             // choose a new instruction path
             if (_state == InstructionState.Idle)
             {
@@ -47,7 +52,7 @@ namespace Strategy.Interface.Gameplay
                 {
                     SetState(InstructionState.Selection);
                 }
-                else if (_showedBasics && !_showedPlacement && _match.PiecesAvailable[(int)_input.Player] >= 4)
+                else if (_showedBasics && !_showedPlacement && _match.PiecesAvailable[(int)_input.Player] >= 2)
                 {
                     SetState(InstructionState.Placement);
                 }
@@ -90,9 +95,10 @@ namespace Strategy.Interface.Gameplay
             {
                 SetState(InstructionState.Movement);
             }
-            else if (_input.Selected != null && _input.Selected.Pieces.Count(p => !p.Ready) > 0 && _showedBasics && _state == InstructionState.Idle)
+            else if (_input.Selected != null && _input.Selected.Pieces.Count(p => !p.Ready) > 0 && _showedBasics && !_showedReadiness && _state == InstructionState.Idle)
             {
-                SetState(InstructionState.Waiting);
+                _showedReadiness = true;
+                SetState(InstructionState.Readiness);
             }
             else if (_input.Selected == null && _state == InstructionState.Cancel)
             {
@@ -103,30 +109,54 @@ namespace Strategy.Interface.Gameplay
 
         private void OnPiecesMoved(object matchObj, PiecesMovedEventArgs args)
         {
-            if (args.Source.Owner == _input.Player && _state == InstructionState.Action)
+            if (args.Source.Owner == _input.Player)
             {
-                _showedBasics = true;
-                SetState(InstructionState.Idle);
+                OnActionTaken();
             }
         }
 
         private void OnTerritoryAttacked(object matchObj, TerritoryAttackedEventArgs args)
         {
-            if (args.Attacker.Owner == _input.Player && _state == InstructionState.Action)
+            if (args.Attacker.Owner == _input.Player)
             {
-                _showedBasics = true;
-                SetState(InstructionState.Idle);
+                OnActionTaken();
             }
         }
 
         private void OnPiecePlaced(object matchObj, PiecePlacedEventArgs args)
         {
-            if (args.Location.Owner == _input.Player && _state == InstructionState.Placement)
+            if (args.Location.Owner == _input.Player)
             {
+                // if the player placed a piece without instruction then no instruction is necessary
+                _showedPlacement = true;
+                if (_state == InstructionState.Placement)
+                {
+                    SetState(InstructionState.Idle);
+                }
+                else
+                {
+                    OnActionTaken();
+                }
+            }
+        }
+
+        private void OnActionTaken()
+        {
+            if (_state == InstructionState.Action)
+            {
+                _showedBasics = true;
                 SetState(InstructionState.Idle);
             }
-            // if the player placed a piece without instruction then no instruction is necessary
-            _showedPlacement = true;
+            else if (_showedBasics && !_showedOwning && _match.Map.Territories.Count(t => t.Owner == _input.Player) >= 4)
+            {
+                _showedOwning = true;
+                SetState(InstructionState.Owning);
+            }
+            else if (_state == InstructionState.Readiness || _state == InstructionState.Owning)
+            {
+                // any action clears these game explanation states
+                SetState(InstructionState.Idle);
+            }
         }
 
         private void SetState(InstructionState state)
@@ -152,8 +182,11 @@ namespace Strategy.Interface.Gameplay
                 case InstructionState.Placement:
                     SetText(Resources.InstructionsPlacement);
                     break;
-                case InstructionState.Waiting:
+                case InstructionState.Readiness:
                     SetText(Resources.InstructionsWaiting);
+                    break;
+                case InstructionState.Owning:
+                    SetText(Resources.InstructionsTerritories);
                     break;
             }
         }
@@ -168,6 +201,13 @@ namespace Strategy.Interface.Gameplay
                     new DelayAnimation(0.1f),
                     new TextAnimation(_sprite, newText),
                     new ColorAnimation(_sprite, Color.Black, 0.2f, Interpolation.InterpolateColor(Easing.Uniform)));
+                // if the text was on its way out bring it back
+                if (_sprite.Position != Visible)
+                {
+                    _animation = new CompositeAnimation(
+                        _animation,
+                        new PositionAnimation(_sprite, Visible, 1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
+                }
             }
             else
             {
@@ -196,13 +236,16 @@ namespace Strategy.Interface.Gameplay
             Action,
             Cancel,
             Placement,
-            Waiting
+            Readiness,
+            Owning,
         }
 
         private InstructionState _state;
         private bool _showedBasics = false;
         private bool _showedPlacement = false;
         private bool _showedCancel = false;
+        private bool _showedReadiness = false;
+        private bool _showedOwning = false;
 
         private LocalInput _input;
         private Match _match;

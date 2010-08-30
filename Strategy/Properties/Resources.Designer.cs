@@ -358,7 +358,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to STICK selects the territory to act on.
+        ///   Looks up a localized string similar to STICK selects territories to act on.
         /// </summary>
         internal static string InstructionsMovement {
             get {
@@ -367,7 +367,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to X places new pieces.
+        ///   Looks up a localized string similar to X places a new piece.
         /// </summary>
         internal static string InstructionsPlacement {
             get {
@@ -376,7 +376,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A picks up pieces to move or attack.
+        ///   Looks up a localized string similar to A picks up pieces to move/attack with.
         /// </summary>
         internal static string InstructionsSelection {
             get {
@@ -385,7 +385,16 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pieces can only act once every 6 seconds.
+        ///   Looks up a localized string similar to Owning more territories creates new pieces faster.
+        /// </summary>
+        internal static string InstructionsTerritories {
+            get {
+                return ResourceManager.GetString("InstructionsTerritories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pieces can only move/attack once every 6 seconds.
         /// </summary>
         internal static string InstructionsWaiting {
             get {
