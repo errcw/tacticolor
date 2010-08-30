@@ -340,6 +340,60 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A attacks and moves.
+        /// </summary>
+        internal static string InstructionsAction {
+            get {
+                return ResourceManager.GetString("InstructionsAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to B puts pieces down.
+        /// </summary>
+        internal static string InstructionsCancel {
+            get {
+                return ResourceManager.GetString("InstructionsCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STICK selects the territory to act on.
+        /// </summary>
+        internal static string InstructionsMovement {
+            get {
+                return ResourceManager.GetString("InstructionsMovement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to X places new pieces.
+        /// </summary>
+        internal static string InstructionsPlacement {
+            get {
+                return ResourceManager.GetString("InstructionsPlacement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A picks up pieces to move or attack.
+        /// </summary>
+        internal static string InstructionsSelection {
+            get {
+                return ResourceManager.GetString("InstructionsSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pieces can only act once every 6 seconds.
+        /// </summary>
+        internal static string InstructionsWaiting {
+            get {
+                return ResourceManager.GetString("InstructionsWaiting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading.
         /// </summary>
         internal static string Loading {

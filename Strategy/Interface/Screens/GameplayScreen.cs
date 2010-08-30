@@ -77,8 +77,8 @@ namespace Strategy.Interface.Screens
                 }
             }
             Gamer primaryGamer = game.Services.GetService<MenuInput>().Controller.Value.GetSignedInGamer();
-            LocalInput primaryInput = (LocalInput)players.First(p => p.Gamer.Gamertag == primaryGamer.Gamertag).Input;
-            _instructionsView = new InstructionsView(null, _context);
+            LocalInput primaryInput = (LocalInput)players.ElementAt(0).Input;// players.First(p => p.Gamer.Gamertag == primaryGamer.Gamertag).Input;
+            _instructionsView = new InstructionsView(primaryInput, match, _context);
 
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
             _isoBatch = new IsometricBatch(_spriteBatch);
