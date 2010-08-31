@@ -149,6 +149,7 @@ namespace Strategy.Interface.Screens
             {
                 _lockstepMatch.Match.ResetEvents();
             }
+            base.Hide(popped);
         }
 
         private void OnSelectionChanged(object inputObj, InputChangedEventArgs args)

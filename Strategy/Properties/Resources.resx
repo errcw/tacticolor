@@ -211,19 +211,19 @@
     <value>{0} won!</value>
   </data>
   <data name="InstructionsAction" xml:space="preserve">
-    <value>A attacks and moves</value>
+    <value>attacks or moves</value>
   </data>
   <data name="InstructionsCancel" xml:space="preserve">
-    <value>B puts pieces down</value>
+    <value>puts pieces down</value>
   </data>
   <data name="InstructionsMovement" xml:space="preserve">
-    <value>STICK selects territories to act on</value>
+    <value>selects territories to act on</value>
   </data>
   <data name="InstructionsPlacement" xml:space="preserve">
-    <value>X places a new piece</value>
+    <value>places new pieces</value>
   </data>
   <data name="InstructionsSelection" xml:space="preserve">
-    <value>A picks up pieces to move/attack with</value>
+    <value>picks up pieces to move or attack with</value>
   </data>
   <data name="InstructionsTerritories" xml:space="preserve">
     <value>Owning more territories creates new pieces faster</value>

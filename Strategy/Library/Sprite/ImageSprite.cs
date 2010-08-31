@@ -11,6 +11,11 @@ namespace Strategy.Library.Sprite
     public class ImageSprite : Sprite
     {
         /// <summary>
+        /// The texture used to draw this sprite.
+        /// </summary>
+        public Texture2D Texture { get; set; }
+
+        /// <summary>
         /// The size of this image.
         /// </summary>
         public override Vector2 Size
@@ -33,7 +38,7 @@ namespace Strategy.Library.Sprite
         /// <param name="sourceRect">The section of the texture to draw; or, null to draw the entire texture.</param>
         public ImageSprite(Texture2D texture, Rectangle? sourceRect)
         {
-            _texture = texture;
+            Texture = texture;
             _sourceRect = sourceRect;
         }
 
@@ -43,7 +48,7 @@ namespace Strategy.Library.Sprite
         internal override void Draw(SpriteBatch spriteBatch, Vector2 position, Vector2 origin, float rotation, Vector2 scale, Color color, float layer)
         {
             SpriteEffects effects = ConvertScaling(ref scale, ref origin, ref rotation);
-            spriteBatch.Draw(_texture, position, _sourceRect, color, -rotation, origin, scale, effects, layer);
+            spriteBatch.Draw(Texture, position, _sourceRect, color, -rotation, origin, scale, effects, layer);
         }
 
         /// <summary>
@@ -53,10 +58,9 @@ namespace Strategy.Library.Sprite
         {
             return (_sourceRect != null)
                 ? new Vector2(_sourceRect.Value.Width, _sourceRect.Value.Height)
-                : new Vector2(_texture.Width, _texture.Height);
+                : new Vector2(Texture.Width, Texture.Height);
         }
 
-        private Texture2D _texture;
         private Rectangle? _sourceRect;
     }
 }

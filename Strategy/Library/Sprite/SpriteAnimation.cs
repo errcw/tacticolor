@@ -164,6 +164,44 @@ namespace Strategy.Library.Sprite
     }
 
     /// <summary>
+    /// Animates the image of an image sprite.
+    /// </summary>
+    public class ImageAnimation : IAnimation
+    {
+        /// <summary>
+        /// Creates a new image animation.
+        /// </summary>
+        /// <param name="controllee">The image sprite to animate.</param>
+        /// <param name="texture">The new texture to set on the sprite.</param>
+        public ImageAnimation(ImageSprite controllee, Texture2D texture)
+        {
+            _controllee = controllee;
+            _texture = texture;
+        }
+
+        /// <summary>
+        /// Starts this animation. No operation.
+        /// </summary>
+        public void Start()
+        {
+        }
+
+        /// <summary>
+        /// Sets the image of the sprite to its new value.
+        /// </summary>
+        /// <param name="time">The elapsed time, in seconds, since the last update. Unused.</param>
+        /// <returns>Always returns false.</returns>
+        public bool Update(float time)
+        {
+            _controllee.Texture = _texture;
+            return false;
+        }
+
+        private ImageSprite _controllee;
+        private Texture2D _texture;
+    }
+
+    /// <summary>
     /// Animates the text of a text sprite.
     /// </summary>
     public class TextAnimation : IAnimation

@@ -38,22 +38,17 @@ namespace Strategy.Interface.Gameplay
             }
 
             SetUpCreatingSprite();
-
-            _lastAvailable = 0;
         }
 
         public void Update(float time)
         {
             // check if a new piece was created this frame
             int available = _match.PiecesAvailable[(int)_player];
-            if (available != _lastAvailable)
+            if (available > _created.Count)
             {
-                if (available > _lastAvailable)
-                {
-                    OnPieceCreated();
-                }
-                _lastAvailable = available;
+                OnPieceCreated();
             }
+            System.Diagnostics.Debug.Assert(_created.Count == _match.PiecesAvailable[(int)_player]);
 
             if (_creatingSprite != null)
             {
@@ -69,8 +64,6 @@ namespace Strategy.Interface.Gameplay
                     _hideAnimation = null;
                 }
             }
-
-            System.Diagnostics.Debug.Assert(_created.Count == _match.PiecesAvailable[(int)_player]);
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -185,8 +178,6 @@ namespace Strategy.Interface.Gameplay
         private Match _match;
         private PlayerId _player;
         private InterfaceContext _context;
-
-        private int _lastAvailable;
 
         private Queue<Sprite> _unused;
         private Stack<Sprite> _created;

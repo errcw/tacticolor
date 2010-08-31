@@ -30,9 +30,31 @@ namespace Strategy.Interface.Gameplay
 
             _options = context.Game.Services.GetService<Options>();
 
+
+            Texture2D background = context.Content.Load<Texture2D>("Images/InstructionsBackground");
             SpriteFont font = context.Content.Load<SpriteFont>("Fonts/TextLarge");
-            _sprite = new TextSprite(font, "");
-            _sprite.Color = Color.Black;
+            Vector2 charSize = font.MeasureString(Resources.InstructionsAction);
+
+            _imageTextures = new Texture2D[8];
+            _imageTextures[(int)InstructionState.Idle] = context.Content.Load<Texture2D>("Images/ButtonA");
+            _imageTextures[(int)InstructionState.Selection] = context.Content.Load<Texture2D>("Images/ButtonA");
+            _imageTextures[(int)InstructionState.Movement] = context.Content.Load<Texture2D>("Images/ButtonThumb");
+            _imageTextures[(int)InstructionState.Action] = context.Content.Load<Texture2D>("Images/ButtonA");
+            _imageTextures[(int)InstructionState.Cancel] = context.Content.Load<Texture2D>("Images/ButtonB");
+            _imageTextures[(int)InstructionState.Placement] = context.Content.Load<Texture2D>("Images/ButtonX");
+            _imageTextures[(int)InstructionState.Readiness] = context.Content.Load<Texture2D>("Images/InstructionsPiece");
+            _imageTextures[(int)InstructionState.Owning] = context.Content.Load<Texture2D>("Images/InstructionsPiece");
+
+            ImageSprite backSprite = new ImageSprite(background);
+
+            _imageSprite = new ImageSprite(_imageTextures[0]);
+            _imageSprite.Position = new Vector2(5, (int)((40 - _imageSprite.Size.Y) / 2));
+
+            _textSprite = new TextSprite(font);
+            _textSprite.Color = Color.Black;
+            _textSprite.Position = new Vector2(_imageSprite.Size.X + 10, (int)((backSprite.Size.Y - charSize.Y) / 2));
+
+            _sprite = new CompositeSprite(backSprite, _imageSprite, _textSprite);
             _sprite.Position = Hidden;
 
             _state = InstructionState.Idle;
@@ -162,68 +184,78 @@ namespace Strategy.Interface.Gameplay
         private void SetState(InstructionState state)
         {
             _state = state;
+
+            Texture2D imageTex = _imageTextures[(int)_state];
             switch (_state)
             {
                 case InstructionState.Idle:
-                    SetText("");
+                    SetInstructions(String.Empty, imageTex);
                     break;
                 case InstructionState.Selection:
-                    SetText(Resources.InstructionsSelection);
+                    SetInstructions(Resources.InstructionsSelection, imageTex);
                     break;
                 case InstructionState.Movement:
-                    SetText(Resources.InstructionsMovement);
+                    SetInstructions(Resources.InstructionsMovement, imageTex);
                     break;
                 case InstructionState.Action:
-                    SetText(Resources.InstructionsAction);
+                    SetInstructions(Resources.InstructionsAction, imageTex);
                     break;
                 case InstructionState.Cancel:
-                    SetText(Resources.InstructionsCancel);
+                    SetInstructions(Resources.InstructionsCancel, imageTex);
                     break;
                 case InstructionState.Placement:
-                    SetText(Resources.InstructionsPlacement);
+                    SetInstructions(Resources.InstructionsPlacement, imageTex);
                     break;
                 case InstructionState.Readiness:
-                    SetText(Resources.InstructionsWaiting);
+                    SetInstructions(Resources.InstructionsWaiting, imageTex);
                     break;
                 case InstructionState.Owning:
-                    SetText(Resources.InstructionsTerritories);
+                    SetInstructions(Resources.InstructionsTerritories, imageTex);
                     break;
             }
         }
 
-        private void SetText(string newText)
+        private void SetInstructions(string newText, Texture2D newImage)
         {
-            if (_sprite.Text.Length > 0 && newText.Length > 0)
+            IAnimation setNewInstructions = new CompositeAnimation(
+                new TextAnimation(_textSprite, newText),
+                new ImageAnimation(_imageSprite, newImage));
+            if (_textSprite.Text.Length > 0 && newText.Length > 0)
             {
                 // replace the existing text
                 _animation = new SequentialAnimation(
-                    new ColorAnimation(_sprite, Color.TransparentWhite, 0.2f, Interpolation.InterpolateColor(Easing.Uniform)),
+                    new CompositeAnimation(
+                        new ColorAnimation(_textSprite, Color.TransparentBlack, 0.2f, Interpolation.InterpolateColor(Easing.Uniform)),
+                        new ColorAnimation(_imageSprite, Color.TransparentWhite, 0.2f, Interpolation.InterpolateColor(Easing.Uniform))),
                     new DelayAnimation(0.1f),
-                    new TextAnimation(_sprite, newText),
-                    new ColorAnimation(_sprite, Color.Black, 0.2f, Interpolation.InterpolateColor(Easing.Uniform)));
-                // if the text was on its way out bring it back
+                    setNewInstructions,
+                    new CompositeAnimation(
+                        new ColorAnimation(_textSprite, Color.Black, 0.2f, Interpolation.InterpolateColor(Easing.Uniform)),
+                        new ColorAnimation(_imageSprite, Color.White, 0.2f, Interpolation.InterpolateColor(Easing.Uniform))));
+
+                // if the panel was on its way out bring it back
                 if (_sprite.Position != Visible)
                 {
                     _animation = new CompositeAnimation(
                         _animation,
-                        new PositionAnimation(_sprite, Visible, 1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
+                        new PositionAnimation(_sprite, Visible, 0.3f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
                 }
             }
             else
             {
                 if (newText.Length > 0)
                 {
-                    // show new instructions
+                    // show the instructions panel
                     _animation = new SequentialAnimation(
-                        new TextAnimation(_sprite, newText),
+                        setNewInstructions,
                         new PositionAnimation(_sprite, Visible, 1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
                 }
                 else
                 {
-                    // hide the instructions
+                    // hide the instructions panel
                     _animation = new SequentialAnimation(
                         new PositionAnimation(_sprite, Hidden, 1f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
-                        new TextAnimation(_sprite, newText));
+                        setNewInstructions);
                 }
             }
         }
@@ -251,10 +283,14 @@ namespace Strategy.Interface.Gameplay
         private Match _match;
         private Options _options;
 
-        private TextSprite _sprite;
+        private Sprite _sprite;
         private IAnimation _animation;
 
-        private readonly Vector2 Visible = new Vector2(900, 100);
-        private readonly Vector2 Hidden = new Vector2(1280, 100);
+        private TextSprite _textSprite;
+        private ImageSprite _imageSprite;
+        private Texture2D[] _imageTextures;
+
+        private readonly Vector2 Visible = new Vector2(650, 75);
+        private readonly Vector2 Hidden = new Vector2(1280, 75);
     }
 }

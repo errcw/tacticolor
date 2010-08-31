@@ -340,7 +340,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A attacks and moves.
+        ///   Looks up a localized string similar to attacks or moves.
         /// </summary>
         internal static string InstructionsAction {
             get {
@@ -349,7 +349,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to B puts pieces down.
+        ///   Looks up a localized string similar to puts pieces down.
         /// </summary>
         internal static string InstructionsCancel {
             get {
@@ -358,7 +358,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to STICK selects territories to act on.
+        ///   Looks up a localized string similar to selects territories to act on.
         /// </summary>
         internal static string InstructionsMovement {
             get {
@@ -367,7 +367,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to X places a new piece.
+        ///   Looks up a localized string similar to places new pieces.
         /// </summary>
         internal static string InstructionsPlacement {
             get {
@@ -376,7 +376,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A picks up pieces to move/attack with.
+        ///   Looks up a localized string similar to picks up pieces to move or attack with.
         /// </summary>
         internal static string InstructionsSelection {
             get {

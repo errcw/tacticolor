@@ -43,8 +43,8 @@ namespace Strategy.Interface.Screens
             {
                 lineSprites[i] = new TextSprite(font, lines[i]);
                 lineSprites[i].Position = new Vector2(
-                    box.Position.X + (box.Size.X - lineSprites[i].Size.X) / 2,
-                    y + i * font.LineSpacing);
+                    (int)(box.Position.X + (box.Size.X - lineSprites[i].Size.X) / 2),
+                    (int)(y + i * font.LineSpacing));
                 lineSprites[i].Color = new Color(60, 60, 60);
             }
             CompositeSprite message = new CompositeSprite(lineSprites);
