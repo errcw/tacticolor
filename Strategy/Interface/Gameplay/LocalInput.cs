@@ -66,6 +66,7 @@ namespace Strategy.Interface.Gameplay
             Command command = null;
 
             _input.Update(time / 1000f);
+
             if (Action.Pressed)
             {
                 if (_actionPending)
@@ -87,7 +88,7 @@ namespace Strategy.Interface.Gameplay
                 }
                 else
                 {
-                    if (Hovered.Owner == Player)
+                    if (CanSelect(Hovered))
                     {
                         SetSelected(Hovered);
                         _actionPending = true;
@@ -117,10 +118,7 @@ namespace Strategy.Interface.Gameplay
 
                 foreach (Territory other in Hovered.Neighbors)
                 {
-                    if (Selected != null &&
-                        Selected != other &&
-                        !_match.CanMove(Player, Selected, other) &&
-                        !_match.CanAttack(Player, Selected, other))
+                    if (Selected == null || CanActBetween(Selected, other))
                     {
                         continue; // cannot move to invalid territory
                     }
@@ -165,6 +163,18 @@ namespace Strategy.Interface.Gameplay
             {
                 SelectedChanged(this, new InputChangedEventArgs(previous));
             }
+        }
+
+        private bool CanSelect(Territory territory)
+        {
+            return territory.Owner == Player && territory.Pieces.Count > 1;
+        }
+
+        private bool CanActBetween(Territory source, Territory destination)
+        {
+            return source == destination ||
+                   _match.CanMove(Player, source, destination) ||
+                   _match.CanAttack(Player, source, destination);
         }
 
         private Match _match;
