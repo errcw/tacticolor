@@ -76,6 +76,7 @@ namespace Strategy.Interface.Screens
                     _inputViews.Add(new LocalInputView(input, _context));
                 }
             }
+
             Gamer primaryGamer = game.Services.GetService<MenuInput>().Controller.Value.GetSignedInGamer();
             LocalInput primaryInput = (LocalInput)players.ElementAt(0).Input;// players.First(p => p.Gamer.Gamertag == primaryGamer.Gamertag).Input;
             _instructions = new Instructions(primaryInput, match, _context);
