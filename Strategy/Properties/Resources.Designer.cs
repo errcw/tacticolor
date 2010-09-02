@@ -358,7 +358,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to selects territories to act on.
+        ///   Looks up a localized string similar to selects territories.
         /// </summary>
         internal static string InstructionsMovement {
             get {
@@ -376,7 +376,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to picks up pieces to move or attack with.
+        ///   Looks up a localized string similar to picks up pieces to move or attack.
         /// </summary>
         internal static string InstructionsSelection {
             get {
@@ -394,7 +394,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pieces can only move/attack once every 6 seconds.
+        ///   Looks up a localized string similar to Pieces can only move or attack every 6 seconds.
         /// </summary>
         internal static string InstructionsWaiting {
             get {
