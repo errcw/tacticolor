@@ -15,13 +15,14 @@ namespace Strategy.Interface.Gameplay
     /// <summary>
     /// Shows instructions for the controls and how to interact with the game.
     /// </summary>
-    public class InstructionsView
+    public class Instructions
     {
-        public InstructionsView(LocalInput input, Match match, InterfaceContext context)
+        public Instructions(LocalInput input, Match match, InterfaceContext context)
         {
             _input = input;
             _input.HoveredChanged += OnHoveredChanged;
             _input.SelectedChanged += OnSelectedChanged;
+            _input.ActionRejected += OnActionRejected;
 
             _match = match;
             _match.PiecesMoved += OnPiecesMoved;
@@ -126,6 +127,14 @@ namespace Strategy.Interface.Gameplay
             {
                 _showedCancel = true;
                 SetState(InstructionState.Idle);
+            }
+        }
+
+        private void OnActionRejected(object inputObj, EventArgs args)
+        {
+            if (_input.Selected == null && _input.Hovered.Owner == _input.Player && _input.Hovered.Pieces.Count <= 1)
+            {
+                // show players must select a territory with more than one piece?
             }
         }
 
