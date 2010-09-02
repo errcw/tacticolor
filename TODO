@@ -40,19 +40,6 @@ Menu Structure
 * Exit to Dashboard
 
 
-Tutorial
---------
-
-* Only for first (completed?) game
-* Only for local matches
-* Demonstate
-  - Selecting pieces
-  - Deselecting pieces
-  - Moving pieces
-  - Attacking territories
-  - Placing pieces
-
-
 Thoughts
 --------
 
@@ -63,14 +50,10 @@ Thoughts
 - Game options
   + music on/off
   + sound effects on/off
+  + instructions on/off
   + storage device
-- Quick start single player game?
-- In-game pop-up instructions
 - Awardments
-  + finish a game in under 1, 2 minutes
-  + win 5, 20 games in a row
   + win a game under every configuration
-  + play 100 games
   + play a game with the developer,
     or someone who has this awardment
 - Game configuration below lobby entries

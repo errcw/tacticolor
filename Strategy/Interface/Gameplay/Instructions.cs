@@ -37,7 +37,7 @@ namespace Strategy.Interface.Gameplay
             Vector2 charSize = font.MeasureString(Resources.InstructionsAction);
 
             _imageTextures = new Texture2D[8];
-            _imageTextures[(int)InstructionState.Idle] = context.Content.Load<Texture2D>("Images/Colourable");
+            _imageTextures[(int)InstructionState.Idle] = context.Content.Load<Texture2D>("Images/ButtonA");
             _imageTextures[(int)InstructionState.Selection] = context.Content.Load<Texture2D>("Images/ButtonA");
             _imageTextures[(int)InstructionState.Movement] = context.Content.Load<Texture2D>("Images/ButtonThumb");
             _imageTextures[(int)InstructionState.Action] = context.Content.Load<Texture2D>("Images/ButtonA");
@@ -72,27 +72,37 @@ namespace Strategy.Interface.Gameplay
             // choose a new instruction path
             if (_state == InstructionState.Idle)
             {
-                if (!_showedBasics && _input.Hovered.Owner == _input.Player)
+                // show the basics before any other instructions
+                if (!_showed[(int)InstructionState.Action])
                 {
-                    SetState(InstructionState.Selection);
+                    if (_input.Hovered.Owner == _input.Player)
+                    {
+                        SetState(InstructionState.Selection);
+                    }
                 }
-                else if (_showedBasics && !_showedPlacement && _match.PiecesAvailable[(int)_input.Player] >= 2)
+                else
                 {
-                    SetState(InstructionState.Placement);
-                }
-                else if (_showedBasics && !_showedCancel && _input.Selected != null)
-                {
-                    SetState(InstructionState.Cancel);
+                    if (!_showed[(int)InstructionState.Placement] && _match.PiecesAvailable[(int)_input.Player] >= 2)
+                    {
+                        SetState(InstructionState.Placement);
+                    }
+                    else if (!_showed[(int)InstructionState.Readiness] && _input.Selected != null && _input.Selected.Pieces.Count(p => !p.Ready) > 0)
+                    {
+                        SetState(InstructionState.Readiness);
+                    }
+                    else if (!_showed[(int)InstructionState.Cancel] && _input.Selected != null && _input.Selected.Pieces.Count(p => p.Ready) == 0)
+                    {
+                        SetState(InstructionState.Cancel);
+                    }
+                    else if (!_showed[(int)InstructionState.Owning] && _match.Map.Territories.Count(t => t.Owner == _input.Player) >= 4)
+                    {
+                        SetState(InstructionState.Owning);
+                    }
                 }
             }
 
             // only show the instructions once
-            if (_showedBasics &&
-                _showedPlacement &&
-                _showedCancel &&
-                _showedReadiness &&
-                _showedOwning &&
-                _sprite.Position == Hidden)
+            if (_showed.All(b => b) && _sprite.Position == Hidden)
             {
                 _options.InstructionsToggle = false;
             }
@@ -131,15 +141,9 @@ namespace Strategy.Interface.Gameplay
             {
                 SetState(InstructionState.Movement);
             }
-            else if (_input.Selected != null && _input.Selected.Pieces.Count(p => !p.Ready) > 0 && _showedBasics && !_showedReadiness && _state == InstructionState.Idle)
-            {
-                SetState(InstructionState.Readiness);
-                _showedReadiness = true;
-            }
             else if (_input.Selected == null && _state == InstructionState.Cancel)
             {
                 SetState(InstructionState.Idle);
-                _showedCancel = true;
             }
         }
 
@@ -153,57 +157,31 @@ namespace Strategy.Interface.Gameplay
 
         private void OnPiecesMoved(object matchObj, PiecesMovedEventArgs args)
         {
-            if (args.Source.Owner == _input.Player)
+            if (args.Source.Owner == _input.Player && (_state == InstructionState.Action || _state == InstructionState.Readiness || _state == InstructionState.Owning))
             {
-                OnActionTaken();
+                SetState(InstructionState.Idle);
             }
         }
 
         private void OnTerritoryAttacked(object matchObj, TerritoryAttackedEventArgs args)
         {
-            if (args.Attacker.Owner == _input.Player)
+            if (args.Attacker.Owner == _input.Player && (_state == InstructionState.Action || _state == InstructionState.Readiness || _state == InstructionState.Owning))
             {
-                OnActionTaken();
+                SetState(InstructionState.Idle);
             }
         }
 
         private void OnPiecePlaced(object matchObj, PiecePlacedEventArgs args)
         {
-            if (args.Location.Owner == _input.Player)
+            if (args.Location.Owner == _input.Player && (_state == InstructionState.Placement || _state == InstructionState.Readiness || _state == InstructionState.Owning))
             {
-                if (_state == InstructionState.Placement)
-                {
-                    SetState(InstructionState.Idle);
-                    _showedPlacement = true;
-                }
-                else
-                {
-                    OnActionTaken();
-                }
-            }
-        }
-
-        private void OnActionTaken()
-        {
-            if (_state == InstructionState.Action)
-            {
-                SetState(InstructionState.Idle);
-                _showedBasics = true;
-            }
-            else if (_showedBasics && !_showedOwning && _match.Map.Territories.Count(t => t.Owner == _input.Player) >= 4)
-            {
-                SetState(InstructionState.Owning);
-                _showedOwning = true;
-            }
-            else if (_state == InstructionState.Readiness || _state == InstructionState.Owning)
-            {
-                // any action clears these game explanation states
                 SetState(InstructionState.Idle);
             }
         }
 
         private void SetState(InstructionState state)
         {
+            _showed[(int)_state] = true;
             _state = state;
 
             Texture2D imageTex = _imageTextures[(int)_state];
@@ -294,6 +272,8 @@ namespace Strategy.Interface.Gameplay
         }
 
         private InstructionState _state;
+        private bool[] _showed = new bool[8];
+
         private bool _showedBasics = false;
         private bool _showedPlacement = false;
         private bool _showedCancel = false;
