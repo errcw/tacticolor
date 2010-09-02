@@ -162,7 +162,7 @@ namespace Strategy.Interface.Screens
         private void OnPlayerEliminated(object matchObj, PlayerEventArgs args)
         {
             // update the player view
-            PlayerView playerView = _playerViews.First(view => view.Player.Id == args.Player);
+            PlayerView playerView = _playerViews.Single(view => view.Player.Id == args.Player);
             playerView.ShowEliminated();
 
             // remove the local input view
@@ -171,7 +171,7 @@ namespace Strategy.Interface.Screens
 
         private void OnMatchEnded(object matchObj, PlayerEventArgs args)
         {
-            Player player = _players.First(p => p.Id == args.Player);
+            Player player = _players.Single(p => p.Id == args.Player);
 
             _awardments.MatchEnded(player.Id);
 
@@ -183,7 +183,7 @@ namespace Strategy.Interface.Screens
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
         {
             // have the player sit idle
-            Player player = _players.First(p => p.Gamer == args.Gamer);
+            Player player = _players.Single(p => p.Gamer == args.Gamer);
             player.Gamer = null;
             player.Controller = null;
             player.Input = null;
