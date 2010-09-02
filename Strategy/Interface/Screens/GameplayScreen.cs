@@ -160,8 +160,12 @@ namespace Strategy.Interface.Screens
 
         private void OnPlayerEliminated(object matchObj, PlayerEventArgs args)
         {
+            // update the player view
             PlayerView playerView = _playerViews.First(view => view.Player.Id == args.Player);
             playerView.ShowEliminated();
+
+            // remove the local input view
+            _inputViews.RemoveAll(view => view.Input.Player == args.Player);
         }
 
         private void OnMatchEnded(object matchObj, PlayerEventArgs args)
@@ -188,11 +192,7 @@ namespace Strategy.Interface.Screens
             playerView.ShowDropped();
 
             // remove the local input view
-            LocalInputView inputView = _inputViews.Find(view => view.Input.Player == player.Id);
-            if (inputView != null)
-            {
-                _inputViews.Remove(inputView);
-            }
+            _inputViews.RemoveAll(view => view.Input.Player == player.Id);
         }
 
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
