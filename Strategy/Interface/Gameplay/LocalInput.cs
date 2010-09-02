@@ -26,6 +26,11 @@ namespace Strategy.Interface.Gameplay
         public event EventHandler<InputChangedEventArgs> SelectedChanged;
 
         /// <summary>
+        /// Occurs when the player attempts an invalid action.
+        /// </summary>
+        public event EventHandler<EventArgs> ActionRejected;
+
+        /// <summary>
         /// The player for this input.
         /// </summary>
         public PlayerId Player { get; private set; }
@@ -81,6 +86,10 @@ namespace Strategy.Interface.Gameplay
                         command = new AttackCommand(Player, Selected, Hovered);
                         _actionPending = false;
                     }
+                    else
+                    {
+                        NotifyActionRejected();
+                    }
                     if (!_actionPending)
                     {
                         SetSelected(null);
@@ -92,6 +101,10 @@ namespace Strategy.Interface.Gameplay
                     {
                         SetSelected(Hovered);
                         _actionPending = true;
+                    }
+                    else
+                    {
+                        NotifyActionRejected();
                     }
                 }
             }
@@ -105,6 +118,10 @@ namespace Strategy.Interface.Gameplay
                 if (_match.CanPlacePiece(Player, Hovered))
                 {
                     command = new PlaceCommand(Player, Hovered);
+                }
+                else
+                {
+                    NotifyActionRejected();
                 }
             }
             else if (Move.Pressed)
@@ -175,6 +192,14 @@ namespace Strategy.Interface.Gameplay
             return source == destination ||
                    _match.CanMove(Player, source, destination) ||
                    _match.CanAttack(Player, source, destination);
+        }
+
+        private void NotifyActionRejected()
+        {
+            if (ActionRejected != null)
+            {
+                ActionRejected(this, EventArgs.Empty);
+            }
         }
 
         private Match _match;

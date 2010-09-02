@@ -103,6 +103,14 @@ namespace Strategy.Interface.Gameplay
         }
 
         /// <summary>
+        /// Updates the view when a player attempted an invalid action.
+        /// </summary>
+        private void OnActionRejected(object input, EventArgs args)
+        {
+            // vibrate the controller? play a sound?
+        }
+
+        /// <summary>
         /// Chooses the cell on which to place the cursor.
         /// </summary>
         private Cell ChooseCell(Territory territory)
