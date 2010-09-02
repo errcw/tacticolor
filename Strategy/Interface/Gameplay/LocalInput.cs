@@ -135,7 +135,7 @@ namespace Strategy.Interface.Gameplay
 
                 foreach (Territory other in Hovered.Neighbors)
                 {
-                    if (Selected == null || CanActBetween(Selected, other))
+                    if (!CanActBetween(Selected, other))
                     {
                         continue; // cannot move to invalid territory
                     }
@@ -189,7 +189,8 @@ namespace Strategy.Interface.Gameplay
 
         private bool CanActBetween(Territory source, Territory destination)
         {
-            return source == destination ||
+            return source == null ||
+                   source == destination ||
                    _match.CanMove(Player, source, destination) ||
                    _match.CanAttack(Player, source, destination);
         }
