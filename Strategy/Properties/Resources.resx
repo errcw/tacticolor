@@ -183,6 +183,15 @@
   <data name="ComputerD" xml:space="preserve">
     <value>Computer D</value>
   </data>
+  <data name="DifficultyEasy" xml:space="preserve">
+    <value>Easy</value>
+  </data>
+  <data name="DifficultyHard" xml:space="preserve">
+    <value>Hard</value>
+  </data>
+  <data name="DifficultyNormal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
   <data name="ExceptionException" xml:space="preserve">
     <value>Exception: {0}</value>
   </data>

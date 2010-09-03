@@ -259,6 +259,33 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Easy.
+        /// </summary>
+        internal static string DifficultyEasy {
+            get {
+                return ResourceManager.GetString("DifficultyEasy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hard.
+        /// </summary>
+        internal static string DifficultyHard {
+            get {
+                return ResourceManager.GetString("DifficultyHard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normal.
+        /// </summary>
+        internal static string DifficultyNormal {
+            get {
+                return ResourceManager.GetString("DifficultyNormal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exception: {0}.
         /// </summary>
         internal static string ExceptionException {

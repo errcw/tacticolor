@@ -11,6 +11,16 @@ using Strategy.Library.Input;
 namespace Strategy.Interface
 {
     /// <summary>
+    /// AI difficulty rating.
+    /// </summary>
+    public enum AIDifficulty
+    {
+        Easy,
+        Normal,
+        Hard
+    }
+
+    /// <summary>
     /// Generates input from a computer player.
     /// </summary>
     public class AIInput : ICommandProvider
