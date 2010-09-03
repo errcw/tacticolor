@@ -17,8 +17,12 @@ namespace Strategy.Interface.Gameplay
     /// </summary>
     public class Instructions
     {
+        public bool Enabled { get; set; }
+
         public Instructions(LocalInput input, Match match, InterfaceContext context)
         {
+            Enabled = true;
+
             _input = input;
             _input.HoveredChanged += OnHoveredChanged;
             _input.SelectedChanged += OnSelectedChanged;
@@ -64,7 +68,7 @@ namespace Strategy.Interface.Gameplay
         public void Update(float time)
         {
             // do not update the instructions if requested by the user
-            if (!_options.InstructionsToggle)
+            if (!Enabled || !_options.InstructionsToggle)
             {
                 return;
             }
@@ -120,7 +124,7 @@ namespace Strategy.Interface.Gameplay
         public void Draw(SpriteBatch spriteBatch)
         {
             // hide the instructions if requested by the user
-            if (!_options.InstructionsToggle)
+            if (!Enabled || !_options.InstructionsToggle)
             {
                 return;
             }

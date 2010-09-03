@@ -77,9 +77,18 @@ namespace Strategy.Interface.Screens
                 }
             }
 
-            Gamer primaryGamer = game.Services.GetService<MenuInput>().Controller.Value.GetSignedInGamer();
-            LocalInput primaryInput = (LocalInput)players.ElementAt(0).Input;// players.First(p => p.Gamer.Gamertag == primaryGamer.Gamertag).Input;
-            _instructions = new Instructions(primaryInput, match, _context);
+            if (_session != null)
+            {
+                Gamer primaryGamer = game.Services.GetService<MenuInput>().Controller.Value.GetSignedInGamer();
+                LocalInput primaryInput = (LocalInput)players.Single(p => p.Gamer.Gamertag == primaryGamer.Gamertag).Input;
+                _instructions = new Instructions(primaryInput, match, _context);
+                _instructions.Enabled = (_session.LocalGamers.Count == 1); // only instuct with one local player
+            }
+            else
+            {
+                LocalInput primaryInput = (LocalInput)players.ElementAt(0).Input;
+                _instructions = new Instructions(primaryInput, match, _context);
+            }
 
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
             _isoBatch = new IsometricBatch(_spriteBatch);
