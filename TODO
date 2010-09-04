@@ -59,3 +59,7 @@ Thoughts
   + Panel of four slots for players
   + Game configuration (map size, AI difficulty) immediately below
   + Start game below (or ready for multiplayer)
+- Lobby
+  + Invalidate player readiness when game configuration changes
+  + Show blank entries for non-local games until configuration arrives
+  

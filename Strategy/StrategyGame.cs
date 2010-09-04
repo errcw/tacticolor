@@ -229,7 +229,7 @@ namespace Strategy
                 }
                 else
                 {
-                    players[p].Input = new AIInput();
+                    players[p].Input = new AIInput(AIDifficulty.Normal);
                 }
             }
 

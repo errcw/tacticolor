@@ -60,7 +60,6 @@ namespace Strategy.Interface.Screens
             _session.GamerLeft += OnGamerLeft;
             _session.HostChanged += OnHostChanged;
             _session.GameStarted += OnGameStarted;
-            _session.GameEnded += OnGameEnded;
             _session.SessionEnded += OnSessionEnded;
             base.Show(pushed);
         }
@@ -71,7 +70,6 @@ namespace Strategy.Interface.Screens
             _session.GamerLeft -= OnGamerLeft;
             _session.HostChanged -= OnHostChanged;
             _session.GameStarted -= OnGameStarted;
-            _session.GameEnded -= OnGameEnded;
             _session.SessionEnded -= OnSessionEnded;
             if (popped)
             {
@@ -91,7 +89,7 @@ namespace Strategy.Interface.Screens
                 {
                     _seed = _random.Next(1, int.MaxValue);
                 }
-                SendSeed(_seed, args.Gamer);
+                SendConfiguration(args.Gamer);
             }
         }
 
@@ -112,7 +110,7 @@ namespace Strategy.Interface.Screens
                 _seed = _random.Next(1, int.MaxValue);
                 foreach (NetworkGamer gamer in _session.RemoteGamers)
                 {
-                    SendSeed(_seed, gamer);
+                    SendConfiguration(gamer);
                 }
             }
         }
@@ -121,6 +119,15 @@ namespace Strategy.Interface.Screens
         {
             Debug.Assert(_seed != 0);
             Debug.WriteLine("Game starting");
+
+            // fill out the remaining players with AI
+            int aiPlayerCount = Match.MaxPlayerCount - _players.Count;
+            for (int p = 0; p < aiPlayerCount; p++)
+            {
+                Player aiPlayer = new Player();
+                aiPlayer.Input = new AIInput(_difficulty);
+                _players.Add(aiPlayer);
+            }
 
             // assign ids to players by sorting based on unique id
             // this assignment guarantees identical assignments across machines
@@ -132,15 +139,10 @@ namespace Strategy.Interface.Screens
 
             Random gameRandom = new Random(_seed);
             MapGenerator generator = new MapGenerator(gameRandom);
-            Map map = generator.Generate(MapType.Filled, MapSize.Normal);
+            Map map = generator.Generate(_mapType, _mapSize);
 
             GameplayScreen gameplayScreen = new GameplayScreen((StrategyGame)Stack.Game, _session, _players, map, gameRandom);
             Stack.Push(gameplayScreen);
-        }
-
-        private void OnGameEnded(object sender, GameEndedEventArgs args)
-        {
-            Debug.WriteLine("Game ended");
         }
 
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
@@ -192,13 +194,13 @@ namespace Strategy.Interface.Screens
         }
 
         /// <summary>
-        /// Broadcasts the game seed to every player in the session.
+        /// Broadcasts the game configuration to every player in the session.
         /// </summary>
-        private void SendSeed(int seed, NetworkGamer gamer)
+        private void SendConfiguration(NetworkGamer gamer)
         {
             LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
             CommandWriter writer = new CommandWriter();
-            writer.Write(new InitializeMatchCommand(seed, MapType.LandRush, MapSize.Normal, AIDifficulty.Normal));
+            writer.Write(new InitializeMatchCommand(_seed, _mapType, _mapSize, _difficulty));
             sender.SendData(writer, SendDataOptions.Reliable);
         }
 
@@ -218,6 +220,10 @@ namespace Strategy.Interface.Screens
                     if (command != null)
                     {
                         _seed = command.RandomSeed;
+                        _mapType = command.MapType;
+                        _mapSize = command.MapSize;
+                        _difficulty = command.Difficulty;
+                        //TODO update the UI state appropriately
                     }
                 }
             }
@@ -305,6 +311,9 @@ namespace Strategy.Interface.Screens
         private MenuInput _input;
 
         private int _seed = 0;
+        private MapType _mapType = MapType.LandRush;
+        private MapSize _mapSize = MapSize.Normal;
+        private AIDifficulty _difficulty = AIDifficulty.Normal;
         private Random _random = new Random();
     }
 }

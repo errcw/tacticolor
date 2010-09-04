@@ -25,7 +25,11 @@ namespace Strategy.AI
     /// </summary>
     public class AIInput : ICommandProvider
     {
-        public AIInput()
+        /// <summary>
+        /// Creates a new AI input.
+        /// </summary>
+        /// <param name="difficulty">The difficulty of the player.</param>
+        public AIInput(AIDifficulty difficulty)
         {
         }
 
