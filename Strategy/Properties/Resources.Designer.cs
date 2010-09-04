@@ -439,6 +439,78 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Map Size.
+        /// </summary>
+        internal static string MapSize {
+            get {
+                return ResourceManager.GetString("MapSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Large.
+        /// </summary>
+        internal static string MapSizeLarge {
+            get {
+                return ResourceManager.GetString("MapSizeLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normal.
+        /// </summary>
+        internal static string MapSizeNormal {
+            get {
+                return ResourceManager.GetString("MapSizeNormal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Small.
+        /// </summary>
+        internal static string MapSizeSmall {
+            get {
+                return ResourceManager.GetString("MapSizeSmall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tiny.
+        /// </summary>
+        internal static string MapSizeTiny {
+            get {
+                return ResourceManager.GetString("MapSizeTiny", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map Type.
+        /// </summary>
+        internal static string MapType {
+            get {
+                return ResourceManager.GetString("MapType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filled.
+        /// </summary>
+        internal static string MapTypeFilled {
+            get {
+                return ResourceManager.GetString("MapTypeFilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Land Rush.
+        /// </summary>
+        internal static string MapTypeLandRush {
+            get {
+                return ResourceManager.GetString("MapTypeLandRush", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while accessing the network..
         /// </summary>
         internal static string NetworkError {

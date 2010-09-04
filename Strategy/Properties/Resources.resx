@@ -243,6 +243,30 @@
   <data name="Loading" xml:space="preserve">
     <value>Loading</value>
   </data>
+  <data name="MapSize" xml:space="preserve">
+    <value>Map Size</value>
+  </data>
+  <data name="MapSizeLarge" xml:space="preserve">
+    <value>Large</value>
+  </data>
+  <data name="MapSizeNormal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="MapSizeSmall" xml:space="preserve">
+    <value>Small</value>
+  </data>
+  <data name="MapSizeTiny" xml:space="preserve">
+    <value>Tiny</value>
+  </data>
+  <data name="MapType" xml:space="preserve">
+    <value>Map Type</value>
+  </data>
+  <data name="MapTypeFilled" xml:space="preserve">
+    <value>Filled</value>
+  </data>
+  <data name="MapTypeLandRush" xml:space="preserve">
+    <value>Land Rush</value>
+  </data>
   <data name="NetworkError" xml:space="preserve">
     <value>There was an error while accessing the network.</value>
   </data>

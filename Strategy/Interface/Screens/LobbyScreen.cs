@@ -131,7 +131,7 @@ namespace Strategy.Interface.Screens
 
             Random gameRandom = new Random(_seed);
             MapGenerator generator = new MapGenerator(gameRandom);
-            Map map = generator.Generate(16, _players.Count, 1, 2);
+            Map map = generator.Generate(MapType.Filled, MapSize.Normal);
 
             GameplayScreen gameplayScreen = new GameplayScreen((StrategyGame)Stack.Game, _session, _players, map, gameRandom);
             Stack.Push(gameplayScreen);

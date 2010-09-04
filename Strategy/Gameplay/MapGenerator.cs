@@ -9,6 +9,26 @@ using Strategy.Library;
 namespace Strategy.Gameplay
 {
     /// <summary>
+    /// Enumerates the possible map sizes.
+    /// </summary>
+    public enum MapSize
+    {
+        Tiny = 8,
+        Small = 12,
+        Normal = 16,
+        Large = 20
+    }
+
+    /// <summary>
+    /// Enumerates the possible map types.
+    /// </summary>
+    public enum MapType
+    {
+        LandRush,
+        Filled
+    }
+
+    /// <summary>
     /// Generates random maps.
     /// </summary>
     public class MapGenerator
@@ -27,6 +47,21 @@ namespace Strategy.Gameplay
         public MapGenerator(Random random)
         {
             _random = random;
+        }
+
+        /// <summary>
+        /// Generates a new map.
+        /// </summary>
+        /// <param name="mapType">The type of map to generate.</param>
+        /// <param name="mapSize">The size of map to generate.</param>
+        /// <returns>The generated map.</returns>
+        public Map Generate(MapType mapType, MapSize mapSize)
+        {
+            int numTerritories = (int)mapSize;
+            int numPlayers = Match.MaxPlayerCount;
+            int territoriesPerPlayer = (mapType == MapType.LandRush ? 1 : numTerritories / numPlayers);
+            int piecesPerPlayer = territoriesPerPlayer * 2 + 2;
+            return Generate(numTerritories, numPlayers, territoriesPerPlayer, piecesPerPlayer);
         }
 
         /// <summary>
