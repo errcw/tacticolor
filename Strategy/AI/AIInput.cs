@@ -8,7 +8,7 @@ using Strategy.Gameplay;
 using Strategy.Net;
 using Strategy.Library.Input;
 
-namespace Strategy.Interface
+namespace Strategy.AI
 {
     /// <summary>
     /// AI difficulty rating.

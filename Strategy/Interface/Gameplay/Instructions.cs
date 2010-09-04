@@ -278,12 +278,6 @@ namespace Strategy.Interface.Gameplay
         private InstructionState _state;
         private bool[] _showed = new bool[8];
 
-        private bool _showedBasics = false;
-        private bool _showedPlacement = false;
-        private bool _showedCancel = false;
-        private bool _showedReadiness = false;
-        private bool _showedOwning = false;
-
         private LocalInput _input;
         private Match _match;
         private Options _options;

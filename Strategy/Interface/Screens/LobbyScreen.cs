@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
 
+using Strategy.AI;
 using Strategy.Gameplay;
 using Strategy.Net;
 using Strategy.Properties;
@@ -197,7 +198,7 @@ namespace Strategy.Interface.Screens
         {
             LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
             CommandWriter writer = new CommandWriter();
-            writer.Write(new InitializeMatchCommand(seed));
+            writer.Write(new InitializeMatchCommand(seed, MapType.LandRush, MapSize.Normal, AIDifficulty.Normal));
             sender.SendData(writer, SendDataOptions.Reliable);
         }
 

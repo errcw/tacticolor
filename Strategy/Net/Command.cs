@@ -3,6 +3,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Net;
 
+using Strategy.AI;
 using Strategy.Gameplay;
 
 namespace Strategy.Net
@@ -97,23 +98,38 @@ namespace Strategy.Net
 
         public int RandomSeed { get; private set; }
 
+        public MapType MapType { get; private set; }
+
+        public MapSize MapSize { get; private set; }
+
+        public AIDifficulty AIDifficulty { get; private set; }
+
         public InitializeMatchCommand() : base(Code)
         {
         }
 
-        public InitializeMatchCommand(int randomSeed) : base(Code, PlayerId.A)
+        public InitializeMatchCommand(int randomSeed, MapType mapType, MapSize mapSize, AIDifficulty difficulty) : base(Code, PlayerId.A)
         {
             RandomSeed = randomSeed;
+            MapType = mapType;
+            MapSize = mapSize;
+            AIDifficulty = difficulty;
         }
 
         protected override void ReadImpl(PacketReader reader)
         {
             RandomSeed = reader.ReadInt32();
+            MapType = (MapType)reader.ReadByte();
+            MapSize = (MapSize)reader.ReadByte();
+            AIDifficulty = (AIDifficulty)reader.ReadByte();
         }
 
         protected override void WriteImpl(PacketWriter writer)
         {
             writer.Write(RandomSeed);
+            writer.Write((byte)MapType);
+            writer.Write((byte)MapSize);
+            writer.Write((byte)AIDifficulty);
         }
     }
 
