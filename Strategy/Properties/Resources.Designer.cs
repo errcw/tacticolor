@@ -61,6 +61,24 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Play a match in every map size and game type..
+        /// </summary>
+        internal static string AwardmentEveryConfigurationDescription {
+            get {
+                return ResourceManager.GetString("AwardmentEveryConfigurationDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experimenter.
+        /// </summary>
+        internal static string AwardmentEveryConfigurationName {
+            get {
+                return ResourceManager.GetString("AwardmentEveryConfigurationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Win a match..
         /// </summary>
         internal static string AwardmentFirstMatchWonDescription {

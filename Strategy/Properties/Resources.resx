@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AwardmentEveryConfigurationDescription" xml:space="preserve">
+    <value>Play a match in every map size and game type.</value>
+  </data>
+  <data name="AwardmentEveryConfigurationName" xml:space="preserve">
+    <value>Experimenter</value>
+  </data>
   <data name="AwardmentFirstMatchWonDescription" xml:space="preserve">
     <value>Win a match.</value>
   </data>

@@ -25,6 +25,7 @@ namespace Strategy.Gameplay
     [XmlInclude(typeof(MatchLongWinStreakAwardment))]
     [XmlInclude(typeof(ManyPiecesPlacedAwardment))]
     [XmlInclude(typeof(VeryManyPiecesPlacedAwardment))]
+    [XmlInclude(typeof(EveryConfigurationAwardment))]
     public abstract class Awardment
     {
         /// <summary>
@@ -282,6 +283,7 @@ namespace Strategy.Gameplay
         {
             MatchThreshold = threshold;
             MatchCountIncludesLosses = includeLosses;
+            MatchCount = 0;
         }
 
         public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
@@ -334,6 +336,7 @@ namespace Strategy.Gameplay
         public TerritoryCaptureAwardment(int threshold)
         {
             TerritoryThreshold = threshold;
+            TerritoriesCaptured = 0;
         }
 
         public override void MatchStarted(Match match, PlayerId player)
@@ -415,6 +418,7 @@ namespace Strategy.Gameplay
         public MatchWinStreakAwardment(int threshold)
         {
             MatchWinStreakThreshold = threshold;
+            MatchesWon = 0;
         }
 
         public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
@@ -462,6 +466,7 @@ namespace Strategy.Gameplay
         public PiecePlacementAwardment(int threshold)
         {
             PiecesPlacedThreshold = threshold;
+            PiecesPlaced = 0;
         }
 
         public override void MatchStarted(Match match, PlayerId player)
@@ -498,5 +503,58 @@ namespace Strategy.Gameplay
             Name = Resources.AwardmentVeryManyPiecesPlacedName;
             Description = Resources.AwardmentVeryManyPiecesPlacedDescription;
         }
+    }
+
+    public class EveryConfigurationAwardment : Awardment
+    {
+        public bool[,] Configurations { get; set; }
+
+        public EveryConfigurationAwardment()
+        {
+            Name = Resources.AwardmentEveryConfigurationName;
+            Description = Resources.AwardmentEveryConfigurationDescription;
+            Configurations = new bool[MapSizeCount, MapTypeCount];
+        }
+
+        public override void MatchStarted(Match match, PlayerId player)
+        {
+            int mapSizeIdx = 0;
+            switch (match.Map.Territories.Count)
+            {
+                case (int)MapSize.Tiny: mapSizeIdx = 0; break;
+                case (int)MapSize.Small: mapSizeIdx = 1; break;
+                case (int)MapSize.Normal: mapSizeIdx = 2; break;
+                case (int)MapSize.Large: mapSizeIdx = 3; break;
+            }
+
+            int mapTypeIdx = 0;
+            if (match.Map.Territories.Count(t => t.Owner == player) == 1)
+            {
+                mapTypeIdx = 1;
+            }
+
+            Configurations[mapSizeIdx,mapTypeIdx] = true;
+
+            bool earned = true;
+            for (int s = 0; s < MapSizeCount; s++)
+            {
+                for (int t = 0; t < MapTypeCount; t++)
+                {
+                    if (!Configurations[s, t])
+                    {
+                        earned = false;
+                        goto Done;
+                    }
+                }
+            }
+        Done:
+            if (earned)
+            {
+                SetEarned();
+            }
+        }
+
+        private const int MapSizeCount = 4;
+        private const int MapTypeCount = 2;
     }
 }
