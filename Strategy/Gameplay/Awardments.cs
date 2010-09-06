@@ -23,6 +23,8 @@ namespace Strategy.Gameplay
     [XmlInclude(typeof(VeryQuickWinAwardment))]
     [XmlInclude(typeof(MatchShortWinStreakAwardment))]
     [XmlInclude(typeof(MatchLongWinStreakAwardment))]
+    [XmlInclude(typeof(ManyPiecesPlacedAwardment))]
+    [XmlInclude(typeof(VeryManyPiecesPlacedAwardment))]
     public abstract class Awardment
     {
         /// <summary>
@@ -450,6 +452,51 @@ namespace Strategy.Gameplay
         {
             Name = Resources.AwardmentLongStreakName;
             Description = Resources.AwardmentLongStreakDescription;
+        }
+    }
+
+    public class PiecePlacementAwardment : Awardment
+    {
+        public int PiecesPlaced { get; set; }
+
+        public PiecePlacementAwardment(int threshold)
+        {
+            PiecesPlacedThreshold = threshold;
+        }
+
+        public override void MatchStarted(Match match, PlayerId player)
+        {
+            match.PiecePlaced += delegate(object matchObj, PiecePlacedEventArgs args)
+            {
+                if (args.Location.Owner == player)
+                {
+                    PiecesPlaced += 1;
+                }
+                if(PiecesPlaced >= PiecesPlacedThreshold)
+                {
+                    SetEarned();
+                }
+            };
+        }
+
+        private readonly int PiecesPlacedThreshold;
+    }
+
+    public class ManyPiecesPlacedAwardment : PiecePlacementAwardment
+    {
+        public ManyPiecesPlacedAwardment() : base(100)
+        {
+            Name = Resources.AwardmentManyPiecesPlacedName;
+            Description = Resources.AwardmentManyPiecesPlacedDescription;
+        }
+    }
+
+    public class VeryManyPiecesPlacedAwardment : PiecePlacementAwardment
+    {
+        public VeryManyPiecesPlacedAwardment() : base(1000)
+        {
+            Name = Resources.AwardmentVeryManyPiecesPlacedName;
+            Description = Resources.AwardmentVeryManyPiecesPlacedDescription;
         }
     }
 }

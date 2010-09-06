@@ -147,6 +147,12 @@
   <data name="AwardmentManyMatchesWonName" xml:space="preserve">
     <value>Epic Win</value>
   </data>
+  <data name="AwardmentManyPiecesPlacedDescription" xml:space="preserve">
+    <value>Place 100 pieces.</value>
+  </data>
+  <data name="AwardmentManyPiecesPlacedName" xml:space="preserve">
+    <value>Producer</value>
+  </data>
   <data name="AwardmentManyTerritoriesCapturedDescription" xml:space="preserve">
     <value>Capture 1000 territories.</value>
   </data>
@@ -164,6 +170,12 @@
   </data>
   <data name="AwardmentShortStreakName" xml:space="preserve">
     <value>Hat Trick</value>
+  </data>
+  <data name="AwardmentVeryManyPiecesPlacedDescription" xml:space="preserve">
+    <value>Place 1000 pieces.</value>
+  </data>
+  <data name="AwardmentVeryManyPiecesPlacedName" xml:space="preserve">
+    <value>Prolific Producer</value>
   </data>
   <data name="AwardmentVeryQuickWinDescription" xml:space="preserve">
     <value>Win a match in under a minute.</value>

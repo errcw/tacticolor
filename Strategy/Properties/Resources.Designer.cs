@@ -151,6 +151,24 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Place 100 pieces..
+        /// </summary>
+        internal static string AwardmentManyPiecesPlacedDescription {
+            get {
+                return ResourceManager.GetString("AwardmentManyPiecesPlacedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Producer.
+        /// </summary>
+        internal static string AwardmentManyPiecesPlacedName {
+            get {
+                return ResourceManager.GetString("AwardmentManyPiecesPlacedName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Capture 1000 territories..
         /// </summary>
         internal static string AwardmentManyTerritoriesCapturedDescription {
@@ -201,6 +219,24 @@ namespace Strategy.Properties {
         internal static string AwardmentShortStreakName {
             get {
                 return ResourceManager.GetString("AwardmentShortStreakName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Place 1000 pieces..
+        /// </summary>
+        internal static string AwardmentVeryManyPiecesPlacedDescription {
+            get {
+                return ResourceManager.GetString("AwardmentVeryManyPiecesPlacedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prolific Producer.
+        /// </summary>
+        internal static string AwardmentVeryManyPiecesPlacedName {
+            get {
+                return ResourceManager.GetString("AwardmentVeryManyPiecesPlacedName", resourceCulture);
             }
         }
         
