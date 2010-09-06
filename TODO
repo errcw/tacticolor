@@ -7,7 +7,6 @@ To Do
   - Button icons
 * Awardments
   - Add the overlay assets and animation
-  - Implement all awardments
 
 
 Menu Structure
@@ -51,10 +50,6 @@ Thoughts
   + sound effects on/off
   + instructions on/off
   + storage device
-- Awardments
-  + win a game under every configuration
-  + play a game with the developer,
-    or someone who has this awardment
 - Game configuration below lobby entries
   + Panel of four slots for players
   + Game configuration (map size, AI difficulty) immediately below
