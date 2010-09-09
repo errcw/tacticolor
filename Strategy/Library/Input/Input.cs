@@ -11,7 +11,7 @@ namespace Strategy.Library.Input
     /// <summary>
     /// Polls for input from one controller.
     /// </summary>
-    public class Input : GameComponent
+    public class Input
     {
         /// <summary>
         /// The currently active controller (i.e., the one being polled).
@@ -31,24 +31,9 @@ namespace Strategy.Library.Input
         /// <summary>
         /// Creates a new input poller.
         /// </summary>
-        /// <param name="game">The game context.</param>
-        public Input(Game game) : base(game)
+        public Input()
         {
             Controller = null;
-        }
-
-        /// <summary>
-        /// Polls the current input state.
-        /// </summary>
-        /// <param name="time">The game time.</param>
-        public override void Update(GameTime gameTime)
-        {
-            PollControllerConnectivity();
-            if (Controller.HasValue)
-            {
-                UpdateControls(gameTime.GetElapsedSeconds());
-                UpdateVibration(gameTime.GetElapsedSeconds());
-            }
         }
 
         /// <summary>

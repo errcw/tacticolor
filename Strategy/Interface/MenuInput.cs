@@ -3,6 +3,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
+using Strategy.Library.Extensions;
 using Strategy.Library.Input;
 
 namespace Strategy.Interface
@@ -26,7 +27,7 @@ namespace Strategy.Interface
         public MenuInput(Game game) : base(game)
         {
             // register the primary input methods
-            _input = new Input(game);
+            _input = new Input();
             _input.Register(Action, Polling.Any(Polling.One(Buttons.A), Polling.One(Buttons.Start)));
             _input.Register(Cancel, Polling.Any(Polling.One(Buttons.B), Polling.One(Buttons.Back)));
             _input.Register(Up, Polling.Any(Polling.One(Buttons.DPadUp), Polling.One(Buttons.LeftThumbstickUp)));
@@ -39,7 +40,7 @@ namespace Strategy.Interface
             for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
             {
                 int index = (int)p;
-                _inputs[index] = new Input(game);
+                _inputs[index] = new Input();
                 _inputs[index].Controller = p;
                 Join[index] = new ControlState();
                 _inputs[index].Register(Join[index], Polling.One(Buttons.A));
@@ -50,10 +51,11 @@ namespace Strategy.Interface
 
         public override void Update(GameTime gameTime)
         {
-            _input.Update(gameTime);
+            float seconds = gameTime.GetElapsedSeconds();
+            _input.Update(seconds);
             foreach (Input input in _inputs)
             {
-                input.Update(gameTime);
+                input.Update(seconds);
             }
         }
 

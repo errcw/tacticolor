@@ -51,7 +51,7 @@ namespace Strategy.Interface.Gameplay
             _match = match;
             _context = context;
 
-            _input = new Input(context.Game);
+            _input = new Input();
             _input.Controller = controller;
             _input.Register(Move, (state) => state.ThumbSticks.Left.LengthSquared() >= MoveTolerance);
             _input.Register(MoveDirection, Polling.LeftThumbStick);
