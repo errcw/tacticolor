@@ -140,8 +140,9 @@ namespace Strategy.Interface.Screens
             Random gameRandom = new Random(_seed);
             MapGenerator generator = new MapGenerator(gameRandom);
             Map map = generator.Generate(_mapType, _mapSize);
+            Match match = new Match(map, gameRandom);
 
-            GameplayScreen gameplayScreen = new GameplayScreen((StrategyGame)Stack.Game, _session, _players, map, gameRandom);
+            GameplayScreen gameplayScreen = new GameplayScreen((StrategyGame)Stack.Game, _session, _players, match);
             Stack.Push(gameplayScreen);
         }
 

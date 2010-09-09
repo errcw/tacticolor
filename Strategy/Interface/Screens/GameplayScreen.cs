@@ -19,7 +19,7 @@ namespace Strategy.Interface.Screens
 {
     public class GameplayScreen : Screen
     {
-        public GameplayScreen(StrategyGame game, NetworkSession session, ICollection<Player> players, Map map, Random random)
+        public GameplayScreen(StrategyGame game, NetworkSession session, ICollection<Player> players, Match match)
         {
             _session = session;
             if (_session != null)
@@ -34,11 +34,10 @@ namespace Strategy.Interface.Screens
             _context = new InterfaceContext(game, game.Content, new IsometricParameters(17, 9, 16, -9));
 
             // create the model
-            Match match = new Match(map, random);
-            match.PlayerEliminated += OnPlayerEliminated;
-            match.Ended += OnMatchEnded;
-
             _lockstepMatch = new LockstepMatch(match);
+            _lockstepMatch.Match.PlayerEliminated += OnPlayerEliminated;
+            _lockstepMatch.Match.Ended += OnMatchEnded;
+
             foreach (Player player in players)
             {
                 if (player.Controller.HasValue)

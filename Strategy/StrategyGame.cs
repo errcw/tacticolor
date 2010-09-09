@@ -214,9 +214,9 @@ namespace Strategy
             const int DebugAI = 0;
 
             Random random = new Random();
-
             MapGenerator generator = new MapGenerator(random);
             Map map = generator.Generate(16, DebugHuman + DebugAI, 1, 2);
+            Match match = new Match(map, random);
 
             Player[] players = new Player[DebugHuman + DebugAI];
             for (int p = 0; p < players.Length; p++)
@@ -235,7 +235,7 @@ namespace Strategy
 
             _input.Controller = PlayerIndex.One;
 
-            GameplayScreen gameplayScreen = new GameplayScreen(this, null, players, map, random);
+            GameplayScreen gameplayScreen = new GameplayScreen(this, null, players, match);
             _screens.Push(gameplayScreen);
         }
 
