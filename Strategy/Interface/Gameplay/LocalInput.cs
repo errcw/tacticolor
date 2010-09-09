@@ -45,11 +45,11 @@ namespace Strategy.Interface.Gameplay
         /// </summary>
         public Territory Selected { get; private set; }
 
-        public LocalInput(PlayerId player, PlayerIndex controller, Match match, InterfaceContext context)
+        public LocalInput(PlayerId player, PlayerIndex controller, Match match, IsometricParameters isoParams)
         {
             Player = player;
             _match = match;
-            _context = context;
+            _isoParams = isoParams;
 
             _input = new Input();
             _input.Controller = controller;
@@ -131,7 +131,7 @@ namespace Strategy.Interface.Gameplay
 
                 Territory newHovered = null;
                 float minAngle = float.MaxValue;
-                Point curLoc = _context.IsoParams.GetPoint(Hovered.Location);
+                Point curLoc = _isoParams.GetPoint(Hovered.Location);
 
                 foreach (Territory other in Hovered.Neighbors)
                 {
@@ -139,7 +139,7 @@ namespace Strategy.Interface.Gameplay
                     {
                         continue; // cannot move to invalid territory
                     }
-                    Point otherLoc = _context.IsoParams.GetPoint(other.Location);
+                    Point otherLoc = _isoParams.GetPoint(other.Location);
                     Vector2 toOtherLoc = new Vector2(otherLoc.X - curLoc.X, otherLoc.Y - curLoc.Y);
 
                     float dot = Vector2.Dot(direction, toOtherLoc);
@@ -204,7 +204,7 @@ namespace Strategy.Interface.Gameplay
         }
 
         private Match _match;
-        private InterfaceContext _context;
+        private IsometricParameters _isoParams;
 
         private bool _actionPending;
 

@@ -42,7 +42,7 @@ namespace Strategy.Interface.Screens
             {
                 if (player.Controller.HasValue)
                 {
-                    player.Input = new LocalInput(player.Id, player.Controller.Value, match, _context);
+                    player.Input = new LocalInput(player.Id, player.Controller.Value, match, _context.IsoParams);
                 }
             }
             _lockstepInput = new LockstepInput(_lockstepMatch, players);
