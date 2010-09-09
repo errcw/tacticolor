@@ -33,7 +33,8 @@ namespace Strategy.Interface.Screens
             SignedInGamer gamer = _input.Controller.Value.GetSignedInGamer();
             IAsyncResult result =
 #if WINDOWS
-                NetworkSessionProvider.BeginFindAndJoin(NetworkSessionType.SystemLink, gamer, OnSessionProvided, false);
+                //NetworkSessionProvider.BeginFindAndJoin(NetworkSessionType.SystemLink, gamer, OnSessionProvided, false);
+                NetworkSessionProvider.BeginCreate(NetworkSessionType.Local, gamer, OnSessionProvided, false);
 #else
                 NetworkSessionProvider.BeginCreate(NetworkSessionType.SystemLink, gamer, OnSessionProvided, true);
 #endif

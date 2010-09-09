@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework.Net;
 
 using Strategy.AI;
 using Strategy.Gameplay;
+using Strategy.Interface;
+using Strategy.Interface.Gameplay;
 using Strategy.Net;
 using Strategy.Properties;
 using Strategy.Library.Extensions;
@@ -120,14 +122,11 @@ namespace Strategy.Interface.Screens
             Debug.Assert(_seed != 0);
             Debug.WriteLine("Game starting");
 
-            // fill out the remaining players with AI
-            int aiPlayerCount = Match.MaxPlayerCount - _players.Count;
-            for (int p = 0; p < aiPlayerCount; p++)
-            {
-                Player aiPlayer = new Player();
-                aiPlayer.Input = new AIInput(_difficulty);
-                _players.Add(aiPlayer);
-            }
+            // create the game objects
+            Random gameRandom = new Random(_seed);
+            MapGenerator generator = new MapGenerator(gameRandom);
+            Map map = generator.Generate(_mapType, _mapSize);
+            Match match = new Match(map, gameRandom);
 
             // assign ids to players by sorting based on unique id
             // this assignment guarantees identical assignments across machines
@@ -135,12 +134,19 @@ namespace Strategy.Interface.Screens
             for (int p = 0; p < _players.Count; p++)
             {
                 _players[p].Id = (PlayerId)p;
+                _players[p].Input = new LocalInput(_players[p].Id, _players[p].Controller.Value, match, GameplayScreen.IsoParams);
             }
 
-            Random gameRandom = new Random(_seed);
-            MapGenerator generator = new MapGenerator(gameRandom);
-            Map map = generator.Generate(_mapType, _mapSize);
-            Match match = new Match(map, gameRandom);
+            // fill out the remaining players with AI
+            int humanPlayerCount = _players.Count;
+            int aiPlayerCount = Match.MaxPlayerCount - humanPlayerCount;
+            for (int p = 0; p < aiPlayerCount; p++)
+            {
+                Player aiPlayer = new Player();
+                aiPlayer.Id = (PlayerId)(p + humanPlayerCount);
+                aiPlayer.Input = new AIInput(_difficulty);
+                _players.Add(aiPlayer);
+            }
 
             GameplayScreen gameplayScreen = new GameplayScreen((StrategyGame)Stack.Game, _session, _players, match);
             Stack.Push(gameplayScreen);

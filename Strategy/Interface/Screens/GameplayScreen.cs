@@ -19,6 +19,11 @@ namespace Strategy.Interface.Screens
 {
     public class GameplayScreen : Screen
     {
+        /// <summary>
+        /// Isometric parameters used to display the map. Hack.
+        /// </summary>
+        public static readonly IsometricParameters IsoParams = new IsometricParameters(17, 9, 16, -9);
+
         public GameplayScreen(StrategyGame game, NetworkSession session, ICollection<Player> players, Match match)
         {
             _session = session;
@@ -30,21 +35,11 @@ namespace Strategy.Interface.Screens
 
             _players = players;
 
-            // isometric context
-            _context = new InterfaceContext(game, game.Content, new IsometricParameters(17, 9, 16, -9));
-
             // create the model
             _lockstepMatch = new LockstepMatch(match);
             _lockstepMatch.Match.PlayerEliminated += OnPlayerEliminated;
             _lockstepMatch.Match.Ended += OnMatchEnded;
 
-            foreach (Player player in players)
-            {
-                if (player.Controller.HasValue)
-                {
-                    player.Input = new LocalInput(player.Id, player.Controller.Value, match, _context.IsoParams);
-                }
-            }
             _lockstepInput = new LockstepInput(_lockstepMatch, players);
 
             IDictionary<string, PlayerId> awardmentPlayers = new Dictionary<string, PlayerId>(match.PlayerCount);
@@ -59,6 +54,7 @@ namespace Strategy.Interface.Screens
             _awardments.MatchStarted(awardmentPlayers, match);
 
             // create the views
+            _context = new InterfaceContext(game, game.Content, IsoParams);
             _backgroundView = new BackgroundView(_context);
             _mapView = new MapView(match, _context); // created first to center subsequent views
             _inputViews = new List<LocalInputView>(players.Count);
@@ -79,7 +75,7 @@ namespace Strategy.Interface.Screens
             if (_session != null)
             {
                 Gamer primaryGamer = game.Services.GetService<MenuInput>().Controller.Value.GetSignedInGamer();
-                LocalInput primaryInput = (LocalInput)players.Single(p => p.Gamer.Gamertag == primaryGamer.Gamertag).Input;
+                LocalInput primaryInput = (LocalInput)players.Single(p => p.Gamer != null ? p.Gamer.Gamertag == primaryGamer.Gamertag : false).Input;
                 _instructions = new Instructions(primaryInput, match, _context);
                 _instructions.Enabled = (_session.LocalGamers.Count == 1); // only instuct with one local player
             }

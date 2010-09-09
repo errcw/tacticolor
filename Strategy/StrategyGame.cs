@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Net;
 using Strategy.AI;
 using Strategy.Gameplay;
 using Strategy.Interface;
+using Strategy.Interface.Gameplay;
 using Strategy.Interface.Screens;
 using Strategy.Net;
 using Strategy.Library;
@@ -65,10 +66,10 @@ namespace Strategy
 
             SignedInGamer.SignedOut += OnGamerSignedOut;
 
-            CreateDebugGame();
-            //TitleScreen titleScreen = new TitleScreen(this);
-            //titleScreen.ContentLoaded += OnContentLoaded;
-            //_screens.Push(titleScreen);
+            //CreateDebugGame();
+            TitleScreen titleScreen = new TitleScreen(this);
+            titleScreen.ContentLoaded += OnContentLoaded;
+            _screens.Push(titleScreen);
         }
 
         /// <summary>
@@ -226,6 +227,7 @@ namespace Strategy
                 if (p < DebugHuman)
                 {
                     players[p].Controller = (PlayerIndex)p;
+                    players[p].Input = new LocalInput(players[p].Id, players[p].Controller.Value, match, GameplayScreen.IsoParams);
                 }
                 else
                 {
