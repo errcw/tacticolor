@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.Xna.Framework;
@@ -41,7 +42,25 @@ namespace Strategy.AI
         /// </summary>
         public Command Update(int time)
         {
+            if (CanPlacePiece())
+            {
+                Territory place = GetOwnedTerritories().FirstOrDefault();
+                if (place != null && _match.CanPlacePiece(_player, place))
+                {
+                    return new PlaceCommand(_player, place);
+                }
+            }
             return null;
+        }
+
+        private bool CanPlacePiece()
+        {
+            return _match.PiecesAvailable[(int)_player] > 0;
+        }
+
+        private IEnumerable<Territory> GetOwnedTerritories()
+        {
+            return _match.Map.Territories.Where(t => t.Owner == _player);
         }
 
         private PlayerId _player;
