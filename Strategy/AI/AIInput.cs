@@ -29,8 +29,11 @@ namespace Strategy.AI
         /// Creates a new AI input.
         /// </summary>
         /// <param name="difficulty">The difficulty of the player.</param>
-        public AIInput(AIDifficulty difficulty)
+        public AIInput(PlayerId player, Match match, AIDifficulty difficulty)
         {
+            _player = player;
+            _match = match;
+            _difficulty = difficulty;
         }
 
         /// <summary>
@@ -40,5 +43,9 @@ namespace Strategy.AI
         {
             return null;
         }
+
+        private PlayerId _player;
+        private Match _match;
+        private AIDifficulty _difficulty;
     }
 }

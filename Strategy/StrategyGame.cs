@@ -66,10 +66,10 @@ namespace Strategy
 
             SignedInGamer.SignedOut += OnGamerSignedOut;
 
-            //CreateDebugGame();
-            TitleScreen titleScreen = new TitleScreen(this);
-            titleScreen.ContentLoaded += OnContentLoaded;
-            _screens.Push(titleScreen);
+            CreateDebugGame();
+            //TitleScreen titleScreen = new TitleScreen(this);
+            //titleScreen.ContentLoaded += OnContentLoaded;
+            //_screens.Push(titleScreen);
         }
 
         /// <summary>
@@ -211,8 +211,8 @@ namespace Strategy
 
         private void CreateDebugGame()
         {
-            const int DebugHuman = 4;
-            const int DebugAI = 0;
+            const int DebugHuman = 1;
+            const int DebugAI = 4 - DebugHuman;
 
             Random random = new Random();
             MapGenerator generator = new MapGenerator(random);
@@ -231,7 +231,7 @@ namespace Strategy
                 }
                 else
                 {
-                    players[p].Input = new AIInput(AIDifficulty.Normal);
+                    players[p].Input = new AIInput(players[p].Id, match, AIDifficulty.Normal);
                 }
             }
 

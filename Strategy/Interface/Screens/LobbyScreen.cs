@@ -144,7 +144,7 @@ namespace Strategy.Interface.Screens
             {
                 Player aiPlayer = new Player();
                 aiPlayer.Id = (PlayerId)(p + humanPlayerCount);
-                aiPlayer.Input = new AIInput(_difficulty);
+                aiPlayer.Input = new AIInput(aiPlayer.Id, match, _difficulty);
                 _players.Add(aiPlayer);
             }
 
