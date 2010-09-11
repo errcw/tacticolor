@@ -50,10 +50,17 @@ namespace Strategy.AI
             if (_commandCooldown <= 0)
             {
                 List<PotentialCommand> commands = GetPotentialCommands();
-                PotentialCommand potential = commands[_random.Next(commands.Count)];
-                command = potential.GetCommand(_player);
+                if (commands.Count != 0)
+                {
+                    var sortedCommands = commands.OrderBy(cmd => -cmd.Score);
+                    var bestScore = sortedCommands.First().Score;
+                    var bestCommands = sortedCommands.TakeWhile(cmd => cmd.Score == bestScore);
 
-                _commandCooldown = CommandCooldownTime;
+                    PotentialCommand potential = bestCommands.ElementAt(_random.Next(bestCommands.Count()));
+                    command = potential.GetCommand(_player);
+
+                    _commandCooldown = CommandCooldownTime;
+                }
             }
 
             return command;
@@ -73,10 +80,9 @@ namespace Strategy.AI
                 }
             }
 
-            var srcTerritories = GetOwnedTerritories().Where(t => t.Pieces.Count >= 2 && HasReadyPieces(t));
-
             // move
-            foreach (Territory src in srcTerritories)
+            var srcMoveTerritories = GetOwnedTerritories().Where(t => t.Pieces.Count >= 2 && HasReadyPieces(t));
+            foreach (Territory src in srcMoveTerritories)
             {
                 var dstTerritories = src.Neighbors.Where(t => t.Owner == _player && t.Pieces.Count < t.Capacity);
                 foreach (Territory dst in dstTerritories)
@@ -86,7 +92,8 @@ namespace Strategy.AI
             }
 
             // attack
-            foreach (Territory src in srcTerritories)
+            var srcAttackTerritories = GetOwnedTerritories().Where(t => t.Pieces.Count >= 2 && HasReadyPieces(t));
+            foreach (Territory src in srcAttackTerritories)
             {
                 var dstTerritories = src.Neighbors.Where(t => t.Owner != _player);
                 foreach (Territory dst in dstTerritories)
@@ -94,6 +101,9 @@ namespace Strategy.AI
                     commands.Add(new PotentialCommand(CommandType.Attack, src, dst));
                 }
             }
+
+            // assign ratings to the command
+            commands.ForEach(command => RateCommand(command));
 
             return commands;
         }
@@ -111,6 +121,40 @@ namespace Strategy.AI
         private bool HasReadyPieces(Territory territory)
         {
             return territory.Pieces.Any(p => p.Ready);
+        }
+
+        private void RateCommand(PotentialCommand command)
+        {
+            int score = 0;
+            switch (command.CommandType)
+            {
+                case CommandType.Place: score = RatePlacement(command.Destination); break;
+                case CommandType.Move: score = RateMove(command.Source, command.Destination); break;
+                case CommandType.Attack: score = RateAttack(command.Source, command.Destination); break;
+            }
+            command.Score = score;
+        }
+
+        private int RatePlacement(Territory place)
+        {
+            int evilNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _player);
+            int missingSlots = place.Capacity - place.Pieces.Count;
+            return 10 + evilNeighbors + missingSlots;
+        }
+
+        private int RateAttack(Territory atk, Territory def)
+        {
+            int diff = atk.Pieces.Count - def.Pieces.Count;
+            return (diff > 0) ? 20 + diff : diff;
+        }
+
+        private int RateMove(Territory src, Territory dst)
+        {
+            int srcEvilNeighbors = src.Neighbors.Count(t => t.Owner != null && t.Owner != _player);
+            int dstEvilNeighbors = dst.Neighbors.Count(t => t.Owner != null && t.Owner != _player);
+            int diffEvilNeighbors = dstEvilNeighbors - srcEvilNeighbors;
+            int diffNeighbors = dst.Neighbors.Count - src.Neighbors.Count;
+            return 5 + diffEvilNeighbors + diffNeighbors;
         }
 
         /// <summary>
@@ -163,6 +207,6 @@ namespace Strategy.AI
         private Random _random;
 
         private int _commandCooldown = CommandCooldownTime;
-        private const int CommandCooldownTime = 3000;
+        private const int CommandCooldownTime = 1000;
     }
 }
