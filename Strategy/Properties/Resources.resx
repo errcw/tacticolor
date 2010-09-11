@@ -285,6 +285,9 @@
   <data name="MapTypeLandRush" xml:space="preserve">
     <value>Land Rush</value>
   </data>
+  <data name="MenuSelect" xml:space="preserve">
+    <value>Select</value>
+  </data>
   <data name="NetworkError" xml:space="preserve">
     <value>There was an error while accessing the network.</value>
   </data>

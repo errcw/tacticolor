@@ -565,6 +565,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select.
+        /// </summary>
+        internal static string MenuSelect {
+            get {
+                return ResourceManager.GetString("MenuSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while accessing the network..
         /// </summary>
         internal static string NetworkError {
