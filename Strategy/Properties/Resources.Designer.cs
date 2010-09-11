@@ -565,11 +565,200 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Awardments.
+        /// </summary>
+        internal static string MenuAwardments {
+            get {
+                return ResourceManager.GetString("MenuAwardments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        internal static string MenuBack {
+            get {
+                return ResourceManager.GetString("MenuBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Controls.
+        /// </summary>
+        internal static string MenuControls {
+            get {
+                return ResourceManager.GetString("MenuControls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Match.
+        /// </summary>
+        internal static string MenuCreateMatch {
+            get {
+                return ResourceManager.GetString("MenuCreateMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Credits.
+        /// </summary>
+        internal static string MenuCredits {
+            get {
+                return ResourceManager.GetString("MenuCredits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exit to Dashboard.
+        /// </summary>
+        internal static string MenuExit {
+            get {
+                return ResourceManager.GetString("MenuExit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back to Main Menu.
+        /// </summary>
+        internal static string MenuExitNo {
+            get {
+                return ResourceManager.GetString("MenuExitNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exit to Dashboard.
+        /// </summary>
+        internal static string MenuExitYes {
+            get {
+                return ResourceManager.GetString("MenuExitYes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help &amp; Options.
+        /// </summary>
+        internal static string MenuHelpOptions {
+            get {
+                return ResourceManager.GetString("MenuHelpOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How to Play.
+        /// </summary>
+        internal static string MenuHowToPlay {
+            get {
+                return ResourceManager.GetString("MenuHowToPlay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Instructions.
+        /// </summary>
+        internal static string MenuInstructions {
+            get {
+                return ResourceManager.GetString("MenuInstructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Join Match.
+        /// </summary>
+        internal static string MenuJoinMatch {
+            get {
+                return ResourceManager.GetString("MenuJoinMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Game.
+        /// </summary>
+        internal static string MenuLocalGame {
+            get {
+                return ResourceManager.GetString("MenuLocalGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multiplayer Game.
+        /// </summary>
+        internal static string MenuMultiplayerGame {
+            get {
+                return ResourceManager.GetString("MenuMultiplayerGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Music.
+        /// </summary>
+        internal static string MenuMusic {
+            get {
+                return ResourceManager.GetString("MenuMusic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Off.
+        /// </summary>
+        internal static string MenuOff {
+            get {
+                return ResourceManager.GetString("MenuOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On.
+        /// </summary>
+        internal static string MenuOn {
+            get {
+                return ResourceManager.GetString("MenuOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options.
+        /// </summary>
+        internal static string MenuOptions {
+            get {
+                return ResourceManager.GetString("MenuOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Get Full Version.
+        /// </summary>
+        internal static string MenuPurchase {
+            get {
+                return ResourceManager.GetString("MenuPurchase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select.
         /// </summary>
         internal static string MenuSelect {
             get {
                 return ResourceManager.GetString("MenuSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sounds.
+        /// </summary>
+        internal static string MenuSounds {
+            get {
+                return ResourceManager.GetString("MenuSounds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle.
+        /// </summary>
+        internal static string MenuToggle {
+            get {
+                return ResourceManager.GetString("MenuToggle", resourceCulture);
             }
         }
         

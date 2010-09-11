@@ -285,8 +285,71 @@
   <data name="MapTypeLandRush" xml:space="preserve">
     <value>Land Rush</value>
   </data>
+  <data name="MenuAwardments" xml:space="preserve">
+    <value>Awardments</value>
+  </data>
+  <data name="MenuBack" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="MenuControls" xml:space="preserve">
+    <value>Controls</value>
+  </data>
+  <data name="MenuCreateMatch" xml:space="preserve">
+    <value>Create Match</value>
+  </data>
+  <data name="MenuCredits" xml:space="preserve">
+    <value>Credits</value>
+  </data>
+  <data name="MenuExit" xml:space="preserve">
+    <value>Exit to Dashboard</value>
+  </data>
+  <data name="MenuExitNo" xml:space="preserve">
+    <value>Back to Main Menu</value>
+  </data>
+  <data name="MenuExitYes" xml:space="preserve">
+    <value>Exit to Dashboard</value>
+  </data>
+  <data name="MenuHelpOptions" xml:space="preserve">
+    <value>Help &amp; Options</value>
+  </data>
+  <data name="MenuHowToPlay" xml:space="preserve">
+    <value>How to Play</value>
+  </data>
+  <data name="MenuInstructions" xml:space="preserve">
+    <value>Instructions</value>
+  </data>
+  <data name="MenuJoinMatch" xml:space="preserve">
+    <value>Join Match</value>
+  </data>
+  <data name="MenuLocalGame" xml:space="preserve">
+    <value>New Game</value>
+  </data>
+  <data name="MenuMultiplayerGame" xml:space="preserve">
+    <value>Multiplayer Game</value>
+  </data>
+  <data name="MenuMusic" xml:space="preserve">
+    <value>Music</value>
+  </data>
+  <data name="MenuOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="MenuOn" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="MenuOptions" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="MenuPurchase" xml:space="preserve">
+    <value>Get Full Version</value>
+  </data>
   <data name="MenuSelect" xml:space="preserve">
     <value>Select</value>
+  </data>
+  <data name="MenuSounds" xml:space="preserve">
+    <value>Sounds</value>
+  </data>
+  <data name="MenuToggle" xml:space="preserve">
+    <value>Toggle</value>
   </data>
   <data name="NetworkError" xml:space="preserve">
     <value>There was an error while accessing the network.</value>
