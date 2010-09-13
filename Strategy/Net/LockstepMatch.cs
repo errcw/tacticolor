@@ -155,10 +155,12 @@ namespace Strategy.Net
 
         private void Log(string message)
         {
+#if NET_DEBUG
 #if XBOX
             Debug.WriteLine("X " + message);
 #else
             Debug.WriteLine("C " + message);
+#endif
 #endif
         }
 
