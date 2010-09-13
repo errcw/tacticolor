@@ -70,35 +70,26 @@ namespace Strategy.AI
         {
             List<PotentialCommand> commands = new List<PotentialCommand>(32);
 
-            // placement
-            if (CanPlacePiece())
+            // moving and attacking
+            foreach (Territory src in GetOwnedTerritories())
             {
-                var openTerritories = GetOwnedTerritories().Where(t => t.Pieces.Count < t.Capacity);
-                foreach (Territory territory in openTerritories)
+                // placement
+                if (_match.CanPlacePiece(_player, src))
                 {
-                    commands.Add(new PotentialCommand(CommandType.Place, null, territory));
+                    commands.Add(new PotentialCommand(CommandType.Place, null, src));
                 }
-            }
-
-            // move
-            var srcMoveTerritories = GetOwnedTerritories().Where(t => t.Pieces.Count >= 2 && HasReadyPieces(t));
-            foreach (Territory src in srcMoveTerritories)
-            {
-                var dstTerritories = src.Neighbors.Where(t => t.Owner == _player && t.Pieces.Count < t.Capacity);
-                foreach (Territory dst in dstTerritories)
+                foreach (Territory dst in src.Neighbors)
                 {
-                    commands.Add(new PotentialCommand(CommandType.Move, src, dst));
-                }
-            }
-
-            // attack
-            var srcAttackTerritories = GetOwnedTerritories().Where(t => t.Pieces.Count >= 2 && HasReadyPieces(t));
-            foreach (Territory src in srcAttackTerritories)
-            {
-                var dstTerritories = src.Neighbors.Where(t => t.Owner != _player);
-                foreach (Territory dst in dstTerritories)
-                {
-                    commands.Add(new PotentialCommand(CommandType.Attack, src, dst));
+                    // movement
+                    if (_match.CanMove(_player, src, dst))
+                    {
+                        commands.Add(new PotentialCommand(CommandType.Move, src, dst));
+                    }
+                    // attack
+                    if (_match.CanAttack(_player, src, dst))
+                    {
+                        commands.Add(new PotentialCommand(CommandType.Attack, src, dst));
+                    }
                 }
             }
 
