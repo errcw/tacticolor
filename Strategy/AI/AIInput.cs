@@ -56,8 +56,8 @@ namespace Strategy.AI
                     var bestScore = sortedCommands.First().Score;
                     var bestCommands = sortedCommands.TakeWhile(cmd => cmd.Score == bestScore);
 
-                    PotentialCommand potential = bestCommands.ElementAt(_random.Next(bestCommands.Count()));
-                    command = potential.GetCommand(_player);
+                    int randomBest = _random.Next(bestCommands.Count());
+                    command = bestCommands.ElementAt(randomBest).GetCommand(_player);
 
                     _commandCooldown = CommandCooldownTime;
                 }
