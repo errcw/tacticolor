@@ -135,7 +135,7 @@ namespace Strategy.AI
 
         private int RateAttack(Territory atk, Territory def)
         {
-            int diff = atk.Pieces.Count - def.Pieces.Count;
+            int diff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
             return (diff > 0) ? 20 + diff : diff;
         }
 
