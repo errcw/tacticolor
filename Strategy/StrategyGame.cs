@@ -231,7 +231,7 @@ namespace Strategy
                 }
                 else
                 {
-                    players[p].Input = new AIInput(players[p].Id, match, AIDifficulty.Normal);
+                    players[p].Input = new AIInput(players[p].Id, match, AIDifficulty.Normal, random);
                 }
             }
 

@@ -30,13 +30,13 @@ namespace Strategy.AI
         /// Creates a new AI input.
         /// </summary>
         /// <param name="difficulty">The difficulty of the player.</param>
-        public AIInput(PlayerId player, Match match, AIDifficulty difficulty)
+        /// <param name="random">The random number generator to use.</param>
+        public AIInput(PlayerId player, Match match, AIDifficulty difficulty, Random random)
         {
             _player = player;
             _match = match;
             _difficulty = difficulty;
-
-            _random = new Random();
+            _random = random;
         }
 
         /// <summary>
