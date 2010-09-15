@@ -38,6 +38,7 @@ namespace Strategy.AI
             _difficulty = difficulty;
             _random = random;
 
+            _evaluator = new CommandEvaluator(this);
             _commandCooldown = GetCooldownTime();
         }
 
@@ -54,7 +55,8 @@ namespace Strategy.AI
                 List<PotentialCommand> commands = GetPotentialCommands();
                 if (commands.Count != 0)
                 {
-                    var sortedCommands = commands.OrderBy(cmd => -cmd.Score);
+                    commands.ForEach(cmd => cmd.Score = _evaluator.RateCommand(cmd));
+                    var sortedCommands = commands.OrderBy(cmd => cmd.Score).Reverse();
                     var bestScore = sortedCommands.First().Score;
                     var bestCommands = sortedCommands.TakeWhile(cmd => cmd.Score == bestScore);
 
@@ -95,9 +97,6 @@ namespace Strategy.AI
                 }
             }
 
-            // assign ratings to the command
-            commands.ForEach(command => RateCommand(command));
-
             return commands;
         }
 
@@ -114,40 +113,6 @@ namespace Strategy.AI
         private bool HasReadyPieces(Territory territory)
         {
             return territory.Pieces.Any(p => p.Ready);
-        }
-
-        private void RateCommand(PotentialCommand command)
-        {
-            int score = 0;
-            switch (command.CommandType)
-            {
-                case CommandType.Place: score = RatePlacement(command.Destination); break;
-                case CommandType.Move: score = RateMove(command.Source, command.Destination); break;
-                case CommandType.Attack: score = RateAttack(command.Source, command.Destination); break;
-            }
-            command.Score = score;
-        }
-
-        private int RatePlacement(Territory place)
-        {
-            int evilNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _player);
-            int missingSlots = place.Capacity - place.Pieces.Count;
-            return 10 + evilNeighbors + missingSlots;
-        }
-
-        private int RateAttack(Territory atk, Territory def)
-        {
-            int diff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
-            return (diff > 0) ? 20 + diff : diff;
-        }
-
-        private int RateMove(Territory src, Territory dst)
-        {
-            int srcEvilNeighbors = src.Neighbors.Count(t => t.Owner != null && t.Owner != _player);
-            int dstEvilNeighbors = dst.Neighbors.Count(t => t.Owner != null && t.Owner != _player);
-            int diffEvilNeighbors = dstEvilNeighbors - srcEvilNeighbors;
-            int diffNeighbors = dst.Neighbors.Count - src.Neighbors.Count;
-            return 5 + diffEvilNeighbors + diffNeighbors;
         }
 
         private int GetCooldownTime()
@@ -206,12 +171,59 @@ namespace Strategy.AI
             }
         }
 
+        /// <summary>
+        /// Assigns scores to potential commands.
+        /// </summary>
+        private class CommandEvaluator
+        {
+            public CommandEvaluator(AIInput input)
+            {
+                _input = input;
+            }
+
+            public int RateCommand(PotentialCommand command)
+            {
+                switch (command.CommandType)
+                {
+                    case CommandType.Place: return RatePlacement(command.Destination);
+                    case CommandType.Move: return RateMove(command.Source, command.Destination);
+                    case CommandType.Attack: return RateAttack(command.Source, command.Destination);
+                    default: return -1;
+                }
+            }
+
+            protected virtual int RatePlacement(Territory place)
+            {
+                int evilNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int missingSlots = place.Capacity - place.Pieces.Count;
+                return 10 + evilNeighbors + missingSlots;
+            }
+
+            private int RateAttack(Territory atk, Territory def)
+            {
+                int diff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
+                return (diff > 0) ? 20 + diff : diff;
+            }
+
+            private int RateMove(Territory src, Territory dst)
+            {
+                int srcEvilNeighbors = src.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int dstEvilNeighbors = dst.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int diffEvilNeighbors = dstEvilNeighbors - srcEvilNeighbors;
+                int diffNeighbors = dst.Neighbors.Count - src.Neighbors.Count;
+                return 5 + diffEvilNeighbors + diffNeighbors;
+            }
+
+            private AIInput _input;
+        }
+
         private PlayerId _player;
         private Match _match;
         private AIDifficulty _difficulty;
 
         private Random _random;
 
+        private CommandEvaluator _evaluator;
         private int _commandCooldown = CommandCooldownTime;
         private const int CommandCooldownTime = 1000;
     }
