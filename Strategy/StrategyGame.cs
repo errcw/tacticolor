@@ -212,7 +212,7 @@ namespace Strategy
         private void CreateDebugGame()
         {
             const int DebugHuman = 1;
-            const int DebugAI = 1;
+            const int DebugAI = 3;
 
             Random random = new Random();
             MapGenerator generator = new MapGenerator(random);

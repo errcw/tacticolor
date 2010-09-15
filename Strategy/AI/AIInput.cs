@@ -37,6 +37,8 @@ namespace Strategy.AI
             _match = match;
             _difficulty = difficulty;
             _random = random;
+
+            _commandCooldown = GetCooldownTime();
         }
 
         /// <summary>
@@ -59,7 +61,7 @@ namespace Strategy.AI
                     int randomBest = _random.Next(bestCommands.Count());
                     command = bestCommands.ElementAt(randomBest).GetCommand(_player);
 
-                    _commandCooldown = CommandCooldownTime;
+                    _commandCooldown = GetCooldownTime();
                 }
             }
 
@@ -146,6 +148,19 @@ namespace Strategy.AI
             int diffEvilNeighbors = dstEvilNeighbors - srcEvilNeighbors;
             int diffNeighbors = dst.Neighbors.Count - src.Neighbors.Count;
             return 5 + diffEvilNeighbors + diffNeighbors;
+        }
+
+        private int GetCooldownTime()
+        {
+            int baseTime = 0;
+            switch (_difficulty)
+            {
+                case AIDifficulty.Easy: baseTime = 2000; break;
+                case AIDifficulty.Normal: baseTime = 1000; break;
+                case AIDifficulty.Hard: baseTime = 750; break;
+            }
+            int variationTime = (int)(baseTime * 0.2f);
+            return _random.Next(baseTime - variationTime, baseTime + variationTime);
         }
 
         /// <summary>
