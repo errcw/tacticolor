@@ -220,13 +220,16 @@ namespace Strategy.AI
                 return BaseMovementRating + diffEvilNeighbors + diffNeighbors;
             }
 
-            private AIInput _input;
+            protected AIInput _input;
 
             protected int BasePlacementRating = 10;
             protected int BaseAttackRating = 20;
             protected int BaseMovementRating = 5;
         }
 
+        /// <summary>
+        /// Makes generally poor decisions.
+        /// </summary>
         private class EasyCommandEvaluator : CommandEvaluator
         {
             public EasyCommandEvaluator(AIInput input) : base(input)
@@ -241,6 +244,9 @@ namespace Strategy.AI
             }
         }
 
+        /// <summary>
+        /// Makes decent decisions.
+        /// </summary>
         private class NormalCommandEvaluator : CommandEvaluator
         {
             public NormalCommandEvaluator(AIInput input) : base(input)
@@ -248,10 +254,30 @@ namespace Strategy.AI
             }
         }
 
+        /// <summary>
+        /// Makes the best decisions it can.
+        /// </summary>
         private class HardCommandEvaluator : CommandEvaluator
         {
             public HardCommandEvaluator(AIInput input) : base(input)
             {
+            }
+
+            protected override int RatePlacement(Territory place)
+            {
+                int evilNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int emptyNeighbors = place.Neighbors.Count(t => t.Owner == null);
+                int emptySlots = place.Capacity - place.Pieces.Count;
+                return BasePlacementRating + 2 * evilNeighbors + emptyNeighbors + emptySlots;
+            }
+
+            protected override int RateMove(Territory src, Territory dst)
+            {
+                int srcEvilNeighborPieces = src.Neighbors.Where(t => t.Owner != _input._player).Sum(t => t.Pieces.Count);
+                int dstEvilNeighborPieces = dst.Neighbors.Where(t => t.Owner != _input._player).Sum(t => t.Pieces.Count);
+                int diffEvilNeighbors = dstEvilNeighborPieces - srcEvilNeighborPieces;
+                int diffNeighbors = dst.Neighbors.Count - src.Neighbors.Count;
+                return (diffEvilNeighbors > 0) ? BaseMovementRating + diffEvilNeighbors + diffNeighbors : -1;
             }
         }
 
