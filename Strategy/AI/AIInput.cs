@@ -64,6 +64,10 @@ namespace Strategy.AI
                     commands.ForEach(cmd => cmd.Score = _evaluator.RateCommand(cmd));
                     var sortedCommands = commands.OrderBy(cmd => cmd.Score).Reverse();
                     var bestScore = sortedCommands.First().Score;
+                    if (bestScore <= 0)
+                    {
+                        return null;
+                    }
                     var bestCommands = sortedCommands.TakeWhile(cmd => cmd.Score == bestScore);
 
                     int randomBest = _random.Next(bestCommands.Count());
@@ -200,24 +204,24 @@ namespace Strategy.AI
 
             protected virtual int RatePlacement(Territory place)
             {
-                int evilNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int enemyNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
                 int missingSlots = place.Capacity - place.Pieces.Count;
-                return BasePlacementRating + evilNeighbors + missingSlots;
+                return BasePlacementRating + enemyNeighbors + missingSlots;
             }
 
             protected virtual int RateAttack(Territory atk, Territory def)
             {
                 int diff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
-                return (diff > 0) ? BaseAttackRating + diff : diff;
+                return (diff > 0) ? BaseAttackRating + diff : 0;
             }
 
             protected virtual int RateMove(Territory src, Territory dst)
             {
-                int srcEvilNeighbors = src.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
-                int dstEvilNeighbors = dst.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
-                int diffEvilNeighbors = dstEvilNeighbors - srcEvilNeighbors;
+                int srcEnemyNeighbors = src.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int dstEnemyNeighbors = dst.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int diffEnemyNeighbors = dstEnemyNeighbors - srcEnemyNeighbors;
                 int diffNeighbors = dst.Neighbors.Count - src.Neighbors.Count;
-                return BaseMovementRating + diffEvilNeighbors + diffNeighbors;
+                return BaseMovementRating + diffEnemyNeighbors + diffNeighbors;
             }
 
             protected AIInput _input;
@@ -265,19 +269,99 @@ namespace Strategy.AI
 
             protected override int RatePlacement(Territory place)
             {
-                int evilNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int enemyNeighbors = place.Neighbors.Count(t => t.Owner != _input._player);
                 int emptyNeighbors = place.Neighbors.Count(t => t.Owner == null);
-                int emptySlots = place.Capacity - place.Pieces.Count;
-                return BasePlacementRating + 2 * evilNeighbors + emptyNeighbors + emptySlots;
+                if (enemyNeighbors != 0 || emptyNeighbors != 0)
+                {
+                    // prefer placement only next to enemy territories
+                    int emptySlots = place.Capacity - place.Pieces.Count;
+                    int readyPiecesBonus = place.Pieces.Any(p => p.Ready) ? 1 : 0;
+                    return BasePlacementRating + 2 * enemyNeighbors + emptyNeighbors + emptySlots + readyPiecesBonus;
+                }
+                else
+                {
+                    // internal placement if no other spaces are viable
+                    return BasePlacementRating - 1;
+                }
+            }
+
+            protected override int RateAttack(Territory atk, Territory def)
+            {
+                int attackDiff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
+                if (attackDiff > 0)
+                {
+                    // attacker has the advantage
+                    int connectionBonus = def.Neighbors.Count < atk.Neighbors.Count ? 1 : 0;
+                    return BaseAttackRating + attackDiff + connectionBonus;
+                }
+                else
+                {
+                    // attacker does not have the advantage, only attack if territory is full
+                    return atk.Pieces.Count == atk.Capacity ? BaseAttackRating - 1 : 0;
+                }
             }
 
             protected override int RateMove(Territory src, Territory dst)
             {
-                int srcEvilNeighborPieces = src.Neighbors.Where(t => t.Owner != _input._player).Sum(t => t.Pieces.Count);
-                int dstEvilNeighborPieces = dst.Neighbors.Where(t => t.Owner != _input._player).Sum(t => t.Pieces.Count);
-                int diffEvilNeighbors = dstEvilNeighborPieces - srcEvilNeighborPieces;
-                int diffNeighbors = dst.Neighbors.Count - src.Neighbors.Count;
-                return (diffEvilNeighbors > 0) ? BaseMovementRating + diffEvilNeighbors + diffNeighbors : -1;
+                int srcEnemyNeighborPieces = src.Neighbors.Where(t => t.Owner != _input._player).Sum(t => t.Pieces.Count);
+                int dstEnemyNeighborPieces = dst.Neighbors.Where(t => t.Owner != _input._player).Sum(t => t.Pieces.Count);
+
+                // moving behind the front lines: move towards the enemy or open spaces
+                if (srcEnemyNeighborPieces == 0 && dstEnemyNeighborPieces == 0)
+                {
+                    int srcDistToEnemy = DistanceTo(src, t => t.Neighbors.Any(n => n.Owner != null && n.Owner != _input._player));
+                    int dstDistToEnemy = DistanceTo(dst, t => t.Neighbors.Any(n => n.Owner != null && n.Owner != _input._player));
+                    if (dstDistToEnemy < srcDistToEnemy)
+                    {
+                        return BaseMovementRating + (4 - dstDistToEnemy);
+                    }
+                    else
+                    {
+                        // no sense moving further away
+                        return 0;
+                    }
+                }
+
+                // moving in front of the enemy: move to protect more pieces
+                int srcAttackDiff = srcEnemyNeighborPieces - src.Pieces.Count;
+                int dstAttackDiff = dstEnemyNeighborPieces - Math.Min((src.Pieces.Count - 1) + dst.Pieces.Count, dst.Capacity);
+                int attackDiff = dstAttackDiff - srcAttackDiff;
+                if (attackDiff > 0)
+                {
+                    return BaseMovementRating + Math.Max(attackDiff, 2);
+                }
+
+                // no benefit: do not consider this move
+                return 0;
+            }
+
+            private int DistanceTo(Territory start, Predicate<Territory> destinationCheck)
+            {
+                Queue<Territory> visit = new Queue<Territory>();
+                Dictionary<Territory, int> visited = new Dictionary<Territory, int>();
+
+                visited.Add(start, 0);
+                visit.Enqueue(start);
+
+                while (visit.Count > 0)
+                {
+                    Territory current = visit.Dequeue();
+                    int distance = visited[current];
+                    if (destinationCheck(current))
+                    {
+                        return distance;
+                    }
+                    foreach (Territory neighbor in current.Neighbors)
+                    {
+                        if (neighbor.Owner == _input._player && !visited.ContainsKey(neighbor))
+                        {
+                            visit.Enqueue(neighbor);
+                            visited.Add(neighbor, distance + 1);
+                        }
+                    }
+                }
+
+                return int.MaxValue;
             }
         }
 
