@@ -222,15 +222,22 @@ namespace Strategy.AI
 
             private AIInput _input;
 
-            private const int BasePlacementRating = 10;
-            private const int BaseAttackRating = 20;
-            private const int BaseMovementRating = 5;
+            protected int BasePlacementRating = 10;
+            protected int BaseAttackRating = 20;
+            protected int BaseMovementRating = 5;
         }
 
         private class EasyCommandEvaluator : CommandEvaluator
         {
             public EasyCommandEvaluator(AIInput input) : base(input)
             {
+                BaseAttackRating = BasePlacementRating;
+            }
+
+            protected override int RateAttack(Territory atk, Territory def)
+            {
+                int diff = atk.Pieces.Count - def.Pieces.Count;
+                return BaseAttackRating + diff;
             }
         }
 
