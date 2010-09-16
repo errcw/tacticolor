@@ -38,7 +38,13 @@ namespace Strategy.AI
             _difficulty = difficulty;
             _random = random;
 
-            _evaluator = new CommandEvaluator(this);
+            switch (_difficulty)
+            {
+                case AIDifficulty.Easy: _evaluator = new EasyCommandEvaluator(this); break;
+                case AIDifficulty.Normal: _evaluator = new NormalCommandEvaluator(this); break;
+                case AIDifficulty.Hard: _evaluator = new HardCommandEvaluator(this); break;
+            }
+
             _commandCooldown = GetCooldownTime();
         }
 
@@ -174,7 +180,7 @@ namespace Strategy.AI
         /// <summary>
         /// Assigns scores to potential commands.
         /// </summary>
-        private class CommandEvaluator
+        private abstract class CommandEvaluator
         {
             public CommandEvaluator(AIInput input)
             {
@@ -196,25 +202,50 @@ namespace Strategy.AI
             {
                 int evilNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
                 int missingSlots = place.Capacity - place.Pieces.Count;
-                return 10 + evilNeighbors + missingSlots;
+                return BasePlacementRating + evilNeighbors + missingSlots;
             }
 
-            private int RateAttack(Territory atk, Territory def)
+            protected virtual int RateAttack(Territory atk, Territory def)
             {
                 int diff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
-                return (diff > 0) ? 20 + diff : diff;
+                return (diff > 0) ? BaseAttackRating + diff : diff;
             }
 
-            private int RateMove(Territory src, Territory dst)
+            protected virtual int RateMove(Territory src, Territory dst)
             {
                 int srcEvilNeighbors = src.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
                 int dstEvilNeighbors = dst.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
                 int diffEvilNeighbors = dstEvilNeighbors - srcEvilNeighbors;
                 int diffNeighbors = dst.Neighbors.Count - src.Neighbors.Count;
-                return 5 + diffEvilNeighbors + diffNeighbors;
+                return BaseMovementRating + diffEvilNeighbors + diffNeighbors;
             }
 
             private AIInput _input;
+
+            private const int BasePlacementRating = 10;
+            private const int BaseAttackRating = 20;
+            private const int BaseMovementRating = 5;
+        }
+
+        private class EasyCommandEvaluator : CommandEvaluator
+        {
+            public EasyCommandEvaluator(AIInput input) : base(input)
+            {
+            }
+        }
+
+        private class NormalCommandEvaluator : CommandEvaluator
+        {
+            public NormalCommandEvaluator(AIInput input) : base(input)
+            {
+            }
+        }
+
+        private class HardCommandEvaluator : CommandEvaluator
+        {
+            public HardCommandEvaluator(AIInput input) : base(input)
+            {
+            }
         }
 
         private PlayerId _player;
