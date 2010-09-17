@@ -126,22 +126,22 @@ namespace Strategy.Interface.Gameplay
             TerritoryView attackerView = _territoryViews[args.Attacker];
             TerritoryView defenderView = _territoryViews[args.Defender];
 
-            const float PieceDelay = 0.1f;
+            const float PieceDelay = 0.15f;
             float delay = 0f;
-            float totalDelay = (args.Attackers.Count + args.Defenders.Count) * PieceDelay;
+            float totalDelay = (args.Attackers.Count + args.Defenders.Count) * PieceDelay + 0.25f;
 
             // handle the defenders
             delay = args.Attackers.Count * PieceDelay;
             foreach (PieceAttackData data in args.Defenders)
             {
                 PieceView pieceView = _pieceViews[data.Piece];
-                pieceView.OnAttacked(data.Roll, data.Survived, null, delay, totalDelay - delay + 0.5f);
                 if (!data.Survived)
                 {
                     defenderView.PieceRemoved(pieceView);
                     _pieceViews.Remove(data.Piece);
                     _removedPieces.Add(pieceView);
                 }
+                pieceView.OnAttacked(data.Roll, data.Survived, null, delay, totalDelay - delay);
                 delay += PieceDelay;
             }
 
@@ -162,11 +162,11 @@ namespace Strategy.Interface.Gameplay
                     _pieceViews.Remove(data.Piece);
                     _removedPieces.Add(pieceView);
                 }
-                pieceView.OnAttacked(data.Roll, data.Survived, destination, delay, totalDelay - delay + 0.5f);
+                pieceView.OnAttacked(data.Roll, data.Survived, destination, delay, totalDelay - delay);
                 delay += PieceDelay;
             }
 
-            defenderView.MaybeChangedOwners(totalDelay + 0.5f);
+            defenderView.MaybeChangedOwners(totalDelay + 0.25f);
         }
 
         /// <summary>

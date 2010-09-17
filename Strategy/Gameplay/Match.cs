@@ -578,7 +578,7 @@ namespace Strategy.Gameplay
         private const float PieceCreationMaxSpeed = 2f;
 
         private const int CooldownMove = 600;
-        private const int CooldownAttackBase = 700;
+        private const int CooldownAttackBase = 2000;
         private const int CooldownAttackPerPiece = 110;
     }
 
