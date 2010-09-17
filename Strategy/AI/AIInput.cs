@@ -246,6 +246,12 @@ namespace Strategy.AI
                 int diff = atk.Pieces.Count - def.Pieces.Count;
                 return BaseAttackRating + diff;
             }
+
+            protected override int RateMove(Territory src, Territory dst)
+            {
+                // never consider moving
+                return 0;
+            }
         }
 
         /// <summary>
