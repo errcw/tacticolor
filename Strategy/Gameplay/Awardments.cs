@@ -508,13 +508,18 @@ namespace Strategy.Gameplay
 
     public class EveryConfigurationAwardment : Awardment
     {
-        public bool[,] Configurations { get; set; }
+        public bool[][] Configurations { get; set; }
 
         public EveryConfigurationAwardment()
         {
             Name = Resources.AwardmentEveryConfigurationName;
             Description = Resources.AwardmentEveryConfigurationDescription;
-            Configurations = new bool[MapSizeCount, MapTypeCount];
+
+            Configurations = new bool[MapSizeCount][];
+            for (int i = 0; i < Configurations.Length; i++)
+            {
+                Configurations[i] = new bool[MapTypeCount];
+            }
         }
 
         public override void MatchStarted(Match match, PlayerId player)
@@ -534,14 +539,14 @@ namespace Strategy.Gameplay
                 mapTypeIdx = 1;
             }
 
-            Configurations[mapSizeIdx,mapTypeIdx] = true;
+            Configurations[mapSizeIdx][mapTypeIdx] = true;
 
             bool earned = true;
             for (int s = 0; s < MapSizeCount; s++)
             {
                 for (int t = 0; t < MapTypeCount; t++)
                 {
-                    if (!Configurations[s, t])
+                    if (!Configurations[s][t])
                     {
                         earned = false;
                         goto Done;
