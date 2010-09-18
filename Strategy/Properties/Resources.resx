@@ -177,6 +177,9 @@
   <data name="AwardmentShortStreakName" xml:space="preserve">
     <value>Hat Trick</value>
   </data>
+  <data name="AwardmentTitle" xml:space="preserve">
+    <value>Awardment: {0}</value>
+  </data>
   <data name="AwardmentVeryManyPiecesPlacedDescription" xml:space="preserve">
     <value>Place 1000 pieces.</value>
   </data>

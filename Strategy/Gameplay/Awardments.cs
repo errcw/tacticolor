@@ -114,6 +114,7 @@ namespace Strategy.Gameplay
                     // no existing awardments for this gamer, create new ones
                     awardments = CreateAwardments(AwardmentTypes);
                     WireAwardmentEarnedEvents(awardments, player.Key);
+                    _awardments[player.Key] = awardments;
                 }
                 foreach (Awardment awardment in awardments)
                 {

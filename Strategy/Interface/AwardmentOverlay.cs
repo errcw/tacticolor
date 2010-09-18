@@ -10,6 +10,7 @@ using Strategy.Library;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
 using Strategy.Library.Sprite;
+using Strategy.Properties;
 
 namespace Strategy.Interface
 {
@@ -20,7 +21,7 @@ namespace Strategy.Interface
     {
         public AwardmentOverlay(StrategyGame game, Awardments awardments)
         {
-            awardments.AwardmentEarned += (s, a) => _pendingAwardments.Enqueue(a);
+            awardments.AwardmentEarned += (s, a) => _pendingAwardments.Enqueue(a.Awardment);
 
             Texture2D background = game.Content.Load<Texture2D>("Images/InstructionsBackground");
             Texture2D trophy = game.Content.Load<Texture2D>("Images/PieceAvailable");
@@ -29,7 +30,13 @@ namespace Strategy.Interface
 
             ImageSprite backSprite = new ImageSprite(background);
 
-            _imageSprite = new ImageSprite(trophy);
+            _imageTextures = new Texture2D[4];
+            for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
+            {
+                _imageTextures[(int)p] = game.Content.Load<Texture2D>("Images/AwardmentPlayer" + (int)p);
+            }
+
+            _imageSprite = new ImageSprite(_imageTextures[0]);
             _imageSprite.Position = new Vector2(5, (int)((40 - _imageSprite.Size.Y) / 2));
 
             _textSprite = new TextSprite(font);
@@ -62,15 +69,18 @@ namespace Strategy.Interface
                 _displayTime -= time;
                 if (_displayTime <= 0)
                 {
-                    SetAwardment(string.Empty, Color.White);
+                    SetAwardment(string.Empty, _imageTextures[0]);
                     _displayedAwardment = null;
                 }
             }
             if (_displayedAwardment == null && _pendingAwardments.Count > 0)
             {
                 _displayedAwardment = _pendingAwardments.Dequeue();
-                SetAwardment(_displayedAwardment.Awardment.Name, Color.White);
                 _displayTime = DisplayTime;
+
+                string text = string.Format(Resources.AwardmentTitle, _displayedAwardment.Name);
+                Texture2D image = _imageTextures[(int)GetIndexForGamertag(_displayedAwardment.OwnerGamertag)];
+                SetAwardment(text, image);
             }
 
             if (_animation != null)
@@ -82,23 +92,23 @@ namespace Strategy.Interface
             }
         }
 
-        private SignedInGamer GetGamerForGamertag(string gamertag)
+        private PlayerIndex GetIndexForGamertag(string gamertag)
         {
             foreach (SignedInGamer gamer in SignedInGamer.SignedInGamers)
             {
                 if (gamer.Gamertag == gamertag)
                 {
-                    return gamer;
+                    return gamer.PlayerIndex;
                 }
             }
-            return null;
+            return PlayerIndex.One;
         }
 
-        private void SetAwardment(string newText, Color newColor)
+        private void SetAwardment(string newText, Texture2D newImage)
         {
             IAnimation setNewInstructions = new CompositeAnimation(
                 new TextAnimation(_textSprite, newText),
-                new ColorAnimation(_imageSprite, newColor, 0f, Interpolation.InterpolateColor(Easing.Uniform)));
+                new ImageAnimation(_imageSprite, newImage));
             if (_textSprite.Text.Length > 0 && newText.Length > 0)
             {
                 // replace the existing text
@@ -139,18 +149,19 @@ namespace Strategy.Interface
             }
         }
 
-        private Queue<AwardmentEventArgs> _pendingAwardments = new Queue<AwardmentEventArgs>();
-        private AwardmentEventArgs _displayedAwardment = null;
+        private Queue<Awardment> _pendingAwardments = new Queue<Awardment>();
+        private Awardment _displayedAwardment = null;
         private float _displayTime;
 
         private Sprite _sprite;
         private TextSprite _textSprite;
         private ImageSprite _imageSprite;
+        private Texture2D[] _imageTextures;
         private IAnimation _animation;
         private SpriteBatch _spriteBatch;
 
-        private readonly Vector2 Visible = new Vector2(650, 75);
-        private readonly Vector2 Hidden = new Vector2(1280, 75);
-        private const float DisplayTime = 3f;
+        private readonly Vector2 Visible = new Vector2(650, 720 - 40 - 75);
+        private readonly Vector2 Hidden = new Vector2(1280, 720 - 40 - 75);
+        private const float DisplayTime = 4f;
     }
 }

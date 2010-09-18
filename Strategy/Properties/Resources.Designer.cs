@@ -241,6 +241,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Awardment: {0}.
+        /// </summary>
+        internal static string AwardmentTitle {
+            get {
+                return ResourceManager.GetString("AwardmentTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Place 1000 pieces..
         /// </summary>
         internal static string AwardmentVeryManyPiecesPlacedDescription {
