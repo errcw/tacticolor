@@ -88,6 +88,7 @@
     <Compile Include="Interface\Screens\MenuScreen.cs" />
     <Compile Include="Interface\Screens\MessageScreen.cs" />
     <Compile Include="Interface\Screens\TitleScreen.cs" />
+    <Compile Include="Interface\SlidingPanel.cs" />
     <Compile Include="Library\BresenhamIterator.cs" />
     <Compile Include="Library\Components\ExceptionDebugGame.cs" />
     <Compile Include="Library\Components\FPSOverlayComponent.cs" />

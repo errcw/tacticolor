@@ -116,6 +116,7 @@
     <Compile Include="Interface\Screens\TitleScreen.cs" />
     <Compile Include="Interface\Gameplay\TerritoryView.cs" />
     <Compile Include="Interface\Gameplay\InterfaceContext.cs" />
+    <Compile Include="Interface\SlidingPanel.cs" />
     <Compile Include="Library\BresenhamIterator.cs" />
     <Compile Include="Library\Components\ExceptionDebugGame.cs" />
     <Compile Include="Library\Components\FPSOverlayComponent.cs" />

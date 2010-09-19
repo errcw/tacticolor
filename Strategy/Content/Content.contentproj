@@ -190,13 +190,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\InstructionsBackground.png">
-      <Name>InstructionsBackground</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Images\ButtonX.png">
       <Name>ButtonX</Name>
       <Importer>TextureImporter</Importer>
@@ -242,6 +235,13 @@
     </Compile>
     <Compile Include="Images\AwardmentPlayer3.png">
       <Name>AwardmentPlayer3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\SlidingPanelBackground.png">
+      <Name>SlidingPanelBackground</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

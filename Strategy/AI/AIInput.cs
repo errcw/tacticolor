@@ -312,6 +312,12 @@ namespace Strategy.AI
                 int srcEnemyNeighborPieces = src.Neighbors.Where(t => t.Owner != _input._player).Sum(t => t.Pieces.Count);
                 int dstEnemyNeighborPieces = dst.Neighbors.Where(t => t.Owner != _input._player).Sum(t => t.Pieces.Count);
 
+                // avoid moving away from the front lines
+                if (srcEnemyNeighborPieces > 0 && dstEnemyNeighborPieces == 0)
+                {
+                    return 0;
+                }
+
                 // moving behind the front lines: move towards the enemy or open spaces
                 if (srcEnemyNeighborPieces == 0 && dstEnemyNeighborPieces == 0)
                 {
