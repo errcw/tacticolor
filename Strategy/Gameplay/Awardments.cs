@@ -146,12 +146,7 @@ namespace Strategy.Gameplay
         /// </summary>
         public void Load(Storage storage)
         {
-            if (!Directory.Exists(AwardmentDirectory))
-            {
-                // bail early if there are no awardments to load
-                return;
-            }
-            foreach (string file in Directory.GetFiles(AwardmentDirectory))
+            foreach (string file in storage.GetFiles(AwardmentDirectory))
             {
                 XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(file);
                 string gamertag = Path.GetFileNameWithoutExtension(file);
@@ -229,7 +224,7 @@ namespace Strategy.Gameplay
         private void AddMissingAwardments(List<Awardment> awardments, List<Type> types)
         {
             var awardmentTypes = awardments.Select(a => a.GetType());
-            var missingTypes = types.Intersect(types);
+            var missingTypes = types.Except(awardmentTypes);
             var newAwardments = CreateAwardments(missingTypes);
             awardments.AddRange(newAwardments);
         }

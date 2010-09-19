@@ -131,6 +131,11 @@ namespace Strategy.Library.Storage
             using (StorageContainer container = _storageDevice.OpenContainer(StorageContainerName))
             {
                 string path = Path.Combine(container.Path, storeable.FileName);
+                string directory = Path.GetDirectoryName(path);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
                 using (StreamWriter writer = new StreamWriter(path))
                 {
                     storeable.Save(writer.BaseStream);
@@ -162,7 +167,7 @@ namespace Strategy.Library.Storage
         /// <summary>
         /// Deletes an ISaveData object from the current storage device.
         /// </summary>
-        /// <param name="storeable">The objects to delete.</param>
+        /// <param name="storeable">The object to delete.</param>
         public void Delete(IStoreable storeable)
         {
             if (!IsValid)
@@ -173,6 +178,38 @@ namespace Strategy.Library.Storage
             using (StorageContainer container = _storageDevice.OpenContainer(StorageContainerName))
             {
                 File.Delete(Path.Combine(container.Path, storeable.FileName));
+            }
+        }
+
+        /// <summary>
+        /// Returns the names of all the files in the specified directory.
+        /// </summary>
+        /// <param name="directory">The directory from which to retrieve the files.</param>
+        public string[] GetFiles(string directory)
+        {
+            if (!IsValid)
+            {
+                throw new InvalidOperationException("StorageDevice is not valid.");
+            }
+
+            using (StorageContainer container = _storageDevice.OpenContainer(StorageContainerName))
+            {
+                string path = Path.Combine(container.Path, directory);
+                if (Directory.Exists(path))
+                {
+                    string[] files = Directory.GetFiles(path);
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        // strip out the container path so the file names can be used with Save/Load/Delete
+                        files[i] = files[i].Substring(container.Path.Length + 1);
+                    }
+                    return files;
+                }
+                else
+                {
+                    // directory does not exist so contains zero files
+                    return new string[0];
+                }
             }
         }
 
