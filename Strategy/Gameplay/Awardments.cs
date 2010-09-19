@@ -146,22 +146,22 @@ namespace Strategy.Gameplay
         /// </summary>
         public void Load(Storage storage)
         {
-            foreach (string file in storage.GetFiles(AwardmentDirectory))
+            try
             {
-                XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(file);
-                string gamertag = Path.GetFileNameWithoutExtension(file);
-                try
+                foreach (string file in storage.GetFiles(AwardmentDirectory))
                 {
+                    XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(file);
+                    string gamertag = Path.GetFileNameWithoutExtension(file);
                     storage.Load(awardmentXml);
                     List<Awardment> awardments = new List<Awardment>(awardmentXml.Data);
                     AddMissingAwardments(awardments, AwardmentTypes);
                     WireAwardmentEarnedEvents(awardments, gamertag);
                     _awardments[gamertag] = awardments;
                 }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e);
-                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
             }
         }
 
@@ -170,19 +170,19 @@ namespace Strategy.Gameplay
         /// </summary>
         public void Save(Storage storage)
         {
-            foreach (var entry in _awardments)
+            try
             {
-                string awardmentPath = Path.Combine(AwardmentDirectory, entry.Key);
-                Awardment[] awardments = entry.Value.ToArray();
-                XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(awardmentPath, awardments);
-                try
+                foreach (var entry in _awardments)
                 {
+                    string awardmentPath = Path.Combine(AwardmentDirectory, entry.Key);
+                    Awardment[] awardments = entry.Value.ToArray();
+                    XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(awardmentPath, awardments);
                     storage.Save(awardmentXml);
                 }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e);
-                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
             }
         }
 
