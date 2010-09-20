@@ -89,8 +89,6 @@ namespace Strategy.Interface
         private Texture2D[] _imageTextures;
         private SpriteBatch _spriteBatch;
 
-        private readonly Vector2 Visible = new Vector2(650, 720 - 40 - 75);
-        private readonly Vector2 Hidden = new Vector2(1280, 720 - 40 - 75);
         private const float DisplayTime = 4f;
     }
 }
