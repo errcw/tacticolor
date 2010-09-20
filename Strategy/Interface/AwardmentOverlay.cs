@@ -85,10 +85,6 @@ namespace Strategy.Interface
         private Awardment _displayedAwardment = null;
         private float _displayTime;
 
-        private Sprite _sprite;
-        private TextSprite _textSprite;
-        private ImageSprite _imageSprite;
-        private IAnimation _animation;
         private SlidingPanel _panel;
         private Texture2D[] _imageTextures;
         private SpriteBatch _spriteBatch;
