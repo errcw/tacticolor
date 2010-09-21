@@ -20,15 +20,10 @@ namespace Strategy.Interface.Screens
         {
         }
 
-        public MessageScreen(Game game, string messageText, Type popUntilScreen) : this(game, messageText, popUntilScreen, 0f)
-        {
-        }
-
-        public MessageScreen(Game game, string messageText, Type popUntilScreen, float visibilityDelay)
+        public MessageScreen(Game game, string messageText, Type popUntilScreen)
         {
             _input = game.Services.GetService<MenuInput>();
             _popUntilScreen = popUntilScreen;
-            _visibilityDelay = visibilityDelay;
 
             ImageSprite background = new ImageSprite(game.Content.Load<Texture2D>("Images/Colourable"));
             background.Scale = new Vector2(1280, 720);
@@ -71,7 +66,7 @@ namespace Strategy.Interface.Screens
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
             ShowBeneath = true;
-            TransitionOnTime = 0.25f + _visibilityDelay;
+            TransitionOnTime = 0.25f;
             TransitionOffTime = 0.25f;
         }
 
@@ -95,10 +90,6 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
         {
-            if (progress * TransitionOnTime < _visibilityDelay)
-            {
-                return;
-            }
             _sprite.Color = new Color(_sprite.Color, (byte)(255 * progress));
         }
 
@@ -140,7 +131,6 @@ namespace Strategy.Interface.Screens
         private MenuInput _input;
 
         private Type _popUntilScreen;
-        private float _visibilityDelay;
 
         private Sprite _sprite;
         private SpriteBatch _spriteBatch;

@@ -77,6 +77,11 @@ namespace Strategy.Gameplay
         /// </summary>
         public long Time { get; private set; }
 
+        /// <summary>
+        /// If this match has finished.
+        /// </summary>
+        public bool IsEnded { get; private set; }
+
 
         /// <summary>
         /// Creates a new match.
@@ -532,10 +537,14 @@ namespace Strategy.Gameplay
             {
                 PlayerEliminated(this, new PlayerEventArgs(player));
             }
-            if (RemainingPlayerCount == 1 && Ended != null)
+            if (RemainingPlayerCount == 1)
             {
-                PlayerId winner = (PlayerId)_numTerritoriesOwned.IndexOf(owned => owned > 0);
-                Ended(this, new PlayerEventArgs(winner));
+                IsEnded = true;
+                if (Ended!= null)
+                {
+                    PlayerId winner = (PlayerId)_numTerritoriesOwned.IndexOf(owned => owned > 0);
+                    Ended(this, new PlayerEventArgs(winner));
+                }
             }
         }
 

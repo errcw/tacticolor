@@ -113,17 +113,28 @@ namespace Strategy.Interface.Screens
                 _session.Update();
             }
 
+            if (!_lockstepMatch.Match.IsEnded)
+            {
+                int milliseconds = gameTime.GetElapsedMilliseconds();
+                _lockstepInput.Update(milliseconds);
+                _lockstepMatch.Update(milliseconds);
+            }
+
             float seconds = gameTime.GetElapsedSeconds();
-            int milliseconds = gameTime.GetElapsedMilliseconds();
-
-            _lockstepInput.Update(milliseconds);
-            _lockstepMatch.Update(milliseconds);
-
             _mapView.Update(seconds);
             _inputViews.ForEach(view => view.Update(seconds));
             _playerViews.ForEach(view => view.Update(seconds));
             _piecesAvailableViews.ForEach(view => view.Update(seconds));
             _instructions.Update(seconds);
+
+            if (_endScreen != null)
+            {
+                _endTime -= seconds;
+                if (_endTime <= 0f)
+                {
+                    Stack.Push(_endScreen);
+                }
+            }
         }
 
         public override void Draw()
@@ -166,7 +177,7 @@ namespace Strategy.Interface.Screens
         private void OnPlayerEliminated(object matchObj, PlayerEventArgs args)
         {
             Player player = _players.Single(p => p.Id == args.Player);
-            OnPlayerLeftMatch(player);
+            ShowPlayerLeftMatch(player);
         }
 
         private void OnMatchEnded(object matchObj, PlayerEventArgs args)
@@ -176,15 +187,14 @@ namespace Strategy.Interface.Screens
             _awardments.MatchEnded(player.Id);
 
             string message = string.Format(Resources.GameWon, player.DisplayName);
-            float time = _lockstepMatch.Match.Map.Territories.Max(t => t.Cooldown) + 3f;
-            MessageScreen messageScreen = new MessageScreen(Stack.Game, message, typeof(LobbyScreen), time);
-            Stack.Push(messageScreen);
+            _endScreen = new MessageScreen(Stack.Game, message, typeof(LobbyScreen));
+            _endTime = _lockstepMatch.Match.Map.Territories.Max(t => t.Cooldown) + 3f;
         }
 
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
         {
             Player player = _players.Single(p => p.Gamer == args.Gamer);
-            OnPlayerLeftMatch(player);
+            ShowPlayerLeftMatch(player);
         }
 
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
@@ -194,7 +204,7 @@ namespace Strategy.Interface.Screens
             Stack.Push(messageScreen);
         }
 
-        private void OnPlayerLeftMatch(Player player)
+        private void ShowPlayerLeftMatch(Player player)
         {
             // have the player sit idle
             player.Input = null;
@@ -230,6 +240,9 @@ namespace Strategy.Interface.Screens
         private List<PlayerView> _playerViews;
         private List<PiecesAvailableView> _piecesAvailableViews;
         private Instructions _instructions;
+
+        private Screen _endScreen;
+        private float _endTime;
 
         private SpriteBatch _spriteBatch;
         private IsometricBatch _isoBatch;
