@@ -41,16 +41,23 @@ namespace Strategy.Interface.Gameplay
                 new PositionAnimation(_cursorHover, _cursorHover.Position + new Vector2(0, -10), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
                 new PositionAnimation(_cursorHover, _cursorHover.Position, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
                 new DelayAnimation(0.5f));
-            _showAnimation = true;
+            _repeatAnimation = true;
         }
 
         public void Update(float time)
         {
-            if (_showAnimation)
+            if (_animation != null)
             {
                 if (!_animation.Update(time))
                 {
-                    _animation.Start();
+                    if (_repeatAnimation)
+                    {
+                        _animation.Start();
+                    }
+                    else
+                    {
+                        _animation = null;
+                    }
                 }
             }
         }
@@ -62,6 +69,14 @@ namespace Strategy.Interface.Gameplay
             {
                 spriteBatch.Draw(_cursorSelect);
             }
+        }
+
+        public void Hide()
+        {
+            _animation = new CompositeAnimation(
+                new ColorAnimation(_cursorHover, Color.TransparentWhite, 0.3f, Interpolation.InterpolateColor(Easing.QuadraticOut)),
+                new ColorAnimation(_cursorSelect, Color.TransparentWhite, 0.3f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
+            _repeatAnimation = false;
         }
 
         /// <summary>
@@ -76,7 +91,7 @@ namespace Strategy.Interface.Gameplay
                 _cursorHover.Position += HoverOffset;
             }
 
-            _showAnimation = false;
+            _animation = null; // end the bounce animation
         }
 
         /// <summary>
@@ -99,7 +114,8 @@ namespace Strategy.Interface.Gameplay
                 }
                 _showSelect = false;
             }
-            _showAnimation = false;
+
+            _animation = null; // end the bounce animation
         }
 
         /// <summary>
@@ -168,7 +184,7 @@ namespace Strategy.Interface.Gameplay
         private bool _showSelect;
 
         private IAnimation _animation;
-        private bool _showAnimation;
+        private bool _repeatAnimation;
 
         private readonly Vector2 HoverOffset = new Vector2(0, -10);
     }

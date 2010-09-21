@@ -14,15 +14,16 @@ namespace Strategy.Interface.Gameplay
 {
     public class PiecesAvailableView
     {
+        public PlayerId Player { get; private set; }
+
         public PiecesAvailableView(Match match, PlayerId player, InterfaceContext context)
         {
             _match = match;
             _match.PiecePlaced += OnPiecePlaced;
-            _player = player;
-            _context = context;
+            Player = player;
 
-            BasePosition = GetBasePosition(_player);
-            SolidColor = GetPlayerColor(_player);
+            BasePosition = GetBasePosition(Player);
+            SolidColor = GetPlayerColor(Player);
             TransparentColor = new Color(SolidColor, 0);
 
             Texture2D pieceSprite = context.Content.Load<Texture2D>("Images/PieceAvailable");
@@ -43,16 +44,16 @@ namespace Strategy.Interface.Gameplay
         public void Update(float time)
         {
             // check if a new piece was created this frame
-            int available = _match.PiecesAvailable[(int)_player];
+            int available = _match.PiecesAvailable[(int)Player];
             if (available > _created.Count)
             {
                 OnPieceCreated();
             }
-            System.Diagnostics.Debug.Assert(_created.Count == _match.PiecesAvailable[(int)_player]);
+            System.Diagnostics.Debug.Assert(_created.Count == _match.PiecesAvailable[(int)Player]);
 
             if (_creatingSprite != null)
             {
-                float progress = _match.PieceCreationProgress[(int)_player];
+                float progress = _match.PieceCreationProgress[(int)Player];
                 _creatingSprite.Color = new Color(SolidColor, (byte)(progress * 255));
                 _creatingSprite.X = Interpolation.InterpolateFloat(Easing.Uniform)(_creatingSprite.X, _creatingTargetX, 8f * time);
             }
@@ -76,6 +77,17 @@ namespace Strategy.Interface.Gameplay
             }
         }
 
+        public void Hide()
+        {
+            IEnumerable<Sprite> sprites = _created;
+            if (_creatingSprite != null)
+            {
+                sprites = sprites.Concat(Enumerable.Repeat(_creatingSprite, 1));
+            }
+            var animations = sprites.Select(s => new ColorAnimation(s, TransparentColor, 0.2f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
+            _hideAnimation = new CompositeAnimation(animations.ToArray());
+        }
+
         /// <summary>
         /// Notifies this view that a piece was created.
         /// </summary>
@@ -86,7 +98,7 @@ namespace Strategy.Interface.Gameplay
             _created.Push(_creatingSprite);
 
             _creatingSprite = null;
-            if (_match.PiecesAvailable[(int)_player] < _match.MaxPiecesAvailable)
+            if (_match.PiecesAvailable[(int)Player] < _match.MaxPiecesAvailable)
             {
                 SetUpCreatingSprite();
             }
@@ -97,14 +109,11 @@ namespace Strategy.Interface.Gameplay
         /// </summary>
         private void OnPiecePlaced(object match, PiecePlacedEventArgs args)
         {
-            if (args.Location.Owner == _player)
+            if (args.Location.Owner == Player)
             {
-                System.Diagnostics.Debug.Assert(_created.Count-1 == _match.PiecesAvailable[(int)_player]);
+                System.Diagnostics.Debug.Assert(_created.Count-1 == _match.PiecesAvailable[(int)Player]);
 
                 // hide the old sprite
-                // XXX what happens when the piece is created according to the model
-                // but the view doesn't know yet? we have to explicitly check for
-                // a new piece first, maybe?
                 Sprite used = _created.Pop();
                 if (_hideAnimation != null)
                 {
@@ -120,7 +129,7 @@ namespace Strategy.Interface.Gameplay
                 if (_creatingSprite != null)
                 {
                     // slide into the now-vacant position
-                    _creatingTargetX = BasePosition.X + _match.PiecesAvailable[(int)_player] * PieceSpacing.X;
+                    _creatingTargetX = BasePosition.X + _match.PiecesAvailable[(int)Player] * PieceSpacing;
                 }
                 else
                 {
@@ -138,7 +147,7 @@ namespace Strategy.Interface.Gameplay
             _creatingSprite = _unused.Dequeue();
             _creatingSprite.Color = TransparentColor;
             _creatingSprite.Y = BasePosition.Y;
-            _creatingSprite.X = BasePosition.X + _match.PiecesAvailable[(int)_player] * PieceSpacing.X;
+            _creatingSprite.X = BasePosition.X + _match.PiecesAvailable[(int)Player] * PieceSpacing;
             _creatingTargetX = _creatingSprite.X;
         }
 
@@ -176,8 +185,6 @@ namespace Strategy.Interface.Gameplay
         }
 
         private Match _match;
-        private PlayerId _player;
-        private InterfaceContext _context;
 
         private Queue<Sprite> _unused;
         private Stack<Sprite> _created;
@@ -190,6 +197,6 @@ namespace Strategy.Interface.Gameplay
         private readonly Color SolidColor;
 
         private readonly Vector2 BasePosition;
-        private readonly Vector2 PieceSpacing = new Vector2(30, 0);
+        private const float PieceSpacing = 30f;
     }
 }

@@ -165,12 +165,8 @@ namespace Strategy.Interface.Screens
 
         private void OnPlayerEliminated(object matchObj, PlayerEventArgs args)
         {
-            // update the player view
-            PlayerView playerView = _playerViews.Single(view => view.Player.Id == args.Player);
-            playerView.ShowEliminated();
-
-            // remove the local input view
-            _inputViews.RemoveAll(view => view.Input.Player == args.Player);
+            Player player = _players.Single(p => p.Id == args.Player);
+            OnPlayerLeftMatch(player);
         }
 
         private void OnMatchEnded(object matchObj, PlayerEventArgs args)
@@ -186,18 +182,8 @@ namespace Strategy.Interface.Screens
 
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
         {
-            // have the player sit idle
             Player player = _players.Single(p => p.Gamer == args.Gamer);
-            player.Gamer = null;
-            player.Controller = null;
-            player.Input = null;
-
-            // update the player view
-            PlayerView playerView = _playerViews.Find(view => view.Player == player);
-            playerView.ShowDropped();
-
-            // remove the local input view
-            _inputViews.RemoveAll(view => view.Input.Player == player.Id);
+            OnPlayerLeftMatch(player);
         }
 
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
@@ -205,6 +191,28 @@ namespace Strategy.Interface.Screens
             // if the session ended before the game is over then we encountered an error
             MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
             Stack.Push(messageScreen);
+        }
+
+        private void OnPlayerLeftMatch(Player player)
+        {
+            // have the player sit idle
+            player.Controller = null;
+            player.Input = null;
+
+            // update the player view
+            PlayerView playerView = _playerViews.Single(view => view.Player == player);
+            playerView.ShowLeft();
+
+            // hide the pieces view
+            PiecesAvailableView piecesView = _piecesAvailableViews.Single(view => view.Player == player.Id);
+            piecesView.Hide();
+
+            // hide the local input view
+            LocalInputView inputView = _inputViews.FirstOrDefault(view => view.Input.Player == player.Id);
+            if (inputView != null)
+            {
+                inputView.Hide();
+            }
         }
 
         private NetworkSession _session;

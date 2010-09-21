@@ -73,30 +73,11 @@ namespace Strategy.Interface.Gameplay
         /// <summary>
         /// Shows that this player was eliminated from the match.
         /// </summary>
-        public void ShowEliminated()
+        public void ShowLeft()
         {
             _nameAnimation = new CompositeAnimation(
                 new ColorAnimation(_name, new Color(176, 176, 176), 1f, Interpolation.InterpolateColor(Easing.Uniform)),
                 new ColorAnimation(_nameShadow, new Color(64, 64, 64, 64), 1f, Interpolation.InterpolateColor(Easing.Uniform)));
-        }
-
-        /// <summary>
-        /// Shows that this previously human player was dropped from the match.
-        /// </summary>
-        public void ShowDropped()
-        {
-            string newDisplayName = Player.DisplayName;
-            _nameAnimation = new SequentialAnimation(
-                new CompositeAnimation(
-                    new ColorAnimation(_name, Color.TransparentWhite, 1f, Interpolation.InterpolateColor(Easing.Uniform)),
-                    new ColorAnimation(_nameShadow, Color.TransparentWhite, 1f, Interpolation.InterpolateColor(Easing.Uniform))),
-                new DelayAnimation(0.1f),
-                new CompositeAnimation(
-                    new TextAnimation(_name, newDisplayName),
-                    new TextAnimation(_nameShadow, newDisplayName)),
-                new CompositeAnimation(
-                    new ColorAnimation(_name, Color.White, 1f, Interpolation.InterpolateColor(Easing.Uniform)),
-                    new ColorAnimation(_nameShadow, new Color(30, 30, 30, 160), 1f, Interpolation.InterpolateColor(Easing.Uniform))));
         }
 
         /// <summary>
