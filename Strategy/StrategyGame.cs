@@ -211,7 +211,7 @@ namespace Strategy
 
         private void CreateDebugGame()
         {
-            const int DebugHuman = 4;
+            const int DebugHuman = 2;
             const int DebugAI = 0;
 
             Random random = new Random();

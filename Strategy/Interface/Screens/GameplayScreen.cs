@@ -176,7 +176,8 @@ namespace Strategy.Interface.Screens
             _awardments.MatchEnded(player.Id);
 
             string message = string.Format(Resources.GameWon, player.DisplayName);
-            MessageScreen messageScreen = new MessageScreen(Stack.Game, message, typeof(LobbyScreen));
+            float time = _lockstepMatch.Match.Map.Territories.Max(t => t.Cooldown) + 3f;
+            MessageScreen messageScreen = new MessageScreen(Stack.Game, message, typeof(LobbyScreen), time);
             Stack.Push(messageScreen);
         }
 
@@ -196,7 +197,6 @@ namespace Strategy.Interface.Screens
         private void OnPlayerLeftMatch(Player player)
         {
             // have the player sit idle
-            player.Controller = null;
             player.Input = null;
 
             // update the player view
