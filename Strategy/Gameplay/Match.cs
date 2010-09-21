@@ -544,7 +544,7 @@ namespace Strategy.Gameplay
         /// </summary>
         private float GetPieceCreationSpeed(int numTerritoriesOwned)
         {
-            return Math.Min(PieceCreationBaseSpeed + numTerritoriesOwned * 0.1f, PieceCreationMaxSpeed);
+            return numTerritoriesOwned > 0 ? Math.Min(PieceCreationBaseSpeed + numTerritoriesOwned * 0.1f, PieceCreationMaxSpeed) : 0;
         }
 
         /// <summary>
