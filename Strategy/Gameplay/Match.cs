@@ -246,7 +246,6 @@ namespace Strategy.Gameplay
 
                 // change the owner
                 defender.Owner = attacker.Owner;
-                TerritoryDidChangeOwners(defender, previousOwner);
             }
             else // attack failed
             {
@@ -280,6 +279,11 @@ namespace Strategy.Gameplay
             if (TerritoryAttacked != null)
             {
                 TerritoryAttacked(this, new TerritoryAttackedEventArgs(attacker, attackers, defender, defenders, success));
+            }
+
+            if (defender.Owner != previousOwner)
+            {
+                TerritoryDidChangeOwners(defender, previousOwner);
             }
         }
 

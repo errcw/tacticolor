@@ -188,7 +188,7 @@ namespace Strategy.Interface.Screens
 
             string message = string.Format(Resources.GameWon, player.DisplayName);
             _endScreen = new MessageScreen(Stack.Game, message, typeof(LobbyScreen));
-            _endTime = _lockstepMatch.Match.Map.Territories.Max(t => t.Cooldown) + 3f;
+            _endTime = _lockstepMatch.Match.Map.Territories.Max(t => t.Cooldown) / 1000f;
         }
 
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
