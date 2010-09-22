@@ -540,7 +540,7 @@ namespace Strategy.Gameplay
             if (RemainingPlayerCount == 1)
             {
                 IsEnded = true;
-                if (Ended!= null)
+                if (Ended != null)
                 {
                     PlayerId winner = (PlayerId)_numTerritoriesOwned.IndexOf(owned => owned > 0);
                     Ended(this, new PlayerEventArgs(winner));
