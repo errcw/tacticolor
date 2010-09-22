@@ -74,8 +74,8 @@ namespace Strategy.Interface.Gameplay
         public void Hide()
         {
             _animation = new CompositeAnimation(
-                new ColorAnimation(_cursorHover, Color.TransparentWhite, 0.3f, Interpolation.InterpolateColor(Easing.QuadraticOut)),
-                new ColorAnimation(_cursorSelect, Color.TransparentWhite, 0.3f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
+                new ColorAnimation(_cursorHover, Color.TransparentWhite, 0.5f, Interpolation.InterpolateColor(Easing.QuadraticOut)),
+                new ColorAnimation(_cursorSelect, Color.TransparentWhite, 0.5f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
             _repeatAnimation = false;
         }
 

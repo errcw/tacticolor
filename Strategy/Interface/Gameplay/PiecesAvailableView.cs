@@ -83,8 +83,9 @@ namespace Strategy.Interface.Gameplay
             if (_creatingSprite != null)
             {
                 sprites = sprites.Concat(Enumerable.Repeat(_creatingSprite, 1));
+                _creatingSprite = null; // force it to stop updating
             }
-            var animations = sprites.Select(s => new ColorAnimation(s, TransparentColor, 0.2f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
+            var animations = sprites.Select(s => new ColorAnimation(s, TransparentColor, 1f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
             _hideAnimation = new CompositeAnimation(animations.ToArray());
         }
 
