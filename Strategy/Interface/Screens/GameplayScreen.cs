@@ -37,6 +37,7 @@ namespace Strategy.Interface.Screens
 
             // create the model
             _lockstepMatch = new LockstepMatch(match);
+            _lockstepMatch.Match.TerritoryAttacked += OnTerritoryAttacked;
             _lockstepMatch.Match.PlayerEliminated += OnPlayerEliminated;
             _lockstepMatch.Match.Ended += OnMatchEnded;
 
@@ -178,6 +179,30 @@ namespace Strategy.Interface.Screens
         {
             Player player = _players.Single(p => p.Id == args.Player);
             ShowPlayerLeftMatch(player);
+            // check for no more human players?
+        }
+
+        private void OnTerritoryAttacked(object matchObj, TerritoryAttackedEventArgs args)
+        {
+            if (Guide.IsTrialMode)
+            {
+                Match match = _lockstepMatch.Match;
+                if (match.RemainingPlayerCount == 2 && args.Successful)
+                {
+                    PlayerId playerId = args.Defenders.First().Piece.Owner;
+                    Player player = _players.Single(p => p.Id == playerId);
+                    if (player.Gamer == null) // computer player lost a territory
+                    {
+                        int remainingCount = match.Map.Territories.Count(t => t.Owner == defender);
+                        if (remainingCount <= 3)
+                        {
+                            // game is almost over, show the trial screen
+                            MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.TrialMatchEnd);
+                            Stack.Push(messageScreen);
+                        }
+                    }
+                }
+            }
         }
 
         private void OnMatchEnded(object matchObj, PlayerEventArgs args)

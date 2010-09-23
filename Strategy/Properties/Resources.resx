@@ -406,4 +406,7 @@
   <data name="Strategy" xml:space="preserve">
     <value>Strategy</value>
   </data>
+  <data name="TrialMatchEnd" xml:space="preserve">
+    <value>Get the full version to finish your conquest!</value>
+  </data>
 </root>

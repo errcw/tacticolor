@@ -923,5 +923,14 @@ namespace Strategy.Properties {
                 return ResourceManager.GetString("Strategy", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Get the full version to finish your conquest!.
+        /// </summary>
+        internal static string TrialMatchEnd {
+            get {
+                return ResourceManager.GetString("TrialMatchEnd", resourceCulture);
+            }
+        }
     }
 }
