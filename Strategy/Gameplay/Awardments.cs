@@ -485,7 +485,7 @@ namespace Strategy.Gameplay
 
     public class ManyPiecesPlacedAwardment : PiecePlacementAwardment
     {
-        public ManyPiecesPlacedAwardment() : base(100)
+        public ManyPiecesPlacedAwardment() : base(250)
         {
             Name = Resources.AwardmentManyPiecesPlacedName;
             Description = Resources.AwardmentManyPiecesPlacedDescription;

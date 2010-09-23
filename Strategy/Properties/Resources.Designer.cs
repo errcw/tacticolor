@@ -169,7 +169,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Place 100 pieces..
+        ///   Looks up a localized string similar to Place 250 pieces..
         /// </summary>
         internal static string AwardmentManyPiecesPlacedDescription {
             get {
