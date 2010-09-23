@@ -148,19 +148,22 @@ namespace Strategy.Interface.Gameplay
                     pieceAction);
             }
 
-            // keep running any existing animation to completion
-            if (_actionAnimation != null)
-            {
-                pieceAction = new CompositeAnimation(
-                    _actionAnimation,
-                    pieceAction);
-            }
-
-            _actionAnimation = new SequentialAnimation(
+            // put together the sequence
+            IAnimation animation = new SequentialAnimation(
                 new DelayAnimation(showDelay),
                 showRoll,
                 new DelayAnimation(actionDelay),
                 new CompositeAnimation(pieceAction, hideRoll));
+
+            if (_actionAnimation == null)
+            {
+                _actionAnimation = animation;
+            }
+            else
+            {
+                // keep running any existing animation to completion
+                _actionAnimation = new CompositeAnimation(_actionAnimation, animation);
+            }
         }
 
         public void Update(float time)
