@@ -56,4 +56,7 @@ Thoughts
 - Lobby
   + Invalidate player readiness when game configuration changes
   + Show blank entries for non-local games until configuration arrives
-  
+- Trial
+  + End games when only a few territories are left to capture
+  + Allow only one map size and game type
+  + Disable awardment saving

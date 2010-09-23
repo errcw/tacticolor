@@ -211,8 +211,8 @@ namespace Strategy
 
         private void CreateDebugGame()
         {
-            const int DebugHuman = 1;
-            const int DebugAI = 3;
+            const int DebugHuman = 2;
+            const int DebugAI = 0;
 
             Random random = new Random();
             MapGenerator generator = new MapGenerator(random);
@@ -234,6 +234,8 @@ namespace Strategy
                     players[p].Input = new AIInput(players[p].Id, match, AIDifficulty.Hard, random);
                 }
             }
+
+            players[1].Input = null;
 
             _input.Controller = PlayerIndex.One;
 
