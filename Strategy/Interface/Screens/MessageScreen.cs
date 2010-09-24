@@ -128,11 +128,11 @@ namespace Strategy.Interface.Screens
             return lines.ToArray();
         }
 
-        private MenuInput _input;
+        protected MenuInput _input;
 
-        private Type _popUntilScreen;
+        protected Type _popUntilScreen;
 
-        private Sprite _sprite;
-        private SpriteBatch _spriteBatch;
+        protected Sprite _sprite;
+        protected SpriteBatch _spriteBatch;
     }
 }

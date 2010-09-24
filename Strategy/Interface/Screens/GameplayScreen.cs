@@ -193,12 +193,12 @@ namespace Strategy.Interface.Screens
                     Player player = _players.Single(p => p.Id == playerId);
                     if (player.Gamer == null) // computer player lost a territory
                     {
-                        int remainingCount = match.Map.Territories.Count(t => t.Owner == defender);
+                        int remainingCount = match.Map.Territories.Count(t => t.Owner == playerId);
                         if (remainingCount <= 3)
                         {
-                            // game is almost over, show the trial screen
-                            MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.TrialMatchEnd);
-                            Stack.Push(messageScreen);
+                            // game is almost over, show the purchase screen
+                            PurchaseScreen purchaseScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd);
+                            Stack.Push(purchaseScreen);
                         }
                     }
                 }
