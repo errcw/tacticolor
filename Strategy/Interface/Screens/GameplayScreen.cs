@@ -114,6 +114,13 @@ namespace Strategy.Interface.Screens
                 _session.Update();
             }
 
+            if (Stack.Game.Services.GetService<MenuInput>().Debug.Released)
+            {
+                PurchaseScreen ps = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd, typeof(MainMenuScreen));
+                Stack.Push(ps);
+                return;
+            }
+
             if (!_lockstepMatch.Match.IsEnded)
             {
                 int milliseconds = gameTime.GetElapsedMilliseconds();

@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Strategy.Properties;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
 using Strategy.Library.Sprite;
@@ -34,6 +35,8 @@ namespace Strategy.Interface.Screens
             box.Position = new Vector2(
                 (int)((1280 - box.Size.X) / 2),
                 (int)((720 - box.Size.Y) / 2));
+            _boxRightX = box.Position.X + box.Size.X;
+            _boxBottomY = box.Position.Y + box.Size.Y;
 
             SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextLarge");
             string[] lines = SplitLines(messageText, box.Size.X * 0.8f, font);
@@ -49,10 +52,8 @@ namespace Strategy.Interface.Screens
             }
             CompositeSprite message = new CompositeSprite(lineSprites);
 
-            TextSprite instructions = new TextSprite(font, "Continue");
-            instructions.Position = new Vector2(
-                box.Position.X + box.Size.X - instructions.Size.X,
-                box.Position.Y + box.Size.Y + 5);
+            TextSprite instructions = new TextSprite(font, Resources.MenuContinue);
+            instructions.Position = new Vector2(_boxRightX - instructions.Size.X, _boxBottomY + 5);
             instructions.Color = new Color(60, 60, 60);
 
             ImageSprite button = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonA"));
@@ -132,7 +133,9 @@ namespace Strategy.Interface.Screens
 
         protected Type _popUntilScreen;
 
-        protected Sprite _sprite;
-        protected SpriteBatch _spriteBatch;
+        protected CompositeSprite _sprite;
+        protected float _boxRightX;
+        protected float _boxBottomY;
+        private SpriteBatch _spriteBatch;
     }
 }
