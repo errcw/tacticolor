@@ -23,7 +23,7 @@ namespace Strategy.Interface.Gameplay
             Player = player;
 
             BasePosition = GetBasePosition(Player);
-            SolidColor = GetPlayerColor(Player);
+            SolidColor = Player.GetPieceColor();
             TransparentColor = new Color(SolidColor, 0);
 
             Texture2D pieceSprite = context.Content.Load<Texture2D>("Images/PieceAvailable");
@@ -150,21 +150,6 @@ namespace Strategy.Interface.Gameplay
             _creatingSprite.Y = BasePosition.Y;
             _creatingSprite.X = BasePosition.X + _match.PiecesAvailable[(int)Player] * PieceSpacing;
             _creatingTargetX = _creatingSprite.X;
-        }
-
-        /// <summary>
-        /// Returns the color of the given player.
-        /// </summary>
-        private Color GetPlayerColor(PlayerId player)
-        {
-            switch (player)
-            {
-                case PlayerId.A: return new Color(221, 104, 168);
-                case PlayerId.B: return new Color(103, 180, 219);
-                case PlayerId.C: return new Color(82, 165, 114);
-                case PlayerId.D: return new Color(249, 235, 124);
-                default: throw new ArgumentException("Invalid player id " + player);
-            }
         }
 
         /// <summary>

@@ -28,7 +28,7 @@ namespace Strategy.Interface.Gameplay
             _piece = piece;
             _context = context;
 
-            PlayerColor = GetPlayerColor(_piece.Owner);
+            PlayerColor = _piece.Owner.GetPieceColor();
             UnreadyColor = Color.Lerp(PlayerColor, Color.White, 0.75f);
 
             Texture2D pieceTex = context.Content.Load<Texture2D>("Images/Piece");
@@ -247,18 +247,6 @@ namespace Strategy.Interface.Gameplay
         {
             _showingSelected = false;
             return new PositionAnimation(_pyramidSprite, Vector2.Zero, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
-        }
-
-        private Color GetPlayerColor(PlayerId player)
-        {
-            switch (player)
-            {
-                case PlayerId.A: return new Color(221, 104, 168);
-                case PlayerId.B: return new Color(103, 180, 219);
-                case PlayerId.C: return new Color(82, 165, 114);
-                case PlayerId.D: return new Color(249, 235, 124);
-                default: throw new ArgumentException("Invalid player id " + player);
-            }
         }
 
         private Piece _piece;

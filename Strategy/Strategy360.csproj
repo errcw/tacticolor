@@ -80,6 +80,7 @@
     <Compile Include="Interface\MenuInput.cs" />
     <Compile Include="Interface\Options.cs" />
     <Compile Include="Interface\Player.cs" />
+    <Compile Include="Interface\PlayerIdExtensions.cs" />
     <Compile Include="Interface\Screens\AsyncBusyScreen.cs" />
     <Compile Include="Interface\Screens\GameplayScreen.cs" />
     <Compile Include="Interface\Screens\LobbyScreen.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="Interface\Screens\MatchOverScreen.cs" />
     <Compile Include="Interface\Screens\MenuScreen.cs" />
     <Compile Include="Interface\Screens\MessageScreen.cs" />
+    <Compile Include="Interface\Screens\PurchaseScreen.cs" />
     <Compile Include="Interface\Screens\TitleScreen.cs" />
     <Compile Include="Interface\SlidingPanel.cs" />
     <Compile Include="Library\BresenhamIterator.cs" />

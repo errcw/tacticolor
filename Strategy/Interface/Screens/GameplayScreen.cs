@@ -197,7 +197,7 @@ namespace Strategy.Interface.Screens
                         if (remainingCount <= 3)
                         {
                             // game is almost over, show the purchase screen
-                            PurchaseScreen purchaseScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd);
+                            PurchaseScreen purchaseScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd, typeof(MainMenuScreen));
                             Stack.Push(purchaseScreen);
                         }
                     }

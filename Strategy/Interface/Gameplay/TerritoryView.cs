@@ -33,7 +33,7 @@ namespace Strategy.Interface.Gameplay
 
             Texture2D tile = context.Content.Load<Texture2D>("Images/Tile");
             Texture2D tileHolder = context.Content.Load<Texture2D>("Images/TileHolder");
-            Color color = GetPlayerColor(territory.Owner);
+            Color color = territory.Owner.GetTerritoryColor();
 
             _sprites = new Sprite[_territory.Area.Count];
             int s = 0;
@@ -98,7 +98,7 @@ namespace Strategy.Interface.Gameplay
         {
             if (_territory.Owner != _lastOwner)
             {
-                Color newColor = GetPlayerColor(_territory.Owner);
+                Color newColor = _territory.Owner.GetTerritoryColor();
                 _colorAnims = new IAnimation[_sprites.Length];
                 for (int i = 0; i < _sprites.Length; i++)
                 {
@@ -146,19 +146,6 @@ namespace Strategy.Interface.Gameplay
             _freeHolders.Push(new Cell(1, 0));
             _freeHolders.Push(new Cell(-1, 0));
             _freeHolders.Push(new Cell(0, 0));
-        }
-
-        private Color GetPlayerColor(PlayerId? player)
-        {
-            switch (player)
-            {
-                case PlayerId.A: return new Color(222, 35, 136);
-                case PlayerId.B: return new Color(33, 157, 221);
-                case PlayerId.C: return new Color(0, 168, 67);
-                case PlayerId.D: return new Color(251, 223, 0);
-                case null: return Color.White;
-                default: throw new ArgumentException("Invalid player id " + player);
-            }
         }
 
         private Territory _territory;

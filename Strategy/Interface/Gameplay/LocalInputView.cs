@@ -28,12 +28,12 @@ namespace Strategy.Interface.Gameplay
             Texture2D cursorTex = context.Content.Load<Texture2D>("Images/Cursor");
 
             _cursorHover = new ImageSprite(cursorTex);
-            _cursorHover.Color = GetPlayerColor(input.Player);
+            _cursorHover.Color = input.Player.GetTerritoryColor();
             _cursorHover.Position = GetPosition(ChooseCell(Input.Hovered));
             _cursorHover.Origin = new Vector2(0, 14);
 
             _cursorSelect = new ImageSprite(cursorTex);
-            _cursorSelect.Color = new Color(GetPlayerColor(input.Player), 128);
+            _cursorSelect.Color = new Color(input.Player.GetTerritoryColor(), 128);
             _cursorSelect.Origin = new Vector2(0, 14);
 
             // bounce the cursor until the player acts
@@ -160,21 +160,6 @@ namespace Strategy.Interface.Gameplay
             Vector2 position = new Vector2(point.X, point.Y);
             position += new Vector2(9, 9); // offset in tile
             return position;
-        }
-
-        /// <summary>
-        /// Returns the color of the given player.
-        /// </summary>
-        private Color GetPlayerColor(PlayerId player)
-        {
-            switch (player)
-            {
-                case PlayerId.A: return new Color(222, 35, 136);
-                case PlayerId.B: return new Color(33, 157, 221);
-                case PlayerId.C: return new Color(0, 168, 67);
-                case PlayerId.D: return new Color(251, 223, 0);
-                default: throw new ArgumentException("Invalid player id " + player);
-            }
         }
 
         private InterfaceContext _context;
