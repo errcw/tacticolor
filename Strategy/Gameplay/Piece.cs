@@ -71,6 +71,6 @@ namespace Strategy.Gameplay
         }
 
         private int _timer;
-        private const int ReadyTime = 6000;
+        private const int ReadyTime = 5000;
     }
 }

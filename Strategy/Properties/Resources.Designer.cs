@@ -484,7 +484,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pieces can only move or attack every 6 seconds.
+        ///   Looks up a localized string similar to Pieces can only move or attack every 5 seconds.
         /// </summary>
         internal static string InstructionsWaiting {
             get {
