@@ -39,14 +39,15 @@ namespace Strategy
             Components.Add(_screens = new ScreenStack(this));
             Components.Add(_input = new MenuInput(this));
             Components.Add(_storage = new SharedStorage(this, "Strategy"));
+            Components.Add(_trial = new TrialModeObserverComponent(this));
 
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
             //Components.Add(new FPSOverlay(this));
-            Components.Add(new TrialModeObserverComponent(this));
             Components.Add(new GamerServicesComponent(this));
 
             Services.AddService<MenuInput>(_input);
             Services.AddService<Storage>(_storage);
+            Services.AddService<TrialModeObserverComponent>(_trial);
             Services.AddService<Options>(_options = new Options());
             Services.AddService<Awardments>(_awardments = new Awardments());
         }
@@ -248,5 +249,6 @@ namespace Strategy
         private Options _options;
         private Storage _storage;
         private Awardments _awardments;
+        private TrialModeObserverComponent _trial;
     }
 }

@@ -601,6 +601,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Continue.
+        /// </summary>
+        internal static string MenuContinue {
+            get {
+                return ResourceManager.GetString("MenuContinue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Controls.
         /// </summary>
         internal static string MenuControls {
@@ -934,11 +943,47 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Get the full version to finish your conquest!.
+        ///   Looks up a localized string similar to Get the full version to keep playing and finish your conquest!.
         /// </summary>
         internal static string TrialMatchEnd {
             get {
                 return ResourceManager.GetString("TrialMatchEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Play online!.
+        /// </summary>
+        internal static string TrialUpsellReason0 {
+            get {
+                return ResourceManager.GetString("TrialUpsellReason0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Earn awardments!.
+        /// </summary>
+        internal static string TrialUpsellReason1 {
+            get {
+                return ResourceManager.GetString("TrialUpsellReason1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to More match types!.
+        /// </summary>
+        internal static string TrialUpsellReason2 {
+            get {
+                return ResourceManager.GetString("TrialUpsellReason2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finish matches!.
+        /// </summary>
+        internal static string TrialUpsellReason3 {
+            get {
+                return ResourceManager.GetString("TrialUpsellReason3", resourceCulture);
             }
         }
     }

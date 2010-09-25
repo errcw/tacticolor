@@ -22,6 +22,8 @@ namespace Strategy.Interface
         public readonly ControlState Down = new ControlState();
         public readonly ControlState Buy = new ControlState();
 
+        public readonly ControlState Debug = new ControlState();
+
         public readonly ControlState[] Join;
         public readonly ControlState[] Leave;
 
@@ -34,6 +36,7 @@ namespace Strategy.Interface
             _input.Register(Up, Polling.Any(Polling.One(Buttons.DPadUp), Polling.One(Buttons.LeftThumbstickUp)));
             _input.Register(Down, Polling.Any(Polling.One(Buttons.DPadDown), Polling.One(Buttons.LeftThumbstickDown)));
             _input.Register(Buy, Polling.One(Buttons.X));
+            _input.Register(Debug, Polling.One(Buttons.Y));
 
             // register the lobby inputs
             _inputs = new Input[4];
