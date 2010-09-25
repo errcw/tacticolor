@@ -66,10 +66,10 @@ namespace Strategy
 
             SignedInGamer.SignedOut += OnGamerSignedOut;
 
-            CreateDebugGame();
-            //TitleScreen titleScreen = new TitleScreen(this);
-            //titleScreen.ContentLoaded += OnContentLoaded;
-            //_screens.Push(titleScreen);
+            //CreateDebugGame();
+            TitleScreen titleScreen = new TitleScreen(this);
+            titleScreen.ContentLoaded += OnContentLoaded;
+            _screens.Push(titleScreen);
         }
 
         /// <summary>

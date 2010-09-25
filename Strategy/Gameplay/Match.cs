@@ -73,6 +73,11 @@ namespace Strategy.Gameplay
         public float[] PieceCreationProgress { get; private set; }
 
         /// <summary>
+        /// The number of territories owned by each player.
+        /// </summary>
+        public int[] TerritoriesOwnedCount { get; private set; }
+
+        /// <summary>
         /// The current game time.
         /// </summary>
         public long Time { get; private set; }
@@ -432,13 +437,13 @@ namespace Strategy.Gameplay
         /// </summary>
         private void SetInitialTerritoryState()
         {
-            _numTerritoriesOwned = new int[PlayerCount];
+            TerritoriesOwnedCount = new int[PlayerCount];
             foreach (Territory territory in _map.Territories)
             {
                 territory.Cooldown = 0;
                 if (territory.Owner.HasValue)
                 {
-                    _numTerritoriesOwned[(int)territory.Owner] += 1;
+                    TerritoriesOwnedCount[(int)territory.Owner] += 1;
                 }
             }
         }
@@ -456,7 +461,7 @@ namespace Strategy.Gameplay
             for (int p = 0; p < PlayerCount; p++)
             {
                 _pieceCreationElapsed[p] = 0;
-                _pieceCreationSpeed[p] = GetPieceCreationSpeed(_numTerritoriesOwned[p]);
+                _pieceCreationSpeed[p] = GetPieceCreationSpeed(TerritoriesOwnedCount[p]);
                 PieceCreationProgress[p] = 0f;
                 PiecesAvailable[p] = 0;
             }
@@ -515,19 +520,19 @@ namespace Strategy.Gameplay
         private void TerritoryDidChangeOwners(Territory territory, PlayerId? previousOwner)
         {
             int ownerIdx = (int)territory.Owner;
-            _numTerritoriesOwned[ownerIdx] += 1;
-            _pieceCreationSpeed[ownerIdx] = GetPieceCreationSpeed(_numTerritoriesOwned[ownerIdx]);
+            TerritoriesOwnedCount[ownerIdx] += 1;
+            _pieceCreationSpeed[ownerIdx] = GetPieceCreationSpeed(TerritoriesOwnedCount[ownerIdx]);
 
             // might not have a value if territory was unowned
             if (previousOwner.HasValue)
             {
                 int prevIdx = (int)previousOwner;
-                _numTerritoriesOwned[prevIdx] -= 1;
-                if (_numTerritoriesOwned[prevIdx] <= 0)
+                TerritoriesOwnedCount[prevIdx] -= 1;
+                if (TerritoriesOwnedCount[prevIdx] <= 0)
                 {
                     PlayerWasEliminated(previousOwner.Value);
                 }
-                _pieceCreationSpeed[prevIdx] = GetPieceCreationSpeed(_numTerritoriesOwned[prevIdx]);
+                _pieceCreationSpeed[prevIdx] = GetPieceCreationSpeed(TerritoriesOwnedCount[prevIdx]);
             }
         }
 
@@ -546,7 +551,7 @@ namespace Strategy.Gameplay
                 IsEnded = true;
                 if (Ended != null)
                 {
-                    PlayerId winner = (PlayerId)_numTerritoriesOwned.IndexOf(owned => owned > 0);
+                    PlayerId winner = (PlayerId)TerritoriesOwnedCount.IndexOf(owned => owned > 0);
                     Ended(this, new PlayerEventArgs(winner));
                 }
             }
@@ -583,8 +588,6 @@ namespace Strategy.Gameplay
 
         private int[] _pieceCreationElapsed;
         private float[] _pieceCreationSpeed;
-
-        private int[] _numTerritoriesOwned;
 
         private const int PieceCreationTime = 5000;
         private const float PieceCreationBaseSpeed = 1f;

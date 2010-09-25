@@ -12,15 +12,9 @@ Menu Structure
 --------------
 
 * Single Player
-  - Quick Match
-  - Custom Match
-* Multiplayer
-  - LIVE
-    + Create Match
-    + Join Match
-  - System Link
-    + Create Match
-    + Join Match
+* LIVE Multiplayer
+  - Create Match
+  - Join Match
 * Awardments
 * Help & Options
   - How to Play
@@ -33,6 +27,7 @@ Menu Structure
     + Music on/off
     + Sound on/off
     + Change storage device
+  - Credits
 * Get Full Version
 * Exit to Dashboard
 
