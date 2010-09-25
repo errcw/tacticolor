@@ -421,6 +421,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All the humans are defeated!.
+        /// </summary>
+        internal static string GameLost {
+            get {
+                return ResourceManager.GetString("GameLost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} won!.
         /// </summary>
         internal static string GameWon {

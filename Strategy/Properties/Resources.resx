@@ -237,6 +237,9 @@
   <data name="ExceptionTrace" xml:space="preserve">
     <value>Stack Trace: {0}</value>
   </data>
+  <data name="GameLost" xml:space="preserve">
+    <value>All the humans are defeated!</value>
+  </data>
   <data name="GameWon" xml:space="preserve">
     <value>{0} won!</value>
   </data>

@@ -179,11 +179,19 @@ namespace Strategy.Interface.Screens
         {
             Player player = _players.Single(p => p.Id == args.Player);
             ShowPlayerLeftMatch(player);
-            // check for no more human players?
+
+            // check if all the human players have been defeated
+            int maxHumanTerritories = _players.Where(p => p.Gamer != null).Max(p => _lockstepMatch.Match.TerritoriesOwnedCount[(int)p.Id]);
+            if (maxHumanTerritories == 0)
+            {
+                _endScreen = new MessageScreen(Stack.Game, Resources.GameLost, typeof(LobbyScreen));
+                _endTime = _lockstepMatch.Match.Map.Territories.Max(t => t.Cooldown) / 1000f;
+            }
         }
 
         private void OnTerritoryAttacked(object matchObj, TerritoryAttackedEventArgs args)
         {
+            // stop the match before it finished in trial mode
             if (Guide.IsTrialMode)
             {
                 Match match = _lockstepMatch.Match;
@@ -193,7 +201,7 @@ namespace Strategy.Interface.Screens
                     Player player = _players.Single(p => p.Id == playerId);
                     if (player.Gamer == null) // computer player lost a territory
                     {
-                        int remainingCount = match.Map.Territories.Count(t => t.Owner == playerId);
+                        int remainingCount = match.TerritoriesOwnedCount[(int)playerId];
                         if (remainingCount <= 3)
                         {
                             // game is almost over, show the purchase screen
@@ -248,6 +256,10 @@ namespace Strategy.Interface.Screens
             {
                 inputView.Hide();
             }
+        }
+
+        private void ShowMatchEnded(string message)
+        {
         }
 
         private NetworkSession _session;
