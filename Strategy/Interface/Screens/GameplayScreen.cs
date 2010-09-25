@@ -133,6 +133,11 @@ namespace Strategy.Interface.Screens
                 _endTime -= seconds;
                 if (_endTime <= 0f)
                 {
+                    if (_session.IsHost)
+                    {
+                        _session.EndGame();
+                        _session.Update(); // force an update to get the new state right away
+                    }
                     Stack.Push(_endScreen);
                 }
             }
@@ -191,6 +196,9 @@ namespace Strategy.Interface.Screens
 
         private void OnTerritoryAttacked(object matchObj, TerritoryAttackedEventArgs args)
         {
+            _endScreen = new MessageScreen(Stack.Game, Resources.GameLost, typeof(LobbyScreen));
+            _endTime = _lockstepMatch.Match.Map.Territories.Max(t => t.Cooldown) / 1000f;
+
             // stop the match before it finished in trial mode
             if (Guide.IsTrialMode)
             {
@@ -205,8 +213,8 @@ namespace Strategy.Interface.Screens
                         if (remainingCount <= 3)
                         {
                             // game is almost over, show the purchase screen
-                            PurchaseScreen purchaseScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd, typeof(MainMenuScreen));
-                            Stack.Push(purchaseScreen);
+                            _endScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd, typeof(MainMenuScreen));
+                            _endTime = 0f;
                         }
                     }
                 }
@@ -256,10 +264,6 @@ namespace Strategy.Interface.Screens
             {
                 inputView.Hide();
             }
-        }
-
-        private void ShowMatchEnded(string message)
-        {
         }
 
         private NetworkSession _session;

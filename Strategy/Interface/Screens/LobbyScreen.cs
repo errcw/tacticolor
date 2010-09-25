@@ -58,11 +58,19 @@ namespace Strategy.Interface.Screens
 
         protected internal override void Show(bool pushed)
         {
+            // handle the case where we are returning to the lobby after a game
+            if (!pushed)
+            {
+                _players.Clear(); // we will have the players in the session re-added
+                _session.ResetReady();
+            }
+
             _session.GamerJoined += OnGamerJoined;
             _session.GamerLeft += OnGamerLeft;
             _session.HostChanged += OnHostChanged;
             _session.GameStarted += OnGameStarted;
             _session.SessionEnded += OnSessionEnded;
+
             base.Show(pushed);
         }
 

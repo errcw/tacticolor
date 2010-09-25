@@ -25,6 +25,7 @@ namespace Strategy.Interface.Gameplay
             match.PiecesMoved += OnPiecesMoved;
             match.TerritoryAttacked += OnTerritoryAttacked;
 
+            _context.IsoParams.OffsetX = _context.IsoParams.OffsetY = 0; // reset the values
             Rectangle extents = CalculatePixelExtents();
             _context.IsoParams.OffsetX = (1280 - extents.Width) / 2 - extents.X;
             _context.IsoParams.OffsetY = (720 - extents.Height) / 2 - extents.Y;
