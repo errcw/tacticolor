@@ -62,7 +62,10 @@ namespace Strategy.Interface.Screens
             if (!pushed)
             {
                 _players.Clear(); // we will have the players in the session re-added
-                _session.ResetReady();
+                if (_session.IsHost)
+                {
+                    _session.ResetReady();
+                }
             }
 
             _session.GamerJoined += OnGamerJoined;
