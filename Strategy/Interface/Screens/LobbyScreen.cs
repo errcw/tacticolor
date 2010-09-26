@@ -66,6 +66,7 @@ namespace Strategy.Interface.Screens
                 {
                     _session.ResetReady();
                 }
+                _seed = 0; // choose a new seed
             }
 
             _session.GamerJoined += OnGamerJoined;
