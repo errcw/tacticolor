@@ -12,7 +12,7 @@ namespace Strategy.Interface.Gameplay
     {
         public BackgroundView(InterfaceContext context)
         {
-            _background = context.Content.Load<Texture2D>("Images/Background");
+            _background = context.Content.Load<Texture2D>("Images/BackgroundGame");
         }
 
         public void Draw(SpriteBatch spriteBatch)

@@ -160,6 +160,7 @@ namespace Strategy.Interface.Screens
         {
             _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.BackToFront, SaveStateMode.None);
             //XXX
+            _entriesSprite.Draw(_spriteBatch);
             _spriteBatch.End();
         }
 
@@ -208,7 +209,7 @@ namespace Strategy.Interface.Screens
         /// <summary>
         /// Updates this screen.
         /// </summary>
-        protected override void  UpdateActive(GameTime gameTime)
+        protected override void UpdateActive(GameTime gameTime)
         {
             if (_input.Cancel.Pressed)
             {
