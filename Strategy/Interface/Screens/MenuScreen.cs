@@ -27,12 +27,12 @@ namespace Strategy.Interface.Screens
         /// <summary>
         /// The number of entries to display on each screen before scrolling.
         /// </summary>
-        protected int NumVisibleEntries { get; set; }
+        protected int VisibleEntryCount { get; set; }
 
         /// <summary>
         /// If the back button should be displayed if this is a root menu screen.
         /// </summary>
-        protected bool ShowBackOnRoot { get; set; }
+        protected bool AllowBackOnRoot { get; set; }
 
         /// <summary>
         /// The vertical padding, in pixels, between menu entries.
@@ -47,10 +47,12 @@ namespace Strategy.Interface.Screens
             _input = game.Services.GetService<MenuInput>();
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
+            LoadContent(game.Content);
+
             ShowBeneath = true;
             TransitionOnTime = 0.4f;
             TransitionOffTime = 0.2f;
-            NumVisibleEntries = 5;
+            VisibleEntryCount = 5;
             Spacing = 10f;
         }
 
@@ -61,7 +63,7 @@ namespace Strategy.Interface.Screens
         public void AddEntry(MenuEntry entry)
         {
             _entries.Add(entry);
-            if (_visibleEntries.Count < NumVisibleEntries)
+            if (_visibleEntries.Count < VisibleEntryCount)
             {
                 ShowEntry(entry, _visibleEntries.Count);
             }
@@ -159,8 +161,9 @@ namespace Strategy.Interface.Screens
         public override void Draw()
         {
             _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.BackToFront, SaveStateMode.None);
-            //XXX
             _entriesSprite.Draw(_spriteBatch);
+            _selectSprite.Draw(_spriteBatch);
+            _backSprite.Draw(_spriteBatch);
             _spriteBatch.End();
         }
 
@@ -170,9 +173,8 @@ namespace Strategy.Interface.Screens
         protected internal override void Show(bool pushed)
         {
             base.Show(pushed);
-            //XXX
-            //_screenDescriptor.GetSprite("Back").Color = IsRoot && !ShowBackOnRoot ? Color.TransparentWhite : Color.White;
-            //_screenDescriptor.GetSprite("Select").Color = Color.White;
+            _backSprite.Color = IsRoot && !AllowBackOnRoot ? Color.TransparentWhite : Color.White;
+            _selectSprite.Color = Color.White;
             //_screenDescriptor.GetSprite("ArrowUp").Color = Color.TransparentWhite;
             //_screenDescriptor.GetSprite("ArrowDown").Color = Color.TransparentWhite;
             if (pushed)
@@ -181,7 +183,7 @@ namespace Strategy.Interface.Screens
                 _entries[_selectedEntryAbs].OnFocusChanged(false);
                 _visibleEntries.ToArray().ForEach(e => HideEntry(e));
                 _visibleEntries.Clear();
-                for (int i = 0; i < Math.Min(_entries.Count, NumVisibleEntries); i++)
+                for (int i = 0; i < Math.Min(_entries.Count, VisibleEntryCount); i++)
                 {
                     ShowEntry(_entries[i], _visibleEntries.Count);
                 }
@@ -201,9 +203,8 @@ namespace Strategy.Interface.Screens
             {
                 _entries[_selectedEntryRel].OnFocusChanged(false);
             }
-            //XXX
-            //_screenDescriptor.GetSprite("Select").Color = Color.TransparentWhite;
-            //_screenDescriptor.GetSprite("Back").Color = Color.TransparentWhite;
+            _selectSprite.Color = Color.TransparentWhite;
+            _backSprite.Color = Color.TransparentWhite;
         }
 
         /// <summary>
@@ -211,7 +212,7 @@ namespace Strategy.Interface.Screens
         /// </summary>
         protected override void UpdateActive(GameTime gameTime)
         {
-            if (_input.Cancel.Pressed)
+            if (_input.Cancel.Pressed && (!IsRoot || (IsRoot && AllowBackOnRoot)))
             {
                 Stack.Pop();
                 return;
@@ -295,7 +296,7 @@ namespace Strategy.Interface.Screens
             _selectedEntryRel = MathHelperExtensions.Clamp(nextRelEntry, 0, _visibleEntries.Count - 1);
             _selectedEntryAbs = MathHelperExtensions.Clamp(nextAbsEntry, 0, _entries.Count - 1);
 
-            if (_entries.Count > NumVisibleEntries)
+            if (_entries.Count > VisibleEntryCount)
             {
                 //XXX
                 //_screenDescriptor.GetSprite("ArrowUp").Color =
@@ -303,11 +304,9 @@ namespace Strategy.Interface.Screens
                 //_screenDescriptor.GetSprite("ArrowDown").Color =
                     //(_listWindowBaseIndex == _entries.Count - NumVisibleEntries) ? Color.TransparentWhite : Color.White;
             }
-            //XXX
-            //_screenDescriptor.GetSprite("Select").Color =
-                //_entries[_selectedEntryAbs].IsSelectable ? Color.White : Color.TransparentWhite;
-            //_screenDescriptor.GetSprite<TextSprite>("TextSelect").Text =
-                //_entries[_selectedEntryAbs].SelectText;
+
+            _selectSprite.Color = _entries[_selectedEntryAbs].IsSelectable ? Color.White : Color.TransparentWhite;
+            _selectTextSprite.Text = _entries[_selectedEntryAbs].SelectText;
 
             _entries[_selectedEntryAbs].OnFocusChanged(true);
 
@@ -335,9 +334,31 @@ namespace Strategy.Interface.Screens
             _entriesSprite.Remove(entry.Sprite);
         }
 
+        /// <summary>
+        /// Loads the menu content.
+        /// </summary>
+        private void LoadContent(ContentManager content)
+        {
+            SpriteFont font = content.Load<SpriteFont>("Fonts/TextLarge");
+
+            ImageSprite selectImage = new ImageSprite(content.Load<Texture2D>("Images/ButtonA"));
+            _selectTextSprite = new TextSprite(font, Resources.MenuSelect);
+            _selectSprite = new CompositeSprite(selectImage, _selectTextSprite);
+
+            ImageSprite backImage = new ImageSprite(content.Load<Texture2D>("Images/ButtonB"));
+            TextSprite backSprite = new TextSprite(font, Resources.MenuBack);
+            _backSprite = new CompositeSprite(backImage, backSprite);
+
+            _entriesSprite = new CompositeSprite();
+        }
+
         private CompositeSprite _entriesSprite;
-        private SoundEffect _soundMove;
+        private Sprite _selectSprite;
+        private TextSprite _selectTextSprite;
+        private Sprite _backSprite;
         private SpriteBatch _spriteBatch;
+
+        private SoundEffect _soundMove;
 
         private MenuInput _input;
 
