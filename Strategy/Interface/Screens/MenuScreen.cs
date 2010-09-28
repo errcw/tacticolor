@@ -342,12 +342,22 @@ namespace Strategy.Interface.Screens
             SpriteFont font = content.Load<SpriteFont>("Fonts/TextLarge");
 
             ImageSprite selectImage = new ImageSprite(content.Load<Texture2D>("Images/ButtonA"));
+            selectImage.Position = ControlsBasePosition;
             _selectTextSprite = new TextSprite(font, Resources.MenuSelect);
+            _selectTextSprite.Position = new Vector2(
+                selectImage.Position.X + selectImage.Size.X + 5,
+                selectImage.Position.Y + (selectImage.Size.Y - _selectTextSprite.Size.Y) / 2);
             _selectSprite = new CompositeSprite(selectImage, _selectTextSprite);
 
             ImageSprite backImage = new ImageSprite(content.Load<Texture2D>("Images/ButtonB"));
-            TextSprite backSprite = new TextSprite(font, Resources.MenuBack);
-            _backSprite = new CompositeSprite(backImage, backSprite);
+            backImage.Position = new Vector2(
+                _selectTextSprite.Position.X + _selectTextSprite.Size.X + 20,
+                ControlsBasePosition.Y);
+            TextSprite backText = new TextSprite(font, Resources.MenuBack);
+            backText.Position = new Vector2(
+                backImage.Position.X + backImage.Size.X + 5,
+                backImage.Position.Y + (backImage.Size.Y - backText.Size.Y) / 2);
+            _backSprite = new CompositeSprite(backImage, backText);
 
             _entriesSprite = new CompositeSprite();
         }
@@ -367,6 +377,8 @@ namespace Strategy.Interface.Screens
         private int _selectedEntryRel; /// relative index inside visible entries
         private int _selectedEntryAbs; /// absolute index inside all entries
         private int _listWindowBaseIndex; /// index of top entry
+
+        private readonly Vector2 ControlsBasePosition = new Vector2(50f, 650f);
     }
 
     /// <summary>
