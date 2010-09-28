@@ -38,7 +38,7 @@ namespace Strategy.Interface.Screens
             _storage = game.Services.GetService<Storage>();
 
             // load the initial content for the loading screen
-            _background = new ImageSprite(game.Content.Load<Texture2D>("Images/Background"));
+            _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundUI"));
 
             _title = new ImageSprite(game.Content.Load<Texture2D>("Images/Title"));
             _title.Position = new Vector2((1280 - _title.Size.X) / 2, (720 - _title.Size.Y) / 2);
