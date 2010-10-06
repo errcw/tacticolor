@@ -12,6 +12,17 @@ using Strategy.Library.Sprite;
 
 using Strategy.Properties;
 
+/* Notes:
+ * - full list of menu items
+ * - always draw the entire list, though some may have A=0
+ * - tag each item with the desired X and Y position
+ *   - at each update step animate items towards the desired positions
+ *   - start all at BaseX,BaseY and transparent
+ *     - use selected item as base (how to pass position?)
+ * - store index of the start of the currently visible items
+ * - moving up/down changes the base visible index
+ *   - fade out old and fade in new
+ */
 namespace Strategy.Interface.Screens
 {
     /// <summary>
