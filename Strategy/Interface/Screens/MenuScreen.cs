@@ -176,7 +176,7 @@ namespace Strategy.Interface.Screens
         /// </summary>
         protected override void UpdateActive(GameTime gameTime)
         {
-            if (_input.Cancel.Pressed && (!IsRoot || (IsRoot && AllowBackOnRoot)))
+            if (_input.Cancel.Released && (!IsRoot || (IsRoot && AllowBackOnRoot)))
             {
                 Stack.Pop();
                 return;
@@ -189,7 +189,7 @@ namespace Strategy.Interface.Screens
             {
                 SetSelected(1);
             }
-            else if (_input.Action.Pressed && _entries[_selectedEntryAbs].IsSelectable)
+            else if (_input.Action.Released && _entries[_selectedEntryAbs].IsSelectable)
             {
                 _entries[_selectedEntryAbs].OnSelected();
             }

@@ -66,7 +66,13 @@ namespace Strategy.Interface
         /// </summary>
         public bool FindAndSetActiveController()
         {
-            return _input.FindActiveController(Polling.One(Buttons.Start));
+            bool found = _input.FindActiveController(Polling.One(Buttons.Start));
+            if (found)
+            {
+                // update the state of the newly selected controller
+                _input.Update(0f);
+            }
+            return found;
         }
 
         private Input _input;

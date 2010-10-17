@@ -72,6 +72,14 @@ namespace Strategy.Interface.Screens
             _spriteBatch.End();
         }
 
+        protected internal override void Show(bool pushed)
+        {
+            // unset the controller value so a new controller may take control
+            _input.Controller = null;
+
+            base.Show(pushed);
+        }
+
         protected override void UpdateActive(GameTime gameTime)
         {
             if (_workerThread != null)
