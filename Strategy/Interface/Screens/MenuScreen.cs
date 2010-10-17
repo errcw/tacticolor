@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
+using Strategy.Gameplay;
 using Strategy.Library;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
@@ -68,7 +69,7 @@ namespace Strategy.Interface.Screens
 
             ShowBeneath = true;
             TransitionOnTime = 0.4f;
-            TransitionOffTime = 0.2f;
+            TransitionOffTime = 1.2f;
             VisibleEntryCount = 8;
             Spacing = 35f;
         }
@@ -165,7 +166,13 @@ namespace Strategy.Interface.Screens
             base.Hide(popped);
             if (popped)
             {
-                _entries[_selectedEntryRel].OnFocusChanged(false);
+                _entries[_selectedEntryAbs].OnFocusChanged(false);
+                // hide all the entries
+                foreach (MenuEntry entry in _entries)
+                {
+                    entry.TargetPosition = BasePosition;
+                    entry.TargetColor = Color.TransparentWhite;
+                }
             }
             _selectSprite.Color = Color.TransparentWhite;
             _backSprite.Color = Color.TransparentWhite;
@@ -195,10 +202,7 @@ namespace Strategy.Interface.Screens
             }
 
             float time = gameTime.GetElapsedSeconds();
-            foreach (MenuEntry entry in _entries)
-            {
-                entry.Update(time);
-            }
+            _entries.ForEach(entry => entry.Update(time));
         }
 
         /// <summary>
@@ -206,6 +210,8 @@ namespace Strategy.Interface.Screens
         /// </summary>
         protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
         {
+            float time = gameTime.GetElapsedSeconds();
+            _entries.ForEach(entry => entry.Update(time));
         }
 
         /// <summary>
@@ -213,6 +219,8 @@ namespace Strategy.Interface.Screens
         /// </summary>
         protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
         {
+            float time = gameTime.GetElapsedSeconds();
+            _entries.ForEach(entry => entry.Update(time));
         }
 
         /// <summary>
@@ -476,7 +484,8 @@ namespace Strategy.Interface.Screens
         private bool _fadeIn;
         private float _fadeElapsed;
 
-        private readonly Color OutlineColor = new Color(207, 115, 115);
+        private readonly Color OutlineColor = PlayerId.C.GetPieceColor();
+        //private readonly Color OutlineColor = new Color(207, 115, 115);S
         private const float FadeDuration = 0.6f;
     }
 }

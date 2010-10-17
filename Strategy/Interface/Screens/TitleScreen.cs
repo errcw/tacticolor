@@ -61,6 +61,9 @@ namespace Strategy.Interface.Screens
                 new ColorAnimation(_loadingText, Color.White, 2f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
 
             _spriteBatch = new SpriteBatch(_device);
+
+            TransitionOnTime = 0f;
+            TransitionOffTime = 1f;
         }
 
         public override void Draw()
@@ -78,6 +81,26 @@ namespace Strategy.Interface.Screens
             _input.Controller = null;
 
             base.Show(pushed);
+        }
+
+        protected internal override void Hide(bool popped)
+        {
+            // future returns to the screen need animation
+            TransitionOnTime = 0.5f;
+
+            base.Hide(popped);
+        }
+
+        protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
+        {
+            _title.Color = new Color(_readyText.Color, (byte)(192 * progress + 63));
+            _readyText.Color = new Color(_readyText.Color, (byte)(255 * progress));
+        }
+
+        protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
+        {
+            _title.Color = new Color(_readyText.Color, (byte)(192 * (1 - progress) + 63));
+            _readyText.Color = new Color(_readyText.Color, (byte)(255 * (1 - progress)));
         }
 
         protected override void UpdateActive(GameTime gameTime)
