@@ -21,12 +21,18 @@ namespace Strategy.Interface.Screens
         {
             _input = game.Services.GetService<MenuInput>();
 
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextSmall"), "Test Item")));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextSmall"), "Single Player")));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextSmall"), "Multiplayer")));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextSmall"), "Awardments")));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextSmall"), "Help & Options")));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextSmall"), "Get Full Version")));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextSmall"), "Exit to Dashboard")));
 
             TransitionOnTime = 0f;
             TransitionOffTime = 0f;
             IsRoot = true;
             AllowBackOnRoot = true;
+            BasePosition = new Vector2(130f, 80f);
         }
 
         protected override void UpdateActive(GameTime gameTime)

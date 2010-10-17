@@ -18,8 +18,8 @@ namespace Strategy.Interface
 
         public readonly ControlState Action = new ControlState();
         public readonly ControlState Cancel = new ControlState();
-        public readonly ControlState Up = new ControlState();
-        public readonly ControlState Down = new ControlState();
+        public readonly ControlState Up = new ControlState() { RepeatEnabled = true };
+        public readonly ControlState Down = new ControlState() { RepeatEnabled = true };
         public readonly ControlState Buy = new ControlState();
 
         public readonly ControlState[] Join;

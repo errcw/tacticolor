@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
+using Strategy.Library;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
 using Strategy.Library.Sprite;
@@ -36,6 +37,11 @@ namespace Strategy.Interface.Screens
         public bool IsRoot { get; set; }
 
         /// <summary>
+        /// The position of the first menu item.
+        /// </summary>
+        public Vector2 BasePosition { get; set; }
+
+        /// <summary>
         /// The number of entries to display on each screen before scrolling.
         /// </summary>
         protected int VisibleEntryCount { get; set; }
@@ -63,8 +69,8 @@ namespace Strategy.Interface.Screens
             ShowBeneath = true;
             TransitionOnTime = 0.4f;
             TransitionOffTime = 0.2f;
-            VisibleEntryCount = 5;
-            Spacing = 10f;
+            VisibleEntryCount = 8;
+            Spacing = 35f;
         }
 
         /// <summary>
@@ -74,10 +80,6 @@ namespace Strategy.Interface.Screens
         public void AddEntry(MenuEntry entry)
         {
             _entries.Add(entry);
-            if (_visibleEntries.Count < VisibleEntryCount)
-            {
-                ShowEntry(entry, _visibleEntries.Count);
-            }
         }
 
         /// <summary>
@@ -91,23 +93,7 @@ namespace Strategy.Interface.Screens
             bool removed = _entries.Remove(entry);
             if (removed)
             {
-                bool visRemoved = _visibleEntries.Remove(entry);
-                if (visRemoved)
-                {
-                    _entriesSprite.Remove(entry.Sprite);
-                }
-                if (entry == selectedEntry)
-                {
-                    SetSelected(0); // move the focus off the now-defunct entry
-                }
-                else
-                {
-                    _selectedEntryAbs = MathHelperExtensions.Clamp(_selectedEntryAbs - 1, 0, _entries.Count); // fix the index
-                    if (visRemoved)
-                    {
-                        _selectedEntryRel = MathHelperExtensions.Clamp(_selectedEntryRel - 1, 0, _visibleEntries.Count);
-                    }
-                }
+                //XXX
             }
             return removed;
         }
@@ -117,53 +103,10 @@ namespace Strategy.Interface.Screens
         /// </summary>
         public void ClearEntries()
         {
-            _entries.ForEach(entry => _entriesSprite.Remove(entry.Sprite));
             _entries.Clear();
-            _visibleEntries.Clear();
             _selectedEntryAbs = 0;
             _selectedEntryRel = 0;
             _listWindowBaseIndex = 0;
-        }
-
-        /// <summary>
-        /// Centers the menu entry sprites vertically and horizontally.
-        /// </summary>
-        public void LayoutEntries()
-        {
-            Vector2 menuSize = new Vector2(0, 0); //XXX
-
-            float height = 0f;
-            foreach (MenuEntry entry in _visibleEntries)
-            {
-                height += entry.Sprite.Size.Y + Spacing;
-            }
-            height -= Spacing; // remove the extra padding at the bottom
-
-            float y = (menuSize.Y - height) / 2f;
-            foreach (MenuEntry entry in _visibleEntries)
-            {
-                float x = (menuSize.X - entry.Sprite.Size.X) / 2f;
-                entry.Sprite.Position = new Vector2((int)x, (int)y);
-                y += entry.Sprite.Size.Y + Spacing;
-            }
-        }
-
-        /// <summary>
-        /// Adds the given sprite as a decorative entry.
-        /// </summary>
-        /// <param name="sprite">The sprite to add.</param>
-        public void AddDecoration(Sprite sprite)
-        {
-            _entriesSprite.Add(sprite);
-        }
-
-        /// <summary>
-        /// Removes the given sprite as a decorative entry.
-        /// </summary>
-        /// <param name="sprite">The sprite to remove.</param>
-        public void RemoveDecoration(Sprite sprite)
-        {
-            _entriesSprite.Remove(sprite);
         }
 
         /// <summary>
@@ -172,7 +115,7 @@ namespace Strategy.Interface.Screens
         public override void Draw()
         {
             _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.BackToFront, SaveStateMode.None);
-            _entriesSprite.Draw(_spriteBatch);
+            _entries.ForEach(entry => entry.Sprite.Draw(_spriteBatch));
             _selectSprite.Draw(_spriteBatch);
             _backSprite.Draw(_spriteBatch);
             _spriteBatch.End();
@@ -190,17 +133,27 @@ namespace Strategy.Interface.Screens
             //_screenDescriptor.GetSprite("ArrowDown").Color = Color.TransparentWhite;
             if (pushed)
             {
-                // reset the list
-                _entries[_selectedEntryAbs].OnFocusChanged(false);
-                _visibleEntries.ToArray().ForEach(e => HideEntry(e));
-                _visibleEntries.Clear();
-                for (int i = 0; i < Math.Min(_entries.Count, VisibleEntryCount); i++)
+                // hide all the entries
+                foreach (MenuEntry entry in _entries)
                 {
-                    ShowEntry(_entries[i], _visibleEntries.Count);
+                    entry.Sprite.Position = BasePosition;
+                    entry.Sprite.Color = Color.TransparentWhite;
                 }
-                LayoutEntries();
-                _selectedEntryRel = _selectedEntryAbs = _listWindowBaseIndex = 0;
-                SetSelected(0);
+                // show the visible entries
+                for (int i = 0; i < _entries.Count && i < VisibleEntryCount; i++)
+                {
+                    Vector2 position = BasePosition;
+                    if (i > 0)
+                    {
+                        float x = _entries[i - 1].TargetPosition.X + _entries[i - 1].Sprite.Size.X + 20f;
+                        position = new Vector2(x, BasePosition.Y);
+                    }
+                    //_entries[i].TargetPosition = BasePosition + i * new Vector2(0, Spacing);
+                    _entries[i].TargetPosition = position;
+                    _entries[i].TargetColor = Color.White;
+                }
+                // focus the first entry
+                _entries[0].OnFocusChanged(true);
             }
         }
 
@@ -241,39 +194,25 @@ namespace Strategy.Interface.Screens
                 _entries[_selectedEntryAbs].OnSelected();
             }
 
-            _entries[_selectedEntryAbs].Update(gameTime.GetElapsedSeconds());
+            float time = gameTime.GetElapsedSeconds();
+            foreach (MenuEntry entry in _entries)
+            {
+                entry.Update(time);
+            }
         }
 
         /// <summary>
-        /// Fades this menu in.
+        /// Animates this menu in.
         /// </summary>
         protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
         {
-            // let the old menu fade out first
-            if (progress < 0.5)
-            {
-                return;
-            }
-            progress = (progress - 0.5f) * 2f;
-            // then fade in this one
-            //_entriesSprite.Color = new Color(Color.White, progress);
-            if (IsRoot && pushed)
-            {
-                //XXX _screenDescriptor.GetSprite("Background").Color = new Color(Color.White, progress);
-            }
         }
 
         /// <summary>
-        /// Fades this menu out.
+        /// Animates this menu out.
         /// </summary>
         protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
         {
-            //_entriesSprite.Color = new Color(Color.White, 1 - progress);
-            if (IsRoot && popped)
-            {
-                // fade out the background when the last menu screen is popped off
-                //XXX _screenDescriptor.GetSprite("Background").Color = new Color(Color.White, 1 - progress);
-            }
         }
 
         /// <summary>
@@ -289,22 +228,18 @@ namespace Strategy.Interface.Screens
             int nextRelEntry = _selectedEntryRel + deltaIdx;
             int nextAbsEntry = _selectedEntryAbs + deltaIdx;
 
-            if (nextRelEntry >= _visibleEntries.Count && nextAbsEntry < _entries.Count)
+            if (nextRelEntry >= VisibleEntryCount && nextAbsEntry < _entries.Count)
             {
-                HideEntry(_visibleEntries[0]);
-                ShowEntry(_entries[nextAbsEntry], _visibleEntries.Count);
-                LayoutEntries();
+                CycleDown();
                 _listWindowBaseIndex += 1;
             }
             else if (nextRelEntry < 0 && nextAbsEntry >= 0)
             {
-                HideEntry(_visibleEntries[_visibleEntries.Count - 1]);
-                ShowEntry(_entries[nextAbsEntry], 0);
-                LayoutEntries();
+                CycleUp();
                 _listWindowBaseIndex -= 1;
             }
 
-            _selectedEntryRel = MathHelperExtensions.Clamp(nextRelEntry, 0, _visibleEntries.Count - 1);
+            _selectedEntryRel = MathHelperExtensions.Clamp(nextRelEntry, 0, VisibleEntryCount - 1);
             _selectedEntryAbs = MathHelperExtensions.Clamp(nextAbsEntry, 0, _entries.Count - 1);
 
             if (_entries.Count > VisibleEntryCount)
@@ -323,26 +258,22 @@ namespace Strategy.Interface.Screens
 
             if (selected != _selectedEntryAbs)
             {
-                _soundMove.Play();
+                //_soundMove.Play();
             }
         }
 
         /// <summary>
-        /// Shows the specified menu entry at a specific position.
+        /// Removes the top menu entry and adds an entry at the bottom.
         /// </summary>
-        private void ShowEntry(MenuEntry entry, int position)
+        private void CycleDown()
         {
-            _visibleEntries.Insert(position, entry);
-            _entriesSprite.Add(entry.Sprite);
         }
 
         /// <summary>
-        /// Hides the specified menu entry.
+        /// Removes the bottom menu entry and adds an entry at the top.
         /// </summary>
-        private void HideEntry(MenuEntry entry)
+        private void CycleUp()
         {
-            _visibleEntries.Remove(entry);
-            _entriesSprite.Remove(entry.Sprite);
         }
 
         /// <summary>
@@ -369,11 +300,8 @@ namespace Strategy.Interface.Screens
                 backImage.Position.X + backImage.Size.X + 5,
                 backImage.Position.Y + (backImage.Size.Y - backText.Size.Y) / 2);
             _backSprite = new CompositeSprite(backImage, backText);
-
-            _entriesSprite = new CompositeSprite();
         }
 
-        private CompositeSprite _entriesSprite;
         private Sprite _selectSprite;
         private TextSprite _selectTextSprite;
         private Sprite _backSprite;
@@ -384,12 +312,11 @@ namespace Strategy.Interface.Screens
         private MenuInput _input;
 
         protected List<MenuEntry> _entries = new List<MenuEntry>();
-        private List<MenuEntry> _visibleEntries = new List<MenuEntry>();
         private int _selectedEntryRel; /// relative index inside visible entries
         private int _selectedEntryAbs; /// absolute index inside all entries
         private int _listWindowBaseIndex; /// index of top entry
 
-        private readonly Vector2 ControlsBasePosition = new Vector2(50f, 650f);
+        private readonly Vector2 ControlsBasePosition = new Vector2(130f, 610f);
     }
 
     /// <summary>
@@ -398,9 +325,19 @@ namespace Strategy.Interface.Screens
     public class MenuEntry
     {
         /// <summary>
-        /// The sprite used to display this menu entry.
+        /// The sprite used to render this entry.
         /// </summary>
         public Sprite Sprite { get; protected set; }
+        
+        /// <summary>
+        /// The desired position of this entry.
+        /// </summary>
+        public Vector2 TargetPosition { get; set; }
+
+        /// <summary>
+        /// The desired color of this entry in [0, 255].
+        /// </summary>
+        public Color TargetColor { get; set; }
 
         /// <summary>
         /// If this entry can be selected.
@@ -429,11 +366,13 @@ namespace Strategy.Interface.Screens
         }
 
         /// <summary>
-        /// Updates this menu entry when it is focused.
+        /// Updates this menu entry.
         /// </summary>
         /// <param name="time">The elapsed time, in seconds, since the last update.</param>
         public virtual void Update(float time)
         {
+            Sprite.Position = Interpolation.InterpolateVector2(Easing.Uniform)(Sprite.Position, TargetPosition, 4f * time);
+            Sprite.Color = Interpolation.InterpolateColor(Easing.Uniform)(Sprite.Color, TargetColor, 4f * time);
         }
 
         /// <summary>
@@ -508,6 +447,8 @@ namespace Strategy.Interface.Screens
             float p = _fadeElapsed / FadeDuration;
             float a = (_fadeIn) ? p : 1 - p;
             TextSprite.OutlineColor = new Color(OutlineColor, a);
+
+            base.Update(time);
         }
 
         /// <summary>
