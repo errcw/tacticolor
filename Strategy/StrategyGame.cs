@@ -166,7 +166,7 @@ namespace Strategy
                     args.Gamer,
                     OnInviteSessionCreated,
                     null);
-                AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
+                AsyncBusyScreen busyScreen = new AsyncBusyScreen(this, result);
                 _screens.Push(busyScreen);
             }
         }

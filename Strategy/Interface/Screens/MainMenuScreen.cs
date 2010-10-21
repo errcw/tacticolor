@@ -46,7 +46,7 @@ namespace Strategy.Interface.Screens
 #else
                 NetworkSessionProvider.BeginCreate(NetworkSessionType.SystemLink, gamer, OnSessionProvided, true);
 #endif
-                AsyncBusyScreen busyScreen = new AsyncBusyScreen(result);
+                AsyncBusyScreen busyScreen = new AsyncBusyScreen(Stack.Game, result);
                 Stack.Push(busyScreen);
             }
 

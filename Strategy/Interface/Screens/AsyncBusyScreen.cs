@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Library.Screen;
+using Strategy.Library.Sprite;
 
 namespace Strategy.Interface.Screens
 {
@@ -14,9 +15,19 @@ namespace Strategy.Interface.Screens
     {
         public event EventHandler<AsyncOperationCompletedEventArgs> OperationCompleted;
 
-        public AsyncBusyScreen(IAsyncResult result)
+        public AsyncBusyScreen(Game game, IAsyncResult result)
         {
             _result = result;
+
+            _background = new ImageSprite(game.Content.Load<Texture2D>("Images/Colourable"));
+            _background.Scale = new Vector2(1280, 720);
+            _background.Color = new Color(255, 255, 255, 128);
+            _background.Position = Vector2.Zero;
+
+            _marker = new ImageSprite(game.Content.Load<Texture2D>("Images/Piece"));
+            _marker.Position = new Vector2(640, 360);
+
+            _batch = new SpriteBatch(game.GraphicsDevice);
 
             TransitionOnTime = 0f;
             TransitionOffTime = 0f;
@@ -25,21 +36,10 @@ namespace Strategy.Interface.Screens
 
         public override void Draw()
         {
-            if (_image != null)
-            {
-                _batch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
-                _batch.Draw(_image, Position, Color.White);
-                _batch.End();
-            }
-        }
-
-        protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
-        {
-            if (_image == null)
-            {
-                _image = Stack.Game.Content.Load<Texture2D>("Images/PieceAvailable");
-                _batch = new SpriteBatch(Stack.Game.GraphicsDevice);
-            }
+            _batch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
+            _background.Draw(_batch);
+            _marker.Draw(_batch);
+            _batch.End();
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -60,10 +60,9 @@ namespace Strategy.Interface.Screens
 
         private IAsyncResult _result;
 
+        private ImageSprite _background;
+        private ImageSprite _marker;
         private SpriteBatch _batch;
-        private Texture2D _image;
-
-        private readonly Vector2 Position = new Vector2(100, 100);
     }
 
     public class AsyncOperationCompletedEventArgs : EventArgs
