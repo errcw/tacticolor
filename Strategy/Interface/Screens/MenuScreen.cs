@@ -188,11 +188,11 @@ namespace Strategy.Interface.Screens
                 Stack.Pop();
                 return;
             }
-            else if (_input.Up.Pressed)
+            else if (_input.Left.Pressed)
             {
                 SetSelected(-1);
             }
-            else if (_input.Down.Pressed)
+            else if (_input.Right.Pressed)
             {
                 SetSelected(1);
             }

@@ -20,6 +20,8 @@ namespace Strategy.Interface
         public readonly ControlState Cancel = new ControlState();
         public readonly ControlState Up = new ControlState() { RepeatEnabled = true };
         public readonly ControlState Down = new ControlState() { RepeatEnabled = true };
+        public readonly ControlState Left = new ControlState() { RepeatEnabled = true };
+        public readonly ControlState Right = new ControlState() { RepeatEnabled = true };
         public readonly ControlState Buy = new ControlState();
 
         public readonly ControlState[] Join;
@@ -33,6 +35,8 @@ namespace Strategy.Interface
             _input.Register(Cancel, Polling.Any(Polling.One(Buttons.B), Polling.One(Buttons.Back)));
             _input.Register(Up, Polling.Any(Polling.One(Buttons.DPadUp), Polling.One(Buttons.LeftThumbstickUp)));
             _input.Register(Down, Polling.Any(Polling.One(Buttons.DPadDown), Polling.One(Buttons.LeftThumbstickDown)));
+            _input.Register(Left, Polling.Any(Polling.One(Buttons.DPadLeft), Polling.One(Buttons.LeftThumbstickLeft)));
+            _input.Register(Right, Polling.Any(Polling.One(Buttons.DPadRight), Polling.One(Buttons.LeftThumbstickRight)));
             _input.Register(Buy, Polling.One(Buttons.X));
 
             // register the lobby inputs
