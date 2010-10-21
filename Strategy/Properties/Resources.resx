@@ -324,17 +324,14 @@
   <data name="MenuHowToPlay" xml:space="preserve">
     <value>How to Play</value>
   </data>
-  <data name="MenuInstructions" xml:space="preserve">
-    <value>Instructions</value>
-  </data>
   <data name="MenuJoinMatch" xml:space="preserve">
     <value>Join Match</value>
   </data>
   <data name="MenuLocalGame" xml:space="preserve">
-    <value>New Game</value>
+    <value>Local Game</value>
   </data>
   <data name="MenuMultiplayerGame" xml:space="preserve">
-    <value>Multiplayer Game</value>
+    <value>Xbox LIVE Game</value>
   </data>
   <data name="MenuMusic" xml:space="preserve">
     <value>Music</value>

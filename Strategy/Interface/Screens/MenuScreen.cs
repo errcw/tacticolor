@@ -71,7 +71,7 @@ namespace Strategy.Interface.Screens
             TransitionOnTime = 0.4f;
             TransitionOffTime = 1.2f;
             VisibleEntryCount = 8;
-            Spacing = 35f;
+            Spacing = 20f;
         }
 
         /// <summary>
@@ -91,12 +91,39 @@ namespace Strategy.Interface.Screens
         public bool RemoveEntry(MenuEntry entry)
         {
             MenuEntry selectedEntry = _entries[_selectedEntryAbs];
-            bool removed = _entries.Remove(entry);
-            if (removed)
+            int removalIndex = _entries.IndexOf(entry);
+            if (removalIndex >= 0)
             {
-                //XXX
+                _entries.Remove(entry);
+
+                // move the subsequent entries back
+                float previousX = entry.TargetPosition.X;
+                for (int i = removalIndex; i < _entries.Count; i++)
+                {
+                    float currentX = _entries[i].TargetPosition.X;
+                    _entries[i].TargetPosition = new Vector2(previousX, _entries[i].TargetPosition.X);
+                    _entries[i].TargetColor = (i - _listWindowBaseIndex < VisibleEntryCount) ? Color.White : Color.TransparentWhite;
+                    previousX = currentX;
+                }
+
+                if (entry == selectedEntry)
+                {
+                    // move the focus off the now-defunct entry
+                    SetSelected(0);
+                }
+                else
+                {
+                    // fix the indices of the selected entry
+                    _selectedEntryAbs = Math.Max(_selectedEntryAbs - 1, 0);
+                    if (removalIndex >= _listWindowBaseIndex && removalIndex < _listWindowBaseIndex + VisibleEntryCount)
+                    {
+                        _selectedEntryRel = Math.Max(_selectedEntryRel - 1, 0);
+                    }
+                }
+
+                return true;
             }
-            return removed;
+            return false;
         }
 
         /// <summary>
@@ -134,25 +161,16 @@ namespace Strategy.Interface.Screens
             //_screenDescriptor.GetSprite("ArrowDown").Color = Color.TransparentWhite;
             if (pushed)
             {
-                // hide all the entries
-                foreach (MenuEntry entry in _entries)
+                // lay out all the entries, hiding those past the visible point
+                float previousX = BasePosition.X;
+                for (int i = 0; i < _entries.Count; i++)
                 {
-                    entry.Sprite.Position = BasePosition;
-                    entry.Sprite.Color = Color.TransparentWhite;
+                    _entries[i].Sprite.Position = BasePosition;
+                    _entries[i].TargetPosition = new Vector2(previousX + Spacing, BasePosition.Y);
+                    _entries[i].TargetColor = (i < VisibleEntryCount) ? Color.White : Color.TransparentWhite;
+                    previousX = _entries[i].TargetPosition.X + _entries[i].Sprite.Size.X;
                 }
-                // show the visible entries
-                for (int i = 0; i < _entries.Count && i < VisibleEntryCount; i++)
-                {
-                    Vector2 position = BasePosition;
-                    if (i > 0)
-                    {
-                        float x = _entries[i - 1].TargetPosition.X + _entries[i - 1].Sprite.Size.X + 20f;
-                        position = new Vector2(x, BasePosition.Y);
-                    }
-                    //_entries[i].TargetPosition = BasePosition + i * new Vector2(0, Spacing);
-                    _entries[i].TargetPosition = position;
-                    _entries[i].TargetColor = Color.White;
-                }
+
                 // focus the first entry
                 _entries[0].OnFocusChanged(true);
             }
@@ -485,7 +503,7 @@ namespace Strategy.Interface.Screens
         private float _fadeElapsed;
 
         private readonly Color OutlineColor = PlayerId.C.GetPieceColor();
-        //private readonly Color OutlineColor = new Color(207, 115, 115);S
+        //private readonly Color OutlineColor = new Color(207, 115, 115);
         private const float FadeDuration = 0.6f;
     }
 }

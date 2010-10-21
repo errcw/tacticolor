@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Net;
 
 using Strategy.Net;
+using Strategy.Properties;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
 using Strategy.Library.Sprite;
@@ -21,12 +22,12 @@ namespace Strategy.Interface.Screens
         {
             _input = game.Services.GetService<MenuInput>();
 
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), "Single Player")));
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), "Multiplayer")));
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), "Awardments")));
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), "Help & Options")));
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), "Get Full Version")));
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), "Exit to Dashboard")));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuLocalGame)));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuMultiplayerGame)));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuPurchase)));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuAwardments)));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuHelpOptions)));
+            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuExit)));
 
             TransitionOnTime = 0f;
             IsRoot = true;

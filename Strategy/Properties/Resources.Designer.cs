@@ -682,15 +682,6 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Instructions.
-        /// </summary>
-        internal static string MenuInstructions {
-            get {
-                return ResourceManager.GetString("MenuInstructions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Join Match.
         /// </summary>
         internal static string MenuJoinMatch {
@@ -700,7 +691,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New Game.
+        ///   Looks up a localized string similar to Local Game.
         /// </summary>
         internal static string MenuLocalGame {
             get {
@@ -709,7 +700,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Multiplayer Game.
+        ///   Looks up a localized string similar to Xbox LIVE Game.
         /// </summary>
         internal static string MenuMultiplayerGame {
             get {
