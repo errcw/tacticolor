@@ -106,14 +106,11 @@ namespace Strategy.Library.Storage
         /// <param name="storeable">The object to query.</param>
         public bool Exists(IStoreable storeable)
         {
-            if (!IsValid)
-            {
-                throw new InvalidOperationException("StorageDevice is not valid.");
-            }
+            ValidateOperation();
 
-            using (StorageContainer container = _storageDevice.OpenContainer(StorageContainerName))
+            using (StorageContainer container = OpenContainer(StorageContainerName))
             {
-                return File.Exists(Path.Combine(container.Path, storeable.FileName));
+                return File.Exists(Path.Combine(container.DisplayName, storeable.FileName));
             }
         }
 
@@ -123,14 +120,11 @@ namespace Strategy.Library.Storage
         /// <param name="storeable">The object to save.</param>
         public void Save(IStoreable storeable)
         {
-            if (!IsValid)
-            {
-                throw new InvalidOperationException("StorageDevice is not valid.");
-            }
+            ValidateOperation();
 
-            using (StorageContainer container = _storageDevice.OpenContainer(StorageContainerName))
+            using (StorageContainer container = OpenContainer(StorageContainerName))
             {
-                string path = Path.Combine(container.Path, storeable.FileName);
+                string path = Path.Combine(container.DisplayName, storeable.FileName);
                 string directory = Path.GetDirectoryName(path);
                 if (!Directory.Exists(directory))
                 {
@@ -149,14 +143,11 @@ namespace Strategy.Library.Storage
         /// <param name="storeable">The object to load.</param>
         public void Load(IStoreable storeable)
         {
-            if (!IsValid)
-            {
-                throw new InvalidOperationException("StorageDevice is not valid.");
-            }
+            ValidateOperation();
 
-            using (StorageContainer container = _storageDevice.OpenContainer(StorageContainerName))
+            using (StorageContainer container = OpenContainer(StorageContainerName))
             {
-                string path = Path.Combine(container.Path, storeable.FileName);
+                string path = Path.Combine(container.DisplayName, storeable.FileName);
                 using (StreamReader reader = new StreamReader(path))
                 {
                     storeable.Load(reader.BaseStream);
@@ -170,14 +161,11 @@ namespace Strategy.Library.Storage
         /// <param name="storeable">The object to delete.</param>
         public void Delete(IStoreable storeable)
         {
-            if (!IsValid)
-            {
-                throw new InvalidOperationException("StorageDevice is not valid.");
-            }
+            ValidateOperation();
 
-            using (StorageContainer container = _storageDevice.OpenContainer(StorageContainerName))
+            using (StorageContainer container = OpenContainer(StorageContainerName))
             {
-                File.Delete(Path.Combine(container.Path, storeable.FileName));
+                File.Delete(Path.Combine(container.DisplayName, storeable.FileName));
             }
         }
 
@@ -187,21 +175,18 @@ namespace Strategy.Library.Storage
         /// <param name="directory">The directory from which to retrieve the files.</param>
         public string[] GetFiles(string directory)
         {
-            if (!IsValid)
-            {
-                throw new InvalidOperationException("StorageDevice is not valid.");
-            }
+            ValidateOperation();
 
-            using (StorageContainer container = _storageDevice.OpenContainer(StorageContainerName))
+            using (StorageContainer container = OpenContainer(StorageContainerName))
             {
-                string path = Path.Combine(container.Path, directory);
+                string path = Path.Combine(container.DisplayName, directory);
                 if (Directory.Exists(path))
                 {
                     string[] files = Directory.GetFiles(path);
                     for (int i = 0; i < files.Length; i++)
                     {
                         // strip out the container path so the file names can be used with Save/Load/Delete
-                        files[i] = files[i].Substring(container.Path.Length + 1);
+                        files[i] = files[i].Substring(container.DisplayName.Length + 1);
                     }
                     return files;
                 }
@@ -320,7 +305,7 @@ namespace Strategy.Library.Storage
 
         private void StorageDeviceSelectorCallback(IAsyncResult result)
         {
-            _storageDevice = Guide.EndShowStorageDeviceSelector(result);
+            _storageDevice = StorageDevice.EndShowSelector(result);
             if (_storageDevice != null && _storageDevice.IsConnected)
             {
                 if (DeviceSelected != null)
@@ -354,6 +339,21 @@ namespace Strategy.Library.Storage
             {
                 DeviceReselectPromptClosed(this, PromptEventArgs);
             }
+        }
+
+        private void ValidateOperation()
+        {
+            if (!IsValid)
+            {
+                throw new InvalidOperationException("Storage is not valid");
+            }
+        }
+
+        private StorageContainer OpenContainer(string containerName)
+        {
+            IAsyncResult result = _storageDevice.BeginOpenContainer(containerName, null, null);
+            result.AsyncWaitHandle.WaitOne();
+            return _storageDevice.EndOpenContainer(result);
         }
 
         /// <summary>

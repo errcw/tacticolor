@@ -78,8 +78,8 @@ namespace Strategy.Interface
                 // replace the existing text
                 _animation = new SequentialAnimation(
                     new CompositeAnimation(
-                        new ColorAnimation(_textSprite, Color.TransparentBlack, 0.2f, Interpolation.InterpolateColor(Easing.Uniform)),
-                        new ColorAnimation(_imageSprite, Color.TransparentWhite, 0.2f, Interpolation.InterpolateColor(Easing.Uniform))),
+                        new ColorAnimation(_textSprite, Color.Transparent, 0.2f, Interpolation.InterpolateColor(Easing.Uniform)),
+                        new ColorAnimation(_imageSprite, Color.Transparent, 0.2f, Interpolation.InterpolateColor(Easing.Uniform))),
                     new DelayAnimation(0.1f),
                     setNewInstructions,
                     new CompositeAnimation(

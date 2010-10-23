@@ -27,7 +27,7 @@ namespace Strategy.Interface.Screens
             _marker = new ImageSprite(game.Content.Load<Texture2D>("Images/Piece"));
             _marker.Position = new Vector2(640, 360);
 
-            _batch = new SpriteBatch(game.GraphicsDevice);
+            _spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
             TransitionOnTime = 0f;
             TransitionOffTime = 0f;
@@ -36,10 +36,10 @@ namespace Strategy.Interface.Screens
 
         public override void Draw()
         {
-            _batch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
-            _background.Draw(_batch);
-            _marker.Draw(_batch);
-            _batch.End();
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            _background.Draw(_spriteBatch);
+            _marker.Draw(_spriteBatch);
+            _spriteBatch.End();
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -62,7 +62,7 @@ namespace Strategy.Interface.Screens
 
         private ImageSprite _background;
         private ImageSprite _marker;
-        private SpriteBatch _batch;
+        private SpriteBatch _spriteBatch;
     }
 
     public class AsyncOperationCompletedEventArgs : EventArgs

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
 using Strategy.Library;
+using Strategy.Library.Extensions;
 using Strategy.Library.Sprite;
 
 namespace Strategy.Interface.Gameplay
@@ -33,7 +34,7 @@ namespace Strategy.Interface.Gameplay
             _cursorHover.Origin = new Vector2(0, 14);
 
             _cursorSelect = new ImageSprite(cursorTex);
-            _cursorSelect.Color = new Color(input.Player.GetTerritoryColor(), 128);
+            _cursorSelect.Color = ColorExtensions.FromNonPremultiplied(input.Player.GetTerritoryColor(), 0.5f);
             _cursorSelect.Origin = new Vector2(0, 14);
 
             // bounce the cursor until the player acts
@@ -74,8 +75,8 @@ namespace Strategy.Interface.Gameplay
         public void Hide()
         {
             _animation = new CompositeAnimation(
-                new ColorAnimation(_cursorHover, Color.TransparentWhite, 0.5f, Interpolation.InterpolateColor(Easing.QuadraticOut)),
-                new ColorAnimation(_cursorSelect, Color.TransparentWhite, 0.5f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
+                new ColorAnimation(_cursorHover, Color.Transparent, 0.5f, Interpolation.InterpolateColor(Easing.QuadraticOut)),
+                new ColorAnimation(_cursorSelect, Color.Transparent, 0.5f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
             _repeatAnimation = false;
         }
 

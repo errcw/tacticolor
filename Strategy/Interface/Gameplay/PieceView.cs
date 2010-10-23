@@ -102,7 +102,7 @@ namespace Strategy.Interface.Gameplay
             // build the roll animations
             _rollSprite.Position = _pieceSprite.Position + new Vector2(-5, -20);
             _rollSprite.Text = roll.ToString("D1", CultureInfo.CurrentCulture);
-            _rollSprite.Color = Color.TransparentWhite;
+            _rollSprite.Color = Color.Transparent;
 
             IAnimation showRoll =
                 new CompositeAnimation(
@@ -111,7 +111,7 @@ namespace Strategy.Interface.Gameplay
 
             IAnimation hideRoll =
                 new CompositeAnimation(
-                    new ColorAnimation(_rollSprite, Color.TransparentWhite, 0.15f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
+                    new ColorAnimation(_rollSprite, Color.Transparent, 0.15f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
                     new PositionAnimation(_rollSprite, _rollSprite.Position + new Vector2(0, -30), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
 
             // build the piece animations
@@ -128,7 +128,7 @@ namespace Strategy.Interface.Gameplay
             {
                 pieceAction = new CompositeAnimation(
                     new ScaleAnimation(_pieceSprite, Vector2.Zero, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
-                    new ColorAnimation(_pieceSprite, Color.TransparentWhite, 0.45f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
+                    new ColorAnimation(_pieceSprite, Color.Transparent, 0.45f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
                 _dying = true;
             }
 

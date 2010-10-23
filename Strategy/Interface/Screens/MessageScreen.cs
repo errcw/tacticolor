@@ -62,7 +62,7 @@ namespace Strategy.Interface.Screens
                 instructions.Position.Y + (instructions.Size.Y - button.Size.Y) / 2);
 
             _sprite = new CompositeSprite(background, box, message, instructions, button);
-            _sprite.Color = Color.TransparentWhite;
+            _sprite.Color = Color.Transparent;
 
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
@@ -73,7 +73,7 @@ namespace Strategy.Interface.Screens
 
         public override void Draw()
         {
-            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             _sprite.Draw(_spriteBatch);
             _spriteBatch.End();
         }
@@ -91,12 +91,12 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
         {
-            _sprite.Color = new Color(_sprite.Color, (byte)(255 * progress));
+            _sprite.Color = ColorExtensions.FromNonPremultiplied(_sprite.Color, progress);
         }
 
         protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
         {
-            _sprite.Color = new Color(_sprite.Color, (byte)(255 * (1 - progress)));
+            _sprite.Color = ColorExtensions.FromNonPremultiplied(_sprite.Color, 1 - progress);
         }
 
         private string[] SplitLines(string message, float lineWidth, SpriteFont font)

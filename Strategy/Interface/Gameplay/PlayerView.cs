@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Strategy.Gameplay;
 using Strategy.Properties;
 using Strategy.Library;
+using Strategy.Library.Extensions;
 using Strategy.Library.Sprite;
 
 namespace Strategy.Interface.Gameplay
@@ -37,7 +38,7 @@ namespace Strategy.Interface.Gameplay
             Texture2D voiceTex = context.Content.Load<Texture2D>("Images/Voice");
             _voiceSprite = new ImageSprite(voiceTex);
             _voiceSprite.Position = position + new Vector2(nameWidth + 5, 5);
-            _voiceSprite.Color = new Color(Color.White, 128);
+            _voiceSprite.Color = ColorExtensions.FromNonPremultiplied(Color.White, 0.5f);
         }
 
         public void Update(float time)
@@ -51,12 +52,12 @@ namespace Strategy.Interface.Gameplay
             }
             if (Player.Gamer != null && Player.Gamer.HasVoice)
             {
-                byte alpha = (byte)(Player.Gamer.IsTalking ? 255 : Player.Gamer.IsMutedByLocalUser ? 32 : 64);
-                _voiceSprite.Color = new Color(Color.White, alpha);
+                float alpha = Player.Gamer.IsTalking ? 1f : Player.Gamer.IsMutedByLocalUser ? 0.1f : 0.25f;
+                _voiceSprite.Color = ColorExtensions.FromNonPremultiplied(Color.White, alpha);
             }
             else
             {
-                _voiceSprite.Color = Color.TransparentWhite;
+                _voiceSprite.Color = Color.Transparent;
             }
         }
 

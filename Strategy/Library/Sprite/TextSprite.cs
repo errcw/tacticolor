@@ -3,6 +3,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Strategy.Library.Extensions;
+
 namespace Strategy.Library.Sprite
 {
     /// <summary>
@@ -65,7 +67,7 @@ namespace Strategy.Library.Sprite
 
             if (OutlineWidth > 0)
             {
-                Color outlineColor = new Color(OutlineColor, (color.A / 255f) * (OutlineColor.A / 255f));
+                Color outlineColor = ColorExtensions.FromNonPremultiplied(OutlineColor, (color.A / 255f) * (OutlineColor.A / 255f));
                 for (int x = -OutlineWidth; x <= OutlineWidth; x++)
                 {
                     for (int y = -OutlineWidth; y <= OutlineWidth; y++)

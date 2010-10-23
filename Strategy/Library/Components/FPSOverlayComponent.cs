@@ -45,7 +45,7 @@ namespace Strategy.Library.Components
         public override void Draw(GameTime gameTime)
         {
             _frameCounter += 1;
-            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.FrontToBack, SaveStateMode.None);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             _spriteBatch.DrawString(_font, _frameRate.ToString(), TextOffset, Color.White);
             _spriteBatch.End();
         }

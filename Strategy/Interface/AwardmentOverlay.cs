@@ -38,7 +38,7 @@ namespace Strategy.Interface
 
         public override void Draw()
         {
-            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             _panel.Draw(_spriteBatch);
             _spriteBatch.End();
         }

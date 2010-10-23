@@ -25,7 +25,7 @@ namespace Strategy.Interface.Gameplay
         {
             _sprites.Sort(RenderOrderComparison);
 
-            _batch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
+            _batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             foreach (Sprite sprite in _sprites)
             {
                 sprite.Draw(_batch);

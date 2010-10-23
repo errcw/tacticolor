@@ -145,7 +145,7 @@ namespace Strategy.Interface.Screens
 
         public override void Draw()
         {
-            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             _backgroundView.Draw(_spriteBatch);
             _playerViews.ForEach(view => view.Draw(_spriteBatch));
             _piecesAvailableViews.ForEach(view => view.Draw(_spriteBatch));

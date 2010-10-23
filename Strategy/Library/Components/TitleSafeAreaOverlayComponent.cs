@@ -33,7 +33,7 @@ namespace Strategy.Library.Components
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // generate a 1x1 texture
-            _texture = new Texture2D(GraphicsDevice, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
+            _texture = new Texture2D(GraphicsDevice, 1, 1);
             _texture.SetData<Color>(new Color[] { Color.White });
 
             // get viewport size and the offset percentage
@@ -59,7 +59,7 @@ namespace Strategy.Library.Components
 
         public override void Draw(GameTime gameTime)
         {
-            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.FrontToBack, SaveStateMode.None);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             Color[] c = new Color[4];
             foreach (Rectangle r in _noActionAreaParts)
             {

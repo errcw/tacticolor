@@ -102,7 +102,7 @@ namespace Strategy.Interface.Screens
                 {
                     float currentX = _entries[i].TargetPosition.X;
                     _entries[i].TargetPosition = new Vector2(previousX, _entries[i].TargetPosition.X);
-                    _entries[i].TargetColor = (i - _listWindowBaseIndex < VisibleEntryCount) ? Color.White : Color.TransparentWhite;
+                    _entries[i].TargetColor = (i - _listWindowBaseIndex < VisibleEntryCount) ? Color.White : Color.Transparent;
                     previousX = currentX;
                 }
 
@@ -142,7 +142,7 @@ namespace Strategy.Interface.Screens
         /// </summary>
         public override void Draw()
         {
-            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.BackToFront, SaveStateMode.None);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             _entries.ForEach(entry => entry.Sprite.Draw(_spriteBatch));
             _selectSprite.Draw(_spriteBatch);
             _backSprite.Draw(_spriteBatch);
@@ -155,10 +155,10 @@ namespace Strategy.Interface.Screens
         protected internal override void Show(bool pushed)
         {
             base.Show(pushed);
-            _backSprite.Color = IsRoot && !AllowBackOnRoot ? Color.TransparentWhite : Color.White;
+            _backSprite.Color = IsRoot && !AllowBackOnRoot ? Color.Transparent : Color.White;
             _selectSprite.Color = Color.White;
-            //_screenDescriptor.GetSprite("ArrowUp").Color = Color.TransparentWhite;
-            //_screenDescriptor.GetSprite("ArrowDown").Color = Color.TransparentWhite;
+            //_screenDescriptor.GetSprite("ArrowUp").Color = Color.Transparent;
+            //_screenDescriptor.GetSprite("ArrowDown").Color = Color.Transparent;
             if (pushed)
             {
                 // lay out all the entries, hiding those past the visible point
@@ -167,7 +167,7 @@ namespace Strategy.Interface.Screens
                 {
                     _entries[i].Sprite.Position = BasePosition;
                     _entries[i].TargetPosition = new Vector2(previousX + Spacing, BasePosition.Y);
-                    _entries[i].TargetColor = (i < VisibleEntryCount) ? Color.White : Color.TransparentWhite;
+                    _entries[i].TargetColor = (i < VisibleEntryCount) ? Color.White : Color.Transparent;
                     previousX = _entries[i].TargetPosition.X + _entries[i].Sprite.Size.X;
                 }
 
@@ -189,11 +189,11 @@ namespace Strategy.Interface.Screens
                 foreach (MenuEntry entry in _entries)
                 {
                     entry.TargetPosition = BasePosition;
-                    entry.TargetColor = Color.TransparentWhite;
+                    entry.TargetColor = Color.Transparent;
                 }
             }
-            _selectSprite.Color = Color.TransparentWhite;
-            _backSprite.Color = Color.TransparentWhite;
+            _selectSprite.Color = Color.Transparent;
+            _backSprite.Color = Color.Transparent;
         }
 
         /// <summary>
@@ -272,12 +272,12 @@ namespace Strategy.Interface.Screens
             {
                 //XXX
                 //_screenDescriptor.GetSprite("ArrowUp").Color =
-                    //(_listWindowBaseIndex == 0) ? Color.TransparentWhite : Color.White;
+                    //(_listWindowBaseIndex == 0) ? Color.Transparent : Color.White;
                 //_screenDescriptor.GetSprite("ArrowDown").Color =
-                    //(_listWindowBaseIndex == _entries.Count - NumVisibleEntries) ? Color.TransparentWhite : Color.White;
+                    //(_listWindowBaseIndex == _entries.Count - NumVisibleEntries) ? Color.Transparent : Color.White;
             }
 
-            _selectSprite.Color = _entries[_selectedEntryAbs].IsSelectable ? Color.White : Color.TransparentWhite;
+            _selectSprite.Color = _entries[_selectedEntryAbs].IsSelectable ? Color.White : Color.Transparent;
             _selectTextSprite.Text = _entries[_selectedEntryAbs].SelectText;
 
             _entries[_selectedEntryAbs].OnFocusChanged(true);
@@ -472,7 +472,7 @@ namespace Strategy.Interface.Screens
             }
             float p = _fadeElapsed / FadeDuration;
             float a = (_fadeIn) ? p : 1 - p;
-            TextSprite.OutlineColor = new Color(OutlineColor, a);
+            TextSprite.OutlineColor = ColorExtensions.FromNonPremultiplied(OutlineColor, a);
 
             base.Update(time);
         }

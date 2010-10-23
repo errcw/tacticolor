@@ -1,7 +1,7 @@
 ﻿using System;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.GamerServices;
+using Microsoft.Xna.Framework.Storage;
 
 namespace Strategy.Library.Storage
 {
@@ -16,7 +16,7 @@ namespace Strategy.Library.Storage
 
         protected override void GetStorageDevice(AsyncCallback callback)
         {
-            Guide.BeginShowStorageDeviceSelector(callback, null);
+            StorageDevice.BeginShowSelector(callback, null);
         }
     }
 }

@@ -15,7 +15,6 @@ namespace Strategy.Library
         public ContentPreloader(ContentManager content)
         {
             _content = content;
-            _contentPath = Path.Combine(StorageContainer.TitleLocation, _content.RootDirectory);
         }
 
         /// <summary>
@@ -25,7 +24,7 @@ namespace Strategy.Library
         /// <param name="directory">The content directory to load from.</param>
         public void Load<T>(string directory)
         {
-            string directoryPath = Path.Combine(_contentPath, directory);
+            string directoryPath = Path.Combine(_content.RootDirectory, directory);
             foreach (string file in Directory.GetFiles(directoryPath))
             {
                 string contentName = Path.GetFileNameWithoutExtension(file);
@@ -41,6 +40,5 @@ namespace Strategy.Library
         }
 
         private ContentManager _content;
-        private string _contentPath;
     }
 }

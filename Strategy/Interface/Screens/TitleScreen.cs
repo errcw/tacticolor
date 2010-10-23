@@ -57,7 +57,7 @@ namespace Strategy.Interface.Screens
             _readyText.Color = Color.Black;
 
             _loadingAnimation = new SequentialAnimation(
-                new ColorAnimation(_loadingText, Color.TransparentWhite, 2f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
+                new ColorAnimation(_loadingText, Color.Transparent, 2f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
                 new ColorAnimation(_loadingText, Color.White, 2f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
 
             _spriteBatch = new SpriteBatch(_device);
@@ -68,7 +68,7 @@ namespace Strategy.Interface.Screens
 
         public override void Draw()
         {
-            _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             _background.Draw(_spriteBatch);
             _title.Draw(_spriteBatch);
             _readyText.Draw(_spriteBatch);
@@ -93,14 +93,14 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
         {
-            _title.Color = new Color(_readyText.Color, (byte)(192 * progress + 63));
-            _readyText.Color = new Color(_readyText.Color, (byte)(255 * progress));
+            _title.Color = ColorExtensions.FromNonPremultiplied(_readyText.Color, 0.8f * progress + 0.2f);
+            _readyText.Color = ColorExtensions.FromNonPremultiplied(_readyText.Color, progress);
         }
 
         protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
         {
-            _title.Color = new Color(_readyText.Color, (byte)(192 * (1 - progress) + 63));
-            _readyText.Color = new Color(_readyText.Color, (byte)(255 * (1 - progress)));
+            _title.Color = ColorExtensions.FromNonPremultiplied(_readyText.Color, 0.8f * (1 - progress) + 0.2f);
+            _readyText.Color = ColorExtensions.FromNonPremultiplied(_readyText.Color, 1 - progress);
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -186,7 +186,7 @@ namespace Strategy.Interface.Screens
 
                 _device.Clear(Color.White);
 
-                _spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None);
+                _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                 _background.Draw(_spriteBatch);
                 _title.Draw(_spriteBatch);
                 _loadingText.Draw(_spriteBatch);

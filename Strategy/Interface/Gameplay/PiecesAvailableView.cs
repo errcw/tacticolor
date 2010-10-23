@@ -24,7 +24,7 @@ namespace Strategy.Interface.Gameplay
 
             BasePosition = GetBasePosition(Player);
             SolidColor = Player.GetPieceColor();
-            TransparentColor = new Color(SolidColor, 0);
+            TransparentColor = ColorExtensions.FromNonPremultiplied(SolidColor, 0f);
 
             Texture2D pieceSprite = context.Content.Load<Texture2D>("Images/PieceAvailable");
             int sprites = _match.MaxPiecesAvailable + 1;
@@ -54,7 +54,7 @@ namespace Strategy.Interface.Gameplay
             if (_creatingSprite != null)
             {
                 float progress = _match.PieceCreationProgress[(int)Player];
-                _creatingSprite.Color = new Color(SolidColor, (byte)(progress * 255));
+                _creatingSprite.Color = ColorExtensions.FromNonPremultiplied(SolidColor, progress);
                 _creatingSprite.X = Interpolation.InterpolateFloat(Easing.Uniform)(_creatingSprite.X, _creatingTargetX, 8f * time);
             }
 

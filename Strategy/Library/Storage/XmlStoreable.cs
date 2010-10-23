@@ -41,6 +41,6 @@ namespace Strategy.Library.Storage
             Data = (T)_serializer.Deserialize(stream);
         }
 
-        private readonly XmlSerializer _serializer = new XmlSerializer(typeof(T));
+        private XmlSerializer _serializer = new XmlSerializer(typeof(T));
     }
 }
