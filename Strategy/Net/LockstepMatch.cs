@@ -118,7 +118,7 @@ namespace Strategy.Net
                     }
                 }
             }
-            _commands.RemoveAll(c => c.Time >= _match.Time && c.Time < _match.Time + time);
+            _commands.Where(c => c.Time >= _match.Time && c.Time < _match.Time + time).ToList();
 
             _match.Update(time);
             Debug.Assert(_match.Time <= _readyStepStartTime + StepTime);

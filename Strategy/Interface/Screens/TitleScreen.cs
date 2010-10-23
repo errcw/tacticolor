@@ -159,7 +159,7 @@ namespace Strategy.Interface.Screens
 
             _lastWorkerUpdateTime = Stopwatch.GetTimestamp();
 
-            while (!_workerExit.WaitOne(WorkerUpdateTime, false))
+            while (!_workerExit.WaitOne(WorkerUpdateTime))
             {
                 long currentUpdateTime = Stopwatch.GetTimestamp();
                 float elapsed = (currentUpdateTime - _lastWorkerUpdateTime) / (float)Stopwatch.Frequency;

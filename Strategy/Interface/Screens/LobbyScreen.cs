@@ -199,7 +199,7 @@ namespace Strategy.Interface.Screens
 
         private void RemovePlayer(NetworkGamer gamer)
         {
-            _players.RemoveAll(player => player.Gamer == gamer);
+            _players = _players.Where(player => player.Gamer == gamer).ToList();
             if (_players.Count == 0)
             {
                 // lost all the players, back out to the main menu
@@ -209,7 +209,7 @@ namespace Strategy.Interface.Screens
 
         private Player FindPlayerByController(PlayerIndex index)
         {
-            return _players.Find(player => player.Controller == index);
+            return _players.First(player => player.Controller == index);
         }
 
         /// <summary>

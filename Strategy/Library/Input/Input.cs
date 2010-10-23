@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -132,7 +133,7 @@ namespace Strategy.Library.Input
         private void UpdateVibration(float time)
         {
             Vector2 vibration = Vector2.Zero;
-            _vibration.RemoveAll(delegate(Vibration v)
+            _vibration = _vibration.Where(delegate(Vibration v)
             {
                 Vector2? amount = v(time);
                 if (amount != null)
@@ -144,7 +145,7 @@ namespace Strategy.Library.Input
                 {
                     return true;
                 }
-            });
+            }).ToList();
             if (VibrationEnabled)
             {
                 GamePad.SetVibration(Controller.Value, vibration.X, vibration.Y);

@@ -62,7 +62,7 @@ namespace Strategy.Interface.Gameplay
             _pieceViews.Values.ForEach(view => view.Update(time));
 
             _removedPieces.ForEach(view => view.Update(time));
-            _removedPieces.RemoveAll(view => !view.IsVisible);
+            _removedPieces = _removedPieces.Where(view => !view.IsVisible).ToList();
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -43,7 +44,7 @@ namespace Strategy.Library.Screen
             {
                 _stackScreens.ForEach(screen => screen.Update(gameTime));
                 _poppedScreens.ForEach(screen => screen.Update(gameTime));
-                _poppedScreens.RemoveAll(screen => screen.State == ScreenState.Inactive);
+                _poppedScreens = _poppedScreens.Where(screen => screen.State == ScreenState.Inactive).ToList();
                 _overlayScreens.ForEach(screen => screen.Update(gameTime));
             }
             else
