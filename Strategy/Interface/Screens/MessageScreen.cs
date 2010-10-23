@@ -28,7 +28,7 @@ namespace Strategy.Interface.Screens
 
             ImageSprite background = new ImageSprite(game.Content.Load<Texture2D>("Images/Colourable"));
             background.Scale = new Vector2(1280, 720);
-            background.Color = new Color(255, 255, 255, 128);
+            background.Color = Color.FromNonPremultiplied(255, 255, 255, 128);
             background.Position = Vector2.Zero;
 
             ImageSprite box = new ImageSprite(game.Content.Load<Texture2D>("Images/MessageBox"));
@@ -48,13 +48,13 @@ namespace Strategy.Interface.Screens
                 lineSprites[i].Position = new Vector2(
                     (int)(box.Position.X + (box.Size.X - lineSprites[i].Size.X) / 2),
                     (int)(y + i * font.LineSpacing));
-                lineSprites[i].Color = new Color(60, 60, 60);
+                lineSprites[i].Color = Color.FromNonPremultiplied(60, 60, 60, 255);
             }
             CompositeSprite message = new CompositeSprite(lineSprites);
 
             TextSprite instructions = new TextSprite(font, Resources.MenuContinue);
             instructions.Position = new Vector2(_boxRightX - instructions.Size.X, _boxBottomY + 5);
-            instructions.Color = new Color(60, 60, 60);
+            instructions.Color = Color.FromNonPremultiplied(60, 60, 60, 255);
 
             ImageSprite button = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonA"));
             button.Position = new Vector2(
@@ -62,7 +62,6 @@ namespace Strategy.Interface.Screens
                 instructions.Position.Y + (instructions.Size.Y - button.Size.Y) / 2);
 
             _sprite = new CompositeSprite(background, box, message, instructions, button);
-            _sprite.Color = Color.Transparent;
 
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
@@ -91,12 +90,12 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
         {
-            _sprite.Color = ColorExtensions.FromNonPremultiplied(_sprite.Color, progress);
+            _sprite.Color = ColorExtensions.FromNonPremultiplied(Color.White, progress);
         }
 
         protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
         {
-            _sprite.Color = ColorExtensions.FromNonPremultiplied(_sprite.Color, 1 - progress);
+            _sprite.Color = ColorExtensions.FromNonPremultiplied(Color.White, 1 - progress);
         }
 
         private string[] SplitLines(string message, float lineWidth, SpriteFont font)

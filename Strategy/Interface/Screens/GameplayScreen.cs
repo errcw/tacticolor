@@ -133,7 +133,7 @@ namespace Strategy.Interface.Screens
                 _endTime -= seconds;
                 if (_endTime <= 0f)
                 {
-                    if (_session.IsHost)
+                    if (_session != null && _session.IsHost)
                     {
                         _session.EndGame();
                         _session.Update(); // force an update to get the new state right away
@@ -196,9 +196,6 @@ namespace Strategy.Interface.Screens
 
         private void OnTerritoryAttacked(object matchObj, TerritoryAttackedEventArgs args)
         {
-            _endScreen = new MessageScreen(Stack.Game, Resources.GameLost, typeof(LobbyScreen));
-            _endTime = _lockstepMatch.Match.Map.Territories.Max(t => t.Cooldown) / 1000f;
-
             // stop the match before it finished in trial mode
             if (Guide.IsTrialMode)
             {

@@ -24,8 +24,8 @@ namespace Strategy.Library.Components
         public TitleSafeAreaOverlayComponent(Game game) : base(game)
         {
             DrawOrder = Int32.MaxValue; // draw last
-            NoActionAreaColor = new Color(255, 0, 0, 127);
-            UnsafeAreaColor = new Color(255, 255, 0, 127);
+            NoActionAreaColor = Color.FromNonPremultiplied(255, 0, 0, 127);
+            UnsafeAreaColor = Color.FromNonPremultiplied(255, 255, 0, 127);
         }
 
         protected override void LoadContent()
@@ -33,7 +33,7 @@ namespace Strategy.Library.Components
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // generate a 1x1 texture
-            _texture = new Texture2D(GraphicsDevice, 1, 1);
+            _texture = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             _texture.SetData<Color>(new Color[] { Color.White });
 
             // get viewport size and the offset percentage

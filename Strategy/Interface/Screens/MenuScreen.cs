@@ -472,7 +472,7 @@ namespace Strategy.Interface.Screens
             }
             float p = _fadeElapsed / FadeDuration;
             float a = (_fadeIn) ? p : 1 - p;
-            TextSprite.OutlineColor = ColorExtensions.FromNonPremultiplied(OutlineColor, a);
+            TextSprite.OutlineColor = ColorExtensions.FromPremultiplied(OutlineColor, a);
 
             base.Update(time);
         }
