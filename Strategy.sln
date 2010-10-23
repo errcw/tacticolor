@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strategy", "Strategy.csproj", "{0CDCD6A6-CEAB-4DA1-8AC7-373201DE7AC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strategy", "Strategy\Strategy.csproj", "{0CDCD6A6-CEAB-4DA1-8AC7-373201DE7AC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrategyPipeline", "..\StrategyPipeline\StrategyPipeline.csproj", "{8D5A9D48-980E-4226-84AC-B44E3EEC4094}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strategy360", "Strategy\Strategy360.csproj", "{05443627-07C3-467C-97EF-B6293C5359A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strategy360", "Strategy360.csproj", "{05443627-07C3-467C-97EF-B6293C5359A7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrategyPipeline", "StrategyPipeline\StrategyPipeline.csproj", "{8D5A9D48-980E-4226-84AC-B44E3EEC4094}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
