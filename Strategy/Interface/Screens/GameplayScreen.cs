@@ -24,7 +24,7 @@ namespace Strategy.Interface.Screens
         /// </summary>
         public static readonly IsometricParameters IsoParams = new IsometricParameters(17, 9, 16, -9);
 
-        public GameplayScreen(StrategyGame game, NetworkSession session, ICollection<Player> players, Match match)
+        public GameplayScreen(Game game, NetworkSession session, ICollection<Player> players, Match match)
         {
             _session = session;
             if (_session != null)

@@ -159,7 +159,7 @@ namespace Strategy.Interface.Screens
                 _players.Add(aiPlayer);
             }
 
-            GameplayScreen gameplayScreen = new GameplayScreen((StrategyGame)Stack.Game, _session, _players, match);
+            GameplayScreen gameplayScreen = new GameplayScreen(Stack.Game, _session, _players, match);
             Stack.Push(gameplayScreen);
         }
 

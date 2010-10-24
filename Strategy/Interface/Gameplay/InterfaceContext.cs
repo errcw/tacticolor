@@ -10,11 +10,11 @@ namespace Strategy.Interface.Gameplay
     /// </summary>
     public class InterfaceContext
     {
-        public readonly StrategyGame Game;
+        public readonly Game Game;
         public readonly ContentManager Content;
         public readonly IsometricParameters IsoParams;
 
-        public InterfaceContext(StrategyGame game, ContentManager content, IsometricParameters isoParams)
+        public InterfaceContext(Game game, ContentManager content, IsometricParameters isoParams)
         {
             Game = game;
             Content = content;

@@ -75,6 +75,5 @@ namespace Strategy.Interface.Gameplay
         }
 
         private List<Sprite> _sprites;
-        private SpriteBatch _batch;
     }
 }
