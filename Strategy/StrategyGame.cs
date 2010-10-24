@@ -237,8 +237,6 @@ namespace Strategy
                 }
             }
 
-            players[1].Input = null;
-
             _input.Controller = PlayerIndex.One;
 
             GameplayScreen gameplayScreen = new GameplayScreen(this, null, players, match);
