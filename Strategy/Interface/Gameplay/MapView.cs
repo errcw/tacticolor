@@ -68,12 +68,12 @@ namespace Strategy.Interface.Gameplay
         /// <summary>
         /// Draws all the elements of the map.
         /// </summary>
-        public void Draw(IsometricBatch isoBatch)
+        public void Draw(IsometricView isoView)
         {
-            _connectionViews.ForEach(view => view.Draw(isoBatch));
-            _territoryViews.Values.ForEach(view => view.Draw(isoBatch));
-            _pieceViews.Values.ForEach(view => view.Draw(isoBatch));
-            _removedPieces.ForEach(view => view.Draw(isoBatch));
+            _connectionViews.ForEach(view => view.Draw(isoView));
+            _territoryViews.Values.ForEach(view => view.Draw(isoView));
+            _pieceViews.Values.ForEach(view => view.Draw(isoView));
+            _removedPieces.ForEach(view => view.Draw(isoView));
         }
 
         /// <summary>

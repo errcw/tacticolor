@@ -56,9 +56,9 @@ namespace Strategy.Interface.Gameplay
             // conntections are currently static
         }
 
-        public void Draw(IsometricBatch isoBatch)
+        public void Draw(IsometricView isoView)
         {
-            _sprites.ForEach(sprite => isoBatch.Draw(sprite));
+            _sprites.ForEach(sprite => isoView.Add(sprite));
         }
 
         private List<Sprite> _sprites;

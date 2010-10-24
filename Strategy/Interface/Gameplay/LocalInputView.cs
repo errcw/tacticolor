@@ -63,12 +63,12 @@ namespace Strategy.Interface.Gameplay
             }
         }
 
-        public void Draw(IsometricBatch spriteBatch)
+        public void Draw(IsometricView isoView)
         {
-            spriteBatch.Draw(_cursorHover);
+            isoView.Add(_cursorHover);
             if (_showSelect)
             {
-                spriteBatch.Draw(_cursorSelect);
+                isoView.Add(_cursorSelect);
             }
         }
 

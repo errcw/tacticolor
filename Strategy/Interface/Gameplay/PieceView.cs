@@ -212,10 +212,10 @@ namespace Strategy.Interface.Gameplay
             }
         }
 
-        public void Draw(IsometricBatch isoBatch)
+        public void Draw(IsometricView isoView)
         {
-            isoBatch.Draw(_pieceSprite);
-            isoBatch.Draw(_rollSprite);
+            isoView.Add(_pieceSprite);
+            isoView.Add(_rollSprite);
         }
 
         private Vector2 GetPosition(Cell cell)

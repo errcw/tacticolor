@@ -87,7 +87,7 @@ namespace Strategy.Interface.Screens
             }
 
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
-            _isoBatch = new IsometricBatch(_spriteBatch);
+            _isoView = new IsometricView();
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -145,17 +145,20 @@ namespace Strategy.Interface.Screens
 
         public override void Draw()
         {
+            // rebuild the isometric view before drawing anything
+            _isoView.Clear();
+            _inputViews.ForEach(view => view.Draw(_isoView));
+            _mapView.Draw(_isoView);
+
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+
             _backgroundView.Draw(_spriteBatch);
+            _isoView.Draw(_spriteBatch);
             _playerViews.ForEach(view => view.Draw(_spriteBatch));
             _piecesAvailableViews.ForEach(view => view.Draw(_spriteBatch));
             _instructions.Draw(_spriteBatch);
-            _spriteBatch.End();
 
-            _isoBatch.Begin();
-            _inputViews.ForEach(view => view.Draw(_isoBatch));
-            _mapView.Draw(_isoBatch);
-            _isoBatch.End();
+            _spriteBatch.End();
         }
 
         protected internal override void Hide(bool popped)
@@ -283,6 +286,6 @@ namespace Strategy.Interface.Screens
         private float _endTime;
 
         private SpriteBatch _spriteBatch;
-        private IsometricBatch _isoBatch;
+        private IsometricView _isoView;
     }
 }

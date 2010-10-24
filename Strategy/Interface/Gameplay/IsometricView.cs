@@ -8,34 +8,33 @@ using Strategy.Library.Sprite;
 
 namespace Strategy.Interface.Gameplay
 {
-    public class IsometricBatch
+    /// <summary>
+    /// Draws sprites in isometric space with the correct ordering.
+    /// </summary>
+    public class IsometricView
     {
-        public IsometricBatch(SpriteBatch batch)
+        public IsometricView()
         {
-            _batch = batch;
-            _sprites = new List<Sprite>(32);
+            _sprites = new List<Sprite>();
         }
 
-        public void Begin()
+        public void Add(Sprite sprite)
+        {
+            _sprites.Add(sprite);
+        }
+
+        public void Clear()
         {
             _sprites.Clear();
         }
 
-        public void End()
+        public void Draw(SpriteBatch spriteBatch)
         {
             _sprites.Sort(RenderOrderComparison);
-
-            _batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             foreach (Sprite sprite in _sprites)
             {
-                sprite.Draw(_batch);
+                sprite.Draw(spriteBatch);
             }
-            _batch.End();
-        }
-
-        public void Draw(Sprite sprite)
-        {
-            _sprites.Add(sprite);
         }
 
         private int RenderOrderComparison(Sprite a, Sprite b)
