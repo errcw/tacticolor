@@ -72,6 +72,7 @@ namespace Strategy.Interface
                 _options = _storeableOptions.Data;
                 SoundEffectsToggle = _options.SoundEffectsToggle;
                 MusicToggle = _options.MusicToggle;
+                InstructionsToggle = _options.InstructionsToggle;
             }
             catch (Exception e)
             {
