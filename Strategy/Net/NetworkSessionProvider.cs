@@ -203,9 +203,10 @@ namespace Strategy.Net
                             SetCurrentSession(joinedSession);
                             break;
                         }
-                        catch
+                        catch (Exception e)
                         {
                             // this session might already be full, try the next one
+                            Debug.WriteLine(e);
                         }
                     }
 
