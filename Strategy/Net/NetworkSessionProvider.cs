@@ -126,6 +126,8 @@ namespace Strategy.Net
             {
                 try
                 {
+                    SetProcessorAffinity();
+
                     NetworkSession session = NetworkSession.Create(
                         type,
                         Enumerable.Repeat(creator, 1),
@@ -138,8 +140,9 @@ namespace Strategy.Net
                     SetCurrentSession(session);
                     result.Complete(session, false);
                 }
-                catch
+                catch (Exception e)
                 {
+                    Debug.WriteLine(e);
                     result.Complete(null, false);
                 }
             };
@@ -154,6 +157,8 @@ namespace Strategy.Net
             {
                 try
                 {
+                    SetProcessorAffinity();
+
                     AvailableNetworkSessionCollection availableSessions = NetworkSession.Find(
                         type,
                         Enumerable.Repeat(joiner, 1),
@@ -206,8 +211,9 @@ namespace Strategy.Net
 
                     result.Complete(joinedSession, false);
                 }
-                catch
+                catch (Exception e)
                 {
+                    Debug.WriteLine(e);
                     result.Complete(null, false);
                 }
             };
@@ -222,15 +228,28 @@ namespace Strategy.Net
             {
                 try
                 {
+                    SetProcessorAffinity();
+
                     NetworkSession session = NetworkSession.JoinInvited(Enumerable.Repeat(accepter, 1));
                     SetCurrentSession(session);
                     result.Complete(session, false);
                 }
-                catch
+                catch (Exception e)
                 {
+                    Debug.WriteLine(e);
                     result.Complete(null, false);
                 }
             };
+        }
+
+        /// <summary>
+        /// Sets the processor affinity on Xbox devices.
+        /// </summary>
+        private static void SetProcessorAffinity()
+        {
+#if XBOX
+            Thread.CurrentThread.SetProcessorAffinity(3);
+#endif
         }
 
         /// <summary>
