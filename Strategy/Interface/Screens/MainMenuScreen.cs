@@ -40,40 +40,36 @@ namespace Strategy.Interface.Screens
             if (_input.Buy.Released)
             {
                 SignedInGamer gamer = _input.Controller.Value.GetSignedInGamer();
-                IAsyncResult result =
-#if WINDOWS
-                    //NetworkSessionProvider.BeginFindAndJoin(NetworkSessionType.SystemLink, gamer, OnSessionProvided, false);
-                    NetworkSessionProvider.BeginCreate(NetworkSessionType.Local, gamer, OnSessionProvided, false);
-#else
-                NetworkSessionProvider.BeginCreate(NetworkSessionType.SystemLink, gamer, OnSessionProvided, true);
-#endif
+                IAsyncResult result = NetworkSessionProvider.BeginCreate(NetworkSessionType.Local, gamer, null, true);
                 AsyncBusyScreen busyScreen = new AsyncBusyScreen(Stack.Game, result);
+                busyScreen.OperationCompleted += OnSessionProvided;
                 Stack.Push(busyScreen);
             }
 
             base.UpdateActive(gameTime);
         }
 
-        private void OnSessionProvided(IAsyncResult result)
+        private void OnSessionProvided(object sender, AsyncOperationCompletedEventArgs args)
         {
             NetworkSession session = null;
-            Boolean isCreating = (Boolean)result.AsyncState;
+            Boolean isCreating = (Boolean)args.AsyncResult.AsyncState;
             if (isCreating)
             {
-                session = NetworkSessionProvider.EndCreate(result);
+                session = NetworkSessionProvider.EndCreate(args.AsyncResult);
             }
             else
             {
-                session = NetworkSessionProvider.EndFindAndJoin(result);
+                session = NetworkSessionProvider.EndFindAndJoin(args.AsyncResult);
             }
             if (session != null)
             {
-                LobbyScreen lobbyScreen = new LobbyScreen((StrategyGame)Stack.Game, session);
+                LobbyScreen lobbyScreen = new LobbyScreen(Stack.Game, session);
                 Stack.Push(lobbyScreen);
             }
             else
             {
-                // show error screen
+                MessageScreen messageScreen = new MessageScreen(Stack.Game, isCreating ? Resources.NetworkErrorCreate : Resources.NetworkErrorJoin);
+                Stack.Push(messageScreen);
             }
         }
 

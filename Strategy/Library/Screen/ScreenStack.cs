@@ -44,7 +44,7 @@ namespace Strategy.Library.Screen
             {
                 _stackScreens.ForEach(screen => screen.Update(gameTime));
                 _poppedScreens.ForEach(screen => screen.Update(gameTime));
-                _poppedScreens = _poppedScreens.Where(screen => screen.State == ScreenState.Inactive).ToList();
+                _poppedScreens = _poppedScreens.Where(screen => screen.State != ScreenState.Inactive).ToList();
                 _overlayScreens.ForEach(screen => screen.Update(gameTime));
             }
             else
@@ -150,7 +150,13 @@ namespace Strategy.Library.Screen
         /// <returns>True if the screen was successfully removed; otherwise, false.</returns>
         public bool RemoveOverlay(Screen overlay)
         {
-            return _overlayScreens.Remove(overlay);
+            bool removed = _overlayScreens.Remove(overlay);
+            if (removed)
+            {
+                overlay.Hide(true);
+                _poppedScreens.Add(overlay);
+            }
+            return removed;
         }
 
         private List<Screen> _stackScreens = new List<Screen>();

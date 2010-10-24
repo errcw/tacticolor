@@ -191,14 +191,14 @@ namespace Strategy.Gameplay
         /// </summary>
         private List<Type> GetAwardmentTypes()
         {
-            object[] typeAttrs = typeof(Awardment).GetCustomAttributes(typeof(XmlIncludeAttribute), false);
+            /*object[] typeAttrs = typeof(Awardment).GetCustomAttributes(typeof(XmlIncludeAttribute), false);
             List<Type> types = new List<Type>(typeAttrs.Length);
             foreach (object typeAttr in typeAttrs)
             {
                 XmlIncludeAttribute attr = (XmlIncludeAttribute)typeAttr;
                 types.Add(attr.Type);
-            }
-            return types;
+            }*/
+            return new List<Type>();
         }
 
         /// <summary>

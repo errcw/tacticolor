@@ -808,6 +808,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to create a game..
+        /// </summary>
+        internal static string NetworkErrorCreate {
+            get {
+                return ResourceManager.GetString("NetworkErrorCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lost connection to the match..
         /// </summary>
         internal static string NetworkErrorDisconnected {
@@ -822,6 +831,15 @@ namespace Strategy.Properties {
         internal static string NetworkErrorHostEndedSession {
             get {
                 return ResourceManager.GetString("NetworkErrorHostEndedSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find a game to join..
+        /// </summary>
+        internal static string NetworkErrorJoin {
+            get {
+                return ResourceManager.GetString("NetworkErrorJoin", resourceCulture);
             }
         }
         

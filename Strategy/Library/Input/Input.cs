@@ -139,12 +139,9 @@ namespace Strategy.Library.Input
                 if (amount != null)
                 {
                     vibration += amount.Value;
-                    return false;
-                }
-                else
-                {
                     return true;
                 }
+                return false;
             }).ToList();
             if (VibrationEnabled)
             {

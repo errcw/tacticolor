@@ -25,10 +25,9 @@ namespace Strategy.Interface.Screens
     /// </summary>
     public class LobbyScreen : Screen
     {
-        public LobbyScreen(StrategyGame game, NetworkSession session)
+        public LobbyScreen(Game game, NetworkSession session)
         {
-            _game = game;
-            _input = _game.Services.GetService<MenuInput>();
+            _input = game.Services.GetService<MenuInput>();
             _players = new List<Player>();
 
             _session = session;
@@ -199,7 +198,8 @@ namespace Strategy.Interface.Screens
 
         private void RemovePlayer(NetworkGamer gamer)
         {
-            _players = _players.Where(player => player.Gamer == gamer).ToList();
+            Player playerToRemove = _players.Single(player => player.Gamer == gamer);
+            _players.Remove(playerToRemove);
             if (_players.Count == 0)
             {
                 // lost all the players, back out to the main menu
@@ -209,7 +209,7 @@ namespace Strategy.Interface.Screens
 
         private Player FindPlayerByController(PlayerIndex index)
         {
-            return _players.First(player => player.Controller == index);
+            return _players.FirstOrDefault(player => player.Controller == index);
         }
 
         /// <summary>
@@ -322,9 +322,7 @@ namespace Strategy.Interface.Screens
             }
         }
 
-        private StrategyGame _game;
         private NetworkSession _session = null;
-
         private List<Player> _players;
 
         private MenuInput _input;

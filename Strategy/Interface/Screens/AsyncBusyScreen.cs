@@ -21,7 +21,7 @@ namespace Strategy.Interface.Screens
 
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/Colourable"));
             _background.Scale = new Vector2(1280, 720);
-            _background.Color = new Color(255, 255, 255, 128);
+            _background.Color = Color.FromNonPremultiplied(255, 255, 255, 128);
             _background.Position = Vector2.Zero;
 
             _marker = new ImageSprite(game.Content.Load<Texture2D>("Images/Piece"));

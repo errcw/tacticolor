@@ -164,16 +164,17 @@ namespace Strategy
 
                 IAsyncResult result = NetworkSessionProvider.BeginJoinInvited(
                     args.Gamer,
-                    OnInviteSessionCreated,
+                    null,
                     null);
                 AsyncBusyScreen busyScreen = new AsyncBusyScreen(this, result);
+                busyScreen.OperationCompleted += OnInviteSessionCreated;
                 _screens.Push(busyScreen);
             }
         }
 
-        private void OnInviteSessionCreated(IAsyncResult result)
+        private void OnInviteSessionCreated(object sender, AsyncOperationCompletedEventArgs args)
         {
-            NetworkSession session = NetworkSessionProvider.EndJoinInvited(result);
+            NetworkSession session = NetworkSessionProvider.EndJoinInvited(args.AsyncResult);
             if (session != null)
             {
 
