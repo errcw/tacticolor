@@ -16,8 +16,8 @@ namespace Strategy.Interface.Gameplay
         public readonly int ColumnX; /// X pixels per isometric column
         public readonly int ColumnY; /// Y pixels per isometric column
 
-        public int OffsetX;
-        public int OffsetY;
+        public int OffsetX; /// X coordinate of cell (0, 0)
+        public int OffsetY; /// Y coordinate of cell (0, 0)
 
         public IsometricParameters(int rowX, int rowY, int colX, int colY)
         {
