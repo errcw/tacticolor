@@ -97,14 +97,7 @@ namespace Strategy.Interface.Screens
                 _entries.Remove(entry);
 
                 // move the subsequent entries back
-                float previousX = entry.TargetPosition.X;
-                for (int i = removalIndex; i < _entries.Count; i++)
-                {
-                    float currentX = _entries[i].TargetPosition.X;
-                    _entries[i].TargetPosition = new Vector2(previousX, _entries[i].TargetPosition.X);
-                    _entries[i].TargetColor = (i - _listWindowBaseIndex < VisibleEntryCount) ? Color.White : Color.Transparent;
-                    previousX = currentX;
-                }
+                LayoutEntries(entry.TargetPosition, removalIndex);
 
                 if (entry == selectedEntry)
                 {
@@ -161,15 +154,12 @@ namespace Strategy.Interface.Screens
             //_screenDescriptor.GetSprite("ArrowDown").Color = Color.Transparent;
             if (pushed)
             {
-                // lay out all the entries, hiding those past the visible point
-                float previousX = BasePosition.X;
-                for (int i = 0; i < _entries.Count; i++)
+                foreach (MenuEntry entry in _entries)
                 {
-                    _entries[i].Sprite.Position = BasePosition;
-                    _entries[i].TargetPosition = new Vector2(previousX + Spacing, BasePosition.Y);
-                    _entries[i].TargetColor = (i < VisibleEntryCount) ? Color.White : Color.Transparent;
-                    previousX = _entries[i].TargetPosition.X + _entries[i].Sprite.Size.X;
+                    entry.Sprite.Position = BasePosition;
+                    entry.Sprite.Color = Color.Transparent;
                 }
+                LayoutEntries(BasePosition, 0);
 
                 // focus the first entry
                 _entries[0].OnFocusChanged(true);
@@ -300,6 +290,20 @@ namespace Strategy.Interface.Screens
         /// </summary>
         private void CycleUp()
         {
+        }
+
+        /// <summary>
+        /// Sets the target positions of a subset of entries.
+        /// </summary>
+        private void LayoutEntries(Vector2 basePosition, int fromIndex)
+        {
+            float previousX = basePosition.X - Spacing;
+            for (int i = fromIndex; i < _entries.Count; i++)
+            {
+                _entries[i].TargetPosition = new Vector2(previousX + Spacing, basePosition.Y);
+                _entries[i].TargetColor = (i < VisibleEntryCount) ? Color.White : Color.Transparent;
+                previousX = _entries[i].TargetPosition.X + _entries[i].Sprite.Size.X;
+            }
         }
 
         /// <summary>

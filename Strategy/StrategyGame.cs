@@ -50,6 +50,10 @@ namespace Strategy
             Services.AddService<TrialModeObserverComponent>(_trial);
             Services.AddService<Options>(_options = new Options());
             Services.AddService<Awardments>(_awardments = new Awardments());
+
+#if DEBUG
+            Guide.SimulateTrialMode = true;
+#endif
         }
 
         /// <summary>

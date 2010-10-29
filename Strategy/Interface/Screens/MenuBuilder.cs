@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
+using Strategy.Library.Sprite;
 
 namespace Strategy.Interface.Screens
 {
@@ -14,9 +16,11 @@ namespace Strategy.Interface.Screens
         /// Creates a new builder for the specified screen.
         /// </summary>
         /// <param name="screen">The screen to build in.</param>
-        public MenuBuilder(MenuScreen screen)
+        /// <param name="game">The game.</param>
+        public MenuBuilder(MenuScreen screen, Game game)
         {
             _screen = screen;
+            _font = game.Content.Load<SpriteFont>("Fonts/TextLarge");
         }
 
         public MenuBuilder CreateButtonEntry(string buttonText, EventHandler<EventArgs> selectedHandler)
@@ -27,12 +31,16 @@ namespace Strategy.Interface.Screens
 
         public MenuBuilder CreateButtonEntry(string buttonText, EventHandler<EventArgs> selectedHandler, out MenuEntry createdEntry)
         {
-            TextMenuEntry entry = new TextMenuEntry(null);
+            TextSprite textSprite = new TextSprite(_font, buttonText);
+            TextMenuEntry entry = new TextMenuEntry(textSprite);
+            entry.Selected += selectedHandler;
             _screen.AddEntry(entry);
             createdEntry = entry;
             return this;
         }
 
         private MenuScreen _screen;
+
+        private SpriteFont _font;
     }
 }

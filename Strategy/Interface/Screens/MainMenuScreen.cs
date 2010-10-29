@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Net;
 
 using Strategy.Net;
 using Strategy.Properties;
+using Strategy.Library.Components;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
 using Strategy.Library.Sprite;
@@ -18,16 +19,22 @@ namespace Strategy.Interface.Screens
     /// </summary>
     public class MainMenuScreen : MenuScreen
     {
+        MenuEntry purchaseEntry;
         public MainMenuScreen(StrategyGame game) : base(game)
         {
             _input = game.Services.GetService<MenuInput>();
 
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuLocalGame)));
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuMultiplayerGame)));
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuPurchase)));
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuAwardments)));
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuHelpOptions)));
-            AddEntry(new TextMenuEntry(new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuExit)));
+
+            new MenuBuilder(this, game)
+                .CreateButtonEntry(Resources.MenuLocalGame, OnLocalGameSelected)
+                .CreateButtonEntry(Resources.MenuMultiplayerGame, OnMultiplayerGameSelected)
+                .CreateButtonEntry(Resources.MenuPurchase, OnPurchaseSelected, out purchaseEntry)
+                .CreateButtonEntry(Resources.MenuAwardments, OnAwardmentsSelected)
+                .CreateButtonEntry(Resources.MenuHelpOptions, OnHelpOptionsSelected)
+                .CreateButtonEntry(Resources.MenuExit, OnExitSelected);
+
+            TrialModeObserverComponent trialObserver = game.Services.GetService<TrialModeObserverComponent>();
+            trialObserver.TrialModeEnded += (s, a) => RemoveEntry(purchaseEntry);
 
             TransitionOnTime = 0f;
             IsRoot = true;
@@ -47,6 +54,31 @@ namespace Strategy.Interface.Screens
             }
 
             base.UpdateActive(gameTime);
+        }
+
+        private void OnLocalGameSelected(object sender, EventArgs args)
+        {
+        }
+
+        private void OnMultiplayerGameSelected(object sender, EventArgs args)
+        {
+        }
+
+        private void OnPurchaseSelected(object sender, EventArgs args)
+        {
+            _input.Controller.Value.PurchaseContent();
+        }
+
+        private void OnAwardmentsSelected(object sender, EventArgs args)
+        {
+        }
+
+        private void OnHelpOptionsSelected(object sender, EventArgs args)
+        {
+        }
+
+        private void OnExitSelected(object sender, EventArgs args)
+        {
         }
 
         private void OnSessionProvided(object sender, AsyncOperationCompletedEventArgs args)
