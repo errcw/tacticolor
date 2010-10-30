@@ -60,12 +60,14 @@ namespace Strategy.Interface.Screens
                 return;
             }
 
+#if !DEBUG // for debug we use system link networking which does not require online privileges
             if (!_input.Controller.Value.CanPlayOnline())
             {
                 MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.MenuMultiplayerUnavailable);
                 Stack.Push(messageScreen);
                 return;
             }
+#endif
 
             MultiplayerSelectionScreen multiplayerScreen = new MultiplayerSelectionScreen(Stack.Game);
             Stack.Push(multiplayerScreen);

@@ -92,7 +92,7 @@ namespace Strategy.Net
             {
                 foreach (Player player in _players)
                 {
-                    if (player.Gamer != null && !player.Gamer.IsLocal)
+                    if (player.Gamer != null && !player.Gamer.IsLocal && !player.Gamer.HasLeftSession)
                     {
                         _writer.Write(command);
                         _sendReceiveGamer.SendData(_writer, SendDataOptions.Reliable, player.Gamer);

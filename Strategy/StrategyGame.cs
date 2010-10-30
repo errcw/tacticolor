@@ -52,7 +52,7 @@ namespace Strategy
             Services.AddService<Awardments>(_awardments = new Awardments());
 
 #if DEBUG
-            Guide.SimulateTrialMode = true;
+            //Guide.SimulateTrialMode = true;
 #endif
         }
 

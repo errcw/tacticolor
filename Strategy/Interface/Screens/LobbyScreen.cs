@@ -145,7 +145,10 @@ namespace Strategy.Interface.Screens
             for (int p = 0; p < _players.Count; p++)
             {
                 _players[p].Id = (PlayerId)p;
-                _players[p].Input = new LocalInput(_players[p].Id, _players[p].Controller.Value, match, GameplayScreen.IsoParams);
+                if (_players[p].Gamer.IsLocal)
+                {
+                    _players[p].Input = new LocalInput(_players[p].Id, _players[p].Controller.Value, match, GameplayScreen.IsoParams);
+                }
             }
 
             // fill out the remaining players with AI
