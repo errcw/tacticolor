@@ -333,6 +333,9 @@
   <data name="MenuMultiplayerGame" xml:space="preserve">
     <value>Xbox LIVE Game</value>
   </data>
+  <data name="MenuMultiplayerUnavailable" xml:space="preserve">
+    <value>You cannot play online as this gamer.</value>
+  </data>
   <data name="MenuMusic" xml:space="preserve">
     <value>Music</value>
   </data>
@@ -367,7 +370,7 @@
     <value>The signed in gamer cannot play online.</value>
   </data>
   <data name="NetworkErrorCreate" xml:space="preserve">
-    <value>Failed to create a game.</value>
+    <value>Failed to create a match</value>
   </data>
   <data name="NetworkErrorDisconnected" xml:space="preserve">
     <value>Lost connection to the match.</value>
@@ -377,7 +380,7 @@
     <comment>Should be impossible</comment>
   </data>
   <data name="NetworkErrorJoin" xml:space="preserve">
-    <value>Could not find a game to join.</value>
+    <value>Could not find a match to join.</value>
   </data>
   <data name="NetworkErrorRemovedByHost" xml:space="preserve">
     <value>The host removed you from the match.</value>
@@ -417,6 +420,9 @@
   </data>
   <data name="TrialMatchEnd" xml:space="preserve">
     <value>Get the full version to keep playing and finish your conquest!</value>
+  </data>
+  <data name="TrialMultiplayer" xml:space="preserve">
+    <value>Get the full version to play online!</value>
   </data>
   <data name="TrialUpsellReason0" xml:space="preserve">
     <value>Play online!</value>

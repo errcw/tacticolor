@@ -19,11 +19,11 @@ namespace Strategy.Interface.Screens
     /// </summary>
     public class MainMenuScreen : MenuScreen
     {
-        MenuEntry purchaseEntry;
         public MainMenuScreen(StrategyGame game) : base(game)
         {
             _input = game.Services.GetService<MenuInput>();
 
+            MenuEntry purchaseEntry;
 
             new MenuBuilder(this, game)
                 .CreateButtonEntry(Resources.MenuLocalGame, OnLocalGameSelected)
@@ -36,32 +36,39 @@ namespace Strategy.Interface.Screens
             TrialModeObserverComponent trialObserver = game.Services.GetService<TrialModeObserverComponent>();
             trialObserver.TrialModeEnded += (s, a) => RemoveEntry(purchaseEntry);
 
-            TransitionOnTime = 0f;
+            TransitionOnTime = 0.01f;
             IsRoot = true;
             AllowBackOnRoot = true;
             BasePosition = new Vector2(130f, 80f);
         }
 
-        protected override void UpdateActive(GameTime gameTime)
-        {
-            if (_input.Buy.Released)
-            {
-                SignedInGamer gamer = _input.Controller.Value.GetSignedInGamer();
-                IAsyncResult result = NetworkSessionProvider.BeginCreate(NetworkSessionType.Local, gamer, null, true);
-                AsyncBusyScreen busyScreen = new AsyncBusyScreen(Stack.Game, result);
-                busyScreen.OperationCompleted += OnSessionProvided;
-                Stack.Push(busyScreen);
-            }
-
-            base.UpdateActive(gameTime);
-        }
-
         private void OnLocalGameSelected(object sender, EventArgs args)
         {
+            SignedInGamer gamer = _input.Controller.Value.GetSignedInGamer();
+            IAsyncResult result = NetworkSessionProvider.BeginCreate(NetworkSessionType.Local, gamer, null, true);
+            AsyncBusyScreen busyScreen = new AsyncBusyScreen(Stack.Game, result);
+            busyScreen.OperationCompleted += OnSessionProvided;
+            Stack.Push(busyScreen);
         }
 
         private void OnMultiplayerGameSelected(object sender, EventArgs args)
         {
+            if (Guide.IsTrialMode)
+            {
+                PurchaseScreen purchaseScreen = new PurchaseScreen(Stack.Game, Resources.TrialMultiplayer, typeof(MainMenuScreen));
+                Stack.Push(purchaseScreen);
+                return;
+            }
+
+            if (!_input.Controller.Value.CanPlayOnline())
+            {
+                MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.MenuMultiplayerUnavailable);
+                Stack.Push(messageScreen);
+                return;
+            }
+
+            MultiplayerSelectionScreen multiplayerScreen = new MultiplayerSelectionScreen(Stack.Game);
+            Stack.Push(multiplayerScreen);
         }
 
         private void OnPurchaseSelected(object sender, EventArgs args)
@@ -79,20 +86,13 @@ namespace Strategy.Interface.Screens
 
         private void OnExitSelected(object sender, EventArgs args)
         {
+            ExitConfirmationScreen confirmationScreen = new ExitConfirmationScreen(Stack.Game);
+            Stack.Push(confirmationScreen);
         }
 
         private void OnSessionProvided(object sender, AsyncOperationCompletedEventArgs args)
         {
-            NetworkSession session = null;
-            Boolean isCreating = (Boolean)args.AsyncResult.AsyncState;
-            if (isCreating)
-            {
-                session = NetworkSessionProvider.EndCreate(args.AsyncResult);
-            }
-            else
-            {
-                session = NetworkSessionProvider.EndFindAndJoin(args.AsyncResult);
-            }
+            NetworkSession session = NetworkSessionProvider.EndCreate(args.AsyncResult);
             if (session != null)
             {
                 LobbyScreen lobbyScreen = new LobbyScreen(Stack.Game, session);
@@ -100,7 +100,7 @@ namespace Strategy.Interface.Screens
             }
             else
             {
-                MessageScreen messageScreen = new MessageScreen(Stack.Game, isCreating ? Resources.NetworkErrorCreate : Resources.NetworkErrorJoin);
+                MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkErrorCreate);
                 Stack.Push(messageScreen);
             }
         }

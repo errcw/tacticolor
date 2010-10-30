@@ -133,12 +133,13 @@ namespace Strategy.Interface.Screens
                 _endTime -= seconds;
                 if (_endTime <= 0f)
                 {
-                    if (_session != null && _session.IsHost)
+                    if (_session != null && _session.IsHost && _session.SessionState == NetworkSessionState.Playing)
                     {
                         _session.EndGame();
                         _session.Update(); // force an update to get the new state right away
                     }
                     Stack.Push(_endScreen);
+                    _endScreen = null; // do not push multiple times
                 }
             }
         }

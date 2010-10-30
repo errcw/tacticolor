@@ -60,7 +60,7 @@ namespace Strategy.Interface.Screens
         /// <summary>
         /// Creates a new menu screen.
         /// </summary>
-        public MenuScreen(StrategyGame game)
+        public MenuScreen(Game game)
         {
             _input = game.Services.GetService<MenuInput>();
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
@@ -107,10 +107,13 @@ namespace Strategy.Interface.Screens
                 else
                 {
                     // fix the indices of the selected entry
-                    _selectedEntryAbs = Math.Max(_selectedEntryAbs - 1, 0);
-                    if (removalIndex >= _listWindowBaseIndex && removalIndex < _listWindowBaseIndex + VisibleEntryCount)
+                    if (_selectedEntryAbs > removalIndex)
                     {
-                        _selectedEntryRel = Math.Max(_selectedEntryRel - 1, 0);
+                        _selectedEntryAbs = Math.Max(_selectedEntryAbs - 1, 0);
+                        if (removalIndex >= _listWindowBaseIndex && removalIndex < _listWindowBaseIndex + VisibleEntryCount)
+                        {
+                            _selectedEntryRel = Math.Max(_selectedEntryRel - 1, 0);
+                        }
                     }
                 }
 

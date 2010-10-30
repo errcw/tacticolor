@@ -709,6 +709,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You cannot play online as this gamer..
+        /// </summary>
+        internal static string MenuMultiplayerUnavailable {
+            get {
+                return ResourceManager.GetString("MenuMultiplayerUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Music.
         /// </summary>
         internal static string MenuMusic {
@@ -808,7 +817,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to create a game..
+        ///   Looks up a localized string similar to Failed to create a match.
         /// </summary>
         internal static string NetworkErrorCreate {
             get {
@@ -835,7 +844,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find a game to join..
+        ///   Looks up a localized string similar to Could not find a match to join..
         /// </summary>
         internal static string NetworkErrorJoin {
             get {
@@ -957,6 +966,15 @@ namespace Strategy.Properties {
         internal static string TrialMatchEnd {
             get {
                 return ResourceManager.GetString("TrialMatchEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Get the full version to play online!.
+        /// </summary>
+        internal static string TrialMultiplayer {
+            get {
+                return ResourceManager.GetString("TrialMultiplayer", resourceCulture);
             }
         }
         
