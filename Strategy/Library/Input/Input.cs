@@ -52,26 +52,6 @@ namespace Strategy.Library.Input
         }
 
         /// <summary>
-        /// Polls all the controllers looking for the specified predicate to be true. The
-        /// first controller matching the predicate is assigned to Controller.
-        /// </summary>
-        /// <param name="poll">The predicate to test.</param>
-        /// <returns>True if a controller was selected; otherwise, false.</returns>
-        public bool FindActiveController(PollIsDown poll)
-        {
-            for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
-            {
-                GamePadState state = PollState(p);
-                if (poll(state))
-                {
-                    Controller = p;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Adds vibration on the active controller. Multiple calls are additive.
         /// </summary>
         /// <param name="vibration">The vibration function.</param>

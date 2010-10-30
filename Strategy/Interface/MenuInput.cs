@@ -24,6 +24,7 @@ namespace Strategy.Interface
         public readonly ControlState Right = new ControlState() { RepeatEnabled = true };
         public readonly ControlState Buy = new ControlState();
 
+        public readonly ControlState[] Activate;
         public readonly ControlState[] Join;
         public readonly ControlState[] Leave;
 
@@ -41,6 +42,7 @@ namespace Strategy.Interface
 
             // register the lobby inputs
             _inputs = new Input[4];
+            Activate = new ControlState[4];
             Join = new ControlState[4];
             Leave = new ControlState[4];
             for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
@@ -48,6 +50,8 @@ namespace Strategy.Interface
                 int index = (int)p;
                 _inputs[index] = new Input();
                 _inputs[index].Controller = p;
+                Activate[index] = new ControlState();
+                _inputs[index].Register(Activate[index], Polling.One(Buttons.Start));
                 Join[index] = new ControlState();
                 _inputs[index].Register(Join[index], Polling.One(Buttons.A));
                 Leave[index] = new ControlState();
@@ -70,13 +74,16 @@ namespace Strategy.Interface
         /// </summary>
         public bool FindAndSetActiveController()
         {
-            bool found = _input.FindActiveController(Polling.One(Buttons.Start));
-            if (found)
+            for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
             {
-                // update the state of the newly selected controller
-                _input.Update(0f);
+                if (Activate[(int)p].Released)
+                {
+                    _input.Controller = p;
+                    _input.Update(0f); // force an update to initialise the state
+                    return true;
+                }
             }
-            return found;
+            return false;
         }
 
         private Input _input;
