@@ -45,14 +45,20 @@ namespace Strategy.Interface.Screens
         {
             SignedInGamer gamer = _input.Controller.Value.GetSignedInGamer();
 
+            NetworkSessionType sessionType = NetworkSessionType.PlayerMatch;
+#if DEBUG
+            // for debug builds only use system link
+            sessionType = NetworkSessionType.SystemLink;
+#endif
+
             IAsyncResult result;
             if (createSession)
             {
-                result = NetworkSessionProvider.BeginCreate(NetworkSessionType.PlayerMatch, gamer, null, true);
+                result = NetworkSessionProvider.BeginCreate(sessionType, gamer, null, true);
             }
             else
             {
-                result = NetworkSessionProvider.BeginFindAndJoin(NetworkSessionType.PlayerMatch, gamer, null, false);
+                result = NetworkSessionProvider.BeginFindAndJoin(sessionType, gamer, null, false);
             }
 
             AsyncBusyScreen busyScreen = new AsyncBusyScreen(Stack.Game, result);

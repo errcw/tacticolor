@@ -48,7 +48,7 @@ namespace Strategy.Interface.Screens
         protected override void UpdateInactive(GameTime gameTime)
         {
             // continue updating the network session even if other temporary screens are on top
-            if (_session.SessionState == NetworkSessionState.Lobby)
+            if (_session != null && _session.SessionState == NetworkSessionState.Lobby)
             {
                 _session.Update();
                 HandleNetworkInput();
@@ -61,7 +61,7 @@ namespace Strategy.Interface.Screens
             if (!pushed)
             {
                 _players.Clear(); // we will have the players in the session re-added
-                if (_session.IsHost)
+                if (_session.IsHost && _session.SessionState == NetworkSessionState.Lobby)
                 {
                     _session.ResetReady();
                 }

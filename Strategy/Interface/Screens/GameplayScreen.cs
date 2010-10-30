@@ -121,6 +121,15 @@ namespace Strategy.Interface.Screens
                 _lockstepMatch.Update(milliseconds);
             }
 
+            // hack in a way to get back to the main menu
+            if (Stack.Game.Services.GetService<MenuInput>().Debug.Released)
+            {
+                _session.EndGame();
+                _session.Update();
+                Stack.Pop(); // this gameplay screen
+                Stack.Pop(); // lobby screen
+            }
+
             float seconds = gameTime.GetElapsedSeconds();
             _mapView.Update(seconds);
             _inputViews.ForEach(view => view.Update(seconds));
