@@ -191,6 +191,7 @@
     <Compile Include="Library\Storage\Storage.cs" />
     <Compile Include="Library\Storage\XmlStoreable.cs" />
     <Compile Include="Net\Command.cs" />
+    <Compile Include="Net\CommandList.cs" />
     <Compile Include="Net\LockstepInput.cs" />
     <Compile Include="Net\LockstepMatch.cs" />
     <Compile Include="Net\NetworkSessionProvider.cs" />

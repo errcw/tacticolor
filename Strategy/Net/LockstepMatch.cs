@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define NET_DEBUG
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -44,7 +46,7 @@ namespace Strategy.Net
         public LockstepMatch(Match match)
         {
             _match = match;
-            _commands = new List<Command>(match.PlayerCount * 3 * 10);
+            _commands = new CommandList();
 
             StepTime = 100;
             StepStart = 0;
@@ -58,6 +60,7 @@ namespace Strategy.Net
             {
                 _readyStepStartTimes[i] = _readyStepStartTime;
             }
+
             _stepHashes = new Dictionary<long, long>(2);
         }
 
@@ -79,12 +82,57 @@ namespace Strategy.Net
 
         /// <summary>
         /// Updates the match for this time step. The match is only updated
-        /// when all the commands for a given 
+        /// when all the commands for a given step are available.
         /// </summary>
         /// <param name="time">The elapsed time, in milliseconds, since the last update.</param>
         public void Update(int time)
         {
-            if (_match.Time + time >= _stepEndTime)
+            long updateEndTime = _match.Time + time;
+
+            while (_commands.Count > 0)
+            {
+                // grab the next command to execute
+                Command command = _commands.Peek();
+
+                // bail if we have executed all the commands for this update
+                if (command.Time > updateEndTime)
+                {
+                    break;
+                }
+
+                // consume the time leading up to the command
+                int dtCommandTime = (int)(command.Time - _match.Time);
+                if (!UpdateMatch(dtCommandTime))
+                {
+                    return; // blocked waiting for the next step
+                }
+
+                // execute the command at its specified time
+                bool executed = command.Execute(_match);
+                if (!executed)
+                {
+                    // do not consider this a fatal error because a player may issue
+                    // commands that are invalidated by earlier remote commands
+                    Log("Tried to execute invalid command " + command);
+                }
+
+                // remove the command now that we have successfully executed it
+                _commands.Pop();
+            }
+
+            // consume the remaining time in the update
+            int dtUpdateEndTime = (int)(updateEndTime - _match.Time);
+            UpdateMatch(dtUpdateEndTime);
+
+            Debug.Assert(_match.Time <= _readyStepStartTime + StepTime);
+        }
+
+        private bool UpdateMatch(int deltaTime)
+        {
+            Debug.Assert(deltaTime >= 0);
+
+            // handle step transitions
+            if (_match.Time + deltaTime >= _stepEndTime)
             {
                 long nextStepStart = _stepEndTime;
                 if (nextStepStart <= _readyStepStartTime)
@@ -94,34 +142,19 @@ namespace Strategy.Net
                         StepEnded(this, EventArgs.Empty);
                     }
                     StepStart = nextStepStart;
-                    Log("Starting step " + StepStart);
                     _stepEndTime = StepStart + StepTime;
+                    Log("Starting step " + StepStart);
                 }
                 else
                 {
                     Log("Blocked starting step " + _stepEndTime);
-                    return;
+                    return false;
                 }
             }
 
-            foreach (Command command in _commands)
-            {
-                if (command.Time >= _match.Time && command.Time < _match.Time + time)
-                {
-                    bool executed = command.Execute(_match);
-                    if (!executed)
-                    {
-                        // do not consider this a fatal error because a player may issue
-                        // more piece placement commands than is possible because she
-                        // does not see the piece assigment reflected immediately
-                        Log("Tried to execute invalid command " + command);
-                    }
-                }
-            }
-            _commands = _commands.Where(c => c.Time >= _match.Time + time).ToList();
-
-            _match.Update(time);
-            Debug.Assert(_match.Time <= _readyStepStartTime + StepTime);
+            // update the match time
+            _match.Update(deltaTime);
+            return true;
         }
 
         private void HandleSynchronization(SynchronizationCommand command)
@@ -136,8 +169,9 @@ namespace Strategy.Net
             if (command.Time > _match.Time + SchedulingOffset + StepTime)
             {
                 Log("Got a sync command from " + command.Player + " for time " + command.Time + " but match time is only " + _match.Time);
-                throw new OutOfSyncException("Got a sync command from too far in the future");
+                //!!! throw new OutOfSyncException("Got a sync command from too far in the future");
             }
+
             long expectedHash;
             if (_stepHashes.TryGetValue(command.HashTime, out expectedHash))
             {
@@ -166,7 +200,7 @@ namespace Strategy.Net
 
         private Match _match;
 
-        private List<Command> _commands;
+        private CommandList _commands;
 
         private long _stepEndTime;
         private long _readyStepStartTime;
