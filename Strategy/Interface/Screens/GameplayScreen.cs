@@ -116,9 +116,17 @@ namespace Strategy.Interface.Screens
 
             if (!_lockstepMatch.Match.IsEnded)
             {
-                int milliseconds = gameTime.GetElapsedMilliseconds();
-                _lockstepInput.Update(milliseconds);
-                _lockstepMatch.Update(milliseconds);
+                try
+                {
+                    int milliseconds = gameTime.GetElapsedMilliseconds();
+                    _lockstepInput.Update(milliseconds);
+                    _lockstepMatch.Update(milliseconds);
+                }
+                catch (OutOfSyncException oos)
+                {
+                    Debug.WriteLine(oos);
+                    //TODO handle this as a fatal network error
+                }
             }
 
             // hack in a way to get back to the main menu
