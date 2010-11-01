@@ -87,7 +87,15 @@ namespace Strategy.Net
                 {
                     SynchronizationCommand command = new SynchronizationCommand(player.Id, _match.Match.GetStateHash(), _match.StepStart, 0);
                     command.Time = _match.StepStart + _match.SchedulingOffset;
-                    BroadcastCommand(command);
+                    if (player.Gamer != null)
+                    {
+                        BroadcastCommand(command);
+                    }
+                    else
+                    {
+                        // no need to broadcast AI commands across the wire
+                        _match.ScheduleCommand(command);
+                    }
                 }
             }
 
