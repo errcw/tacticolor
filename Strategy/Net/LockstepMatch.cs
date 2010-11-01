@@ -170,7 +170,7 @@ namespace Strategy.Net
             if (command.Time > _match.Time + SchedulingOffset + StepTime)
             {
                 Log("Got a sync command from " + command.Player + " for time " + command.Time + " but match time is only " + _match.Time);
-                //!!! throw new OutOfSyncException("Got a sync command from too far in the future");
+                throw new OutOfSyncException("Got a sync command from too far in the future");
             }
 
             long expectedHash;
