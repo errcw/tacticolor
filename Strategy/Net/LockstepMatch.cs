@@ -154,6 +154,7 @@ namespace Strategy.Net
 
             // update the match time
             _match.Update(deltaTime);
+
             return true;
         }
 

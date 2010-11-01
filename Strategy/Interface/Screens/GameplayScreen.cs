@@ -245,6 +245,7 @@ namespace Strategy.Interface.Screens
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
         {
             Player player = _players.Single(p => p.Gamer == args.Gamer);
+            _lockstepInput.OnPlayerLeft(player);
             ShowPlayerLeftMatch(player);
         }
 

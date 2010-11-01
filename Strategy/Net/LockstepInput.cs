@@ -64,6 +64,18 @@ namespace Strategy.Net
         }
 
         /// <summary>
+        /// Notifies the input the specified player left the match.
+        /// </summary>
+        public void OnPlayerLeft(Player player)
+        {
+            // the match should no longer wait for commands for this player
+            // so tell it that it has all the commands for all time
+            SynchronizationCommand command = new SynchronizationCommand(player.Id, 0, 0, 0);
+            command.Time = long.MaxValue;
+            _match.ScheduleCommand(command);
+        }
+
+        /// <summary>
         /// Notifies the input the step has ended.
         /// </summary>
         private void OnStepEnded(object matchObj, EventArgs args)
@@ -71,7 +83,7 @@ namespace Strategy.Net
             // send a synchronization command for each local player
             foreach (Player player in _players)
             {
-                if (player.Gamer == null || player.Gamer.IsLocal)
+                if (player.Gamer == null || player.Gamer.IsLocal || player.Gamer.HasLeftSession)
                 {
                     SynchronizationCommand command = new SynchronizationCommand(player.Id, _match.Match.GetStateHash(), _match.StepStart, 0);
                     command.Time = _match.StepStart + _match.SchedulingOffset;
@@ -106,6 +118,7 @@ namespace Strategy.Net
         /// </summary>
         private void SendNetworkCommands()
         {
+            // no-op, we send all input as soon as we receive it
         }
 
         /// <summary>

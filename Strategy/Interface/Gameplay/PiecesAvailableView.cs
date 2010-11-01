@@ -49,7 +49,6 @@ namespace Strategy.Interface.Gameplay
             {
                 OnPieceCreated();
             }
-            System.Diagnostics.Debug.Assert(_created.Count == _match.PiecesAvailable[(int)Player]);
 
             if (_creatingSprite != null)
             {
@@ -94,6 +93,12 @@ namespace Strategy.Interface.Gameplay
         /// </summary>
         private void OnPieceCreated()
         {
+            // bail if there is no creating sprite to update (when the view is hidden)
+            if (_creatingSprite == null)
+            {
+                return;
+            }
+
             _creatingSprite.Color = SolidColor;
             _creatingSprite.X = _creatingTargetX;
             _created.Push(_creatingSprite);
@@ -103,6 +108,8 @@ namespace Strategy.Interface.Gameplay
             {
                 SetUpCreatingSprite();
             }
+
+            System.Diagnostics.Debug.Assert(_created.Count == _match.PiecesAvailable[(int)Player]);
         }
 
         /// <summary>
