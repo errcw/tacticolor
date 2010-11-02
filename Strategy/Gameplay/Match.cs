@@ -457,14 +457,12 @@ namespace Strategy.Gameplay
         private void SetInitialPieceState()
         {
             _pieceCreationElapsed = new int[PlayerCount];
-            _pieceCreationSpeed = new float[PlayerCount];
             PieceCreationProgress = new float[PlayerCount];
             PiecesAvailable = new int[PlayerCount];
 
             for (int p = 0; p < PlayerCount; p++)
             {
                 _pieceCreationElapsed[p] = 0;
-                _pieceCreationSpeed[p] = GetPieceCreationSpeed(TerritoriesOwnedCount[p]);
                 PieceCreationProgress[p] = 0f;
                 PiecesAvailable[p] = 0;
             }
@@ -504,10 +502,11 @@ namespace Strategy.Gameplay
                     continue;
                 }
 
-                _pieceCreationElapsed[p] += (int)Math.Floor(time * _pieceCreationSpeed[p]);
-                PieceCreationProgress[p] = Math.Min(_pieceCreationElapsed[p] / (float)PieceCreationTime, 1f);
+                int elapsedTicks = time * (PieceCreationMillisToTicksBase + (TerritoriesOwnedCount[p] * PieceCreationMillisToTicksPerTerritory));
+                _pieceCreationElapsed[p] += elapsedTicks;
+                PieceCreationProgress[p] = Math.Min(_pieceCreationElapsed[p] / (float)PieceCreationTicks, 1f);
 
-                if (_pieceCreationElapsed[p] >= PieceCreationTime)
+                if (_pieceCreationElapsed[p] >= PieceCreationTicks)
                 {
                     PiecesAvailable[p] += 1;
 
@@ -524,7 +523,6 @@ namespace Strategy.Gameplay
         {
             int ownerIdx = (int)territory.Owner;
             TerritoriesOwnedCount[ownerIdx] += 1;
-            _pieceCreationSpeed[ownerIdx] = GetPieceCreationSpeed(TerritoriesOwnedCount[ownerIdx]);
 
             // might not have a value if territory was unowned
             if (previousOwner.HasValue)
@@ -535,7 +533,6 @@ namespace Strategy.Gameplay
                 {
                     PlayerWasEliminated(previousOwner.Value);
                 }
-                _pieceCreationSpeed[prevIdx] = GetPieceCreationSpeed(TerritoriesOwnedCount[prevIdx]);
             }
         }
 
@@ -561,14 +558,6 @@ namespace Strategy.Gameplay
         }
 
         /// <summary>
-        /// Returns a territory creation speed.
-        /// </summary>
-        private float GetPieceCreationSpeed(int numTerritoriesOwned)
-        {
-            return numTerritoriesOwned > 0 ? Math.Min(PieceCreationBaseSpeed + numTerritoriesOwned * 0.1f, PieceCreationMaxSpeed) : 0;
-        }
-
-        /// <summary>
         /// Returns the number of players owning territories on the map.
         /// </summary>
         private int GetPlayerCount()
@@ -590,11 +579,10 @@ namespace Strategy.Gameplay
         private Random _random;
 
         private int[] _pieceCreationElapsed;
-        private float[] _pieceCreationSpeed;
 
-        private const int PieceCreationTime = 5000;
-        private const float PieceCreationBaseSpeed = 1f;
-        private const float PieceCreationMaxSpeed = 2f;
+        private const int PieceCreationTicks = 5000 * 1000;
+        private const int PieceCreationMillisToTicksBase = 900;
+        private const int PieceCreationMillisToTicksPerTerritory = 50;
 
         private const int CooldownMove = 600;
         private const int CooldownAttackBase = 2000;
