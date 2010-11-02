@@ -70,7 +70,7 @@ namespace Strategy.Net
         {
             // the match should no longer wait for commands for this player
             // so tell it that it has all the commands for all time
-            SynchronizationCommand command = new SynchronizationCommand(player.Id, 0, 0, 0);
+            SynchronizationCommand command = new SynchronizationCommand(player.Id, 0, 0);
             command.Time = long.MaxValue;
             _match.ScheduleCommand(command);
         }
@@ -85,7 +85,7 @@ namespace Strategy.Net
             {
                 if (player.Gamer == null || player.Gamer.IsLocal || player.Gamer.HasLeftSession)
                 {
-                    SynchronizationCommand command = new SynchronizationCommand(player.Id, _match.Match.GetStateHash(), _match.StepStart, 0);
+                    SynchronizationCommand command = new SynchronizationCommand(player.Id, _match.Match.GetStateHash(), _match.StepStart);
                     command.Time = _match.StepStart + _match.SchedulingOffset;
                     if (player.Gamer != null)
                     {

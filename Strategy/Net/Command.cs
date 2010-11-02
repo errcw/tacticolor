@@ -166,34 +166,26 @@ namespace Strategy.Net
         /// </summary>
         public long HashTime { get; private set; }
 
-        /// <summary>
-        /// Timing data to tune the step length.
-        /// </summary>
-        public int Timing { get; private set; }
-
         public SynchronizationCommand() : base(Code)
         {
         }
 
-        public SynchronizationCommand(PlayerId player, long hash, long hashTime, int timing) : base(Code, player)
+        public SynchronizationCommand(PlayerId player, long hash, long hashTime) : base(Code, player)
         {
             Hash = hash;
             HashTime = hashTime;
-            Timing = timing;
         }
 
         protected override void ReadImpl(PacketReader reader)
         {
             Hash = reader.ReadInt64();
             HashTime = reader.ReadInt64();
-            Timing = reader.ReadInt32();
         }
 
         protected override void WriteImpl(PacketWriter writer)
         {
             writer.Write(Hash);
             writer.Write(HashTime);
-            writer.Write(Timing);
         }
     }
 
