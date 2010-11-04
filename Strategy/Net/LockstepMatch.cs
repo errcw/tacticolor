@@ -123,8 +123,6 @@ namespace Strategy.Net
             // consume the remaining time in the update
             int dtUpdateEndTime = (int)(updateEndTime - _match.Time);
             UpdateMatch(dtUpdateEndTime);
-
-            Debug.Assert(_match.Time <= _readyStepStartTime + StepTime);
         }
 
         private bool UpdateMatch(int deltaTime)
@@ -137,10 +135,16 @@ namespace Strategy.Net
                 long nextStepStart = _stepEndTime;
                 if (nextStepStart <= _readyStepStartTime)
                 {
+                    // update up to the end of the step
+                    int dtStepEnd = (int)(_stepEndTime - _match.Time);
+                    _match.Update(dtStepEnd);
+                    deltaTime -= dtStepEnd;
+
                     if (StepEnded != null)
                     {
                         StepEnded(this, EventArgs.Empty);
                     }
+
                     StepStart = nextStepStart;
                     _stepEndTime = StepStart + StepTime;
                     Log("Starting step " + StepStart);
@@ -155,6 +159,7 @@ namespace Strategy.Net
             // update the match time
             _match.Update(deltaTime);
 
+            Debug.Assert(_match.Time <= _readyStepStartTime + StepTime);
             return true;
         }
 
