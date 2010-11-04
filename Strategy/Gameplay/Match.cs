@@ -580,9 +580,9 @@ namespace Strategy.Gameplay
 
         private int[] _pieceCreationElapsed;
 
-        private const int PieceCreationTicks = 5000 * 1000;
-        private const int PieceCreationMillisToTicksBase = 900;
-        private const int PieceCreationMillisToTicksPerTerritory = 50;
+        private const int PieceCreationTicks = 4500000;
+        private const int PieceCreationMillisToTicksBase = 950;
+        private const int PieceCreationMillisToTicksPerTerritory = 40;
 
         private const int CooldownMove = 600;
         private const int CooldownAttackBase = 2000;
