@@ -136,8 +136,8 @@ namespace Strategy.Interface.Screens
             // create the game objects
             Random gameRandom = new Random(_seed);
             MapGenerator generator = new MapGenerator(gameRandom);
-            //Map map = generator.Generate(_mapType, _mapSize);
-            Map map = generator.Generate(16, 2, 1, 4);
+            Map map = generator.Generate(_mapType, _mapSize);
+            //Map map = generator.Generate(16, 2, 1, 4);
             Match match = new Match(map, gameRandom);
 
             // assign ids to players by sorting based on unique id
@@ -153,7 +153,6 @@ namespace Strategy.Interface.Screens
             }
 
             // fill out the remaining players with AI
-            /*
             int humanPlayerCount = _players.Count;
             int aiPlayerCount = Match.MaxPlayerCount - humanPlayerCount;
             for (int p = 0; p < aiPlayerCount; p++)
@@ -163,7 +162,6 @@ namespace Strategy.Interface.Screens
                 aiPlayer.Input = new AIInput(aiPlayer.Id, match, _difficulty, gameRandom);
                 _players.Add(aiPlayer);
             }
-            */
 
             GameplayScreen gameplayScreen = new GameplayScreen(Stack.Game, _session, _players, match);
             Stack.Push(gameplayScreen);
@@ -336,7 +334,7 @@ namespace Strategy.Interface.Screens
         private int _seed = 0;
         private MapType _mapType = MapType.LandRush;
         private MapSize _mapSize = MapSize.Normal;
-        private AIDifficulty _difficulty = AIDifficulty.Normal;
+        private AIDifficulty _difficulty = AIDifficulty.Hard; //TODO
         private Random _random = new Random();
     }
 }
