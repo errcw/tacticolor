@@ -93,8 +93,10 @@
     <Compile Include="Interface\Player.cs" />
     <Compile Include="Interface\PlayerIdExtensions.cs" />
     <Compile Include="Interface\Screens\AsyncBusyScreen.cs" />
+    <Compile Include="Interface\Screens\AwardmentsScreen.cs" />
     <Compile Include="Interface\Screens\ExitConfirmationScreen.cs" />
     <Compile Include="Interface\Screens\GameplayScreen.cs" />
+    <Compile Include="Interface\Screens\HelpOptionsScreen.cs" />
     <Compile Include="Interface\Screens\LobbyScreen.cs" />
     <Compile Include="Interface\Screens\MainMenuScreen.cs" />
     <Compile Include="Interface\Screens\MatchOverScreen.cs" />

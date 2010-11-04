@@ -80,10 +80,14 @@ namespace Strategy.Interface.Screens
 
         private void OnAwardmentsSelected(object sender, EventArgs args)
         {
+            AwardmentsScreen awardmentsScreen = new AwardmentsScreen(Stack.Game);
+            Stack.Push(awardmentsScreen);
         }
 
         private void OnHelpOptionsSelected(object sender, EventArgs args)
         {
+            HelpOptionsScreen helpOptionsScreen = new HelpOptionsScreen(Stack.Game);
+            Stack.Push(helpOptionsScreen);
         }
 
         private void OnExitSelected(object sender, EventArgs args)

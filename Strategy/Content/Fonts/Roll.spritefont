@@ -12,6 +12,11 @@
         <Start>&#48;</Start>
         <End>&#57;</End>
       </CharacterRegion>
+      <!-- + -->
+      <CharacterRegion>
+        <Start>&#43;</Start>
+        <End>&#43;</End>
+      </CharacterRegion>
     </CharacterRegions>
   </Asset>
 </XnaContent>

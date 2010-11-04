@@ -101,7 +101,7 @@ namespace Strategy.Interface.Gameplay
         {
             // build the roll animations
             _rollSprite.Position = _pieceSprite.Position + new Vector2(-5, -20);
-            _rollSprite.Text = "+" + roll.ToString("D1", CultureInfo.CurrentCulture);
+            _rollSprite.Text = roll.ToString("D1", CultureInfo.CurrentCulture);
             _rollSprite.Color = Color.Transparent;
 
             IAnimation showRoll =
