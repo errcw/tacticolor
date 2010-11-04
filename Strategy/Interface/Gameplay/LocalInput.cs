@@ -45,11 +45,18 @@ namespace Strategy.Interface.Gameplay
         /// </summary>
         public Territory Selected { get; private set; }
 
+        /// <summary>
+        /// True if input is interpreted in screen space; false for isometric space.
+        /// </summary>
+        public bool UseScreenSpace { get; set; }
+
         public LocalInput(PlayerId player, PlayerIndex controller, Match match, IsometricParameters isoParams)
         {
             Player = player;
             _match = match;
             _isoParams = isoParams;
+
+            UseScreenSpace = true;
 
             _input = new Input();
             _input.Controller = controller;
@@ -126,12 +133,11 @@ namespace Strategy.Interface.Gameplay
             }
             else if (Move.Pressed)
             {
-                Vector2 direction = MoveDirection.Position;
-                direction.Y = -direction.Y;
+                Vector2 direction = GetDirectionInInputSpace();
 
                 Territory newHovered = null;
                 float minAngle = float.MaxValue;
-                Point curLoc = _isoParams.GetPoint(Hovered.Location);
+                Point curLoc = GetPointInInputSpace(Hovered.Location);
 
                 foreach (Territory other in Hovered.Neighbors)
                 {
@@ -139,7 +145,7 @@ namespace Strategy.Interface.Gameplay
                     {
                         continue; // cannot move to invalid territory
                     }
-                    Point otherLoc = _isoParams.GetPoint(other.Location);
+                    Point otherLoc = GetPointInInputSpace(other.Location);
                     Vector2 toOtherLoc = new Vector2(otherLoc.X - curLoc.X, otherLoc.Y - curLoc.Y);
 
                     float dot = Vector2.Dot(direction, toOtherLoc);
@@ -200,6 +206,28 @@ namespace Strategy.Interface.Gameplay
             if (ActionRejected != null)
             {
                 ActionRejected(this, EventArgs.Empty);
+            }
+        }
+
+        private Vector2 GetDirectionInInputSpace()
+        {
+            Vector2 direction = MoveDirection.Position;
+            if (UseScreenSpace)
+            {
+                direction.Y = -direction.Y;
+            }
+            return direction;
+        }
+
+        private Point GetPointInInputSpace(Cell cell)
+        {
+            if (UseScreenSpace)
+            {
+                return _isoParams.GetPoint(cell);
+            }
+            else
+            {
+                return new Point(cell.Row, cell.Col);
             }
         }
 
