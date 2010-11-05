@@ -2,10 +2,22 @@ To Do
 -----
 
 * Menu
+  - Add the how to play screen
+  - Add the controls screen
+  - Add the options screen
+  - Add the credits screen
+  - Add the awardments screen
+  - Add the lobby screen
+  - Add the in-game menu scren
+  - Animate the async busy screen
+  - Fix the trial version menu entry
 * Awardments
   - Add the trophy images
 * Trial
 * Sound
+
+* Fix storage on the Xbox
+* Fix local control latency
 
 
 Menu Structure
@@ -36,7 +48,7 @@ Thoughts
 --------
 
 - Per-game options
-  + difficulity of CPU-controlled players
+  + difficulty of CPU-controlled players
   + map size
   + territories all or partially assigned
 - Game options
