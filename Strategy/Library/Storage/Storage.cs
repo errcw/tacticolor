@@ -110,7 +110,7 @@ namespace Strategy.Library.Storage
 
             using (StorageContainer container = OpenContainer(StorageContainerName))
             {
-                return File.Exists(Path.Combine(container.DisplayName, storeable.FileName));
+                return container.FileExists(storeable.FileName);
             }
         }
 
@@ -124,15 +124,14 @@ namespace Strategy.Library.Storage
 
             using (StorageContainer container = OpenContainer(StorageContainerName))
             {
-                string path = Path.Combine(container.DisplayName, storeable.FileName);
-                string directory = Path.GetDirectoryName(path);
-                if (!Directory.Exists(directory))
+                string directory = Path.GetDirectoryName(storeable.FileName);
+                if (!String.IsNullOrEmpty(directory) && !container.DirectoryExists(directory))
                 {
-                    Directory.CreateDirectory(directory);
+                    container.CreateDirectory(directory);
                 }
-                using (StreamWriter writer = new StreamWriter(path))
+                using (Stream writer = container.OpenFile(storeable.FileName, FileMode.Create, FileAccess.Write))
                 {
-                    storeable.Save(writer.BaseStream);
+                    storeable.Save(writer);
                 }
             }
         }
@@ -141,18 +140,24 @@ namespace Strategy.Library.Storage
         /// Loads an IStoredData object from the current storage device.
         /// </summary>
         /// <param name="storeable">The object to load.</param>
-        public void Load(IStoreable storeable)
+        /// <returns>True if the file was successfully loaded; otherwise, false.</returns>
+        public bool Load(IStoreable storeable)
         {
             ValidateOperation();
 
             using (StorageContainer container = OpenContainer(StorageContainerName))
             {
-                string path = Path.Combine(container.DisplayName, storeable.FileName);
-                using (StreamReader reader = new StreamReader(path))
+                if (!container.FileExists(storeable.FileName))
                 {
-                    storeable.Load(reader.BaseStream);
+                    return false;
+                }
+                using (Stream reader = container.OpenFile(storeable.FileName, FileMode.Open, FileAccess.Read))
+                {
+                    storeable.Load(reader);
                 }
             }
+
+            return true;
         }
 
         /// <summary>
@@ -165,7 +170,7 @@ namespace Strategy.Library.Storage
 
             using (StorageContainer container = OpenContainer(StorageContainerName))
             {
-                File.Delete(Path.Combine(container.DisplayName, storeable.FileName));
+                container.DeleteFile(storeable.FileName);
             }
         }
 
@@ -179,10 +184,9 @@ namespace Strategy.Library.Storage
 
             using (StorageContainer container = OpenContainer(StorageContainerName))
             {
-                string path = Path.Combine(container.DisplayName, directory);
-                if (Directory.Exists(path))
+                if (container.DirectoryExists(directory))
                 {
-                    string[] files = Directory.GetFiles(path);
+                    string[] files = container.GetFileNames(directory + "*");
                     for (int i = 0; i < files.Length; i++)
                     {
                         // strip out the container path so the file names can be used with Save/Load/Delete

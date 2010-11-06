@@ -68,15 +68,18 @@ namespace Strategy.Interface
         {
             try
             {
-                storage.Load(_storeableOptions);
-                _options = _storeableOptions.Data;
-                SoundEffectsToggle = _options.SoundEffectsToggle;
-                MusicToggle = _options.MusicToggle;
-                InstructionsToggle = _options.InstructionsToggle;
+                bool loadedExistingOptions = storage.Load(_storeableOptions);
+                if (loadedExistingOptions)
+                {
+                    _options = _storeableOptions.Data;
+                    SoundEffectsToggle = _options.SoundEffectsToggle;
+                    MusicToggle = _options.MusicToggle;
+                    InstructionsToggle = _options.InstructionsToggle;
+                }
             }
             catch (Exception e)
             {
-                // options unavailable, stick with the defaults
+                // something went wrong with the storage
                 Debug.WriteLine(e);
             }
         }
@@ -93,6 +96,7 @@ namespace Strategy.Interface
             }
             catch (Exception e)
             {
+                // something went wrong with the storage
                 Debug.WriteLine(e);
             }
         }

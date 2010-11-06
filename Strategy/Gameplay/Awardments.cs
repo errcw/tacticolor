@@ -152,11 +152,14 @@ namespace Strategy.Gameplay
                 {
                     XmlStoreable<Awardment[]> awardmentXml = new XmlStoreable<Awardment[]>(file);
                     string gamertag = Path.GetFileNameWithoutExtension(file);
-                    storage.Load(awardmentXml);
-                    List<Awardment> awardments = new List<Awardment>(awardmentXml.Data);
-                    AddMissingAwardments(awardments, AwardmentTypes);
-                    WireAwardmentEarnedEvents(awardments, gamertag);
-                    _awardments[gamertag] = awardments;
+                    bool loadedExistingAwardments = storage.Load(awardmentXml);
+                    if (loadedExistingAwardments)
+                    {
+                        List<Awardment> awardments = new List<Awardment>(awardmentXml.Data);
+                        AddMissingAwardments(awardments, AwardmentTypes);
+                        WireAwardmentEarnedEvents(awardments, gamertag);
+                        _awardments[gamertag] = awardments;
+                    }
                 }
             }
             catch (Exception e)
