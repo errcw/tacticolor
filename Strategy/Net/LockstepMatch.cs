@@ -53,7 +53,6 @@ namespace Strategy.Net
             _stepEndTime = StepTime;
 
             SchedulingOffset = 2 * StepTime;
-            SchedulingOffset = 0;
 
             _readyStepStartTime = _stepEndTime + 2 * SchedulingOffset;
             _readyStepStartTimes = new long[match.PlayerCount];
@@ -63,6 +62,12 @@ namespace Strategy.Net
             }
 
             _stepHashes = new Dictionary<long, long>(2);
+
+            SchedulingOffset = 0;
+            for (int i = 0; i < _readyStepStartTimes.Length; i++)
+            {
+                _readyStepStartTimes[i] = long.MaxValue-StepTime;
+            }
         }
 
         /// <summary>
