@@ -53,6 +53,7 @@ namespace Strategy.Net
             _stepEndTime = StepTime;
 
             SchedulingOffset = 2 * StepTime;
+            SchedulingOffset = 0;
 
             _readyStepStartTime = _stepEndTime + 2 * SchedulingOffset;
             _readyStepStartTimes = new long[match.PlayerCount];
@@ -81,7 +82,7 @@ namespace Strategy.Net
         }
 
         /// <summary>
-        /// Updates the match for this time step. The match is only updated
+        /// Updates the match for this frame. The match is only updated
         /// when all the commands for a given step are available.
         /// </summary>
         /// <param name="time">The elapsed time, in milliseconds, since the last update.</param>

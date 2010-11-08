@@ -13,11 +13,14 @@ To Do
   - Fix the trial version menu entry
 * Awardments
   - Add the trophy images
+  - Add more targetable awardments?
 * Trial
 * Sound
 
-* Fix storage on the Xbox
 * Fix local control latency
+* Fix Awardment storage
+* Validate Awardment saving/loading on the Xbox
+* Fix AI lockstep issues
 
 
 Menu Structure
