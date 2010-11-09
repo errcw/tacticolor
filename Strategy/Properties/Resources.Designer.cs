@@ -205,6 +205,24 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Place 5 pieces in under 1 second..
+        /// </summary>
+        internal static string AwardmentQuickPiecePlacementDescription {
+            get {
+                return ResourceManager.GetString("AwardmentQuickPiecePlacementDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reinforcer.
+        /// </summary>
+        internal static string AwardmentQuickPiecePlacementName {
+            get {
+                return ResourceManager.GetString("AwardmentQuickPiecePlacementName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Capture 3 territories in under 3 seconds..
         /// </summary>
         internal static string AwardmentQuickTerritoryCaptureDescription {

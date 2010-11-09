@@ -26,6 +26,7 @@ namespace Strategy.Gameplay
     [XmlInclude(typeof(MatchLongWinStreakAwardment))]
     [XmlInclude(typeof(ManyPiecesPlacedAwardment))]
     [XmlInclude(typeof(VeryManyPiecesPlacedAwardment))]
+    [XmlInclude(typeof(QuickPiecePlacementAwardment))]
     [XmlInclude(typeof(EveryConfigurationAwardment))]
     public abstract class Awardment
     {
@@ -547,6 +548,47 @@ namespace Strategy.Gameplay
             Name = Resources.AwardmentVeryManyPiecesPlacedName;
             Description = Resources.AwardmentVeryManyPiecesPlacedDescription;
         }
+    }
+
+    public class QuickPiecePlacementAwardment : Awardment
+    {
+        public QuickPiecePlacementAwardment()
+        {
+            Name = Resources.AwardmentQuickPiecePlacementName;
+            Description = Resources.AwardmentQuickPiecePlacementDescription;
+        }
+
+        public override void MatchStarted(Match match, PlayerId player)
+        {
+            match.PiecePlaced += delegate(object matchObj, PiecePlacedEventArgs args)
+            {
+                if (_placementCount == 0)
+                {
+                    _firstPlacementTime = match.Time;
+                }
+
+                _placementCount += 1;
+
+                long dt = match.Time - _firstPlacementTime;
+                if (dt > TimeoutThreshold)
+                {
+                    // reset the baseline to the current capture
+                    _placementCount = 1;
+                    _firstPlacementTime = match.Time;
+                }
+
+                if (_placementCount >= PlacementThreshold)
+                {
+                    SetEarned();
+                }
+            };
+        }
+
+        private long _firstPlacementTime;
+        private int _placementCount = 0;
+
+        private const int TimeoutThreshold = 1000;
+        private const int PlacementThreshold = 5;
     }
 
     public class EveryConfigurationAwardment : Awardment

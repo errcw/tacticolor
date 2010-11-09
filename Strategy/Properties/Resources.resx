@@ -165,6 +165,12 @@
   <data name="AwardmentManyTerritoriesCapturedName" xml:space="preserve">
     <value>Conqueror</value>
   </data>
+  <data name="AwardmentQuickPiecePlacementDescription" xml:space="preserve">
+    <value>Place 5 pieces in under 1 second.</value>
+  </data>
+  <data name="AwardmentQuickPiecePlacementName" xml:space="preserve">
+    <value>Reinforcer</value>
+  </data>
   <data name="AwardmentQuickTerritoryCaptureDescription" xml:space="preserve">
     <value>Capture 3 territories in under 3 seconds.</value>
   </data>
