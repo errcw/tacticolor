@@ -184,21 +184,7 @@ namespace Strategy.Library.Storage
 
             using (StorageContainer container = OpenContainer(StorageContainerName))
             {
-                if (container.DirectoryExists(directory))
-                {
-                    string[] files = container.GetFileNames(directory + "*");
-                    for (int i = 0; i < files.Length; i++)
-                    {
-                        // strip out the container path so the file names can be used with Save/Load/Delete
-                        files[i] = files[i].Substring(container.DisplayName.Length + 1);
-                    }
-                    return files;
-                }
-                else
-                {
-                    // directory does not exist so contains zero files
-                    return new string[0];
-                }
+                return container.GetFileNames(Path.Combine(directory, "*"));
             }
         }
 
