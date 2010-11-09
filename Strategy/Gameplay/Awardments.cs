@@ -19,6 +19,7 @@ namespace Strategy.Gameplay
     [XmlInclude(typeof(ManyMatchesPlayedAwardment))]
     [XmlInclude(typeof(FirstTerritoryCapturedAwardment))]
     [XmlInclude(typeof(ManyTerritoriesCapturedAwardment))]
+    [XmlInclude(typeof(QuickTerritoryCaptureAwardment))]
     [XmlInclude(typeof(QuickWinAwardment))]
     [XmlInclude(typeof(VeryQuickWinAwardment))]
     [XmlInclude(typeof(MatchShortWinStreakAwardment))]
@@ -372,6 +373,50 @@ namespace Strategy.Gameplay
             Name = Resources.AwardmentFirstTerritoryCapturedName;
             Description = Resources.AwardmentFirstTerritoryCapturedDescription;
         }
+    }
+
+    public class QuickTerritoryCaptureAwardment : Awardment
+    {
+        public QuickTerritoryCaptureAwardment()
+        {
+            Name = Resources.AwardmentQuickTerritoryCaptureName;
+            Description = Resources.AwardmentQuickTerritoryCaptureDescription;
+        }
+
+        public override void MatchStarted(Match match, PlayerId player)
+        {
+            match.TerritoryAttacked += delegate(object matchObj, TerritoryAttackedEventArgs args)
+            {
+                if (args.Successful && args.Attacker.Owner == player)
+                {
+                    if (_captureCount == 0)
+                    {
+                        _firstCaptureTime = match.Time;
+                    }
+
+                    _captureCount += 1;
+
+                    long dt = match.Time - _firstCaptureTime;
+                    if (dt > TimeoutThreshold)
+                    {
+                        // reset the baseline to the current capture
+                        _captureCount = 1;
+                        _firstCaptureTime = match.Time;
+                    }
+
+                    if (_captureCount >= CaptureThreshold)
+                    {
+                        SetEarned();
+                    }
+                }
+            };
+        }
+
+        private long _firstCaptureTime;
+        private int _captureCount = 0;
+
+        private const int TimeoutThreshold = 3000;
+        private const int CaptureThreshold = 3;
     }
 
     public abstract class MatchTimeAwardment : Awardment

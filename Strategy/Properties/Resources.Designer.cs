@@ -205,6 +205,24 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Capture 3 territories in under 3 seconds..
+        /// </summary>
+        internal static string AwardmentQuickTerritoryCaptureDescription {
+            get {
+                return ResourceManager.GetString("AwardmentQuickTerritoryCaptureDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blitzkrieg.
+        /// </summary>
+        internal static string AwardmentQuickTerritoryCaptureName {
+            get {
+                return ResourceManager.GetString("AwardmentQuickTerritoryCaptureName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Win a match in under 3 minutes..
         /// </summary>
         internal static string AwardmentQuickWinDescription {

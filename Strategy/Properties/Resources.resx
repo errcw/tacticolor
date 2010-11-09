@@ -165,6 +165,12 @@
   <data name="AwardmentManyTerritoriesCapturedName" xml:space="preserve">
     <value>Conqueror</value>
   </data>
+  <data name="AwardmentQuickTerritoryCaptureDescription" xml:space="preserve">
+    <value>Capture 3 territories in under 3 seconds.</value>
+  </data>
+  <data name="AwardmentQuickTerritoryCaptureName" xml:space="preserve">
+    <value>Blitzkrieg</value>
+  </data>
   <data name="AwardmentQuickWinDescription" xml:space="preserve">
     <value>Win a match in under 3 minutes.</value>
   </data>
