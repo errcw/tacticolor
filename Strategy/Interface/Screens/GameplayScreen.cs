@@ -41,6 +41,13 @@ namespace Strategy.Interface.Screens
             _lockstepMatch.Match.PlayerEliminated += OnPlayerEliminated;
             _lockstepMatch.Match.Ended += OnMatchEnded;
 
+            if (session.IsLocalSession())
+            {
+                // local matches should execute commands immediately
+                _lockstepMatch.SchedulingOffset = 0;
+                _lockstepMatch.StepTime = int.MaxValue;
+            }
+
             _lockstepInput = new LockstepInput(_lockstepMatch, players);
 
             IDictionary<string, PlayerId> awardmentPlayers = new Dictionary<string, PlayerId>(match.PlayerCount);

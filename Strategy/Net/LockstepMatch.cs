@@ -48,9 +48,9 @@ namespace Strategy.Net
             _match = match;
             _commands = new CommandList();
 
-            StepTime = 100;
             StepStart = 0;
-            _stepEndTime = StepTime;
+            StepTime = 100;
+            _stepEndTime = StepStart + StepTime;
 
             SchedulingOffset = 2 * StepTime;
 
@@ -62,12 +62,6 @@ namespace Strategy.Net
             }
 
             _stepHashes = new Dictionary<long, long>(2);
-
-            SchedulingOffset = 0;
-            for (int i = 0; i < _readyStepStartTimes.Length; i++)
-            {
-                _readyStepStartTimes[i] = long.MaxValue-StepTime;
-            }
         }
 
         /// <summary>
