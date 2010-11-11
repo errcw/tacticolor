@@ -12,14 +12,14 @@ namespace Strategy.Library.Components
     /// Displays the number of frames rendered per second.
     /// </summary>
     /// <remarks>Adapted from http://blogs.msdn.com/shawnhar/archive/2007/06/08/displaying-the-framerate.aspx </remarks>
-    public class FPSOverlay : DrawableGameComponent
+    public class FpsOverlay : DrawableGameComponent
     {
         /// <summary>
         /// The name of the font to use to draw the FPS counter.
         /// </summary>
         public string FontName { get; set; }
 
-        public FPSOverlay(Game game) : base(game)
+        public FpsOverlay(Game game) : base(game)
         {
             DrawOrder = Int32.MaxValue; // draw last
             FontName = "Fonts/TextSmall";

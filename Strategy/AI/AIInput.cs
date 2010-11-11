@@ -14,7 +14,7 @@ namespace Strategy.AI
     /// <summary>
     /// AI difficulty rating.
     /// </summary>
-    public enum AIDifficulty
+    public enum AiDifficulty
     {
         Easy,
         Normal,
@@ -24,14 +24,14 @@ namespace Strategy.AI
     /// <summary>
     /// Generates input from a computer player.
     /// </summary>
-    public class AIInput : ICommandProvider
+    public class AiInput : ICommandProvider
     {
         /// <summary>
         /// Creates a new AI input.
         /// </summary>
         /// <param name="difficulty">The difficulty of the player.</param>
         /// <param name="random">The random number generator to use.</param>
-        public AIInput(PlayerId player, Match match, AIDifficulty difficulty, Random random)
+        public AiInput(PlayerId player, Match match, AiDifficulty difficulty, Random random)
         {
             _player = player;
             _match = match;
@@ -40,9 +40,9 @@ namespace Strategy.AI
 
             switch (_difficulty)
             {
-                case AIDifficulty.Easy: _evaluator = new EasyCommandEvaluator(this); break;
-                case AIDifficulty.Normal: _evaluator = new NormalCommandEvaluator(this); break;
-                case AIDifficulty.Hard: _evaluator = new HardCommandEvaluator(this); break;
+                case AiDifficulty.Easy: _evaluator = new EasyCommandEvaluator(this); break;
+                case AiDifficulty.Normal: _evaluator = new NormalCommandEvaluator(this); break;
+                case AiDifficulty.Hard: _evaluator = new HardCommandEvaluator(this); break;
             }
 
             _commandCooldown = GetCooldownTime();
@@ -130,9 +130,9 @@ namespace Strategy.AI
             int baseTime = 0;
             switch (_difficulty)
             {
-                case AIDifficulty.Easy: baseTime = 2000; break;
-                case AIDifficulty.Normal: baseTime = 1000; break;
-                case AIDifficulty.Hard: baseTime = 750; break;
+                case AiDifficulty.Easy: baseTime = 2000; break;
+                case AiDifficulty.Normal: baseTime = 1000; break;
+                case AiDifficulty.Hard: baseTime = 750; break;
             }
             int variationTime = (int)(baseTime * 0.2f);
             return _random.Next(baseTime - variationTime, baseTime + variationTime);
@@ -186,7 +186,7 @@ namespace Strategy.AI
         /// </summary>
         private abstract class CommandEvaluator
         {
-            public CommandEvaluator(AIInput input)
+            public CommandEvaluator(AiInput input)
             {
                 _input = input;
             }
@@ -224,7 +224,7 @@ namespace Strategy.AI
                 return BaseMovementRating + diffEnemyNeighbors + diffNeighbors;
             }
 
-            protected AIInput _input;
+            protected AiInput _input;
 
             protected int BasePlacementRating = 10;
             protected int BaseAttackRating = 20;
@@ -236,7 +236,7 @@ namespace Strategy.AI
         /// </summary>
         private class EasyCommandEvaluator : CommandEvaluator
         {
-            public EasyCommandEvaluator(AIInput input) : base(input)
+            public EasyCommandEvaluator(AiInput input) : base(input)
             {
                 BaseAttackRating = BasePlacementRating;
             }
@@ -259,7 +259,7 @@ namespace Strategy.AI
         /// </summary>
         private class NormalCommandEvaluator : CommandEvaluator
         {
-            public NormalCommandEvaluator(AIInput input) : base(input)
+            public NormalCommandEvaluator(AiInput input) : base(input)
             {
             }
         }
@@ -269,7 +269,7 @@ namespace Strategy.AI
         /// </summary>
         private class HardCommandEvaluator : CommandEvaluator
         {
-            public HardCommandEvaluator(AIInput input) : base(input)
+            public HardCommandEvaluator(AiInput input) : base(input)
             {
             }
 
@@ -379,7 +379,7 @@ namespace Strategy.AI
 
         private PlayerId _player;
         private Match _match;
-        private AIDifficulty _difficulty;
+        private AiDifficulty _difficulty;
 
         private Random _random;
 

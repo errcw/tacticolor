@@ -102,13 +102,13 @@ namespace Strategy.Net
 
         public MapSize MapSize { get; private set; }
 
-        public AIDifficulty Difficulty { get; private set; }
+        public AiDifficulty Difficulty { get; private set; }
 
         public InitializeMatchCommand() : base(Code)
         {
         }
 
-        public InitializeMatchCommand(int randomSeed, MapType mapType, MapSize mapSize, AIDifficulty difficulty) : base(Code, PlayerId.A)
+        public InitializeMatchCommand(int randomSeed, MapType mapType, MapSize mapSize, AiDifficulty difficulty) : base(Code, PlayerId.A)
         {
             RandomSeed = randomSeed;
             MapType = mapType;
@@ -121,7 +121,7 @@ namespace Strategy.Net
             RandomSeed = reader.ReadInt32();
             MapType = (MapType)reader.ReadByte();
             MapSize = (MapSize)reader.ReadByte();
-            Difficulty = (AIDifficulty)reader.ReadByte();
+            Difficulty = (AiDifficulty)reader.ReadByte();
         }
 
         protected override void WriteImpl(PacketWriter writer)

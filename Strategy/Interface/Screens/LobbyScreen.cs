@@ -159,7 +159,7 @@ namespace Strategy.Interface.Screens
             {
                 Player aiPlayer = new Player();
                 aiPlayer.Id = (PlayerId)(p + humanPlayerCount);
-                aiPlayer.Input = new AIInput(aiPlayer.Id, match, _difficulty, gameRandom);
+                aiPlayer.Input = new AiInput(aiPlayer.Id, match, _difficulty, gameRandom);
                 _players.Add(aiPlayer);
             }
 
@@ -334,7 +334,7 @@ namespace Strategy.Interface.Screens
         private int _seed = 0;
         private MapType _mapType = MapType.LandRush;
         private MapSize _mapSize = MapSize.Normal;
-        private AIDifficulty _difficulty = AIDifficulty.Hard; //TODO
+        private AiDifficulty _difficulty = AiDifficulty.Hard; //TODO
         private Random _random = new Random();
     }
 }

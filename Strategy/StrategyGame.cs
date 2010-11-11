@@ -42,7 +42,7 @@ namespace Strategy
             Components.Add(_trial = new TrialModeObserverComponent(this));
 
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
-            //Components.Add(new FPSOverlay(this));
+            //Components.Add(new FpsOverlay(this));
             Components.Add(new GamerServicesComponent(this));
 
             Services.AddService<MenuInput>(_input);
@@ -237,7 +237,7 @@ namespace Strategy
                 }
                 else
                 {
-                    players[p].Input = new AIInput(players[p].Id, match, AIDifficulty.Hard, random);
+                    players[p].Input = new AiInput(players[p].Id, match, AiDifficulty.Hard, random);
                 }
             }
 
