@@ -337,32 +337,38 @@ namespace Strategy.Net
     }
 
     /// <summary>
-    /// No action.
+    /// An AI decision schedule to occur in the future. Used as a mechanism
+    /// to allow AI players to make decisions at fixed points in time to
+    /// guarantee consistency across machines.
     /// </summary>
-    public class NoOpCommand : Command
+    public class AiDecisionCommand : Command
     {
         public const byte Code = 6;
 
-        public NoOpCommand() : base(Code)
-        {
-        }
+        public delegate void AiDecision(Match match);
 
-        public NoOpCommand(PlayerId player) : base(Code, player)
+        public AiDecisionCommand(PlayerId player, AiDecision desicion) : base(Code, player)
         {
+            _decision = desicion;
         }
 
         public override bool Execute(Match match)
         {
+            _decision(match);
             return true;
         }
 
         protected override void ReadImpl(PacketReader reader)
         {
+            throw new InvalidOperationException("AiActionCommands cannot be transmitted");
         }
 
         protected override void WriteImpl(PacketWriter writer)
         {
+            throw new InvalidOperationException("AiActionCommands cannot be transmitted");
         }
+
+        private AiDecision _decision;
     }
 
     /// <summary>
@@ -394,9 +400,6 @@ namespace Strategy.Net
                     break;
                 case AttackCommand.Code:
                     command = new AttackCommand();
-                    break;
-                case NoOpCommand.Code:
-                    command = new NoOpCommand();
                     break;
                 default:
                     // invalid/unknown command type

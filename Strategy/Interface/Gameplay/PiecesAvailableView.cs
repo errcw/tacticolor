@@ -19,6 +19,7 @@ namespace Strategy.Interface.Gameplay
         public PiecesAvailableView(Match match, PlayerId player, InterfaceContext context)
         {
             _match = match;
+            _match.PieceCreated += OnPieceCreated;
             _match.PiecePlaced += OnPiecePlaced;
             Player = player;
 
@@ -43,13 +44,6 @@ namespace Strategy.Interface.Gameplay
 
         public void Update(float time)
         {
-            // check if a new piece was created this frame
-            int available = _match.PiecesAvailable[(int)Player];
-            if (available > _created.Count)
-            {
-                OnPieceCreated();
-            }
-
             if (_creatingSprite != null)
             {
                 float progress = _match.PieceCreationProgress[(int)Player];
@@ -91,25 +85,28 @@ namespace Strategy.Interface.Gameplay
         /// <summary>
         /// Notifies this view that a piece was created.
         /// </summary>
-        private void OnPieceCreated()
+        private void OnPieceCreated(object match, PlayerEventArgs args)
         {
-            // bail if there is no creating sprite to update (when the view is hidden)
-            if (_creatingSprite == null)
+            if (args.Player == Player)
             {
-                return;
+                // bail if there is no creating sprite to update (when the view is hidden)
+                if (_creatingSprite == null)
+                {
+                    return;
+                }
+
+                _creatingSprite.Color = SolidColor;
+                _creatingSprite.X = _creatingTargetX;
+                _created.Push(_creatingSprite);
+
+                _creatingSprite = null;
+                if (_match.PiecesAvailable[(int)Player] < _match.MaxPiecesAvailable)
+                {
+                    SetUpCreatingSprite();
+                }
+
+                System.Diagnostics.Debug.Assert(_created.Count == _match.PiecesAvailable[(int)Player]);
             }
-
-            _creatingSprite.Color = SolidColor;
-            _creatingSprite.X = _creatingTargetX;
-            _created.Push(_creatingSprite);
-
-            _creatingSprite = null;
-            if (_match.PiecesAvailable[(int)Player] < _match.MaxPiecesAvailable)
-            {
-                SetUpCreatingSprite();
-            }
-
-            System.Diagnostics.Debug.Assert(_created.Count == _match.PiecesAvailable[(int)Player]);
         }
 
         /// <summary>

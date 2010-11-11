@@ -12,6 +12,11 @@ namespace Strategy.Gameplay
     public class Match
     {
         /// <summary>
+        /// Occurs when a new piece is created.
+        /// </summary>
+        public event EventHandler<PlayerEventArgs> PieceCreated;
+
+        /// <summary>
         /// Occurs when a piece is placed on the map.
         /// </summary>
         public event EventHandler<PiecePlacedEventArgs> PiecePlaced;
@@ -512,6 +517,11 @@ namespace Strategy.Gameplay
 
                     _pieceCreationElapsed[p] = 0;
                     PieceCreationProgress[p] = 0f;
+
+                    if (PieceCreated != null)
+                    {
+                        PieceCreated(this, new PlayerEventArgs((PlayerId)p));
+                    }
                 }
             }
         }
@@ -654,7 +664,7 @@ namespace Strategy.Gameplay
     }
 
     /// <summary>
-    /// Event data for when a player is eliminated or the match ends.
+    /// Event data signalling something happened to/for a player.
     /// </summary>
     public class PlayerEventArgs : EventArgs
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using Microsoft.Xna.Framework;
@@ -45,7 +46,8 @@ namespace Strategy.AI
                 case AiDifficulty.Hard: _evaluator = new HardCommandEvaluator(this); break;
             }
 
-            _commandCooldown = GetCooldownTime();
+            _lastCommandTime = 0;
+            _shouldScheduleCommand = true;
         }
 
         /// <summary>
@@ -55,29 +57,42 @@ namespace Strategy.AI
         {
             Command command = null;
 
-            _commandCooldown -= time;
-            if (_commandCooldown <= 0)
+            if (_shouldScheduleCommand)
             {
-                List<PotentialCommand> commands = GetPotentialCommands();
-                if (commands.Count != 0)
-                {
-                    commands.ForEach(cmd => cmd.Score = _evaluator.RateCommand(cmd));
-                    var sortedCommands = commands.OrderBy(cmd => cmd.Score).Reverse();
-                    var bestScore = sortedCommands.First().Score;
-                    if (bestScore <= 0)
-                    {
-                        return null;
-                    }
-                    var bestCommands = sortedCommands.TakeWhile(cmd => cmd.Score == bestScore);
+                command = new AiDecisionCommand(_player, OnAiDecision);
+                command.Time = _lastCommandTime + GetCooldownTime();
 
-                    int randomBest = _random.Next(bestCommands.Count());
-                    command = bestCommands.ElementAt(randomBest).GetCommand(_player);
-
-                    _commandCooldown = GetCooldownTime();
-                }
+                _lastCommandTime = command.Time;
+                _shouldScheduleCommand = false;
             }
 
             return command;
+        }
+
+        private void OnAiDecision(Match match)
+        {
+            Debug.Assert(match == _match);
+            Debug.Assert(match.Time == _lastCommandTime);
+
+            List<PotentialCommand> commands = GetPotentialCommands();
+            if (commands.Count > 0)
+            {
+                commands.ForEach(cmd => cmd.Score = _evaluator.RateCommand(cmd));
+                var sortedCommands = commands.OrderBy(cmd => cmd.Score).Reverse();
+                var bestScore = sortedCommands.First().Score;
+                if (bestScore > 0)
+                {
+                    var bestCommands = sortedCommands.TakeWhile(cmd => cmd.Score == bestScore);
+
+                    int randomBest = _random.Next(bestCommands.Count());
+                    Command command = bestCommands.ElementAt(randomBest).GetCommand(_player);
+
+                    command.Execute(match);
+                }
+            }
+
+            // having made a decision, make a new one in the future
+            _shouldScheduleCommand = true;
         }
 
         private List<PotentialCommand> GetPotentialCommands()
@@ -384,7 +399,8 @@ namespace Strategy.AI
         private Random _random;
 
         private CommandEvaluator _evaluator;
-        private int _commandCooldown = CommandCooldownTime;
-        private const int CommandCooldownTime = 1000;
+
+        private bool _shouldScheduleCommand;
+        private long _lastCommandTime;
     }
 }

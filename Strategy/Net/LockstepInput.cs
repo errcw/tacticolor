@@ -54,7 +54,10 @@ namespace Strategy.Net
                     Command command = player.Input.Update(time);
                     if (command != null)
                     {
-                        command.Time = _match.Match.Time + _match.SchedulingOffset;
+                        if (command.Time <= 0) // some commands may ask for a specific execution time
+                        {
+                            command.Time = _match.Match.Time + _match.SchedulingOffset;
+                        }
                         BroadcastCommand(command);
                     }
                 }
