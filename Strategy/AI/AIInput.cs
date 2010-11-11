@@ -64,6 +64,8 @@ namespace Strategy.AI
 
                 _lastCommandTime = command.Time;
                 _shouldScheduleCommand = false;
+
+                Debug.Assert(_lastCommandTime > _match.Time);
             }
 
             return command;
@@ -83,10 +85,8 @@ namespace Strategy.AI
                 if (bestScore > 0)
                 {
                     var bestCommands = sortedCommands.TakeWhile(cmd => cmd.Score == bestScore);
-
                     int randomBest = _random.Next(bestCommands.Count());
                     Command command = bestCommands.ElementAt(randomBest).GetCommand(_player);
-
                     command.Execute(match);
                 }
             }
