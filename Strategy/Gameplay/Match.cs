@@ -433,6 +433,7 @@ namespace Strategy.Gameplay
         /// </summary>
         public void ResetEvents()
         {
+            PieceCreated = null;
             PiecePlaced = null;
             PiecesMoved = null;
             TerritoryAttacked = null;

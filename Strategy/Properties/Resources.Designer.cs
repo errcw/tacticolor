@@ -61,6 +61,24 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Win the match after losing all but one territory..
+        /// </summary>
+        internal static string AwardmentBrinkDescription {
+            get {
+                return ResourceManager.GetString("AwardmentBrinkDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I&apos;ll Be Back.
+        /// </summary>
+        internal static string AwardmentBrinkName {
+            get {
+                return ResourceManager.GetString("AwardmentBrinkName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Play a match in every map size and game type..
         /// </summary>
         internal static string AwardmentEveryConfigurationDescription {

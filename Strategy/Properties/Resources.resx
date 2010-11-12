@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AwardmentBrinkDescription" xml:space="preserve">
+    <value>Win the match after losing all but one territory.</value>
+  </data>
+  <data name="AwardmentBrinkName" xml:space="preserve">
+    <value>I'll Be Back</value>
+  </data>
   <data name="AwardmentEveryConfigurationDescription" xml:space="preserve">
     <value>Play a match in every map size and game type.</value>
   </data>

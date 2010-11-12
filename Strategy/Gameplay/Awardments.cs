@@ -29,6 +29,7 @@ namespace Strategy.Gameplay
     [XmlInclude(typeof(QuickPiecePlacementAwardment))]
     [XmlInclude(typeof(EveryConfigurationAwardment))]
     [XmlInclude(typeof(RecaptureAwardment))]
+    [XmlInclude(typeof(BrinkAwardment))]
     public abstract class Awardment
     {
         /// <summary>
@@ -677,11 +678,44 @@ namespace Strategy.Gameplay
                         SetEarned();
                     }
 
-                    territoryCaptureCount.Add(args.Defender, captureCount);
+                    territoryCaptureCount[args.Defender] = captureCount;
                 }
             };
         }
 
         private const int CaptureThreshold = 10;
+    }
+
+    public class BrinkAwardment : Awardment
+    {
+        public BrinkAwardment()
+        {
+            Name = Resources.AwardmentBrinkName;
+            Description = Resources.AwardmentBrinkDescription;
+        }
+
+        public override void MatchStarted(Match match, PlayerId player)
+        {
+            _oneTerritoryLeft = false;
+            match.TerritoryAttacked += delegate(object matchObj, TerritoryAttackedEventArgs args)
+            {
+                // check for 2 because the lost territory hasn't been counted yet
+                PlayerId defender = args.Defenders.First().Piece.Owner;
+                if (defender == player && args.Successful && match.TerritoriesOwnedCount[(int)player] == 2)
+                {
+                    _oneTerritoryLeft = true;
+                }
+            };
+        }
+
+        public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
+        {
+            if (player == winner && _oneTerritoryLeft)
+            {
+                SetEarned();
+            }
+        }
+
+        private bool _oneTerritoryLeft;
     }
 }
