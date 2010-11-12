@@ -332,8 +332,8 @@ namespace Strategy.Interface.Screens
         private MenuInput _input;
 
         private int _seed = 0;
-        private MapType _mapType = MapType.LandRush;
-        private MapSize _mapSize = MapSize.Normal;
+        private MapType _mapType = MapType.Filled;
+        private MapSize _mapSize = MapSize.Small;
         private AiDifficulty _difficulty = AiDifficulty.Hard; //TODO
         private Random _random = new Random();
     }

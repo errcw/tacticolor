@@ -183,6 +183,12 @@
   <data name="AwardmentQuickWinName" xml:space="preserve">
     <value>Quickly</value>
   </data>
+  <data name="AwardmentRecaptureDescription" xml:space="preserve">
+    <value>Capture the same territory 10 times in a single match.</value>
+  </data>
+  <data name="AwardmentRecaptureName" xml:space="preserve">
+    <value>Back and Forth</value>
+  </data>
   <data name="AwardmentShortStreakDescription" xml:space="preserve">
     <value>Win 3 matches in a row.</value>
   </data>

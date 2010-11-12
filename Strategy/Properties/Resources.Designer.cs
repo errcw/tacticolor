@@ -259,6 +259,24 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Capture the same territory 10 times in a single match..
+        /// </summary>
+        internal static string AwardmentRecaptureDescription {
+            get {
+                return ResourceManager.GetString("AwardmentRecaptureDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back and Forth.
+        /// </summary>
+        internal static string AwardmentRecaptureName {
+            get {
+                return ResourceManager.GetString("AwardmentRecaptureName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Win 3 matches in a row..
         /// </summary>
         internal static string AwardmentShortStreakDescription {

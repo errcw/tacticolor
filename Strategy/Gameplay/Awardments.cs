@@ -28,6 +28,7 @@ namespace Strategy.Gameplay
     [XmlInclude(typeof(VeryManyPiecesPlacedAwardment))]
     [XmlInclude(typeof(QuickPiecePlacementAwardment))]
     [XmlInclude(typeof(EveryConfigurationAwardment))]
+    [XmlInclude(typeof(RecaptureAwardment))]
     public abstract class Awardment
     {
         /// <summary>
@@ -647,5 +648,40 @@ namespace Strategy.Gameplay
 
         private const int MapSizeCount = 4;
         private const int MapTypeCount = 2;
+    }
+
+    public class RecaptureAwardment : Awardment
+    {
+        public RecaptureAwardment()
+        {
+            Name = Resources.AwardmentRecaptureName;
+            Name = Resources.AwardmentRecaptureDescription;
+        }
+
+        public override void MatchStarted(Match match, PlayerId player)
+        {
+            Dictionary<Territory, int> territoryCaptureCount = new Dictionary<Territory,int>();
+            match.TerritoryAttacked += delegate(object matchObj, TerritoryAttackedEventArgs args)
+            {
+                if (args.Successful && args.Attacker.Owner == player)
+                {
+                    int captureCount;
+                    if (!territoryCaptureCount.TryGetValue(args.Defender, out captureCount))
+                    {
+                        captureCount = 0;
+                    }
+
+                    captureCount += 1;
+                    if (captureCount == CaptureThreshold)
+                    {
+                        SetEarned();
+                    }
+
+                    territoryCaptureCount.Add(args.Defender, captureCount);
+                }
+            };
+        }
+
+        private const int CaptureThreshold = 10;
     }
 }
