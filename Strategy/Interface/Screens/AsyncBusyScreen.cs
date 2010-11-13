@@ -3,6 +3,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Strategy.Library;
+using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
 using Strategy.Library.Sprite;
 
@@ -25,6 +27,7 @@ namespace Strategy.Interface.Screens
             _background.Position = Vector2.Zero;
 
             _marker = new ImageSprite(game.Content.Load<Texture2D>("Images/Piece"));
+            _marker.Origin = _marker.Size / 2;
             _marker.Position = new Vector2(640, 360);
 
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
@@ -56,12 +59,27 @@ namespace Strategy.Interface.Screens
 
                 _result = null;
             }
+
+            if (_animation != null)
+            {
+                if (!_animation.Update(gameTime.GetElapsedSeconds()))
+                {
+                    _animation = null;
+                }
+            }
+            if (_animation == null)
+            {
+                _animation = new SequentialAnimation(
+                    new ScaleAnimation(_marker, new Vector2(-1, 1), 0.5f, Interpolation.InterpolateVector2(Easing.Uniform)),
+                    new ScaleAnimation(_marker, new Vector2(1, 1), 0.5f, Interpolation.InterpolateVector2(Easing.Uniform)));
+            }
         }
 
         private IAsyncResult _result;
 
         private ImageSprite _background;
         private ImageSprite _marker;
+        private IAnimation _animation;
         private SpriteBatch _spriteBatch;
     }
 

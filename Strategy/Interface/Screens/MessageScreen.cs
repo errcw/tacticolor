@@ -66,7 +66,7 @@ namespace Strategy.Interface.Screens
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
             ShowBeneath = true;
-            TransitionOnTime = 0.25f;
+            TransitionOnTime = 0f;
             TransitionOffTime = 0.25f;
         }
 
