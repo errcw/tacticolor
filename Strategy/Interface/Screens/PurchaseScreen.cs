@@ -68,6 +68,8 @@ namespace Strategy.Interface.Screens
                 600f);
 
             _sprite.Add(reasonSprite);
+
+            TransitionOnTime = 0.5f; 
         }
 
         protected override void UpdateActive(GameTime gameTime)

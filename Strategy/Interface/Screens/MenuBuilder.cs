@@ -1,8 +1,11 @@
 ﻿using System;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 
+using Strategy.Library.Components;
+using Strategy.Library.Extensions;
 using Strategy.Library.Sprite;
 
 namespace Strategy.Interface.Screens
@@ -20,7 +23,8 @@ namespace Strategy.Interface.Screens
         public MenuBuilder(MenuScreen screen, Game game)
         {
             _screen = screen;
-            _font = game.Content.Load<SpriteFont>("Fonts/TextLarge");
+            _game = game;
+            _font = _game.Content.Load<SpriteFont>("Fonts/TextLarge");
         }
 
         public MenuBuilder CreateButtonEntry(string buttonText, EventHandler<EventArgs> selectedHandler)
@@ -39,6 +43,21 @@ namespace Strategy.Interface.Screens
             return this;
         }
 
+        public MenuBuilder CreatePurchaseButtonEntry(string buttonText)
+        {
+            if (Guide.IsTrialMode)
+            {
+                MenuInput input = _game.Services.GetService<MenuInput>();
+                MenuEntry purchaseEntry = null;
+                CreateButtonEntry(buttonText, (s, a) => input.Controller.Value.PurchaseContent(), out purchaseEntry);
+
+                TrialModeObserverComponent trialObserver = _game.Services.GetService<TrialModeObserverComponent>();
+                trialObserver.TrialModeEnded += (s, a) => _screen.RemoveEntry(purchaseEntry);
+            }
+            return this;
+        }
+
+        private Game _game;
         private MenuScreen _screen;
 
         private SpriteFont _font;

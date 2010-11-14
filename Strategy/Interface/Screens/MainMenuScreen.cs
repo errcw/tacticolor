@@ -23,18 +23,13 @@ namespace Strategy.Interface.Screens
         {
             _input = game.Services.GetService<MenuInput>();
 
-            MenuEntry purchaseEntry;
-
             new MenuBuilder(this, game)
                 .CreateButtonEntry(Resources.MenuLocalGame, OnLocalGameSelected)
                 .CreateButtonEntry(Resources.MenuMultiplayerGame, OnMultiplayerGameSelected)
-                .CreateButtonEntry(Resources.MenuPurchase, OnPurchaseSelected, out purchaseEntry)
+                .CreatePurchaseButtonEntry(Resources.MenuPurchase)
                 .CreateButtonEntry(Resources.MenuAwardments, OnAwardmentsSelected)
                 .CreateButtonEntry(Resources.MenuHelpOptions, OnHelpOptionsSelected)
                 .CreateButtonEntry(Resources.MenuExit, OnExitSelected);
-
-            TrialModeObserverComponent trialObserver = game.Services.GetService<TrialModeObserverComponent>();
-            trialObserver.TrialModeEnded += (s, a) => RemoveEntry(purchaseEntry);
 
             TransitionOnTime = 0.01f;
             IsRoot = true;
@@ -71,11 +66,6 @@ namespace Strategy.Interface.Screens
 
             MultiplayerSelectionScreen multiplayerScreen = new MultiplayerSelectionScreen(Stack.Game);
             Stack.Push(multiplayerScreen);
-        }
-
-        private void OnPurchaseSelected(object sender, EventArgs args)
-        {
-            _input.Controller.Value.PurchaseContent();
         }
 
         private void OnAwardmentsSelected(object sender, EventArgs args)
