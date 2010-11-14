@@ -137,7 +137,7 @@ namespace Strategy.Interface.Screens
             }
 
             // hack in a way to get back to the main menu
-            if (Stack.Game.Services.GetService<MenuInput>().Debug.Released)
+            if (Stack.Game.Services.GetService<MenuInput>().Debug.Pressed)
             {
                 _session.EndGame();
                 _session.Update();

@@ -74,7 +74,7 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateActive(GameTime gameTime)
         {
-            if (_input.Buy.Released)
+            if (_input.Buy.Pressed)
             {
                 _input.Controller.Value.PurchaseContent();
                 return;

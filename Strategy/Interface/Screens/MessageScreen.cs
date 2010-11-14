@@ -79,7 +79,7 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateActive(GameTime gameTime)
         {
-            if (_input.Action.Released)
+            if (_input.Action.Pressed)
             {
                 while (!_popUntilScreen.IsInstanceOfType(Stack.ActiveScreen))
                 {

@@ -260,7 +260,7 @@ namespace Strategy.Interface.Screens
             for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
             {
                 Player player = FindPlayerByController(p);
-                if (_input.Join[(int)p].Released)
+                if (_input.Join[(int)p].Pressed)
                 {
                     if (player != null)
                     {
@@ -302,7 +302,7 @@ namespace Strategy.Interface.Screens
                         }
                     }
                 }
-                else if (_input.Leave[(int)p].Released)
+                else if (_input.Leave[(int)p].Pressed)
                 {
                     // ignore leave requests from non-players
                     if (player != null)

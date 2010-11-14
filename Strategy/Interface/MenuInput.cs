@@ -78,7 +78,7 @@ namespace Strategy.Interface
         {
             for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
             {
-                if (Activate[(int)p].Released)
+                if (Activate[(int)p].Pressed)
                 {
                     _input.Controller = p;
                     _input.Update(0f); // force an update to initialise the state
