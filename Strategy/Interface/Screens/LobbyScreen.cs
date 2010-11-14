@@ -84,11 +84,13 @@ namespace Strategy.Interface.Screens
             _session.HostChanged -= OnHostChanged;
             _session.GameStarted -= OnGameStarted;
             _session.SessionEnded -= OnSessionEnded;
+
             if (popped)
             {
                 _session.Dispose();
                 _session = null;
             }
+
             base.Hide(popped);
         }
 
@@ -332,9 +334,9 @@ namespace Strategy.Interface.Screens
         private MenuInput _input;
 
         private int _seed = 0;
-        private MapType _mapType = MapType.Filled;
-        private MapSize _mapSize = MapSize.Small;
-        private AiDifficulty _difficulty = AiDifficulty.Hard; //TODO
+        private MapType _mapType = MapType.LandRush;
+        private MapSize _mapSize = MapSize.Normal;
+        private AiDifficulty _difficulty = AiDifficulty.Easy;
         private Random _random = new Random();
     }
 }

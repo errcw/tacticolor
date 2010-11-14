@@ -58,7 +58,7 @@ namespace Strategy.Net
                         {
                             command.Time = _match.Match.Time + _match.SchedulingOffset;
                         }
-                        BroadcastCommand(command);
+                        BroadcastCommand(command, player);
                     }
                 }
             }
@@ -88,30 +88,20 @@ namespace Strategy.Net
             {
                 if (player.Gamer == null || player.Gamer.IsLocal || player.Gamer.HasLeftSession)
                 {
-                    SynchronizationCommand command = new SynchronizationCommand(player.Id, _match.Match.GetStateHash(), _match.StepStart);
+                    SynchronizationCommand command = new SynchronizationCommand(player.Id, _match.Match.GetStateHash(), _match.Match.Time);
                     command.Time = _match.StepStart + _match.SchedulingOffset;
-                    if (player.Gamer != null)
-                    {
-                        BroadcastCommand(command);
-                    }
-                    else
-                    {
-                        // no need to broadcast AI commands across the wire
-                        _match.ScheduleCommand(command);
-                    }
+                    BroadcastCommand(command, player);
                 }
             }
-
-            SendNetworkCommands();
         }
 
         /// <summary>
         /// Sends a command to all remote players.
         /// </summary>
-        private void BroadcastCommand(Command command)
+        private void BroadcastCommand(Command command, Player sender)
         {
             _match.ScheduleCommand(command);
-            if (_sendReceiveGamer != null)
+            if (_sendReceiveGamer != null && sender.Gamer != null) // no need to send AI commands
             {
                 foreach (Player player in _players)
                 {
@@ -122,14 +112,6 @@ namespace Strategy.Net
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Sends all pending commands.
-        /// </summary>
-        private void SendNetworkCommands()
-        {
-            // no-op, we send all input as soon as we receive it
         }
 
         /// <summary>

@@ -127,7 +127,11 @@ namespace Strategy.Net
 
         private bool UpdateMatch(int deltaTime)
         {
-            Debug.Assert(deltaTime >= 0);
+            if (deltaTime == 0)
+            {
+                return true;
+            }
+            Debug.Assert(deltaTime > 0);
 
             // handle step transitions
             if (_match.Time + deltaTime >= _stepEndTime)
@@ -172,7 +176,8 @@ namespace Strategy.Net
             Log("Setting ready time to " + _readyStepStartTime);
 
             // verify that the other players are running as expected
-            if (command.Time > _match.Time + SchedulingOffset + StepTime)
+            // explicitly allow for infinite synchronization special case
+            if (command.Time > _match.Time + SchedulingOffset + StepTime && command.Time < long.MaxValue)
             {
                 Log("Got a sync command from " + command.Player + " for time " + command.Time + " but match time is only " + _match.Time);
                 throw new OutOfSyncException("Got a sync command from too far in the future");

@@ -139,8 +139,6 @@ namespace Strategy.Interface.Screens
             // hack in a way to get back to the main menu
             if (Stack.Game.Services.GetService<MenuInput>().Debug.Pressed)
             {
-                _session.EndGame();
-                _session.Update();
                 Stack.Pop(); // this gameplay screen
                 Stack.Pop(); // lobby screen
             }
