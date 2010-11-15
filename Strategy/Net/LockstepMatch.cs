@@ -69,13 +69,13 @@ namespace Strategy.Net
         /// </summary>
         public void ScheduleCommand(Command command)
         {
-            Log("Scheduling " + command);
             if (command is SynchronizationCommand)
             {
                 HandleSynchronization((SynchronizationCommand)command);
             }
             else
             {
+                //LOG Log("Scheduling " + command);
                 _commands.Add(command);
             }
         }
@@ -115,6 +115,10 @@ namespace Strategy.Net
                     // commands that are invalidated by earlier remote commands
                     Log("Tried to execute invalid command " + command);
                 }
+                else
+                {
+                    Log("Executed " + command);
+                }
 
                 // remove the command now that we have successfully executed it
                 _commands.Pop();
@@ -151,11 +155,11 @@ namespace Strategy.Net
 
                     StepStart = nextStepStart;
                     _stepEndTime = StepStart + StepTime;
-                    Log("Starting step " + StepStart);
+                    //LOG Log("Starting step " + StepStart);
                 }
                 else
                 {
-                    Log("Blocked starting step " + _stepEndTime);
+                    //LOG Log("Blocked starting step " + _stepEndTime);
                     return false;
                 }
             }
@@ -173,7 +177,7 @@ namespace Strategy.Net
             int playerIdx = (int)command.Player;
             _readyStepStartTimes[playerIdx] = Math.Max(command.Time, _readyStepStartTimes[playerIdx]);
             _readyStepStartTime = _readyStepStartTimes.Min();
-            Log("Setting ready time to " + _readyStepStartTime);
+            //LOG Log("Setting ready time to " + _readyStepStartTime);
 
             // verify that the other players are running as expected
             // explicitly allow for infinite synchronization special case
