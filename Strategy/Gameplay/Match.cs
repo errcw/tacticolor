@@ -421,11 +421,10 @@ namespace Strategy.Gameplay
         /// </summary>
         public long GetStateHash()
         {
-            return _pieceCreationElapsed.Sum();
-            /*return PiecesAvailable.Sum() +
+            return _pieceCreationElapsed.Sum() +
                    Map.Territories.Sum(t => t.Pieces.Count) +
                    TerritoriesOwnedCount.Sum() +
-                   RemainingPlayerCount;*/
+                   RemainingPlayerCount;
         }
 
         /// <summary>
@@ -517,10 +516,16 @@ namespace Strategy.Gameplay
                 {
                     PiecesAvailable[p] += 1;
 
-                    Log("Created piece for " + p + " at " + Time);
-
-                    _pieceCreationElapsed[p] = 0;
+                    _pieceCreationElapsed[p] -= PieceCreationTicks;
                     PieceCreationProgress[p] = 0f;
+
+                    // because piece creation may happen at different times on different machines
+                    // the elapsed remainder may be different and conflict in the state hash
+                    // because it is no longer continually updated
+                    if (PiecesAvailable[p] == MaxPiecesAvailable)
+                    {
+                        _pieceCreationElapsed[p] = 0;
+                    }
 
                     if (PieceCreated != null)
                     {
@@ -528,14 +533,6 @@ namespace Strategy.Gameplay
                     }
                 }
             }
-        }
-        private void Log(string message)
-        {
-#if XBOX
-            System.Diagnostics.Debug.WriteLine("X " + message);
-#else
-            System.Diagnostics.Debug.WriteLine("C " + message);
-#endif
         }
 
         /// <summary>
@@ -600,7 +597,7 @@ namespace Strategy.Gameplay
         private Map _map;
         private Random _random;
 
-        private int[] _pieceCreationElapsed;
+        public int[] _pieceCreationElapsed;
 
         private const int PieceCreationTicks = 4500000;
         private const int PieceCreationMillisToTicksBase = 950;

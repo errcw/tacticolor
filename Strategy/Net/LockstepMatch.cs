@@ -1,6 +1,4 @@
-﻿#define NET_DEBUG
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -75,7 +73,7 @@ namespace Strategy.Net
             }
             else
             {
-                //LOG Log("Scheduling " + command);
+                Log("Scheduling " + command);
                 _commands.Add(command);
             }
         }
@@ -115,10 +113,6 @@ namespace Strategy.Net
                     // commands that are invalidated by earlier remote commands
                     Log("Tried to execute invalid command " + command);
                 }
-                else
-                {
-                    Log("Executed " + command);
-                }
 
                 // remove the command now that we have successfully executed it
                 _commands.Pop();
@@ -131,40 +125,35 @@ namespace Strategy.Net
 
         private bool UpdateMatch(int deltaTime)
         {
-            if (deltaTime == 0)
-            {
-                return true;
-            }
-            Debug.Assert(deltaTime > 0);
+            Debug.Assert(deltaTime >= 0);
 
             // handle step transitions
             if (_match.Time + deltaTime >= _stepEndTime)
             {
+                // update to right before the end of the step
+                int dtStepEnd = (int)(_stepEndTime - _match.Time - 1);
+                deltaTime -= dtStepEnd;
+                _match.Update(dtStepEnd);
+
                 long nextStepStart = _stepEndTime;
                 if (nextStepStart <= _readyStepStartTime)
                 {
-                    // update up to the end of the step
-                    int dtStepEnd = (int)(_stepEndTime - _match.Time);
-                    _match.Update(dtStepEnd);
-                    deltaTime -= dtStepEnd;
-
                     if (StepEnded != null)
                     {
                         StepEnded(this, EventArgs.Empty);
                     }
-
                     StepStart = nextStepStart;
                     _stepEndTime = StepStart + StepTime;
-                    //LOG Log("Starting step " + StepStart);
                 }
                 else
                 {
-                    //LOG Log("Blocked starting step " + _stepEndTime);
+                    // bail and do not consume the remaining time
+                    Log("Blocked starting step " + _stepEndTime);
                     return false;
                 }
             }
 
-            // update the match time
+            // update the (remaining) match time
             _match.Update(deltaTime);
 
             Debug.Assert(_match.Time <= _readyStepStartTime + StepTime);
@@ -177,7 +166,7 @@ namespace Strategy.Net
             int playerIdx = (int)command.Player;
             _readyStepStartTimes[playerIdx] = Math.Max(command.Time, _readyStepStartTimes[playerIdx]);
             _readyStepStartTime = _readyStepStartTimes.Min();
-            //LOG Log("Setting ready time to " + _readyStepStartTime);
+            og("Setting ready time to " + _readyStepStartTime);
 
             // verify that the other players are running as expected
             // explicitly allow for infinite synchronization special case
