@@ -139,7 +139,6 @@ namespace Strategy.Interface.Screens
             Random gameRandom = new Random(_seed);
             MapGenerator generator = new MapGenerator(gameRandom);
             Map map = generator.Generate(_mapType, _mapSize);
-            //Map map = generator.Generate(16, 2, 1, 4);
             Match match = new Match(map, gameRandom);
 
             // assign ids to players by sorting based on unique id
@@ -226,7 +225,7 @@ namespace Strategy.Interface.Screens
             LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
             CommandWriter writer = new CommandWriter();
             writer.Write(new InitializeMatchCommand(_seed, _mapType, _mapSize, _difficulty));
-            sender.SendData(writer, SendDataOptions.Reliable);
+            sender.SendData(writer, SendDataOptions.ReliableInOrder);
         }
 
         /// <summary>
