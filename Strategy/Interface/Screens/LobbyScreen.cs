@@ -31,6 +31,11 @@ namespace Strategy.Interface.Screens
             _players = new List<Player>();
 
             _session = session;
+            _session.GamerJoined += OnGamerJoined;
+            _session.GamerLeft += OnGamerLeft;
+            _session.HostChanged += OnHostChanged;
+            _session.GameStarted += OnGameStarted;
+            _session.SessionEnded += OnSessionEnded;
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -67,36 +72,24 @@ namespace Strategy.Interface.Screens
                 }
                 _seed = 0; // choose a new seed
             }
-
-            _session.GamerJoined += OnGamerJoined;
-            _session.GamerLeft += OnGamerLeft;
-            _session.HostChanged += OnHostChanged;
-            _session.GameStarted += OnGameStarted;
-            _session.SessionEnded += OnSessionEnded;
-
             base.Show(pushed);
         }
 
         protected internal override void Hide(bool popped)
         {
-            _session.GamerJoined -= OnGamerJoined;
-            _session.GamerLeft -= OnGamerLeft;
-            _session.HostChanged -= OnHostChanged;
-            _session.GameStarted -= OnGameStarted;
-            _session.SessionEnded -= OnSessionEnded;
-
             if (popped)
             {
                 _session.Dispose();
                 _session = null;
             }
-
             base.Hide(popped);
         }
 
         private void OnGamerJoined(object sender, GamerJoinedEventArgs args)
         {
             Debug.WriteLine(args.Gamer.Gamertag + " joined");
+            Debug.Assert(_session.SessionState != NetworkSessionState.Playing);
+
             AddPlayer(args.Gamer);
             if (_session.IsHost)
             {
@@ -118,15 +111,18 @@ namespace Strategy.Interface.Screens
         {
             Debug.WriteLine(args.NewHost.Gamertag + " is now host (was " + args.OldHost.Gamertag + ")");
 
+            // once the game has started host changes do not matter
+            if (_session.SessionState == NetworkSessionState.Playing)
+            {
+                return;
+            }
+
             // the host might have backed out before every player received
             // the seed data so broadcast a new seed to every player
             if (_session.IsHost)
             {
                 _seed = _random.Next(1, int.MaxValue);
-                foreach (NetworkGamer gamer in _session.RemoteGamers)
-                {
-                    SendConfiguration(gamer);
-                }
+                BroadcastConfiguration();
             }
         }
 
@@ -141,35 +137,45 @@ namespace Strategy.Interface.Screens
             Map map = generator.Generate(_mapType, _mapSize);
             Match match = new Match(map, gameRandom);
 
+            // create a copy of the list so that the match can continue to
+            // manipulate the list of remaining gamers while the match runs
+            List<Player> gamePlayers = new List<Player>(_players);
+
             // assign ids to players by sorting based on unique id
             // this assignment guarantees identical assignments across machines
-            _players.Sort((a, b) => a.Gamer.Id.CompareTo(b.Gamer.Id));
-            for (int p = 0; p < _players.Count; p++)
+            gamePlayers.Sort((a, b) => a.Gamer.Id.CompareTo(b.Gamer.Id));
+            for (int p = 0; p < gamePlayers.Count; p++)
             {
-                _players[p].Id = (PlayerId)p;
-                if (_players[p].Gamer.IsLocal)
+                gamePlayers[p].Id = (PlayerId)p;
+                if (gamePlayers[p].Gamer.IsLocal)
                 {
-                    _players[p].Input = new LocalInput(_players[p].Id, _players[p].Controller.Value, match, GameplayScreen.IsoParams);
+                    gamePlayers[p].Input = new LocalInput(gamePlayers[p].Id, gamePlayers[p].Controller.Value, match, GameplayScreen.IsoParams);
                 }
             }
 
             // fill out the remaining players with AI
-            int humanPlayerCount = _players.Count;
+            int humanPlayerCount = gamePlayers.Count;
             int aiPlayerCount = Match.MaxPlayerCount - humanPlayerCount;
             for (int p = 0; p < aiPlayerCount; p++)
             {
                 Player aiPlayer = new Player();
                 aiPlayer.Id = (PlayerId)(p + humanPlayerCount);
                 aiPlayer.Input = new AiInput(aiPlayer.Id, match, _difficulty, gameRandom);
-                _players.Add(aiPlayer);
+                gamePlayers.Add(aiPlayer);
             }
 
-            GameplayScreen gameplayScreen = new GameplayScreen(Stack.Game, _session, _players, match);
+            GameplayScreen gameplayScreen = new GameplayScreen(Stack.Game, _session, gamePlayers, match);
             Stack.Push(gameplayScreen);
         }
 
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
         {
+            // the gameplay screen might have already consumed this event
+            // (but account for the lobby putting up its own message screens)
+            if (Stack.ActiveScreen is MessageScreen && _session.SessionState != NetworkSessionState.Lobby)
+            {
+                return;
+            }
             // if the session ended before the game started then we encountered an error
             MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
             Stack.Push(messageScreen);
@@ -220,12 +226,24 @@ namespace Strategy.Interface.Screens
         /// <summary>
         /// Broadcasts the game configuration to every player in the session.
         /// </summary>
-        private void SendConfiguration(NetworkGamer gamer)
+        private void BroadcastConfiguration()
         {
             LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
             CommandWriter writer = new CommandWriter();
             writer.Write(new InitializeMatchCommand(_seed, _mapType, _mapSize, _difficulty));
             sender.SendData(writer, SendDataOptions.ReliableInOrder);
+        }
+
+        /// <summary>
+        /// Sends the game configuration to the specified player.
+        /// </summary>
+        /// <param name="gamer"></param>
+        private void SendConfiguration(NetworkGamer gamer)
+        {
+            LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
+            CommandWriter writer = new CommandWriter();
+            writer.Write(new InitializeMatchCommand(_seed, _mapType, _mapSize, _difficulty));
+            sender.SendData(writer, SendDataOptions.ReliableInOrder, gamer);
         }
 
         /// <summary>

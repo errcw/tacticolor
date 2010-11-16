@@ -95,6 +95,10 @@ namespace Strategy.Interface.Screens
 
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
             _isoView = new IsometricView();
+
+            // consume a frame to transition on and off to avoid input glitches
+            TransitionOnTime = 0.01f;
+            TransitionOffTime = 0.01f;
         }
 
         protected override void UpdateActive(GameTime gameTime)
