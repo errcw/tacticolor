@@ -14,6 +14,13 @@ To Do
 * Trial
 * Sound
 
+* Do not start running the game until the gameplay screen is visible
+  - On the first active tick send a synchronization command for time 0
+* Add a display when the match is halted because of network delays
+  - In LockstepMatch add a flag when the update fails because of not enough sync
+  - Report the players that are not sufficiently synced
+  - Add a view that displays connection break problems
+
 
 Menu Structure
 --------------

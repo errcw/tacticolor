@@ -35,6 +35,7 @@ namespace Strategy.Interface.Screens
             _session.GamerLeft += OnGamerLeft;
             _session.HostChanged += OnHostChanged;
             _session.GameStarted += OnGameStarted;
+            _session.GameEnded += OnGameEnded;
             _session.SessionEnded += OnSessionEnded;
         }
 
@@ -65,12 +66,11 @@ namespace Strategy.Interface.Screens
             // handle the case where we are returning to the lobby after a game
             if (!pushed)
             {
-                _players.Clear(); // we will have the players in the session re-added
+                _seed = 0; // choose/receive a new seed
                 if (_session.IsHost && _session.SessionState == NetworkSessionState.Lobby)
                 {
                     _session.ResetReady();
                 }
-                _seed = 0; // choose a new seed
             }
             base.Show(pushed);
         }
@@ -129,7 +129,10 @@ namespace Strategy.Interface.Screens
         private void OnGameStarted(object sender, GameStartedEventArgs args)
         {
             Debug.Assert(_seed != 0);
+            Debug.Assert(!_isMatchRunning);
             Debug.WriteLine("Game starting");
+
+            _isMatchRunning = true;
 
             // create the game objects
             Random gameRandom = new Random(_seed);
@@ -168,11 +171,15 @@ namespace Strategy.Interface.Screens
             Stack.Push(gameplayScreen);
         }
 
+        private void OnGameEnded(object sender, GameEndedEventArgs args)
+        {
+            _isMatchRunning = false;
+        }
+
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
         {
             // the gameplay screen might have already consumed this event
-            // (but account for the lobby putting up its own message screens)
-            if (Stack.ActiveScreen is MessageScreen && _session.SessionState != NetworkSessionState.Lobby)
+            if (_isMatchRunning)
             {
                 return;
             }
@@ -355,5 +362,7 @@ namespace Strategy.Interface.Screens
         private MapSize _mapSize = MapSize.Normal;
         private AiDifficulty _difficulty = AiDifficulty.Easy;
         private Random _random = new Random();
+
+        private bool _isMatchRunning = false;
     }
 }

@@ -166,7 +166,7 @@ namespace Strategy.Net
             int playerIdx = (int)command.Player;
             _readyStepStartTimes[playerIdx] = Math.Max(command.Time, _readyStepStartTimes[playerIdx]);
             _readyStepStartTime = _readyStepStartTimes.Min();
-            og("Setting ready time to " + _readyStepStartTime);
+            Log("Setting ready time to " + _readyStepStartTime);
 
             // verify that the other players are running as expected
             // explicitly allow for infinite synchronization special case
