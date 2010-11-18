@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
+using Strategy.Net;
 using Strategy.Properties;
 using Strategy.Library;
 using Strategy.Library.Extensions;
@@ -18,9 +20,10 @@ namespace Strategy.Interface.Gameplay
     {
         public Player Player { get; private set; }
 
-        public PlayerView(Player player, InterfaceContext context)
+        public PlayerView(Player player, LockstepMatch match, InterfaceContext context)
         {
             Player = player;
+            _match = match;
 
             Vector2 position = GetBasePosition(Player.Id);
             SpriteFont font = context.Content.Load<SpriteFont>("Fonts/Gamertag");
@@ -37,8 +40,13 @@ namespace Strategy.Interface.Gameplay
 
             Texture2D voiceTex = context.Content.Load<Texture2D>("Images/Voice");
             _voiceSprite = new ImageSprite(voiceTex);
-            _voiceSprite.Position = position + new Vector2(nameWidth + 5, 5);
+            _voiceSprite.Position = _name.Position + new Vector2(nameWidth + 5, 5);
             _voiceSprite.Color = ColorExtensions.FromNonPremultiplied(Color.White, 0.5f);
+
+            Texture2D lagTex = context.Content.Load<Texture2D>("Images/Lag");
+            _lagSprite = new ImageSprite(lagTex);
+            _lagSprite.Position = _voiceSprite.Position + new Vector2(_voiceSprite.Size.X + 5, 0);
+            _lagSprite.Color = Color.Transparent;
         }
 
         public void Update(float time)
@@ -50,6 +58,13 @@ namespace Strategy.Interface.Gameplay
                     _nameAnimation = null;
                 }
             }
+            if (_lagAnimation != null)
+            {
+                if (!_lagAnimation.Update(time))
+                {
+                    _lagAnimation = null;
+                }
+            }
             if (Player.Gamer != null && Player.Gamer.HasVoice)
             {
                 float alpha = Player.Gamer.IsTalking ? 1f : Player.Gamer.IsMutedByLocalUser ? 0.1f : 0.25f;
@@ -59,16 +74,30 @@ namespace Strategy.Interface.Gameplay
             {
                 _voiceSprite.Color = Color.Transparent;
             }
+            if (_match.BlockingPlayers.Contains(Player.Id))
+            {
+                _blockedUpdateCount += 1;
+            }
+            else
+            {
+                _blockedUpdateCount = 0;
+                _lagSprite.Color = Color.Transparent;
+                _lagAnimation = null;
+            }
+            if (_blockedUpdateCount > BlockedUpdateLagThreshold && _lagAnimation == null)
+            {
+                _lagAnimation = new SequentialAnimation(
+                    new ColorAnimation(_lagSprite, ColorExtensions.FromNonPremultiplied(Color.White, 0.5f), 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
+                    new ColorAnimation(_lagSprite, Color.White, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)));
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             _nameShadow.Draw(spriteBatch);
             _name.Draw(spriteBatch);
-            if (_voiceSprite != null)
-            {
-                _voiceSprite.Draw(spriteBatch);
-            }
+            _voiceSprite.Draw(spriteBatch);
+            _lagSprite.Draw(spriteBatch);
         }
 
         /// <summary>
@@ -102,7 +131,14 @@ namespace Strategy.Interface.Gameplay
         private TextSprite _name;
         private TextSprite _nameShadow;
         private ImageSprite _voiceSprite;
+        private ImageSprite _lagSprite;
 
         private IAnimation _nameAnimation;
+        private IAnimation _lagAnimation;
+
+        private int _blockedUpdateCount = 0;
+        private LockstepMatch _match;
+
+        private const int BlockedUpdateLagThreshold = 15;
     }
 }

@@ -38,6 +38,12 @@ namespace Strategy.Net
         public int SchedulingOffset { get; set; }
 
         /// <summary>
+        /// Returns, if the last update did not complete because one or more players was not
+        /// synchronized, the players blocking the update; otherwise, an empty collection.
+        /// </summary>
+        public IEnumerable<PlayerId> BlockingPlayers { get; private set;  }
+
+        /// <summary>
         /// Creates a new lockstep match for a given game.
         /// </summary>
         /// <param name="match"></param>
@@ -149,14 +155,22 @@ namespace Strategy.Net
                 {
                     // bail and do not consume the remaining time
                     Log("Blocked starting step " + _stepEndTime);
+
+                    BlockingPlayers = _readyStepStartTimes
+                        .Select((time, id) => new { Time = time, Id = (PlayerId)id })
+                        .Where((desc) => desc.Time < nextStepStart)
+                        .Select((desc) => desc.Id);
+
                     return false;
                 }
             }
 
             // update the (remaining) match time
             _match.Update(deltaTime);
-
             Debug.Assert(_match.Time <= _readyStepStartTime + StepTime);
+
+            BlockingPlayers = Enumerable.Empty<PlayerId>();
+
             return true;
         }
 
@@ -189,6 +203,10 @@ namespace Strategy.Net
             {
                 _stepHashes[command.HashTime] = command.Hash;
             }
+        }
+
+        private void SetBlocked(bool isBlocked)
+        {
         }
 
         private void Log(string message)

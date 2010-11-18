@@ -70,7 +70,7 @@ namespace Strategy.Interface.Screens
             _piecesAvailableViews = new List<PiecesAvailableView>(players.Count);
             foreach (Player player in players)
             {
-                _playerViews.Add(new PlayerView(player, _context));
+                _playerViews.Add(new PlayerView(player, _lockstepMatch, _context));
                 _piecesAvailableViews.Add(new PiecesAvailableView(match, player.Id, _context));
                 LocalInput input = player.Input as LocalInput;
                 if (input != null)
@@ -136,7 +136,7 @@ namespace Strategy.Interface.Screens
                 catch (OutOfSyncException oos)
                 {
                     Debug.WriteLine(oos);
-                    //TODO handle this as a fatal network error
+                    HandleNetworkError();
                 }
             }
 
@@ -269,6 +269,11 @@ namespace Strategy.Interface.Screens
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
         {
             // if the session ended before the game is over then we encountered an error
+            HandleNetworkError();
+        }
+
+        private void HandleNetworkError()
+        {
             MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
             Stack.Push(messageScreen);
         }
