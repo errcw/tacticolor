@@ -114,6 +114,7 @@ namespace Strategy.Interface.Screens
             // once the game has started host changes do not matter
             if (_session.SessionState == NetworkSessionState.Playing)
             {
+                Debug.Assert(_isMatchRunning);
                 return;
             }
 

@@ -20,7 +20,11 @@ To Do
   - In LockstepMatch add a flag when the update fails because of not enough sync
   - Report the players that are not sufficiently synced
   - Add a view that displays connection break problems
-
+* Add a Stack.PushOn(Screen,Screen) method to allow notification screens
+  to be associated with a parent (e.g., allow the game over screen to appear
+  under the main menu screen)
+* Verify the GameEnded is not called when the Session terminates abruptly
+* Add an out-of-sync handler
 
 Menu Structure
 --------------
