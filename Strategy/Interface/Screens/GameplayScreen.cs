@@ -35,6 +35,8 @@ namespace Strategy.Interface.Screens
 
             _players = players;
 
+            _input = game.Services.GetService<MenuInput>();
+
             // create the model
             _lockstepMatch = new LockstepMatch(match);
             _lockstepMatch.Match.TerritoryAttacked += OnTerritoryAttacked;
@@ -140,13 +142,6 @@ namespace Strategy.Interface.Screens
                 }
             }
 
-            // hack in a way to get back to the main menu
-            if (Stack.Game.Services.GetService<MenuInput>().Debug.Pressed)
-            {
-                Stack.Pop(); // this gameplay screen
-                Stack.Pop(); // lobby screen
-            }
-
             float seconds = gameTime.GetElapsedSeconds();
             _mapView.Update(seconds);
             _inputViews.ForEach(view => view.Update(seconds));
@@ -164,9 +159,16 @@ namespace Strategy.Interface.Screens
                         _session.EndGame();
                         _session.Update(); // force an update to get the new state right away
                     }
-                    Stack.Push(_endScreen);
+                    Stack.PushOn(_endScreen, this);
                     _endScreen = null; // do not push multiple times
                 }
+            }
+
+            if (_input.Activate.Any(a => a.Pressed))
+            {
+                //TODO handle which player opened the menu
+                InGameMenuScreen menuScreen = new InGameMenuScreen(Stack.Game);
+                Stack.Push(menuScreen);
             }
         }
 
@@ -275,7 +277,7 @@ namespace Strategy.Interface.Screens
         private void HandleNetworkError()
         {
             MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
-            Stack.Push(messageScreen);
+            Stack.PushOn(messageScreen, this);
         }
 
         private void ShowPlayerLeftMatch(Player player)
@@ -314,6 +316,8 @@ namespace Strategy.Interface.Screens
         private List<PlayerView> _playerViews;
         private List<PiecesAvailableView> _piecesAvailableViews;
         private Instructions _instructions;
+
+        private MenuInput _input;
 
         private Screen _endScreen;
         private float _endTime;
