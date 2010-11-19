@@ -88,14 +88,25 @@ namespace Strategy.Library.Screen
         /// <param name="screen">The screen to push.</param>
         public void Push(Screen screen)
         {
-            Screen active = ActiveScreen;
-            if (active != null)
-            {
-                active.Hide(false);
-            }
-            _stackScreens.Add(screen);
+            PushOn(screen, ActiveScreen);
+        }
+
+        /// <summary>
+        /// Adds a screen on top of a specified screen. If the screen to push on
+        /// is not found then the screen is inserted at the bottom of the stack.
+        /// </summary>
+        /// <param name="screen">The screen to push.</param>
+        /// <param name="pushOn">The screen to push on.</param>
+        public void PushOn(Screen screen, Screen pushOn)
+        {
+            int pushLocation = _stackScreens.FindIndex(s => s == pushOn);
+            _stackScreens.Insert(pushLocation + 1, screen);
             screen.Stack = this;
             screen.Show(true);
+            if (pushOn != null)
+            {
+                pushOn.Hide(false);
+            }
         }
 
         /// <summary>
