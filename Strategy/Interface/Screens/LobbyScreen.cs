@@ -219,7 +219,7 @@ namespace Strategy.Interface.Screens
         {
             Player playerToRemove = _players.Single(player => player.Gamer == gamer);
             _players.Remove(playerToRemove);
-            if (_players.Count == 0)
+            if (_players.Count == 0 && !_isMatchRunning)
             {
                 // lost all the players, back out to the main menu
                 Stack.Pop();

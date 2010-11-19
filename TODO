@@ -9,17 +9,14 @@ To Do
   - Add the awardments screen
   - Add the lobby screen
   - Add the in-game menu scren
-* Awardments
-  - Add the trophy images
 * Trial
 * Sound
+* Art
+  - Trophy images
+  - Lag image
 
 * Do not start running the game until the gameplay screen is visible
   - On the first active tick send a synchronization command for time 0
-* Add a display when the match is halted because of network delays
-  - In LockstepMatch add a flag when the update fails because of not enough sync
-  - Report the players that are not sufficiently synced
-  - Add a view that displays connection break problems
 * Add a Stack.PushOn(Screen,Screen) method to allow notification screens
   to be associated with a parent (e.g., allow the game over screen to appear
   under the main menu screen)
