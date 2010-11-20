@@ -37,7 +37,7 @@ namespace Strategy.AI
             _player = player;
             _match = match;
             _difficulty = difficulty;
-            _random = random;
+            _random = new Random(random.Next());
 
             switch (_difficulty)
             {
