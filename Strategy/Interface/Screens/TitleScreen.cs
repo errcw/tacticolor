@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
@@ -28,8 +29,6 @@ namespace Strategy.Interface.Screens
 
         public TitleScreen(StrategyGame game)
         {
-            _loader = new ContentPreloader(game.Content);
-
             _workerThread = new Thread(UpdateDrawWorker);
             _workerExit = new ManualResetEvent(false);
             _device = game.GraphicsDevice;
@@ -111,9 +110,7 @@ namespace Strategy.Interface.Screens
                 _workerThread.Start();
 
                 // load the content on the main thread
-                _loader.Load<Texture2D>("Images");
-                _loader.Load<SoundEffect>("Sounds");
-                _loader.Load<SpriteFont>("Fonts");
+                LoadFromManifest();
 
                 _workerExit.Set();
                 _workerThread.Join();
@@ -143,6 +140,18 @@ namespace Strategy.Interface.Screens
                     MainMenuScreen menuScreen = new MainMenuScreen((StrategyGame)Stack.Game);
                     Stack.Push(menuScreen);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Loads the file from a manifest
+        /// </summary>
+        private void LoadFromManifest()
+        {
+            List<string> contentFiles = Stack.Game.Content.Load<List<string>>("manifest");
+            foreach (string contentFile in contentFiles)
+            {
+                Stack.Game.Content.Load<object>(contentFile);
             }
         }
 
@@ -200,8 +209,6 @@ namespace Strategy.Interface.Screens
                 _device = null;
             }
         }
-
-        private ContentPreloader _loader;
 
         private Thread _workerThread;
         private long _lastWorkerUpdateTime;
