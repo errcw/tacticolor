@@ -41,7 +41,7 @@ namespace Strategy.Interface.Gameplay
             Texture2D voiceTex = context.Content.Load<Texture2D>("Images/Voice");
             _voiceSprite = new ImageSprite(voiceTex);
             _voiceSprite.Position = _name.Position + new Vector2(nameWidth + 5, 5);
-            _voiceSprite.Color = ColorExtensions.FromNonPremultiplied(Color.White, 0.5f);
+            _voiceSprite.Color = Color.Transparent;
 
             Texture2D lagTex = context.Content.Load<Texture2D>("Images/Lag");
             _lagSprite = new ImageSprite(lagTex);
@@ -58,6 +58,7 @@ namespace Strategy.Interface.Gameplay
                     _nameAnimation = null;
                 }
             }
+
             if (_lagAnimation != null)
             {
                 if (!_lagAnimation.Update(time))
@@ -65,6 +66,7 @@ namespace Strategy.Interface.Gameplay
                     _lagAnimation = null;
                 }
             }
+
             if (Player.Gamer != null && Player.Gamer.HasVoice)
             {
                 float alpha = Player.Gamer.IsTalking ? 1f : Player.Gamer.IsMutedByLocalUser ? 0.1f : 0.25f;
@@ -74,6 +76,7 @@ namespace Strategy.Interface.Gameplay
             {
                 _voiceSprite.Color = Color.Transparent;
             }
+
             if (_match.BlockingPlayers.Contains(Player.Id))
             {
                 _blockedUpdateCount += 1;
