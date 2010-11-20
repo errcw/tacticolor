@@ -58,7 +58,7 @@ namespace Strategy.Net
 
             SchedulingOffset = 2 * StepTime;
 
-            _readyStepStartTime = _stepEndTime + 2 * SchedulingOffset;
+            _readyStepStartTime = -1; // wait for start game command
             _readyStepStartTimes = new long[match.PlayerCount];
             for (int i = 0; i < _readyStepStartTimes.Length; i++)
             {

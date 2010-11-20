@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Net;
@@ -67,6 +68,24 @@ namespace Strategy.Net
         }
 
         /// <summary>
+        /// Notifies the input that the game will start. The input broadcasts
+        /// a start game command to synchronize stuff.
+        /// </summary>
+        public void OnGameWillStart()
+        {
+            Debug.Assert(_match.Match.Time == 0);
+            foreach (Player player in _players)
+            {
+                if (RequiresLocalSynchronization(player))
+                {
+                    SynchronizationCommand command = new StartSynchronizationCommand(player.Id, _match.Match.GetStateHash());
+                    command.Time = _match.SchedulingOffset;
+                    BroadcastCommand(command, player);
+                }
+            }
+        }
+
+        /// <summary>
         /// Notifies the input the specified player left the match.
         /// </summary>
         public void OnPlayerLeft(Player player)
@@ -86,7 +105,7 @@ namespace Strategy.Net
             // send a synchronization command for each local player
             foreach (Player player in _players)
             {
-                if (player.Gamer == null || player.Gamer.IsLocal || player.Gamer.HasLeftSession)
+                if (RequiresLocalSynchronization(player))
                 {
                     SynchronizationCommand command = new StepSynchronizationCommand(player.Id, _match.Match.GetStateHash(), _match.Match.Time);
                     command.Time = _match.StepStart + _match.SchedulingOffset;
@@ -140,6 +159,11 @@ namespace Strategy.Net
                     }
                 }
             }
+        }
+
+        private bool RequiresLocalSynchronization(Player player)
+        {
+            return player.Gamer == null || player.Gamer.IsLocal || player.Gamer.HasLeftSession;
         }
 
         private LockstepMatch _match;

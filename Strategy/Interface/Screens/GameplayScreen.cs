@@ -52,6 +52,10 @@ namespace Strategy.Interface.Screens
 
             _lockstepInput = new LockstepInput(_lockstepMatch, players);
 
+            // while the game is starting send out start game synchronization commands
+            // by the time the commands arrive the game should be ready
+            _lockstepInput.OnGameWillStart();
+
             IDictionary<string, PlayerId> awardmentPlayers = new Dictionary<string, PlayerId>(match.PlayerCount);
             foreach (Player player in players)
             {

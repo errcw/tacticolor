@@ -70,6 +70,9 @@ namespace Strategy.Interface.Screens
                 if (_session.IsHost && _session.SessionState == NetworkSessionState.Lobby)
                 {
                     _session.ResetReady();
+
+                    _seed = _random.Next(1, int.MaxValue);
+                    BroadcastConfiguration();
                 }
             }
             base.Show(pushed);
