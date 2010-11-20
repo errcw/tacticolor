@@ -99,7 +99,7 @@ namespace Strategy.Library.Screen
         /// <param name="pushOn">The screen to push on.</param>
         public void PushOn(Screen screen, Screen pushOn)
         {
-            int pushLocation = _stackScreens.FindIndex(s => s == pushOn);
+            int pushLocation = _stackScreens.IndexOf(pushOn);
             _stackScreens.Insert(pushLocation + 1, screen);
             screen.Stack = this;
             screen.Show(true);
