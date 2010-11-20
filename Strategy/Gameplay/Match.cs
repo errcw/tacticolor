@@ -421,10 +421,10 @@ namespace Strategy.Gameplay
         /// </summary>
         public long GetStateHash()
         {
-            return _pieceCreationElapsed.Sum() +
-                   Map.Territories.Sum(t => t.Pieces.Count) +
-                   TerritoriesOwnedCount.Sum() +
-                   RemainingPlayerCount;
+            return ((int)_pieceCreationElapsed.Sum() << 0) |
+                   ((byte)Map.Territories.Sum(t => t.Pieces.Count) << 32) |
+                   ((byte)TerritoriesOwnedCount.Sum() << 40) |
+                   ((byte)RemainingPlayerCount << 48);
         }
 
         /// <summary>
