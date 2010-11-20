@@ -205,10 +205,6 @@ namespace Strategy.Net
             }
         }
 
-        private void SetBlocked(bool isBlocked)
-        {
-        }
-
         private void Log(string message)
         {
 #if NET_DEBUG

@@ -134,30 +134,14 @@ namespace Strategy.Net
     }
 
     /// <summary>
-    /// Notifies players that the match should start.
+    /// Marks a synchronization point in the match. A player sending a
+    /// synchronization command for time T indicates that she has sent all her
+    /// input for up to match time T.
     /// </summary>
-    public class StartMatchCommand : Command
+    public abstract class SynchronizationCommand : Command
     {
-        public const byte Code = 1;
-
-        public StartMatchCommand() : base(Code)
-        {
-        }
-
-        public StartMatchCommand(PlayerId player) : base(Code, player)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Marks a synchronization point at the end of a step.
-    /// </summary>
-    public class SynchronizationCommand : Command
-    {
-        public const byte Code = 2;
-
         /// <summary>
-        /// A hash of the game state at the end of the current step.
+        /// A hash of the game state prior to synchronization point.
         /// </summary>
         public long Hash { get; private set; }
 
@@ -166,11 +150,11 @@ namespace Strategy.Net
         /// </summary>
         public long HashTime { get; private set; }
 
-        public SynchronizationCommand() : base(Code)
+        public SynchronizationCommand(byte code) : base(code)
         {
         }
 
-        public SynchronizationCommand(PlayerId player, long hash, long hashTime) : base(Code, player)
+        public SynchronizationCommand(byte code, PlayerId player, long hash, long hashTime) : base(code, player)
         {
             Hash = hash;
             HashTime = hashTime;
@@ -186,6 +170,38 @@ namespace Strategy.Net
         {
             writer.Write(Hash);
             writer.Write(HashTime);
+        }
+    }
+
+    /// <summary>
+    /// Synchronizes the game at the start of the match.
+    /// </summary>
+    public class StartSynchronizationCommand : SynchronizationCommand
+    {
+        public const byte Code = 1;
+
+        public StartSynchronizationCommand() : base(Code)
+        {
+        }
+
+        public StartSynchronizationCommand(PlayerId player, long hash) : base(Code, player, hash, 0)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Synchronizes the game at the end of a step.
+    /// </summary>
+    public class StepSynchronizationCommand : SynchronizationCommand
+    {
+        public const byte Code = 2;
+
+        public StepSynchronizationCommand() : base(Code)
+        {
+        }
+
+        public StepSynchronizationCommand(PlayerId player, long hash, long hashTime) : base(Code, player, hash, hashTime)
+        {
         }
     }
 
@@ -386,11 +402,11 @@ namespace Strategy.Net
                 case InitializeMatchCommand.Code:
                     command = new InitializeMatchCommand();
                     break;
-                case StartMatchCommand.Code:
-                    command = new StartMatchCommand();
+                case StartSynchronizationCommand.Code:
+                    command = new StartSynchronizationCommand();
                     break;
-                case SynchronizationCommand.Code:
-                    command = new SynchronizationCommand();
+                case StepSynchronizationCommand.Code:
+                    command = new StepSynchronizationCommand();
                     break;
                 case PlaceCommand.Code:
                     command = new PlaceCommand();

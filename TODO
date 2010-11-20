@@ -13,7 +13,6 @@ To Do
 * Sound
 * Art
   - Trophy images
-  - Lag image
 
 * Do not start running the game until the gameplay screen is visible
   - On the first active tick send a synchronization command for time 0
