@@ -8,6 +8,10 @@ using Microsoft.Xna.Framework.Content.Pipeline;
 
 namespace StrategyPipeline
 {
+    /*
+     * Taken nearly verbatim from: http://create.msdn.com/en-US/sample/contentmanifestextensions
+     */
+
     /// <summary>
     /// A passthrough importer that returns to the processor the manifest path.
     /// </summary>
