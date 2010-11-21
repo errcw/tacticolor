@@ -17,9 +17,6 @@ To Do
 * Bugs
   - Restarting a network game does not work correctly
     * The gameplay screen eats the initialize command
-  - Input intended for menus leaks down to the gameplay screen
-  - Menu screen fading mostly looks bad
-    * Should toggle fade in or abrupt in
 
 Menu Structure
 --------------

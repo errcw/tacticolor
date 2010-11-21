@@ -37,20 +37,23 @@ namespace Strategy.Net
                     break;
                 }
             }
+            Debug.Assert(_sendReceiveGamer != null);
 
             _writer = new CommandWriter();
             _reader = new CommandReader();
         }
 
         /// <summary>
-        /// Updates the input for this frame.
+        /// Updates the local and remote input for this frame.
         /// </summary>
         /// <param name="time">The elapsed time, in milliseconds, since the last update.</param>
-        public void Update(int time)
+        /// <param name="suppressLocalInput">True if local human players should be ignored.</param>
+        public void Update(int time, bool suppressLocalInput)
         {
+            ReadNetworkCommands();
             foreach (Player player in _players)
             {
-                if (player.Input != null) // local player providing input
+                if (RequiresLocalInput(player, suppressLocalInput))
                 {
                     Command command = player.Input.Update(time);
                     if (command != null)
@@ -63,8 +66,6 @@ namespace Strategy.Net
                     }
                 }
             }
-
-            ReadNetworkCommands();
         }
 
         /// <summary>
@@ -90,9 +91,9 @@ namespace Strategy.Net
         /// </summary>
         public void OnPlayerLeft(Player player)
         {
-            // the match should no longer wait for commands for this player
+            // the match should no longer wait for commands for this player,
             // so tell it that it has all the commands for all time
-            SynchronizationCommand command = new StepSynchronizationCommand(player.Id, -1, -1);
+            SynchronizationCommand command = new StepSynchronizationCommand(player.Id, -1000, -1000);
             command.Time = long.MaxValue;
             _match.ScheduleCommand(command);
         }
@@ -115,26 +116,9 @@ namespace Strategy.Net
         }
 
         /// <summary>
-        /// Sends a command to all remote players.
-        /// </summary>
-        private void BroadcastCommand(Command command, Player sender)
-        {
-            _match.ScheduleCommand(command);
-            if (_sendReceiveGamer != null && sender.Gamer != null) // no need to send AI commands
-            {
-                foreach (Player player in _players)
-                {
-                    if (player.Gamer != null && !player.Gamer.IsLocal && !player.Gamer.HasLeftSession)
-                    {
-                        _writer.Write(command);
-                        _sendReceiveGamer.SendData(_writer, SendDataOptions.Reliable, player.Gamer);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Reads incoming commands from the network.
+        /// Reads the incoming commands from over the network. We read the
+        /// commands for every local gamer, though we feed only one set of
+        /// commands to the lockstep match to avoid duplication.
         /// </summary>
         private void ReadNetworkCommands()
         {
@@ -144,7 +128,6 @@ namespace Strategy.Net
                 {
                     LocalNetworkGamer receiver = (LocalNetworkGamer)player.Gamer;
                     NetworkGamer sender;
-
                     while (receiver.IsDataAvailable)
                     {
                         receiver.ReceiveData(_reader, out sender);
@@ -161,9 +144,44 @@ namespace Strategy.Net
             }
         }
 
+
+        /// <summary>
+        /// Sends a command to all remote players.
+        /// </summary>
+        private void BroadcastCommand(Command command, Player sender)
+        {
+            _match.ScheduleCommand(command);
+            if (RequiresRemoteBroadcastFrom(sender))
+            {
+                foreach (Player player in _players)
+                {
+                    if (RequiresRemoteBroadcastTo(player))
+                    {
+                        _writer.Write(command);
+                        _sendReceiveGamer.SendData(_writer, SendDataOptions.Reliable, player.Gamer);
+                    }
+                }
+            }
+        }
+
+        private bool RequiresLocalInput(Player player, bool suppressLocalInput)
+        {
+            return player.Input != null && (player.Gamer == null || player.Gamer != null && !suppressLocalInput);
+        }
+
         private bool RequiresLocalSynchronization(Player player)
         {
             return player.Gamer == null || player.Gamer.IsLocal || player.Gamer.HasLeftSession;
+        }
+
+        private bool RequiresRemoteBroadcastFrom(Player player)
+        {
+            return player.Gamer != null;
+        }
+
+        private bool RequiresRemoteBroadcastTo(Player player)
+        {
+            return player.Gamer != null && !player.Gamer.IsLocal && !player.Gamer.HasLeftSession;
         }
 
         private LockstepMatch _match;

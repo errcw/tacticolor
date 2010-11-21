@@ -109,7 +109,7 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateActive(GameTime gameTime)
         {
-            UpdateInternal(gameTime);
+            UpdateInternal(gameTime, true);
         }
 
         protected override void UpdateInactive(GameTime gameTime)
@@ -121,10 +121,10 @@ namespace Strategy.Interface.Screens
             }
 
             // for networked games we can never pause
-            UpdateInternal(gameTime);
+            UpdateInternal(gameTime, false);
         }
 
-        private void UpdateInternal(GameTime gameTime)
+        private void UpdateInternal(GameTime gameTime, bool isActive)
         {
             if (_session != null)
             {
@@ -136,7 +136,7 @@ namespace Strategy.Interface.Screens
                 try
                 {
                     int milliseconds = gameTime.GetElapsedMilliseconds();
-                    _lockstepInput.Update(milliseconds);
+                    _lockstepInput.Update(milliseconds, !isActive);
                     _lockstepMatch.Update(milliseconds);
                 }
                 catch (OutOfSyncException oos)
@@ -168,7 +168,7 @@ namespace Strategy.Interface.Screens
                 }
             }
 
-            if (_input.Activate.Any(a => a.Pressed))
+            if (isActive && _input.Activate.Any(a => a.Pressed))
             {
                 //TODO handle which player opened the menu
                 InGameMenuScreen menuScreen = new InGameMenuScreen(Stack.Game);
