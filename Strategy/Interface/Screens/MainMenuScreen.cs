@@ -96,7 +96,11 @@ namespace Strategy.Interface.Screens
             }
             else
             {
-                MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkErrorCreate);
+                MessageScreen messageScreen = new MessageScreen(
+                    Stack.Game,
+                    Resources.NetworkErrorCreate,
+                    typeof(MainMenuScreen),
+                    false);
                 Stack.Push(messageScreen);
             }
         }

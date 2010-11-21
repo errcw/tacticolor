@@ -21,7 +21,11 @@ namespace Strategy.Interface.Screens
         {
         }
 
-        public MessageScreen(Game game, string messageText, Type popUntilScreen)
+        public MessageScreen(Game game, string messageText, Type popUntilScreen) : this(game, messageText, popUntilScreen, true)
+        {
+        }
+
+        public MessageScreen(Game game, string messageText, Type popUntilScreen, bool fadeIn)
         {
             _input = game.Services.GetService<MenuInput>();
             _popUntilScreen = popUntilScreen;
@@ -66,7 +70,7 @@ namespace Strategy.Interface.Screens
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
             ShowBeneath = true;
-            TransitionOnTime = 0f;
+            TransitionOnTime = fadeIn ? 0.25f : 0f;
             TransitionOffTime = 0.25f;
         }
 

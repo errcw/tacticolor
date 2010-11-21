@@ -88,7 +88,8 @@ namespace Strategy.Interface.Screens
                 MessageScreen messageScreen = new MessageScreen(
                     Stack.Game,
                     isCreating ? Resources.NetworkErrorCreate : Resources.NetworkErrorJoin,
-                    typeof(MultiplayerSelectionScreen));
+                    typeof(MultiplayerSelectionScreen),
+                    false);
                 Stack.Push(messageScreen);
             }
         }

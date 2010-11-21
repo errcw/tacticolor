@@ -64,13 +64,11 @@ namespace Strategy.Interface.Screens
         protected internal override void Show(bool pushed)
         {
             // handle the case where we are returning to the lobby after a game
-            if (!pushed)
+            if (!pushed && _session.SessionState == NetworkSessionState.Lobby)
             {
                 _seed = 0; // choose/receive a new seed
-                if (_session.IsHost && _session.SessionState == NetworkSessionState.Lobby)
+                if (_session.IsHost)
                 {
-                    _session.ResetReady();
-
                     _seed = _random.Next(1, int.MaxValue);
                     BroadcastConfiguration();
                 }
