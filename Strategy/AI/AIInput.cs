@@ -258,8 +258,8 @@ namespace Strategy.AI
 
             protected override int RateAttack(Territory atk, Territory def)
             {
-                int diff = atk.Pieces.Count - def.Pieces.Count;
-                return BaseAttackRating + diff;
+                int diff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
+                return (diff >= 0) ? BaseAttackRating + diff : 0;
             }
 
             protected override int RateMove(Territory src, Territory dst)

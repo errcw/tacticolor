@@ -604,7 +604,7 @@ namespace Strategy.Gameplay
         private const int PieceCreationMillisToTicksPerTerritory = 40;
 
         private const int CooldownMove = 600;
-        private const int CooldownAttackBase = 700;
+        private const int CooldownAttackBase = 1400;
         private const int CooldownAttackPerPiece = 150;
     }
 
