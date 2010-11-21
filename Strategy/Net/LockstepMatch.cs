@@ -52,7 +52,7 @@ namespace Strategy.Net
             _match = match;
             _commands = new CommandList();
 
-            StepStart = 0;
+            StepStart = -100;
             StepTime = 100;
             _stepEndTime = StepStart + StepTime;
 
