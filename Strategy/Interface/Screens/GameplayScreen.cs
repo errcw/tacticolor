@@ -280,6 +280,9 @@ namespace Strategy.Interface.Screens
 
         private void HandleNetworkError()
         {
+            // null out the session to indicate its state is invalid
+            _session = null;
+
             MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
             Stack.PushOn(messageScreen, this);
         }
