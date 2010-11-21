@@ -14,8 +14,12 @@ To Do
 * Art
   - Trophy images
 
-* Do not start running the game until the gameplay screen is visible
-  - On the first active tick send a synchronization command for time 0
+* Bugs
+  - Restarting a network game does not work correctly
+    * The gameplay screen eats the initialize command
+  - Input intended for menus leaks down to the gameplay screen
+  - Menu screen fading mostly looks bad
+    * Should toggle fade in or abrupt in
 
 Menu Structure
 --------------
