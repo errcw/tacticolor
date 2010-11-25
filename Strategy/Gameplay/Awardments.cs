@@ -70,7 +70,7 @@ namespace Strategy.Gameplay
         /// <summary>
         /// Updates the state of this awardment when a match ends.
         /// </summary>
-        public virtual void MatchEnded(Match match, PlayerId player, PlayerId winner)
+        public virtual void MatchEnded(Match match, PlayerId player, PlayerId? winner)
         {
         }
 
@@ -130,7 +130,7 @@ namespace Strategy.Gameplay
             }
         }
 
-        public void MatchEnded(PlayerId winner)
+        public void MatchEnded(PlayerId? winner)
         {
             foreach (var player in _players)
             {
@@ -289,9 +289,9 @@ namespace Strategy.Gameplay
             MatchCount = 0;
         }
 
-        public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
+        public override void MatchEnded(Match match, PlayerId player, PlayerId? winner)
         {
-            if (player == winner || MatchCountIncludesLosses)
+            if (winner != null && (player == winner || MatchCountIncludesLosses))
             {
                 MatchCount += 1;
             }
@@ -429,7 +429,7 @@ namespace Strategy.Gameplay
             MatchTimeThreshold = threshold;
         }
 
-        public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
+        public override void MatchEnded(Match match, PlayerId player, PlayerId? winner)
         {
             if (match.Time < MatchTimeThreshold && player == winner)
             {
@@ -468,7 +468,7 @@ namespace Strategy.Gameplay
             MatchesWon = 0;
         }
 
-        public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
+        public override void MatchEnded(Match match, PlayerId player, PlayerId? winner)
         {
             if (player == winner)
             {
@@ -708,7 +708,7 @@ namespace Strategy.Gameplay
             };
         }
 
-        public override void MatchEnded(Match match, PlayerId player, PlayerId winner)
+        public override void MatchEnded(Match match, PlayerId player, PlayerId? winner)
         {
             if (player == winner && _oneTerritoryLeft)
             {

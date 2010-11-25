@@ -17,6 +17,8 @@ To Do
 * Bugs
   - Restarting a network game does not work correctly
     * The gameplay screen eats the initialize command
+  - Host changes may eat EndGame notifications
+  - Controller disconnects are unhandled
 
 Menu Structure
 --------------

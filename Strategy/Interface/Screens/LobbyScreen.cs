@@ -31,11 +31,14 @@ namespace Strategy.Interface.Screens
             _players = new List<Player>();
 
             _session = session;
+            if (_session.IsHost)
+            {
+                _seed = _random.Next(1, int.MaxValue);
+            }
             _session.GamerJoined += OnGamerJoined;
             _session.GamerLeft += OnGamerLeft;
             _session.HostChanged += OnHostChanged;
             _session.GameStarted += OnGameStarted;
-            _session.GameEnded += OnGameEnded;
             _session.SessionEnded += OnSessionEnded;
         }
 
@@ -45,16 +48,21 @@ namespace Strategy.Interface.Screens
             HandleNetworkInput();
             HandleLocalInput();
 
-            if (_session != null && _session.IsHost && _session.IsEveryoneReady && _session.SessionState == NetworkSessionState.Lobby)
+            if (_session.IsHost && _session.IsEveryoneReady && _session.SessionState == NetworkSessionState.Lobby)
             {
                 _session.StartGame();
+            }
+
+            if (_session.IsHost && _session.SessionState == NetworkSessionState.Playing)
+            {
+                _session.EndGame();
             }
         }
 
         protected override void UpdateInactive(GameTime gameTime)
         {
             // continue updating the network session even if other temporary screens are on top
-            if (_session != null && _session.SessionState == NetworkSessionState.Lobby)
+            if (_session.SessionState == NetworkSessionState.Lobby)
             {
                 _session.Update();
                 HandleNetworkInput();
@@ -63,14 +71,19 @@ namespace Strategy.Interface.Screens
 
         protected internal override void Show(bool pushed)
         {
-            // handle the case where we are returning to the lobby after a game
-            if (!pushed && _session.SessionState == NetworkSessionState.Lobby)
+            if (!pushed)
             {
-                _seed = 0; // choose/receive a new seed
-                if (_session.IsHost)
+                // handle the case where we are returning to the lobby after a game
+                if (_isMatchRunning)
                 {
-                    _seed = _random.Next(1, int.MaxValue);
-                    BroadcastConfiguration();
+                    _isMatchRunning = false;
+
+                    _seed = 0; // choose/receive a new seed
+                    if (_session.IsHost)
+                    {
+                        _seed = _random.Next(1, int.MaxValue);
+                        BroadcastConfiguration();
+                    }
                 }
             }
             base.Show(pushed);
@@ -89,15 +102,11 @@ namespace Strategy.Interface.Screens
         private void OnGamerJoined(object sender, GamerJoinedEventArgs args)
         {
             Debug.WriteLine(args.Gamer.Gamertag + " joined");
-            Debug.Assert(_session.SessionState != NetworkSessionState.Playing);
+            Debug.Assert(_session.SessionState == NetworkSessionState.Lobby);
 
             AddPlayer(args.Gamer);
             if (_session.IsHost)
             {
-                if (_seed == 0)
-                {
-                    _seed = _random.Next(1, int.MaxValue);
-                }
                 SendConfiguration(args.Gamer);
             }
         }
@@ -115,7 +124,6 @@ namespace Strategy.Interface.Screens
             // once the game has started host changes do not matter
             if (_session.SessionState == NetworkSessionState.Playing)
             {
-                Debug.Assert(_isMatchRunning);
                 return;
             }
 
@@ -131,9 +139,9 @@ namespace Strategy.Interface.Screens
         private void OnGameStarted(object sender, GameStartedEventArgs args)
         {
             Debug.Assert(_seed != 0);
-            Debug.Assert(!_isMatchRunning);
             Debug.WriteLine("Game starting");
 
+            Debug.Assert(!_isMatchRunning);
             _isMatchRunning = true;
 
             // create the game objects
@@ -173,14 +181,9 @@ namespace Strategy.Interface.Screens
             Stack.Push(gameplayScreen);
         }
 
-        private void OnGameEnded(object sender, GameEndedEventArgs args)
-        {
-            _isMatchRunning = false;
-        }
-
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
         {
-            // the gameplay screen might have already consumed this event
+            // the gameplay screen has already consumed this event
             if (_isMatchRunning)
             {
                 return;
@@ -246,7 +249,6 @@ namespace Strategy.Interface.Screens
         /// <summary>
         /// Sends the game configuration to the specified player.
         /// </summary>
-        /// <param name="gamer"></param>
         private void SendConfiguration(NetworkGamer gamer)
         {
             LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;

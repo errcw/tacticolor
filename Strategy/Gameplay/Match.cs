@@ -216,7 +216,7 @@ namespace Strategy.Gameplay
             {
                 PieceAttackData data = new PieceAttackData();
                 data.Piece = piece;
-                data.Roll = _random.Next(1, 4 + 1);
+                data.Roll = _random.Next(1, 6 + 1);
                 data.Survived = true;
                 data.Moved = false;
                 defenders.Add(data);
@@ -601,7 +601,7 @@ namespace Strategy.Gameplay
 
         private const int PieceCreationTicks = 4500000;
         private const int PieceCreationMillisToTicksBase = 950;
-        private const int PieceCreationMillisToTicksPerTerritory = 40;
+        private const int PieceCreationMillisToTicksPerTerritory = 80;
 
         private const int CooldownMove = 600;
         private const int CooldownAttackBase = 1400;

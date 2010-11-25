@@ -41,7 +41,7 @@ namespace Strategy.Interface.Screens
             _lockstepMatch = new LockstepMatch(match);
             _lockstepMatch.Match.TerritoryAttacked += OnTerritoryAttacked;
             _lockstepMatch.Match.PlayerEliminated += OnPlayerEliminated;
-            _lockstepMatch.Match.Ended += OnMatchEnded;
+            _lockstepMatch.Match.Ended += OnMatchEndedWithWinner;
 
             if (session.IsLocalSession())
             {
@@ -126,12 +126,12 @@ namespace Strategy.Interface.Screens
 
         private void UpdateInternal(GameTime gameTime, bool isActive)
         {
-            if (_session != null)
+            if (_session != null && _session.SessionState == NetworkSessionState.Playing)
             {
                 _session.Update();
             }
 
-            if (!_lockstepMatch.Match.IsEnded)
+            if (!_isEnded)
             {
                 try
                 {
@@ -158,11 +158,6 @@ namespace Strategy.Interface.Screens
                 _endTime -= seconds;
                 if (_endTime <= 0f)
                 {
-                    if (_session != null && _session.IsHost && _session.SessionState == NetworkSessionState.Playing)
-                    {
-                        _session.EndGame();
-                        _session.Update(); // force an update to get the new state right away
-                    }
                     Stack.PushOn(_endScreen, this);
                     _endScreen = null; // do not push multiple times
                 }
@@ -196,16 +191,23 @@ namespace Strategy.Interface.Screens
 
         protected internal override void Hide(bool popped)
         {
-            // unwire the handlers once this screen disappears
-            if (_session != null && popped)
-            {
-                _session.GamerLeft -= OnGamerLeft;
-                _session.SessionEnded -= OnSessionEnded;
-            }
-            // unhook listeners to allow garbage collection
             if (popped)
             {
+                // unwire the handlers once this screen disappears
+                if (_session != null)
+                {
+                    _session.GamerLeft -= OnGamerLeft;
+                    _session.SessionEnded -= OnSessionEnded;
+                }
+
+                // unhook listeners to allow garbage collection
                 _lockstepMatch.Match.ResetEvents();
+
+                // notify the awardments the match was abandonned
+                if (!_isEnded)
+                {
+                    _awardments.MatchEnded(null);
+                }
             }
             base.Hide(popped);
         }
@@ -225,8 +227,8 @@ namespace Strategy.Interface.Screens
             int maxHumanTerritories = _players.Where(p => p.Gamer != null).Max(p => _lockstepMatch.Match.TerritoriesOwnedCount[(int)p.Id]);
             if (maxHumanTerritories == 0)
             {
-                _endScreen = new MessageScreen(Stack.Game, Resources.GameLost, typeof(LobbyScreen));
-                _endTime = _lockstepMatch.Match.Map.Territories.Max(t => t.Cooldown) / 1000f;
+                PlayerId aiWinner = _players.First(p => p.Gamer == null).Id; // have an arbitrary AI player "win"
+                OnMatchEnded(Resources.GameLost, aiWinner);
             }
         }
 
@@ -254,15 +256,10 @@ namespace Strategy.Interface.Screens
             }
         }
 
-        private void OnMatchEnded(object matchObj, PlayerEventArgs args)
+        private void OnMatchEndedWithWinner(object matchObj, PlayerEventArgs args)
         {
-            Player player = _players.Single(p => p.Id == args.Player);
-
-            _awardments.MatchEnded(player.Id);
-
-            string message = string.Format(Resources.GameWon, player.DisplayName);
-            _endScreen = new MessageScreen(Stack.Game, message, typeof(LobbyScreen));
-            _endTime = _lockstepMatch.Match.Map.Territories.Max(t => t.Cooldown) / 1000f;
+            Player winner = _players.Single(p => p.Id == args.Player);
+            OnMatchEnded(string.Format(Resources.GameWon, winner.DisplayName), winner.Id);
         }
 
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
@@ -274,17 +271,31 @@ namespace Strategy.Interface.Screens
 
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
         {
-            // if the session ended before the game is over then we encountered an error
+            // if the session ended before the match ended then we encountered an error
             HandleNetworkError();
+        }
+
+        private void OnMatchEnded(string message, PlayerId winner)
+        {
+            if (_session != null && _session.IsHost && _session.SessionState == NetworkSessionState.Playing)
+            {
+                _session.EndGame();
+            }
+
+            _awardments.MatchEnded(winner);
+
+            _endScreen = new MessageScreen(Stack.Game, message, typeof(LobbyScreen));
+            _endTime = _lockstepMatch.Match.Map.Territories.Max(t => t.Cooldown) / 1000f;
+            _isEnded = true;
         }
 
         private void HandleNetworkError()
         {
-            // null out the session to indicate its state is invalid
             _session = null;
+            _isEnded = true;
 
             MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
-            Stack.PushOn(messageScreen, this);
+            Stack.Push(messageScreen);
         }
 
         private void ShowPlayerLeftMatch(Player player)
@@ -328,6 +339,7 @@ namespace Strategy.Interface.Screens
 
         private Screen _endScreen;
         private float _endTime;
+        private bool _isEnded;
 
         private SpriteBatch _spriteBatch;
         private IsometricView _isoView;
