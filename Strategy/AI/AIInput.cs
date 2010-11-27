@@ -240,6 +240,17 @@ namespace Strategy.AI
         }
 
         /// <summary>
+        /// Assigns a fixed value to all possible commands.
+        /// </summary>
+        private class RandomCommandEvaluator : CommandEvaluator
+        {
+            public RandomCommandEvaluator(AiInput input) : base(input)
+            {
+                BasePlacementRating = BaseAttackRating = BaseMovementRating = 1;
+            }
+        }
+
+        /// <summary>
         /// Makes generally poor decisions.
         /// </summary>
         private class EasyCommandEvaluator : CommandEvaluator
