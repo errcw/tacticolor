@@ -90,11 +90,11 @@ namespace Strategy.Net
     }
 
     /// <summary>
-    /// Contains data to setup the initial match state.
+    /// Contains data to set up a match.
     /// </summary>
-    public class InitializeMatchCommand : Command
+    public class MatchConfigurationCommand : Command
     {
-        public const byte Code = 0;
+        public const byte Code = 1;
 
         public int RandomSeed { get; private set; }
 
@@ -104,11 +104,11 @@ namespace Strategy.Net
 
         public AiDifficulty Difficulty { get; private set; }
 
-        public InitializeMatchCommand() : base(Code)
+        public MatchConfigurationCommand() : base(Code)
         {
         }
 
-        public InitializeMatchCommand(int randomSeed, MapType mapType, MapSize mapSize, AiDifficulty difficulty) : base(Code, PlayerId.A)
+        public MatchConfigurationCommand(int randomSeed, MapType mapType, MapSize mapSize, AiDifficulty difficulty) : base(Code, PlayerId.A)
         {
             RandomSeed = randomSeed;
             MapType = mapType;
@@ -178,7 +178,7 @@ namespace Strategy.Net
     /// </summary>
     public class StartSynchronizationCommand : SynchronizationCommand
     {
-        public const byte Code = 1;
+        public const byte Code = 2;
 
         public StartSynchronizationCommand() : base(Code)
         {
@@ -194,7 +194,7 @@ namespace Strategy.Net
     /// </summary>
     public class StepSynchronizationCommand : SynchronizationCommand
     {
-        public const byte Code = 2;
+        public const byte Code = 3;
 
         public StepSynchronizationCommand() : base(Code)
         {
@@ -210,7 +210,7 @@ namespace Strategy.Net
     /// </summary>
     public class PlaceCommand : Command
     {
-        public const byte Code = 3;
+        public const byte Code = 4;
 
         public PlaceCommand() : base(Code)
         {
@@ -253,7 +253,7 @@ namespace Strategy.Net
     /// </summary>
     public class MoveCommand : Command
     {
-        public const byte Code = 4;
+        public const byte Code = 5;
 
         public MoveCommand() : base(Code)
         {
@@ -305,7 +305,7 @@ namespace Strategy.Net
     /// </summary>
     public class AttackCommand : Command
     {
-        public const byte Code = 5;
+        public const byte Code = 6;
 
         public AttackCommand() : base(Code)
         {
@@ -359,7 +359,7 @@ namespace Strategy.Net
     /// </summary>
     public class AiDecisionCommand : Command
     {
-        public const byte Code = 6;
+        public const byte Code = 7;
 
         public delegate void AiDecision(Match match);
 
@@ -399,8 +399,8 @@ namespace Strategy.Net
             int code = ReadByte();
             switch (code)
             {
-                case InitializeMatchCommand.Code:
-                    command = new InitializeMatchCommand();
+                case MatchConfigurationCommand.Code:
+                    command = new MatchConfigurationCommand();
                     break;
                 case StartSynchronizationCommand.Code:
                     command = new StartSynchronizationCommand();

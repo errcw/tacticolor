@@ -33,7 +33,7 @@ namespace Strategy.Interface.Screens
             _session = session;
             if (_session.IsHost)
             {
-                _seed = _random.Next(1, int.MaxValue);
+                ResetSeed();
             }
             _session.GamerJoined += OnGamerJoined;
             _session.GamerLeft += OnGamerLeft;
@@ -45,24 +45,24 @@ namespace Strategy.Interface.Screens
         protected override void UpdateActive(GameTime gameTime)
         {
             _session.Update();
-            HandleNetworkInput();
-            HandleLocalInput();
-
             if (_session.IsHost && _session.IsEveryoneReady && _session.SessionState == NetworkSessionState.Lobby)
             {
                 _session.StartGame();
             }
-
-            if (_session.IsHost && _session.SessionState == NetworkSessionState.Playing)
+            else if (_session.IsHost && _session.SessionState == NetworkSessionState.Playing)
             {
+                // if the 
                 _session.EndGame();
             }
+
+            HandleNetworkInput();
+            HandleLocalInput();
         }
 
         protected override void UpdateInactive(GameTime gameTime)
         {
             // continue updating the network session even if other temporary screens are on top
-            if (_session.SessionState == NetworkSessionState.Lobby)
+            if (_session != null && _session.SessionState == NetworkSessionState.Lobby)
             {
                 _session.Update();
                 HandleNetworkInput();
@@ -81,7 +81,7 @@ namespace Strategy.Interface.Screens
                     _seed = 0; // choose/receive a new seed
                     if (_session.IsHost)
                     {
-                        _seed = _random.Next(1, int.MaxValue);
+                        ResetSeed();
                         BroadcastConfiguration();
                     }
                 }
@@ -131,7 +131,7 @@ namespace Strategy.Interface.Screens
             // the seed data so broadcast a new seed to every player
             if (_session.IsHost)
             {
-                _seed = _random.Next(1, int.MaxValue);
+                ResetSeed();
                 BroadcastConfiguration();
             }
         }
@@ -236,14 +236,14 @@ namespace Strategy.Interface.Screens
         }
 
         /// <summary>
-        /// Broadcasts the game configuration to every player in the session.
+        /// Resets the seed used to synchronize the game. Because every player
+        /// needs the same seed we also reset the ready state. Should only be
+        /// called by the host.
         /// </summary>
-        private void BroadcastConfiguration()
+        private void ResetSeed()
         {
-            LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
-            CommandWriter writer = new CommandWriter();
-            writer.Write(new InitializeMatchCommand(_seed, _mapType, _mapSize, _difficulty));
-            sender.SendData(writer, SendDataOptions.ReliableInOrder);
+            _seed = _random.Next(1, int.MaxValue);
+            _session.ResetReady();
         }
 
         /// <summary>
@@ -253,8 +253,19 @@ namespace Strategy.Interface.Screens
         {
             LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
             CommandWriter writer = new CommandWriter();
-            writer.Write(new InitializeMatchCommand(_seed, _mapType, _mapSize, _difficulty));
+            writer.Write(new MatchConfigurationCommand(_seed, _mapType, _mapSize, _difficulty));
             sender.SendData(writer, SendDataOptions.ReliableInOrder, gamer);
+        }
+
+        /// <summary>
+        /// Broadcasts the game configuration to every player in the session.
+        /// </summary>
+        private void BroadcastConfiguration()
+        {
+            LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
+            CommandWriter writer = new CommandWriter();
+            writer.Write(new MatchConfigurationCommand(_seed, _mapType, _mapSize, _difficulty));
+            sender.SendData(writer, SendDataOptions.ReliableInOrder);
         }
 
         /// <summary>
@@ -269,7 +280,7 @@ namespace Strategy.Interface.Screens
                 {
                     NetworkGamer sender;
                     gamer.ReceiveData(reader, out sender);
-                    InitializeMatchCommand command = reader.ReadCommand() as InitializeMatchCommand;
+                    MatchConfigurationCommand command = reader.ReadCommand() as MatchConfigurationCommand;
                     if (command != null)
                     {
                         _seed = command.RandomSeed;
