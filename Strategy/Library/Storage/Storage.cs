@@ -184,6 +184,10 @@ namespace Strategy.Library.Storage
 
             using (StorageContainer container = OpenContainer(StorageContainerName))
             {
+                if (!container.DirectoryExists(directory))
+                {
+                    return new string[0];
+                }
                 return container.GetFileNames(Path.Combine(directory, "*"));
             }
         }
