@@ -219,24 +219,17 @@ namespace Strategy.AI
 
             protected virtual int RatePlacement(Territory place)
             {
-                int enemyNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
-                int missingSlots = place.Capacity - place.Pieces.Count;
-                return BasePlacementRating + enemyNeighbors + missingSlots;
+                return BasePlacementRating;
             }
 
             protected virtual int RateAttack(Territory atk, Territory def)
             {
-                int diff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
-                return (diff > 0) ? BaseAttackRating + diff : 0;
+                return BaseAttackRating;
             }
 
             protected virtual int RateMove(Territory src, Territory dst)
             {
-                int srcEnemyNeighbors = src.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
-                int dstEnemyNeighbors = dst.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
-                int diffEnemyNeighbors = dstEnemyNeighbors - srcEnemyNeighbors;
-                int diffNeighbors = dst.Neighbors.Count - src.Neighbors.Count;
-                return BaseMovementRating + diffEnemyNeighbors + diffNeighbors;
+                return BaseMovementRating;
             }
 
             protected AiInput _input;
@@ -256,10 +249,18 @@ namespace Strategy.AI
                 BaseAttackRating = BasePlacementRating;
             }
 
+            protected virtual int RatePlacement(Territory place)
+            {
+                int enemyNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int missingSlots = place.Capacity - place.Pieces.Count;
+                return BasePlacementRating + enemyNeighbors + missingSlots;
+            }
+
             protected override int RateAttack(Territory atk, Territory def)
             {
                 int diff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
-                return (diff >= 0) ? BaseAttackRating + diff : 0;
+                bool fullAttacker = atk.Pieces.Count == atk.Capacity;
+                return (diff >= 0 || fullAttacker) ? BaseAttackRating + diff : 0;
             }
 
             protected override int RateMove(Territory src, Territory dst)
@@ -276,6 +277,29 @@ namespace Strategy.AI
         {
             public NormalCommandEvaluator(AiInput input) : base(input)
             {
+            }
+
+            protected virtual int RatePlacement(Territory place)
+            {
+                int enemyNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int missingSlots = place.Capacity - place.Pieces.Count;
+                return BasePlacementRating + enemyNeighbors + missingSlots;
+            }
+
+            protected virtual int RateAttack(Territory atk, Territory def)
+            {
+                int diff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
+                bool fullAttacker = atk.Pieces.Count == atk.Capacity;
+                return (diff > 0 || fullAttacker) ? BaseAttackRating + diff : 0;
+            }
+
+            protected virtual int RateMove(Territory src, Territory dst)
+            {
+                int srcEnemyNeighbors = src.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int dstEnemyNeighbors = dst.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                int diffEnemyNeighbors = dstEnemyNeighbors - srcEnemyNeighbors;
+                int diffNeighbors = dst.Neighbors.Count - src.Neighbors.Count;
+                return BaseMovementRating + diffEnemyNeighbors + diffNeighbors;
             }
         }
 
