@@ -260,11 +260,21 @@ namespace Strategy.AI
                 BaseAttackRating = BasePlacementRating;
             }
 
-            protected virtual int RatePlacement(Territory place)
+            protected override int RatePlacement(Territory place)
             {
-                int enemyNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
-                int missingSlots = place.Capacity - place.Pieces.Count;
-                return BasePlacementRating + enemyNeighbors + missingSlots;
+                bool hasEnemyNeighbors = place.Neighbors.Any(t => t.Owner != place.Owner);
+                if (hasEnemyNeighbors)
+                {
+                    int enemyNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
+                    int missingSlots = place.Capacity - place.Pieces.Count;
+                    return BasePlacementRating + enemyNeighbors + missingSlots;
+                }
+                else
+                {
+                    // only allow placement next to enemy territories
+                    // (i.e., restrict reinforcing interior territories)
+                    return 0;
+                }
             }
 
             protected override int RateAttack(Territory atk, Territory def)
@@ -290,21 +300,21 @@ namespace Strategy.AI
             {
             }
 
-            protected virtual int RatePlacement(Territory place)
+            protected override int RatePlacement(Territory place)
             {
                 int enemyNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
                 int missingSlots = place.Capacity - place.Pieces.Count;
                 return BasePlacementRating + enemyNeighbors + missingSlots;
             }
 
-            protected virtual int RateAttack(Territory atk, Territory def)
+            protected override int RateAttack(Territory atk, Territory def)
             {
                 int diff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
                 bool fullAttacker = atk.Pieces.Count == atk.Capacity;
                 return (diff > 0 || fullAttacker) ? BaseAttackRating + diff : 0;
             }
 
-            protected virtual int RateMove(Territory src, Territory dst)
+            protected override int RateMove(Territory src, Territory dst)
             {
                 int srcEnemyNeighbors = src.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
                 int dstEnemyNeighbors = dst.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
