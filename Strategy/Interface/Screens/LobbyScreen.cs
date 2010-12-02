@@ -31,31 +31,31 @@ namespace Strategy.Interface.Screens
             _players = new List<Player>();
 
             _session = session;
-            if (_session.IsHost)
-            {
-                ResetSeed();
-            }
             _session.GamerJoined += OnGamerJoined;
             _session.GamerLeft += OnGamerLeft;
             _session.HostChanged += OnHostChanged;
             _session.GameStarted += OnGameStarted;
             _session.SessionEnded += OnSessionEnded;
+
+            _configuration = new MatchConfigurationManager(_session);
+            _configuration.ConfigurationChanged += OnConfigurationChanged;
+            _configuration.ReadyChanged += OnReadyChanged;
+
+            if (_session.IsHost)
+            {
+                _configuration.Seed = _random.Next(1, int.MaxValue);
+            }
         }
 
         protected override void UpdateActive(GameTime gameTime)
         {
             _session.Update();
-            if (_session.IsHost && _session.IsEveryoneReady && _session.SessionState == NetworkSessionState.Lobby)
+            if (_session.IsHost && _session.SessionState == NetworkSessionState.Lobby && _configuration.IsEveryoneReady)
             {
                 _session.StartGame();
             }
-            else if (_session.IsHost && _session.SessionState == NetworkSessionState.Playing)
-            {
-                // if the 
-                _session.EndGame();
-            }
 
-            HandleNetworkInput();
+            _configuration.Update();
             HandleLocalInput();
         }
 
@@ -65,7 +65,7 @@ namespace Strategy.Interface.Screens
             if (_session != null && _session.SessionState == NetworkSessionState.Lobby)
             {
                 _session.Update();
-                HandleNetworkInput();
+                _configuration.Update();
             }
         }
 
@@ -77,13 +77,7 @@ namespace Strategy.Interface.Screens
                 if (_isMatchRunning)
                 {
                     _isMatchRunning = false;
-
-                    _seed = 0; // choose/receive a new seed
-                    if (_session.IsHost)
-                    {
-                        ResetSeed();
-                        BroadcastConfiguration();
-                    }
+                    _configuration.ResetForNextMatch();
                 }
             }
             base.Show(pushed);
@@ -103,12 +97,7 @@ namespace Strategy.Interface.Screens
         {
             Debug.WriteLine(args.Gamer.Gamertag + " joined");
             Debug.Assert(_session.SessionState == NetworkSessionState.Lobby);
-
             AddPlayer(args.Gamer);
-            if (_session.IsHost)
-            {
-                SendConfiguration(args.Gamer);
-            }
         }
 
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
@@ -131,23 +120,21 @@ namespace Strategy.Interface.Screens
             // the seed data so broadcast a new seed to every player
             if (_session.IsHost)
             {
-                ResetSeed();
-                BroadcastConfiguration();
+                _configuration.Seed = _random.Next(1, int.MaxValue);
             }
         }
 
         private void OnGameStarted(object sender, GameStartedEventArgs args)
         {
-            Debug.Assert(_seed != 0);
             Debug.WriteLine("Game starting");
 
             Debug.Assert(!_isMatchRunning);
             _isMatchRunning = true;
 
             // create the game objects
-            Random gameRandom = new Random(_seed);
+            Random gameRandom = new Random(_configuration.Seed);
             MapGenerator generator = new MapGenerator(gameRandom);
-            Map map = generator.Generate(_mapType, _mapSize);
+            Map map = generator.Generate(_configuration.MapType, _configuration.MapSize);
             Match match = new Match(map, gameRandom);
 
             // create a copy of the list so that the match can continue to
@@ -173,7 +160,7 @@ namespace Strategy.Interface.Screens
             {
                 Player aiPlayer = new Player();
                 aiPlayer.Id = (PlayerId)(p + humanPlayerCount);
-                aiPlayer.Input = new AiInput(aiPlayer.Id, match, _difficulty, gameRandom);
+                aiPlayer.Input = new AiInput(aiPlayer.Id, match, _configuration.Difficulty, gameRandom);
                 gamePlayers.Add(aiPlayer);
             }
 
@@ -191,6 +178,16 @@ namespace Strategy.Interface.Screens
             // if the session ended before the game started then we encountered an error
             MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
             Stack.Push(messageScreen);
+        }
+
+        private void OnConfigurationChanged(object sender, EventArgs args)
+        {
+            Debug.WriteLine("Configuration changed");
+        }
+
+        private void OnReadyChanged(object sender, ReadyChangedEventArgs args)
+        {
+            Debug.WriteLine(args.Gamer.Gamertag + " is ready changed to " + args.IsReady);
         }
 
         private void AddPlayer(NetworkGamer gamer)
@@ -236,64 +233,6 @@ namespace Strategy.Interface.Screens
         }
 
         /// <summary>
-        /// Resets the seed used to synchronize the game. Because every player
-        /// needs the same seed we also reset the ready state. Should only be
-        /// called by the host.
-        /// </summary>
-        private void ResetSeed()
-        {
-            _seed = _random.Next(1, int.MaxValue);
-            _session.ResetReady();
-        }
-
-        /// <summary>
-        /// Sends the game configuration to the specified player.
-        /// </summary>
-        private void SendConfiguration(NetworkGamer gamer)
-        {
-            LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
-            CommandWriter writer = new CommandWriter();
-            writer.Write(new MatchConfigurationCommand(_seed, _mapType, _mapSize, _difficulty));
-            sender.SendData(writer, SendDataOptions.ReliableInOrder, gamer);
-        }
-
-        /// <summary>
-        /// Broadcasts the game configuration to every player in the session.
-        /// </summary>
-        private void BroadcastConfiguration()
-        {
-            LocalNetworkGamer sender = (LocalNetworkGamer)_session.Host;
-            CommandWriter writer = new CommandWriter();
-            writer.Write(new MatchConfigurationCommand(_seed, _mapType, _mapSize, _difficulty));
-            sender.SendData(writer, SendDataOptions.ReliableInOrder);
-        }
-
-        /// <summary>
-        /// Receives seeds.
-        /// </summary>
-        private void HandleNetworkInput()
-        {
-            CommandReader reader = new CommandReader();
-            foreach (LocalNetworkGamer gamer in _session.LocalGamers)
-            {
-                while (gamer.IsDataAvailable)
-                {
-                    NetworkGamer sender;
-                    gamer.ReceiveData(reader, out sender);
-                    MatchConfigurationCommand command = reader.ReadCommand() as MatchConfigurationCommand;
-                    if (command != null)
-                    {
-                        _seed = command.RandomSeed;
-                        _mapType = command.MapType;
-                        _mapSize = command.MapSize;
-                        _difficulty = command.Difficulty;
-                        //TODO update the UI state appropriately
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Handle input for every local player in the lobby.
         /// </summary>
         private void HandleLocalInput()
@@ -306,10 +245,9 @@ namespace Strategy.Interface.Screens
                     if (player != null)
                     {
                         // mark this player as ready
-                        if (_seed != 0)
+                        if (_configuration.HasValidConfiguration)
                         {
-                            Debug.WriteLine(player.Gamer.Gamertag + " is ready");
-                            player.Gamer.IsReady = true;
+                            _configuration.SetIsReady((LocalNetworkGamer)player.Gamer, true);
                         }
                     }
                     else
@@ -348,11 +286,10 @@ namespace Strategy.Interface.Screens
                     // ignore leave requests from non-players
                     if (player != null)
                     {
-                        if (player.Gamer.IsReady)
+                        if (_configuration.IsReady(player.Gamer))
                         {
                             // back out of the ready state
-                            Debug.WriteLine(player.Gamer.Gamertag + " is unready");
-                            player.Gamer.IsReady = false;
+                            _configuration.SetIsReady((LocalNetworkGamer)player.Gamer, false);
                         }
                         else
                         {
@@ -372,11 +309,8 @@ namespace Strategy.Interface.Screens
 
         private MenuInput _input;
 
-        private int _seed = 0;
-        private MapType _mapType = MapType.LandRush;
-        private MapSize _mapSize = MapSize.Normal;
-        private AiDifficulty _difficulty = AiDifficulty.Easy;
         private Random _random = new Random();
+        private MatchConfigurationManager _configuration;
 
         private bool _isMatchRunning = false;
     }

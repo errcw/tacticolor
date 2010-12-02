@@ -17,8 +17,15 @@ To Do
 * Bugs
   - Restarting a network game does not work correctly
     * The gameplay screen eats the initialize command
+  - Network game start state is not correctly synced
   - Host changes may eat EndGame notifications
-  - Controller disconnects are unhandled
+  - Controller disconnects in-game are unhandled
+
+* To try
+  - Show large numbers over the territory representing
+  the attack total; add attack/defense markers too
+  - Better ready indicator for available pieces
+  - Navigation with paths
 
 Menu Structure
 --------------

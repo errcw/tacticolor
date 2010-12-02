@@ -19,6 +19,11 @@ namespace Strategy.Net
         public event EventHandler<EventArgs> ConfigurationChanged;
 
         /// <summary>
+        /// Occurs when the ready state of a gamer changes.
+        /// </summary>
+        public event EventHandler<ReadyChangedEventArgs> ReadyChanged;
+
+        /// <summary>
         /// The random number generator seed for the match.
         /// </summary>
         public int Seed
@@ -55,15 +60,25 @@ namespace Strategy.Net
         }
 
         /// <summary>
+        /// Returns true if the configuration is valid; otherwise, false.
+        /// </summary>
+        public bool HasValidConfiguration { get { return Seed != 0; } }
+
+        /// <summary>
         /// Determines if all players are ready to begin the match.
         /// </summary>
-        public bool IsEveryoneReady { get; set; }
+        public bool IsEveryoneReady { get { return _ready.All(kv => kv.Value); } }
 
         public MatchConfigurationManager(NetworkSession session)
         {
-            IsEveryoneReady = false;
+            _session = session;
+            _session.GamerJoined += OnGamerJoined;
+            _session.GamerLeft += OnGamerLeft;
         }
 
+        /// <summary>
+        /// Sends and receives network data for configuration.
+        /// </summary>
         public void Update()
         {
             foreach (LocalNetworkGamer gamer in _session.LocalGamers)
@@ -75,49 +90,95 @@ namespace Strategy.Net
                     MatchConfigurationCommand command = _reader.ReadCommand() as MatchConfigurationCommand;
                     if (command != null)
                     {
-                        if (!_session.IsHost)
+                        if (command.IsConfiguration)
                         {
                             // received new configuration from the host
-                            if (HasNewConfiguration(command))
-                            {
-                                Seed = command.RandomSeed;
-                                MapType = command.MapType;
-                                MapSize = command.MapSize;
-                                Difficulty = command.Difficulty;
-                                OnConfigurationChanged();
-                            }
-                            AcknowledgeConfiguration(gamer);
+                            OnConfigurationReceived(command);
                         }
                         else
                         {
-                            // received acknowledgement from a player
+                            // received ready signal from a gamer
+                            OnReadyReceived(sender, command);
                         }
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Sets the ready state of the specified gamer.
+        /// </summary>
+        public void SetIsReady(LocalNetworkGamer gamer, bool isReady)
+        {
+            bool changedReadyState = SetIsReadyInternal(gamer, isReady);
+            if (changedReadyState)
+            {
+                if (isReady)
+                {
+                    BroadcastReady(gamer);
+                }
+                else
+                {
+                    BroadcastUnready(gamer);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Queries the ready state of the specified gamer.
+        /// </summary>
         public bool IsReady(NetworkGamer gamer)
         {
             return _ready[gamer];
         }
 
-        private void AcknowledgeConfiguration(LocalNetworkGamer gamer)
+        /// <summary>
+        /// Resets the configuration for a new match.
+        /// </summary>
+        public void ResetForNextMatch()
         {
-            _writer.Write(new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty));
-            gamer.SendData(_writer, SendDataOptions.ReliableInOrder, gamer);
+            // deterministically choose a new seed so that no negotiation
+            // is necessary for the gamers to use the same configuration
+            // across matches
+            _seed += 1;
+
+            foreach (NetworkGamer gamer in _session.AllGamers)
+            {
+                SetIsReadyInternal(gamer, false);
+            }
         }
 
-        /// <summary>
-        /// Returns true if the configuration in the command differs from the
-        /// local configuration; otherwise, false.
-        /// </summary>
-        private bool HasNewConfiguration(MatchConfigurationCommand command)
+        private bool SetIsReadyInternal(NetworkGamer gamer, bool isReady)
         {
-            return Seed != command.RandomSeed ||
-                MapType != command.MapType ||
-                MapSize != command.MapSize ||
-                Difficulty != command.Difficulty;
+            bool wasReady = _ready[gamer];
+            if (wasReady != isReady)
+            {
+                _ready[gamer] = isReady;
+                if (ReadyChanged != null)
+                {
+                    ReadyChanged(this, new ReadyChangedEventArgs(gamer, isReady));
+                }
+                return true;
+            }
+            return false;
+        }
+
+        private void OnGamerJoined(object sender, GamerJoinedEventArgs args)
+        {
+            _ready[args.Gamer] = false;
+            _lastReadied[args.Gamer] = null;
+
+            if (_session.IsHost)
+            {
+                // the newly added gamer needs to get the current configuration
+                SendConfigurationFromHost(args.Gamer);
+            }
+        }
+
+        private void OnGamerLeft(object sender, GamerLeftEventArgs args)
+        {
+            _ready.Remove(args.Gamer);
+            _lastReadied.Remove(args.Gamer);
         }
 
         /// <summary>
@@ -125,10 +186,87 @@ namespace Strategy.Net
         /// </summary>
         private void OnConfigurationChanged()
         {
+            // host broadcasts the new configuration to every gamer
+            if (_session.IsHost)
+            {
+                BroadcastConfigurationFromHost();
+            }
+
+            // set the ready state based on the last readied configuration
+            foreach (NetworkGamer gamer in _session.AllGamers)
+            {
+                MatchConfigurationCommand lastReady = _lastReadied[gamer];
+                SetIsReadyInternal(gamer, MatchesLocalConfiguration(lastReady));
+            }
+
             if (ConfigurationChanged != null)
             {
                 ConfigurationChanged(this, EventArgs.Empty);
             }
+        }
+
+        /// <summary>
+        /// Handles authoritative configuration commands.
+        /// </summary>
+        private void OnConfigurationReceived(MatchConfigurationCommand command)
+        {
+            // only trigger the on change logic if appropriate, otherwise the
+            // host will continually trigger change broadcasts when it receives
+            // its own configuration back as a command
+            if (!MatchesLocalConfiguration(command))
+            {
+                _seed = command.RandomSeed;
+                _mapType = command.MapType;
+                _mapSize = command.MapSize;
+                _difficulty = command.Difficulty;
+                OnConfigurationChanged();
+            }
+        }
+
+        /// <summary>
+        /// Handles ready commands.
+        /// </summary>
+        private void OnReadyReceived(NetworkGamer gamer, MatchConfigurationCommand command)
+        {
+            _lastReadied[gamer] = command;
+            SetIsReadyInternal(gamer, MatchesLocalConfiguration(command));
+        }
+
+        private bool MatchesLocalConfiguration(MatchConfigurationCommand command)
+        {
+            return command != null &&
+                Seed == command.RandomSeed &&
+                MapType == command.MapType &&
+                MapSize == command.MapSize &&
+                Difficulty == command.Difficulty;
+        }
+
+        private void BroadcastReady(LocalNetworkGamer gamer)
+        {
+            _writer.Write(new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty, false));
+            gamer.SendData(_writer, SendDataOptions.ReliableInOrder);
+        }
+
+        private void BroadcastUnready(LocalNetworkGamer gamer)
+        {
+            _writer.Write(UnreadyCommand);
+            gamer.SendData(_writer, SendDataOptions.ReliableInOrder);
+        }
+
+        private void SendConfigurationFromHost(NetworkGamer receiver)
+        {
+            if (receiver.Equals(_session.Host))
+            {
+                return;
+            }
+            _writer.Write(new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty, true));
+            ((LocalNetworkGamer)_session.Host).SendData(_writer, SendDataOptions.ReliableInOrder, receiver);
+        }
+
+        private void BroadcastConfigurationFromHost()
+        {
+            _writer.Write(new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty, true));
+            ((LocalNetworkGamer)_session.Host).SendData(_writer, SendDataOptions.ReliableInOrder);
         }
 
         private int _seed = 0;
@@ -140,6 +278,21 @@ namespace Strategy.Net
         private CommandReader _reader = new CommandReader();
         private CommandWriter _writer = new CommandWriter();
 
-        private Dictionary<NetworkGamer, bool> _ready;
+        private Dictionary<NetworkGamer, bool> _ready = new Dictionary<NetworkGamer, bool>();
+        private Dictionary<NetworkGamer, MatchConfigurationCommand> _lastReadied = new Dictionary<NetworkGamer, MatchConfigurationCommand>();
+
+        private readonly MatchConfigurationCommand UnreadyCommand = new MatchConfigurationCommand(0, 0, 0, 0, false);
+    }
+
+    public class ReadyChangedEventArgs : EventArgs
+    {
+        public readonly NetworkGamer Gamer;
+        public readonly bool IsReady;
+
+        public ReadyChangedEventArgs(NetworkGamer gamer, bool isReady)
+        {
+            Gamer = gamer;
+            IsReady = isReady;
+        }
     }
 }

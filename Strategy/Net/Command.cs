@@ -104,16 +104,19 @@ namespace Strategy.Net
 
         public AiDifficulty Difficulty { get; private set; }
 
+        public bool IsConfiguration { get; private set; }
+
         public MatchConfigurationCommand() : base(Code)
         {
         }
 
-        public MatchConfigurationCommand(int randomSeed, MapType mapType, MapSize mapSize, AiDifficulty difficulty) : base(Code, PlayerId.A)
+        public MatchConfigurationCommand(int randomSeed, MapType mapType, MapSize mapSize, AiDifficulty difficulty, bool isConfiguration) : base(Code, PlayerId.A)
         {
             RandomSeed = randomSeed;
             MapType = mapType;
             MapSize = mapSize;
             Difficulty = difficulty;
+            IsConfiguration = isConfiguration;
         }
 
         protected override void ReadImpl(PacketReader reader)
@@ -122,6 +125,7 @@ namespace Strategy.Net
             MapType = (MapType)reader.ReadByte();
             MapSize = (MapSize)reader.ReadByte();
             Difficulty = (AiDifficulty)reader.ReadByte();
+            IsConfiguration = reader.ReadBoolean();
         }
 
         protected override void WriteImpl(PacketWriter writer)
@@ -130,6 +134,7 @@ namespace Strategy.Net
             writer.Write((byte)MapType);
             writer.Write((byte)MapSize);
             writer.Write((byte)Difficulty);
+            writer.Write(IsConfiguration);
         }
     }
 
