@@ -43,6 +43,7 @@ namespace Strategy.Interface.Screens
 
             if (_session.IsHost)
             {
+                // choose a default configuration to start
                 _configuration.SetConfiguration(
                     _random.Next(1, int.MaxValue),
                     MapType.LandRush,
@@ -59,7 +60,7 @@ namespace Strategy.Interface.Screens
                 _session.StartGame();
             }
 
-            _configuration.Update();
+            _configuration.Update(); // network input
             HandleLocalInput();
         }
 
@@ -120,10 +121,9 @@ namespace Strategy.Interface.Screens
                 return;
             }
 
-            // the host might have backed out before every player received
-            // the seed data so broadcast a new seed to every player
             if (_session.IsHost)
             {
+                // use a new configuration with the new host to sync all players
                 _configuration.Seed = _random.Next(1, int.MaxValue);
             }
         }
@@ -196,8 +196,8 @@ namespace Strategy.Interface.Screens
 
         private void AddPlayer(NetworkGamer gamer)
         {
-            Player player = new Player();
-            player.Gamer = gamer;
+            Player player = new Player() { Gamer = gamer };
+            _players.Add(player);
 
             // for local players find the local controller
             if (gamer.IsLocal)
@@ -216,14 +216,13 @@ namespace Strategy.Interface.Screens
                     player.Controller = PlayerIndex.One;
                 }
             }
-
-            _players.Add(player);
         }
 
         private void RemovePlayer(NetworkGamer gamer)
         {
             Player playerToRemove = _players.Single(player => player.Gamer == gamer);
             _players.Remove(playerToRemove);
+
             if (_players.Count == 0 && !_isMatchRunning)
             {
                 // lost all the players, back out to the main menu
