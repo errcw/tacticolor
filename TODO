@@ -15,9 +15,6 @@ To Do
   - Trophy images
 
 * Bugs
-  - Restarting a network game does not work correctly
-    * The gameplay screen eats the initialize command
-  - Network game start state is not correctly synced
   - Host changes may eat EndGame notifications
   - Controller disconnects in-game are unhandled
 

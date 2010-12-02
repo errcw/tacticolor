@@ -148,6 +148,20 @@ namespace Strategy.Net
             }
         }
 
+        /// <summary>
+        /// Sets the entire configuration. A mechanism for avoiding multiple
+        /// change notifications (and the corresponding network traffic) when
+        /// multiple parameters are changed at a time.
+        /// </summary>
+        public void SetConfiguration(int seed, MapType mapType, MapSize mapSize, AiDifficulty difficulty)
+        {
+            _seed = seed;
+            _mapType = mapType;
+            _mapSize = mapSize;
+            _difficulty = difficulty;
+            OnConfigurationChanged();
+        }
+
         private bool SetIsReadyInternal(NetworkGamer gamer, bool isReady)
         {
             bool wasReady = _ready[gamer];

@@ -43,7 +43,11 @@ namespace Strategy.Interface.Screens
 
             if (_session.IsHost)
             {
-                _configuration.Seed = _random.Next(1, int.MaxValue);
+                _configuration.SetConfiguration(
+                    _random.Next(1, int.MaxValue),
+                    MapType.LandRush,
+                    MapSize.Normal,
+                    AiDifficulty.Normal);
             }
         }
 
