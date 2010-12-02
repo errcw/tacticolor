@@ -15,7 +15,6 @@ To Do
   - Trophy images
 
 * Bugs
-  - Host changes may eat EndGame notifications
   - Controller disconnects in-game are unhandled
 
 * To try

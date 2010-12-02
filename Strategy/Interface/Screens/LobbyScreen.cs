@@ -59,6 +59,13 @@ namespace Strategy.Interface.Screens
             {
                 _session.StartGame();
             }
+            else if (_session.IsHost && _session.SessionState == NetworkSessionState.Playing && !_isMatchRunning)
+            {
+                // if we are in the lobby and in the playing state but the match is not running
+                // then something has gone wrong and we should move back to the lobby state
+                // (probably the host died before its end game packets were sent)
+                _session.EndGame();
+            }
 
             _configuration.Update(); // network input
             HandleLocalInput();
