@@ -19,14 +19,29 @@ namespace Strategy.Interface.Screens
     /// </summary>
     public class InGameMenuScreen : MenuScreen
     {
-        public InGameMenuScreen(Game game) : base(game)
+        public InGameMenuScreen(Game game, PlayerIndex controller) : base(game)
         {
             new MenuBuilder(this, game)
                 .CreateButtonEntry(Resources.MenuExitNo, OnReturnSelected)
                 .CreateButtonEntry(Resources.MenuExitYes, OnExitSelected);
 
-            TransitionOnTime = 0.01f;
+            // transfer control to the player opening the menu
+            _input = game.Services.GetService<MenuInput>();
+            _previousController = _input.Controller.Value;
+            _input.Controller = controller;
+
+            TransitionOnTime = 0.02f;
             BasePosition = new Vector2(150f, 120f);
+        }
+
+        protected internal override void Hide(bool popped)
+        {
+            if (popped)
+            {
+                // restore control to the menu owner
+                _input.Controller = _previousController;
+            }
+            base.Hide(popped);
         }
 
         private void OnReturnSelected(object sender, EventArgs args)
@@ -40,5 +55,8 @@ namespace Strategy.Interface.Screens
             Stack.Pop(); // pop the gameplay screen
             Stack.Pop(); // pop the lobby screen
         }
+
+        private MenuInput _input;
+        private PlayerIndex _previousController;
     }
 }

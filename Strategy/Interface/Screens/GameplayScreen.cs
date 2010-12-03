@@ -163,11 +163,14 @@ namespace Strategy.Interface.Screens
                 }
             }
 
-            if (isActive && _input.Activate.Any(a => a.Pressed))
+            for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
             {
-                //TODO handle which player opened the menu
-                InGameMenuScreen menuScreen = new InGameMenuScreen(Stack.Game);
-                Stack.Push(menuScreen);
+                if (_input.Activate[(int)p].Pressed)
+                {
+                    InGameMenuScreen menuScreen = new InGameMenuScreen(Stack.Game, p);
+                    Stack.Push(menuScreen);
+                    break;
+                }
             }
         }
 
@@ -296,6 +299,10 @@ namespace Strategy.Interface.Screens
 
             MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
             Stack.Push(messageScreen);
+        }
+
+        private void ShowPauseScreen(PlayerIndex controller)
+        {
         }
 
         private void ShowPlayerLeftMatch(Player player)
