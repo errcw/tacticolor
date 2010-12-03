@@ -82,6 +82,7 @@ namespace Strategy.Interface.Screens
                 if (input != null)
                 {
                     input.SelectedChanged += OnSelectionChanged;
+                    input.ControllerDisconnected += OnControllerDisconnected;
                     _inputViews.Add(new LocalInputView(input, _context));
                 }
             }
@@ -292,6 +293,16 @@ namespace Strategy.Interface.Screens
             _isEnded = true;
         }
 
+        private void OnControllerDisconnected(object sender, EventArgs args)
+        {
+            if (_session.IsLocalSession())
+            {
+                Player player = _players.Single(p => p.Id == ((LocalInput)sender).Player);
+                InGameMenuScreen menuScreen = new InGameMenuScreen(Stack.Game, player.Controller.Value);
+                Stack.Push(menuScreen);
+            }
+        }
+
         private void HandleNetworkError()
         {
             _session = null;
@@ -299,10 +310,6 @@ namespace Strategy.Interface.Screens
 
             MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
             Stack.Push(messageScreen);
-        }
-
-        private void ShowPauseScreen(PlayerIndex controller)
-        {
         }
 
         private void ShowPlayerLeftMatch(Player player)

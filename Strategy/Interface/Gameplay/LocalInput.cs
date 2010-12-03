@@ -31,6 +31,11 @@ namespace Strategy.Interface.Gameplay
         public event EventHandler<EventArgs> ActionRejected;
 
         /// <summary>
+        /// Occurs when the player controller is disconnected.
+        /// </summary>
+        public event EventHandler<EventArgs> ControllerDisconnected;
+
+        /// <summary>
         /// The player for this input.
         /// </summary>
         public PlayerId Player { get; private set; }
@@ -65,6 +70,7 @@ namespace Strategy.Interface.Gameplay
             _input.Register(Action, Polling.One(Buttons.A));
             _input.Register(Cancel, Polling.One(Buttons.B));
             _input.Register(Place, Polling.One(Buttons.X));
+            _input.ControllerDisconnected += (s, a) => ControllerDisconnected(this, a);
 
             SetHovered(_match.Map.Territories.First(t => t.Owner == Player));
             SetSelected(null);
