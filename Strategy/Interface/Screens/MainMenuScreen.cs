@@ -82,7 +82,7 @@ namespace Strategy.Interface.Screens
 
         private void OnExitSelected(object sender, EventArgs args)
         {
-            ExitConfirmationScreen confirmationScreen = new ExitConfirmationScreen(Stack.Game);
+            ExitGameConfirmationScreen confirmationScreen = new ExitGameConfirmationScreen(Stack.Game);
             Stack.Push(confirmationScreen);
         }
 

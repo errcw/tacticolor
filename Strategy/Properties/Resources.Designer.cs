@@ -763,6 +763,33 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Leave Match.
+        /// </summary>
+        internal static string MenuLeaveMatch {
+            get {
+                return ResourceManager.GetString("MenuLeaveMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back to Match Menu.
+        /// </summary>
+        internal static string MenuLeaveNo {
+            get {
+                return ResourceManager.GetString("MenuLeaveNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exit to Main Menu.
+        /// </summary>
+        internal static string MenuLeaveYes {
+            get {
+                return ResourceManager.GetString("MenuLeaveYes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Local Game.
         /// </summary>
         internal static string MenuLocalGame {
@@ -831,6 +858,15 @@ namespace Strategy.Properties {
         internal static string MenuPurchase {
             get {
                 return ResourceManager.GetString("MenuPurchase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Return to Match.
+        /// </summary>
+        internal static string MenuReturnMatch {
+            get {
+                return ResourceManager.GetString("MenuReturnMatch", resourceCulture);
             }
         }
         

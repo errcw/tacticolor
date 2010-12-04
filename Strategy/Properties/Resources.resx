@@ -351,6 +351,15 @@
   <data name="MenuJoinMatch" xml:space="preserve">
     <value>Join Match</value>
   </data>
+  <data name="MenuLeaveMatch" xml:space="preserve">
+    <value>Leave Match</value>
+  </data>
+  <data name="MenuLeaveNo" xml:space="preserve">
+    <value>Back to Match Menu</value>
+  </data>
+  <data name="MenuLeaveYes" xml:space="preserve">
+    <value>Exit to Main Menu</value>
+  </data>
   <data name="MenuLocalGame" xml:space="preserve">
     <value>Local Game</value>
   </data>
@@ -374,6 +383,9 @@
   </data>
   <data name="MenuPurchase" xml:space="preserve">
     <value>Get Full Version</value>
+  </data>
+  <data name="MenuReturnMatch" xml:space="preserve">
+    <value>Return to Match</value>
   </data>
   <data name="MenuSelect" xml:space="preserve">
     <value>Select</value>

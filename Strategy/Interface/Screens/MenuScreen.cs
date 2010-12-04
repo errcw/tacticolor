@@ -338,7 +338,7 @@ namespace Strategy.Interface.Screens
         private Sprite _selectSprite;
         private TextSprite _selectTextSprite;
         private Sprite _backSprite;
-        private SpriteBatch _spriteBatch;
+        protected SpriteBatch _spriteBatch;
 
         private SoundEffect _soundMove;
 

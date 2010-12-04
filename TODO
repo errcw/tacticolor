@@ -8,14 +8,11 @@ To Do
   - Add the credits screen
   - Add the awardments screen
   - Add the lobby screen
-  - Add the in-game menu screen; fix who controls it
+  - Add the in-game menu screen
 * Trial
 * Sound
 * Art
   - Trophy images
-
-* Bugs
-  - Controller disconnects in-game are unhandled
 
 * To try
   - Show large numbers over the territory representing

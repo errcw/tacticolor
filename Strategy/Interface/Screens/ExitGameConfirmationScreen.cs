@@ -17,9 +17,9 @@ namespace Strategy.Interface.Screens
     /// <summary>
     /// Allows the player to confirm exiting the game.
     /// </summary>
-    public class ExitConfirmationScreen : MenuScreen
+    public class ExitGameConfirmationScreen : MenuScreen
     {
-        public ExitConfirmationScreen(Game game) : base(game)
+        public ExitGameConfirmationScreen(Game game) : base(game)
         {
             new MenuBuilder(this, game)
                 .CreateButtonEntry(Resources.MenuExitNo, OnReturnSelected)
