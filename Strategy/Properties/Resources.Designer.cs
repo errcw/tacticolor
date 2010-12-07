@@ -754,6 +754,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Instructions.
+        /// </summary>
+        internal static string MenuInstructions {
+            get {
+                return ResourceManager.GetString("MenuInstructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Join Match.
         /// </summary>
         internal static string MenuJoinMatch {

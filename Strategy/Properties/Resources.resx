@@ -348,6 +348,9 @@
   <data name="MenuHowToPlay" xml:space="preserve">
     <value>How to Play</value>
   </data>
+  <data name="MenuInstructions" xml:space="preserve">
+    <value>Instructions</value>
+  </data>
   <data name="MenuJoinMatch" xml:space="preserve">
     <value>Join Match</value>
   </data>
