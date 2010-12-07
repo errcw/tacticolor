@@ -140,9 +140,12 @@
     <Compile Include="Interface\PlayerIdExtensions.cs" />
     <Compile Include="Interface\Screens\AsyncBusyScreen.cs" />
     <Compile Include="Interface\Screens\AwardmentsScreen.cs" />
+    <Compile Include="Interface\Screens\ControlsScreen.cs" />
+    <Compile Include="Interface\Screens\CreditsScreen.cs" />
     <Compile Include="Interface\Screens\ExitGameConfirmationScreen.cs" />
     <Compile Include="Interface\Screens\GameplayScreen.cs" />
     <Compile Include="Interface\Screens\HelpOptionsScreen.cs" />
+    <Compile Include="Interface\Screens\HowToPlayScreen.cs" />
     <Compile Include="Interface\Screens\InGameMenuScreen.cs" />
     <Compile Include="Interface\Screens\LeaveMatchConfirmationScreen.cs" />
     <Compile Include="Interface\Screens\LobbyScreen.cs" />
@@ -151,6 +154,7 @@
     <Compile Include="Interface\Screens\MenuScreen.cs" />
     <Compile Include="Interface\Screens\MessageScreen.cs" />
     <Compile Include="Interface\Screens\MultiplayerSelectionScreen.cs" />
+    <Compile Include="Interface\Screens\OptionsScreen.cs" />
     <Compile Include="Interface\Screens\PurchaseScreen.cs" />
     <Compile Include="Interface\Screens\TitleScreen.cs" />
     <Compile Include="Interface\Gameplay\TerritoryView.cs" />
