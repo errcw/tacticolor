@@ -21,19 +21,30 @@ namespace Strategy.Interface.Screens
     {
         public OptionsScreen(Game game) : base(game)
         {
-            new MenuBuilder(this, game)
-                .CreateButtonEntry(Resources.MenuSounds, OnOptionToggled)
-                .CreateButtonEntry(Resources.MenuMusic, OnOptionToggled)
-                .CreateButtonEntry(Resources.MenuInstructions, OnOptionToggled);
-
             _options = game.Services.GetService<Options>();
+
+            new MenuBuilder(this, game)
+                .CreateToggleButtonEntry(Resources.MenuSounds, OnSoundEffectsToggled, _options.SoundEffectsToggle)
+                .CreateToggleButtonEntry(Resources.MenuMusic, OnMusicToggled, _options.MusicToggle)
+                .CreateToggleButtonEntry(Resources.MenuInstructions, OnInstructionsToggled, _options.InstructionsToggle);
 
             TransitionOnTime = 0.01f;
             BasePosition = new Vector2(170f, 160f);
         }
 
-        private void OnOptionToggled(object sender, EventArgs args)
+        private void OnSoundEffectsToggled(object sender, EventArgs args)
         {
+            _options.SoundEffectsToggle = !_options.SoundEffectsToggle;
+        }
+
+        private void OnMusicToggled(object sender, EventArgs args)
+        {
+            _options.MusicToggle = !_options.MusicToggle;
+        }
+
+        private void OnInstructionsToggled(object sender, EventArgs args)
+        {
+            _options.InstructionsToggle = !_options.InstructionsToggle;
         }
 
         private Options _options;

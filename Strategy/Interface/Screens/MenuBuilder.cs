@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 
+using Strategy.Properties;
 using Strategy.Library.Components;
 using Strategy.Library.Extensions;
 using Strategy.Library.Sprite;
@@ -54,6 +55,25 @@ namespace Strategy.Interface.Screens
                 TrialModeObserverComponent trialObserver = _game.Services.GetService<TrialModeObserverComponent>();
                 trialObserver.TrialModeEnded += (s, a) => _screen.RemoveEntry(purchaseEntry);
             }
+            return this;
+        }
+
+        public MenuBuilder CreateToggleButtonEntry(string labelText, EventHandler<EventArgs> toggledHandler, bool initialState)
+        {
+            TextSprite labelSprite = new TextSprite(_font, labelText);
+            TextSprite textSprite = new TextSprite(_font, initialState ? Resources.MenuOn : Resources.MenuOff);
+            TextMenuEntry entry = new TextMenuEntry(labelSprite, textSprite);
+            entry.SelectText = Resources.MenuToggle;
+            entry.Selected += toggledHandler;
+
+            bool state = initialState;
+            entry.Selected += (s, a) =>
+            {
+                state = !state;
+                textSprite.Text = state ? Resources.MenuOn : Resources.MenuOff;
+            };
+
+            _screen.AddEntry(entry);
             return this;
         }
 
