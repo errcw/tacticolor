@@ -165,7 +165,7 @@ namespace Strategy.Interface.Screens
                 LayoutEntries(BasePosition, 0);
 
                 // focus the first entry
-                _entries[0].OnFocusChanged(true);
+                SetSelected(0);
             }
         }
 
