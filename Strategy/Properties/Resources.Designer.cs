@@ -439,6 +439,51 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Designed and built by Eric Woroshow.
+        /// </summary>
+        internal static string CreditsMain {
+            get {
+                return ResourceManager.GetString("CreditsMain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Music.
+        /// </summary>
+        internal static string CreditsMusic {
+            get {
+                return ResourceManager.GetString("CreditsMusic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An Artist, Another Artist.
+        /// </summary>
+        internal static string CreditsMusicList {
+            get {
+                return ResourceManager.GetString("CreditsMusicList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sound.
+        /// </summary>
+        internal static string CreditsSound {
+            get {
+                return ResourceManager.GetString("CreditsSound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sound Guy, Some Other Guy, strangename.
+        /// </summary>
+        internal static string CreditsSoundList {
+            get {
+                return ResourceManager.GetString("CreditsSoundList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Easy.
         /// </summary>
         internal static string DifficultyEasy {

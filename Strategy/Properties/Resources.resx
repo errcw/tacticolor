@@ -243,6 +243,21 @@
   <data name="ControlsX" xml:space="preserve">
     <value>Place Piece</value>
   </data>
+  <data name="CreditsMain" xml:space="preserve">
+    <value>Designed and built by Eric Woroshow</value>
+  </data>
+  <data name="CreditsMusic" xml:space="preserve">
+    <value>Music</value>
+  </data>
+  <data name="CreditsMusicList" xml:space="preserve">
+    <value>An Artist, Another Artist</value>
+  </data>
+  <data name="CreditsSound" xml:space="preserve">
+    <value>Sound</value>
+  </data>
+  <data name="CreditsSoundList" xml:space="preserve">
+    <value>Sound Guy, Some Other Guy, strangename</value>
+  </data>
   <data name="DifficultyEasy" xml:space="preserve">
     <value>Easy</value>
   </data>
