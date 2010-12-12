@@ -21,8 +21,16 @@ namespace Strategy.Interface.Screens
     {
         public HowToPlayScreen(Game game) : base(game)
         {
+            CompositeSprite page1 = new CompositeSprite();
+            CompositeSprite page2 = new CompositeSprite();
+
+            new MenuBuilder(this, game)
+                .CreateImageEntry(page1)
+                .CreateImageEntry(page2);
+
             TransitionOnTime = 0.01f;
             BasePosition = new Vector2(170f, 160f);
+            VisibleEntryCount = 1;
         }
     }
 }
