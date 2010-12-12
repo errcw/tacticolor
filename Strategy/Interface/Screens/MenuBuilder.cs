@@ -77,6 +77,14 @@ namespace Strategy.Interface.Screens
             return this;
         }
 
+        public MenuBuilder CreateImageEntry(Sprite sprite)
+        {
+            MenuEntry entry = new MenuEntry(sprite);
+            entry.IsSelectable = false;
+            _screen.AddEntry(entry);
+            return this;
+        }
+
         private Game _game;
         private MenuScreen _screen;
 

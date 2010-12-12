@@ -394,6 +394,51 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select/Attack/Move.
+        /// </summary>
+        internal static string ControlsA {
+            get {
+                return ResourceManager.GetString("ControlsA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unselect.
+        /// </summary>
+        internal static string ControlsB {
+            get {
+                return ResourceManager.GetString("ControlsB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Territory.
+        /// </summary>
+        internal static string ControlsLStick {
+            get {
+                return ResourceManager.GetString("ControlsLStick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Menu.
+        /// </summary>
+        internal static string ControlsStart {
+            get {
+                return ResourceManager.GetString("ControlsStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Place Piece.
+        /// </summary>
+        internal static string ControlsX {
+            get {
+                return ResourceManager.GetString("ControlsX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Easy.
         /// </summary>
         internal static string DifficultyEasy {

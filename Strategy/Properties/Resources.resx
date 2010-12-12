@@ -228,6 +228,21 @@
   <data name="ComputerD" xml:space="preserve">
     <value>Computer D</value>
   </data>
+  <data name="ControlsA" xml:space="preserve">
+    <value>Select/Attack/Move</value>
+  </data>
+  <data name="ControlsB" xml:space="preserve">
+    <value>Unselect</value>
+  </data>
+  <data name="ControlsLStick" xml:space="preserve">
+    <value>Select Territory</value>
+  </data>
+  <data name="ControlsStart" xml:space="preserve">
+    <value>Menu</value>
+  </data>
+  <data name="ControlsX" xml:space="preserve">
+    <value>Place Piece</value>
+  </data>
   <data name="DifficultyEasy" xml:space="preserve">
     <value>Easy</value>
   </data>
