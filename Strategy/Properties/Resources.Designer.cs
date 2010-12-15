@@ -601,6 +601,42 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tacticolor is a game about *conquest*. The game is played on a *randomly generated map*. Each color gets an equal number of starting *territories* and *pieces*..
+        /// </summary>
+        internal static string HowToPlay0 {
+            get {
+                return ResourceManager.GetString("HowToPlay0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to *Expand your territory* by attacking neighboring enemies. A battle&apos;s outcome is determined by a *roll of dice*. Each piece represents one die. The *higher total dice roll wins* the battle (tie goes to the defender)..
+        /// </summary>
+        internal static string HowToPlay1 {
+            get {
+                return ResourceManager.GetString("HowToPlay1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Every few seconds you&apos;ll get a *new piece*. The *more territories* you own the *faster* you&apos;ll get new pieces. You can also *move pieces* between territories to reinforce them..
+        /// </summary>
+        internal static string HowToPlay2 {
+            get {
+                return ResourceManager.GetString("HowToPlay2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pieces can only *attack or move every five seconds*. Pieces can defend any time..
+        /// </summary>
+        internal static string HowToPlay3 {
+            get {
+                return ResourceManager.GetString("HowToPlay3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to attacks or moves.
         /// </summary>
         internal static string InstructionsAction {
