@@ -97,7 +97,7 @@ namespace Strategy.Interface.Screens
                 _entries.Remove(entry);
 
                 // move the subsequent entries back
-                LayoutEntries(entry.TargetPosition, removalIndex);
+                LayoutEntries();
 
                 if (entry == selectedEntry)
                 {
@@ -162,7 +162,7 @@ namespace Strategy.Interface.Screens
                     entry.Sprite.Position = BasePosition;
                     entry.Sprite.Color = Color.Transparent;
                 }
-                LayoutEntries(BasePosition, 0);
+                LayoutEntries();
 
                 // focus the first entry
                 SetSelected(0);
@@ -249,13 +249,13 @@ namespace Strategy.Interface.Screens
 
             if (nextRelEntry >= VisibleEntryCount && nextAbsEntry < _entries.Count)
             {
-                CycleDown();
                 _listWindowBaseIndex += 1;
+                LayoutEntries();
             }
             else if (nextRelEntry < 0 && nextAbsEntry >= 0)
             {
-                CycleUp();
                 _listWindowBaseIndex -= 1;
+                LayoutEntries();
             }
 
             _selectedEntryRel = MathHelperExtensions.Clamp(nextRelEntry, 0, VisibleEntryCount - 1);
@@ -279,34 +279,39 @@ namespace Strategy.Interface.Screens
             {
                 //_soundMove.Play();
             }
+
         }
 
         /// <summary>
-        /// Removes the top menu entry and adds an entry at the bottom.
+        /// Sets the target positions of the menu entries.
         /// </summary>
-        private void CycleDown()
+        private void LayoutEntries()
         {
-        }
-
-        /// <summary>
-        /// Removes the bottom menu entry and adds an entry at the top.
-        /// </summary>
-        private void CycleUp()
-        {
-        }
-
-        /// <summary>
-        /// Sets the target positions of a subset of entries.
-        /// </summary>
-        private void LayoutEntries(Vector2 basePosition, int fromIndex)
-        {
-            float previousX = basePosition.X - Spacing;
-            for (int i = fromIndex; i < _entries.Count; i++)
+            // anchor the start of the visible entries at the base position
+            float previousX = BasePosition.X;
+            for (int i = _listWindowBaseIndex; i < _entries.Count; i++)
             {
-                _entries[i].TargetPosition = new Vector2(previousX + Spacing, basePosition.Y);
-                _entries[i].TargetColor = (i < VisibleEntryCount) ? Color.White : Color.Transparent;
-                previousX = _entries[i].TargetPosition.X + _entries[i].Sprite.Size.X;
+                _entries[i].TargetPosition = new Vector2(previousX, BasePosition.Y);
+                _entries[i].TargetColor = IsEntryVisible(i) ? Color.White : Color.Transparent;
+                previousX = _entries[i].TargetPosition.X + _entries[i].Sprite.Size.X + Spacing;
             }
+            // then lay out backwards from the base
+            previousX = BasePosition.X - Spacing;
+            for (int i = _listWindowBaseIndex - 1; i >= 0; i--)
+            {
+                float width = _entries[i].Sprite.Size.X;
+                _entries[i].TargetPosition = new Vector2(previousX - width, BasePosition.Y);
+                _entries[i].TargetColor = IsEntryVisible(i) ? Color.White : Color.Transparent;
+                previousX = _entries[i].TargetPosition.X - width - Spacing;
+            }
+        }
+
+        /// <summary>
+        /// Checks if the entry with the given index should be visible.
+        /// </summary>
+        private bool IsEntryVisible(int entryIndex)
+        {
+            return entryIndex >= _listWindowBaseIndex && entryIndex - _listWindowBaseIndex < VisibleEntryCount;
         }
 
         /// <summary>
