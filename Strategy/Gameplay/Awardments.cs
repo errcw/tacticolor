@@ -194,6 +194,14 @@ namespace Strategy.Gameplay
         }
 
         /// <summary>
+        /// Returns the awardments for the given gamertag.
+        /// </summary>
+        public List<Awardment> GetAwardments(string gamertag)
+        {
+            return _awardments[gamertag];
+        }
+
+        /// <summary>
         /// Returns the types of awardments declared on the awardment class.
         /// </summary>
         private List<Type> GetAwardmentTypes()
@@ -328,7 +336,7 @@ namespace Strategy.Gameplay
         public ManyMatchesPlayedAwardment() : base(100, true)
         {
             Name = Resources.AwardmentManyMatchesPlayedName;
-            Description = Resources.AwardmentManyMatchesPlayedName;
+            Description = Resources.AwardmentManyMatchesPlayedDescription;
         }
     }
 
@@ -656,7 +664,7 @@ namespace Strategy.Gameplay
         public RecaptureAwardment()
         {
             Name = Resources.AwardmentRecaptureName;
-            Name = Resources.AwardmentRecaptureDescription;
+            Description = Resources.AwardmentRecaptureDescription;
         }
 
         public override void MatchStarted(Match match, PlayerId player)
