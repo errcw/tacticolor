@@ -297,16 +297,16 @@
   <data name="GameWon" xml:space="preserve">
     <value>{0} won!</value>
   </data>
-  <data name="HowToPlay0" xml:space="preserve">
+  <data name="HowToPlay1" xml:space="preserve">
     <value>Tacticolor is a game about *conquest*. The game is played on a *randomly generated map*. Each color gets an equal number of starting *territories* and *pieces*.</value>
   </data>
-  <data name="HowToPlay1" xml:space="preserve">
+  <data name="HowToPlay2" xml:space="preserve">
     <value>*Expand your territory* by attacking neighboring enemies. A battle's outcome is determined by a *roll of dice*. Each piece represents one die. The *higher total dice roll wins* the battle (tie goes to the defender).</value>
   </data>
-  <data name="HowToPlay2" xml:space="preserve">
+  <data name="HowToPlay3" xml:space="preserve">
     <value>Every few seconds you'll get a *new piece*. The *more territories* you own the *faster* you'll get new pieces. You can also *move pieces* between territories to reinforce them.</value>
   </data>
-  <data name="HowToPlay3" xml:space="preserve">
+  <data name="HowToPlay4" xml:space="preserve">
     <value>Pieces can only *attack or move every five seconds*. Pieces can defend any time.</value>
   </data>
   <data name="InstructionsAction" xml:space="preserve">

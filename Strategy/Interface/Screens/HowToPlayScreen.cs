@@ -25,13 +25,19 @@ namespace Strategy.Interface.Screens
             SpriteFont emphasisFont = game.Content.Load<SpriteFont>("Fonts/TextSmallBold");
 
             CompositeSprite page1 = new CompositeSprite(
-                FormatString(Resources.HowToPlay0, LineWidth, normalFont, emphasisFont));
-            CompositeSprite page2 = new CompositeSprite(
                 FormatString(Resources.HowToPlay1, LineWidth, normalFont, emphasisFont));
+            CompositeSprite page2 = new CompositeSprite(
+                FormatString(Resources.HowToPlay2, LineWidth, normalFont, emphasisFont));
+            CompositeSprite page3 = new CompositeSprite(
+                FormatString(Resources.HowToPlay3, LineWidth, normalFont, emphasisFont));
+            CompositeSprite page4 = new CompositeSprite(
+                FormatString(Resources.HowToPlay4, LineWidth, normalFont, emphasisFont));
 
             new MenuBuilder(this, game)
                 .CreateImageEntry(page1)
-                .CreateImageEntry(page2);
+                .CreateImageEntry(page2)
+                .CreateImageEntry(page3)
+                .CreateImageEntry(page4);
 
             TransitionOnTime = 0.01f;
             BasePosition = new Vector2(170f, 160f);
