@@ -291,18 +291,20 @@ namespace Strategy.Interface.Screens
             float previousX = BasePosition.X;
             for (int i = _listWindowBaseIndex; i < _entries.Count; i++)
             {
-                _entries[i].TargetPosition = new Vector2(previousX, BasePosition.Y);
+                Vector2 position = new Vector2(previousX, BasePosition.Y);
+                _entries[i].TargetPosition = position;
                 _entries[i].TargetColor = IsEntryVisible(i) ? Color.White : Color.Transparent;
-                previousX = _entries[i].TargetPosition.X + _entries[i].Sprite.Size.X + Spacing;
+                previousX = position.X + _entries[i].Sprite.Size.X + Spacing;
             }
             // then lay out backwards from the base
             previousX = BasePosition.X - Spacing;
             for (int i = _listWindowBaseIndex - 1; i >= 0; i--)
             {
                 float width = _entries[i].Sprite.Size.X;
-                _entries[i].TargetPosition = new Vector2(previousX - width, BasePosition.Y);
+                Vector2 position = new Vector2(previousX - width, BasePosition.Y);
+                _entries[i].TargetPosition = position;
                 _entries[i].TargetColor = IsEntryVisible(i) ? Color.White : Color.Transparent;
-                previousX = _entries[i].TargetPosition.X - width - Spacing;
+                previousX = position.X - width - Spacing;
             }
         }
 
@@ -370,12 +372,18 @@ namespace Strategy.Interface.Screens
         /// <summary>
         /// The desired position of this entry.
         /// </summary>
-        public Vector2 TargetPosition { get; set; }
+        public Vector2 TargetPosition
+        {
+            set { _positionAnimation = new PositionAnimation(Sprite, value, 0.75f, Interpolation.InterpolateVector2(Easing.QuadraticOut)); }
+        }
 
         /// <summary>
         /// The desired color of this entry in [0, 255].
         /// </summary>
-        public Color TargetColor { get; set; }
+        public Color TargetColor
+        {
+            set { _colorAnimation = new ColorAnimation(Sprite, value, 0.5f, Interpolation.InterpolateColor(Easing.Uniform)); }
+        }
 
         /// <summary>
         /// If this entry can be selected.
@@ -409,8 +417,14 @@ namespace Strategy.Interface.Screens
         /// <param name="time">The elapsed time, in seconds, since the last update.</param>
         public virtual void Update(float time)
         {
-            Sprite.Position = Interpolation.InterpolateVector2(Easing.Uniform)(Sprite.Position, TargetPosition, 4f * time);
-            Sprite.Color = Interpolation.InterpolateColor(Easing.Uniform)(Sprite.Color, TargetColor, 4f * time);
+            if (_positionAnimation != null)
+            {
+                _positionAnimation.Update(time);
+            }
+            if (_colorAnimation != null)
+            {
+                _colorAnimation.Update(time);
+            }
         }
 
         /// <summary>
@@ -431,6 +445,9 @@ namespace Strategy.Interface.Screens
         public virtual void OnFocusChanged(bool focused)
         {
         }
+
+        private IAnimation _positionAnimation;
+        private IAnimation _colorAnimation;
     }
 
     /// <summary>
