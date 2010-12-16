@@ -198,7 +198,12 @@ namespace Strategy.Gameplay
         /// </summary>
         public List<Awardment> GetAwardments(string gamertag)
         {
-            return _awardments[gamertag];
+            List<Awardment> awardments = null;
+            if (!_awardments.TryGetValue(gamertag, out awardments))
+            {
+                awardments = CreateAwardments(AwardmentTypes);
+            }
+            return awardments;
         }
 
         /// <summary>
