@@ -24,24 +24,28 @@ namespace Strategy.Interface.Screens
             SpriteFont normalFont = game.Content.Load<SpriteFont>("Fonts/TextSmall");
             SpriteFont emphasisFont = game.Content.Load<SpriteFont>("Fonts/TextSmallBold");
 
-            CompositeSprite page1 = new CompositeSprite(
-                FormatString(Resources.HowToPlay1, LineWidth, normalFont, emphasisFont));
-            CompositeSprite page2 = new CompositeSprite(
-                FormatString(Resources.HowToPlay2, LineWidth, normalFont, emphasisFont));
-            CompositeSprite page3 = new CompositeSprite(
-                FormatString(Resources.HowToPlay3, LineWidth, normalFont, emphasisFont));
-            CompositeSprite page4 = new CompositeSprite(
-                FormatString(Resources.HowToPlay4, LineWidth, normalFont, emphasisFont));
+            MenuBuilder builder = new MenuBuilder(this, game);
+            for (int page = 1; page <= 4; page++)
+            {
+                string illustration = "Images/HowToPlay" + page;
+                Sprite illustrationSprite = new ImageSprite(game.Content.Load<Texture2D>(illustration));
 
-            new MenuBuilder(this, game)
-                .CreateImageEntry(page1)
-                .CreateImageEntry(page2)
-                .CreateImageEntry(page3)
-                .CreateImageEntry(page4);
+                string text = Resources.ResourceManager.GetString("HowToPlay" + page);
+                Sprite textSprite = FormatString(text, LineWidth, normalFont, emphasisFont);
+
+                builder.CreateImageEntry(LayoutPage(illustrationSprite, textSprite));
+            }
 
             TransitionOnTime = 0.01f;
             BasePosition = new Vector2(170f, 160f);
             VisibleEntryCount = 1;
+        }
+
+        private Sprite LayoutPage(Sprite illustration, Sprite text)
+        {
+            illustration.Position = new Vector2((LineWidth - illustration.Size.X) / 2 - 25, 10);
+            text.Position = new Vector2(0, illustration.Size.Y + 30);
+            return new CompositeSprite(illustration, text);
         }
 
         private Sprite FormatString(string str, float lineWidth, SpriteFont normalFont, SpriteFont emphasisFont)
@@ -100,6 +104,6 @@ namespace Strategy.Interface.Screens
             return ".;?!".Contains(character.ToString());
         }
 
-        private const float LineWidth = 500f;
+        private const float LineWidth = 510f;
     }
 }

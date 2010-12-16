@@ -619,7 +619,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Every few seconds you&apos;ll get a *new piece*. The *more territories* you own the *faster* you&apos;ll get new pieces. You can also *move pieces* between territories to reinforce them..
+        ///   Looks up a localized string similar to Every few seconds you&apos;ll get a *new piece* to place. The *more territories* you own the *faster* you&apos;ll get new pieces. You can also *move pieces* between territories to reinforce them..
         /// </summary>
         internal static string HowToPlay3 {
             get {
@@ -628,7 +628,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pieces can only *attack or move every five seconds*. Pieces can defend any time..
+        ///   Looks up a localized string similar to Pieces can only *attack or move* every *five seconds*. Pieces can defend any time..
         /// </summary>
         internal static string HowToPlay4 {
             get {

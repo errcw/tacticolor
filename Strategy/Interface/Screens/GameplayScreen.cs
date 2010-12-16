@@ -191,6 +191,27 @@ namespace Strategy.Interface.Screens
             _instructions.Draw(_spriteBatch);
 
             _spriteBatch.End();
+
+#if DEBUG
+            if (_input.Debug.Pressed)
+            {
+                GraphicsDevice device = Stack.Game.GraphicsDevice;
+                using (RenderTarget2D target = new RenderTarget2D(device, 1280, 720))
+                {
+                    device.SetRenderTarget(target);
+                    device.Clear(Color.Transparent);
+
+                    _isoView.Clear();
+                    _mapView.Draw(_isoView);
+                    _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                    _isoView.Draw(_spriteBatch);
+                    _spriteBatch.End();
+
+                    device.SetRenderTarget(null);
+                    target.SaveAsPng(new System.IO.FileStream("map.png", System.IO.FileMode.Create), 1280, 720);
+                }
+            }
+#endif
         }
 
         protected internal override void Hide(bool popped)
