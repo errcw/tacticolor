@@ -43,7 +43,7 @@ namespace Strategy.Interface.Screens
 
         private Sprite LayoutPage(Sprite illustration, Sprite text)
         {
-            illustration.Position = new Vector2((LineWidth - illustration.Size.X) / 2 - 25, 10);
+            illustration.Position = new Vector2((text.Size.X - illustration.Size.X) / 2 - 25, 10);
             text.Position = new Vector2(0, illustration.Size.Y + 30);
             return new CompositeSprite(illustration, text);
         }
