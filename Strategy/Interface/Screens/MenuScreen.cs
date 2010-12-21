@@ -185,6 +185,13 @@ namespace Strategy.Interface.Screens
                     entry.TargetColor = Color.Transparent;
                 }
             }
+            else
+            {
+                // reset the focused state of the menu entry so that the
+                // focus highlight will be correctly displayed while the
+                // parent menu is not being updated
+                _entries[_selectedEntryAbs].OnFocusChanged(true);
+            }
             _selectSprite.Color = Color.Transparent;
             _backSprite.Color = Color.Transparent;
         }
