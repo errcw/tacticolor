@@ -142,10 +142,10 @@
     <value>First!</value>
   </data>
   <data name="AwardmentLongStreakDescription" xml:space="preserve">
-    <value>Unstoppable</value>
+    <value>Win 20 matches in a row.</value>
   </data>
   <data name="AwardmentLongStreakName" xml:space="preserve">
-    <value>Win 20 matches in a row.</value>
+    <value>Unstoppable</value>
   </data>
   <data name="AwardmentManyMatchesPlayedDescription" xml:space="preserve">
     <value>Play 100 matches.</value>

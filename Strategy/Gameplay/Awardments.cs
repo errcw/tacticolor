@@ -386,8 +386,8 @@ namespace Strategy.Gameplay
     {
         public ManyTerritoriesCapturedAwardment() : base(1000)
         {
-            Name = Resources.AwardmentFirstTerritoryCapturedName;
-            Description = Resources.AwardmentFirstTerritoryCapturedDescription;
+            Name = Resources.AwardmentManyTerritoriesCapturedName;
+            Description = Resources.AwardmentManyTerritoriesCapturedDescription;
         }
     }
 

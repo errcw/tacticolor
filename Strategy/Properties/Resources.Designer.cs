@@ -133,7 +133,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unstoppable.
+        ///   Looks up a localized string similar to Win 20 matches in a row..
         /// </summary>
         internal static string AwardmentLongStreakDescription {
             get {
@@ -142,7 +142,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Win 20 matches in a row..
+        ///   Looks up a localized string similar to Unstoppable.
         /// </summary>
         internal static string AwardmentLongStreakName {
             get {
