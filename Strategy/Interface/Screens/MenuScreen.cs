@@ -538,8 +538,8 @@ namespace Strategy.Interface.Screens
         private bool _fadeIn;
         private float _fadeElapsed;
 
-        private readonly Color OutlineColor = PlayerId.C.GetPieceColor();
-        //private readonly Color OutlineColor = new Color(207, 115, 115);
+        //private readonly Color OutlineColor = PlayerId.C.GetPieceColor();
+        private readonly Color OutlineColor = new Color(207, 115, 115);
         private const float FadeDuration = 0.6f;
     }
 }
