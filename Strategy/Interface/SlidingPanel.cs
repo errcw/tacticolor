@@ -98,7 +98,10 @@ namespace Strategy.Interface
             {
                 // show the panel with the new content
                 _animation = new SequentialAnimation(
-                    setNewInstructions,
+                    new CompositeAnimation(
+                        setNewInstructions,
+                        new ColorAnimation(_textSprite, Color.Black, 0f, Interpolation.InterpolateColor(Easing.Uniform)),
+                        new ColorAnimation(_imageSprite, Color.White, 0f, Interpolation.InterpolateColor(Easing.Uniform))),
                     new PositionAnimation(_sprite, Visible, 1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
             }
         }
@@ -108,7 +111,13 @@ namespace Strategy.Interface
         /// </summary>
         public void Hide()
         {
+            IAnimation showAnimation = _animation;
             _animation = new PositionAnimation(_sprite, Hidden, 1f, Interpolation.InterpolateVector2(Easing.QuadraticIn));
+            if (showAnimation != null)
+            {
+                // keep running the show animation while the panel slides away
+                _animation = new CompositeAnimation(_animation, showAnimation);
+            }
         }
 
         private Sprite _sprite;
