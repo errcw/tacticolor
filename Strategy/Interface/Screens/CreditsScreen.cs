@@ -24,10 +24,10 @@ namespace Strategy.Interface.Screens
             SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextSmall");
             SpriteFont titleFont = game.Content.Load<SpriteFont>("Fonts/TextSmallItalic");
             Sprite main = new TextSprite(font, Resources.CreditsMain) { Position = new Vector2(0, 0) };
-            Sprite musicTitle = new TextSprite(titleFont, Resources.CreditsMusic) { Position = new Vector2(0, 30) };
-            Sprite musicList = new TextSprite(font, Resources.CreditsMusicList) { Position = new Vector2(15, 50) };
-            Sprite soundTitle = new TextSprite(titleFont, Resources.CreditsSound) { Position = new Vector2(0, 75) };
-            Sprite soundList = new TextSprite(font, Resources.CreditsSoundList) { Position = new Vector2(15, 95) };
+            Sprite musicTitle = new TextSprite(titleFont, Resources.CreditsMusic) { Position = new Vector2(0, 35) };
+            Sprite musicList = new TextSprite(font, Resources.CreditsMusicList) { Position = new Vector2(15, 60) };
+            Sprite soundTitle = new TextSprite(titleFont, Resources.CreditsSound) { Position = new Vector2(0, 95) };
+            Sprite soundList = new TextSprite(font, Resources.CreditsSoundList) { Position = new Vector2(15, 120) };
             Sprite credits = new CompositeSprite(main, musicTitle, musicList, soundTitle, soundList);
 
             new MenuBuilder(this, game).CreateImageEntry(credits);
