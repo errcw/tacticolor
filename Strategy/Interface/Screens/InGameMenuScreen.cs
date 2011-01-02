@@ -34,7 +34,7 @@ namespace Strategy.Interface.Screens
 
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/Colourable"));
             _background.Scale = new Vector2(1280, 720);
-            _background.Color = Color.FromNonPremultiplied(128, 128, 128, 128);
+            _background.Color = Color.FromNonPremultiplied(64, 64, 64, 215);
             _background.Position = Vector2.Zero;
 
             TransitionOnTime = 0.5f;
