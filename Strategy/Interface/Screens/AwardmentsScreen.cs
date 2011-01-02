@@ -29,6 +29,8 @@ namespace Strategy.Interface.Screens
             Awardments awardments = game.Services.GetService<Awardments>();
             List<Awardment> gamerAwardments = awardments.GetAwardments(gamer);
 
+            Texture2D earnedTex = game.Content.Load<Texture2D>("Images/AwardmentEarned");
+            Texture2D unearnedTex = game.Content.Load<Texture2D>("Images/AwardmentNotEarned");
             SpriteFont titleFont = game.Content.Load<SpriteFont>("Fonts/TextSmallItalic");
             SpriteFont descFont = game.Content.Load<SpriteFont>("Fonts/TextSmall");
 
@@ -36,24 +38,24 @@ namespace Strategy.Interface.Screens
             MenuBuilder builder = new MenuBuilder(this, game);
             foreach (Awardment awardment in gamerAwardments)
             {
-                builder.CreateImageEntry(BuildAwardmentSprite(awardment, titleFont, descFont));
+                Sprite image = new ImageSprite(awardment.IsEarned ? earnedTex : unearnedTex);
+                image.Position = new Vector2(0, 15);
+
+                Sprite title = new TextSprite(titleFont, awardment.Name);
+                title.Position = new Vector2(image.Size.X + 10, 0);
+
+                Sprite description = new TextSprite(descFont, awardment.Description);
+                description.Position = new Vector2(
+                    title.Position.X,
+                    title.Position.Y + title.Size.Y + 5);
+
+                Sprite awardmentSprite = new CompositeSprite(image, title, description);
+                builder.CreateImageEntry(awardmentSprite);
             }
 
             TransitionOnTime = 0.01f;
             BasePosition = new Vector2(150f, 120f);
             VisibleEntryCount = 1;
-        }
-
-        private Sprite BuildAwardmentSprite(Awardment awardment, SpriteFont titleFont, SpriteFont descFont)
-        {
-            TextSprite title = new TextSprite(titleFont, awardment.Name);
-
-            TextSprite description = new TextSprite(descFont, awardment.Description);
-            description.Position = new Vector2(
-                title.Position.X,
-                title.Position.Y + title.Size.Y + 5);
-
-            return new CompositeSprite(title, description);
         }
     }
 }
