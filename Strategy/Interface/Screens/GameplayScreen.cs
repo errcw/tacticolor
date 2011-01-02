@@ -103,9 +103,9 @@ namespace Strategy.Interface.Screens
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
             _isoView = new IsometricView();
 
-            // consume a frame to transition on and off to avoid input glitches
-            TransitionOnTime = 0.01f;
-            TransitionOffTime = 0.01f;
+            TransitionOnTime = 0.5f;
+            TransitionOffTime = 0.5f;
+            ShowBeneath = true;
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -123,6 +123,22 @@ namespace Strategy.Interface.Screens
 
             // for networked games we can never pause
             UpdateInternal(gameTime, false);
+        }
+
+        protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
+        {
+            if (pushed)
+            {
+                _transitionProgress = progress;
+            }
+        }
+
+        protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
+        {
+            if (popped)
+            {
+                _transitionProgress = 1 - progress;
+            }
         }
 
         private void UpdateInternal(GameTime gameTime, bool isActive)
@@ -182,7 +198,9 @@ namespace Strategy.Interface.Screens
             _inputViews.ForEach(view => view.Draw(_isoView));
             _mapView.Draw(_isoView);
 
-            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            float slidePosition = 1280 * (1 - _transitionProgress);
+            Matrix m = Matrix.CreateTranslation(slidePosition, 0f, 0f);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, m);
 
             _backgroundView.Draw(_spriteBatch);
             _isoView.Draw(_spriteBatch);
@@ -378,5 +396,7 @@ namespace Strategy.Interface.Screens
 
         private SpriteBatch _spriteBatch;
         private IsometricView _isoView;
+
+        private float _transitionProgress;
     }
 }

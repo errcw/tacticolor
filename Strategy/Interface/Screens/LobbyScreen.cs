@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
@@ -17,6 +18,7 @@ using Strategy.Properties;
 using Strategy.Library.Extensions;
 using Strategy.Library.Input;
 using Strategy.Library.Screen;
+using Strategy.Library.Sprite;
 
 namespace Strategy.Interface.Screens
 {
@@ -50,6 +52,13 @@ namespace Strategy.Interface.Screens
                     MapSize.Normal,
                     AiDifficulty.Normal);
             }
+
+            _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundLobby"));
+            _spriteBatch = new SpriteBatch(game.GraphicsDevice);
+
+            TransitionOnTime = 0.5f;
+            TransitionOffTime = 0.5f;
+            ShowBeneath = true; // for the transition on
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -79,6 +88,31 @@ namespace Strategy.Interface.Screens
                 _session.Update();
                 _configuration.Update();
             }
+        }
+
+        protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
+        {
+            if (pushed)
+            {
+                _transitionProgress = progress;
+            }
+        }
+
+        protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
+        {
+            if (popped)
+            {
+                _transitionProgress = 1 - progress;
+            }
+        }
+
+        public override void Draw()
+        {
+            float slidePosition = 1280 * (1 - _transitionProgress);
+            Matrix m = Matrix.CreateTranslation(slidePosition, 0f, 0f);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, m);
+            _background.Draw(_spriteBatch);
+            _spriteBatch.End();
         }
 
         protected internal override void Show(bool pushed)
@@ -323,5 +357,9 @@ namespace Strategy.Interface.Screens
         private MatchConfigurationManager _configuration;
 
         private bool _isMatchRunning = false;
+
+        private Sprite _background;
+        private SpriteBatch _spriteBatch;
+        private float _transitionProgress;
     }
 }
