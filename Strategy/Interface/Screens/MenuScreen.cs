@@ -14,17 +14,6 @@ using Strategy.Library.Sprite;
 
 using Strategy.Properties;
 
-/* Notes:
- * - full list of menu items
- * - always draw the entire list, though some may have A=0
- * - tag each item with the desired X and Y position
- *   - at each update step animate items towards the desired positions
- *   - start all at BaseX,BaseY and transparent
- *     - use selected item as base (how to pass position?)
- * - store index of the start of the currently visible items
- * - moving up/down changes the base visible index
- *   - fade out old and fade in new
- */
 namespace Strategy.Interface.Screens
 {
     /// <summary>
@@ -142,6 +131,7 @@ namespace Strategy.Interface.Screens
             _entries.ForEach(entry => entry.Sprite.Draw(_spriteBatch));
             _selectSprite.Draw(_spriteBatch);
             _backSprite.Draw(_spriteBatch);
+            _moveSprite.Draw(_spriteBatch);
             _spriteBatch.End();
         }
 
@@ -151,10 +141,9 @@ namespace Strategy.Interface.Screens
         protected internal override void Show(bool pushed)
         {
             base.Show(pushed);
-            _backSprite.Color = IsRoot && !AllowBackOnRoot ? Color.Transparent : Color.White;
             _selectSprite.Color = Color.White;
-            //_screenDescriptor.GetSprite("ArrowUp").Color = Color.Transparent;
-            //_screenDescriptor.GetSprite("ArrowDown").Color = Color.Transparent;
+            _backSprite.Color = IsRoot && !AllowBackOnRoot ? Color.Transparent : Color.White;
+            _moveSprite.Color = _entries.Count > VisibleEntryCount ? Color.White : Color.Transparent;
             if (pushed)
             {
                 foreach (MenuEntry entry in _entries)
@@ -175,6 +164,9 @@ namespace Strategy.Interface.Screens
         protected internal override void Hide(bool popped)
         {
             base.Hide(popped);
+            _selectSprite.Color = Color.Transparent;
+            _backSprite.Color = Color.Transparent;
+            _moveSprite.Color = Color.Transparent;
             if (popped)
             {
                 _entries[_selectedEntryAbs].OnFocusChanged(false);
@@ -270,11 +262,11 @@ namespace Strategy.Interface.Screens
 
             if (_entries.Count > VisibleEntryCount)
             {
-                //XXX
-                //_screenDescriptor.GetSprite("ArrowUp").Color =
-                    //(_listWindowBaseIndex == 0) ? Color.Transparent : Color.White;
-                //_screenDescriptor.GetSprite("ArrowDown").Color =
-                    //(_listWindowBaseIndex == _entries.Count - NumVisibleEntries) ? Color.Transparent : Color.White;
+                bool hasNext = (_selectedEntryAbs < _entries.Count - 1);
+                bool hasPrev = (_selectedEntryAbs > 0);
+                if (hasNext && !hasPrev) { _moveTextSprite.Text = Resources.MenuNext; }
+                else if (hasNext && hasPrev) { _moveTextSprite.Text = Resources.MenuNextPrevious; }
+                else if (!hasNext && hasPrev) { _moveTextSprite.Text = Resources.MenuPrevious; }
             }
 
             _selectSprite.Color = _entries[_selectedEntryAbs].IsSelectable ? Color.White : Color.Transparent;
@@ -347,11 +339,21 @@ namespace Strategy.Interface.Screens
             _backSprite.Position = new Vector2(
                 ControlsBasePosition.X,
                 _selectSprite.Position.Y + _selectSprite.Size.Y + 10);
+
+            ImageSprite moveImage = new ImageSprite(content.Load<Texture2D>("Images/ButtonThumb"));
+            _moveTextSprite = new TextSprite(font, Resources.MenuNext);
+            _moveTextSprite.Position = new Vector2(
+                moveImage.Position.X + moveImage.Size.X + 5,
+                moveImage.Position.Y + (moveImage.Size.Y - _moveTextSprite.Size.Y) / 2);
+            _moveSprite = new CompositeSprite(moveImage, _moveTextSprite);
+            _moveSprite.Position = ControlsBasePosition;
         }
 
         private Sprite _selectSprite;
         private TextSprite _selectTextSprite;
         private Sprite _backSprite;
+        private Sprite _moveSprite;
+        private TextSprite _moveTextSprite;
         protected SpriteBatch _spriteBatch;
 
         private SoundEffect _soundMove;

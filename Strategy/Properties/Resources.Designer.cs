@@ -961,6 +961,24 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Next.
+        /// </summary>
+        internal static string MenuNext {
+            get {
+                return ResourceManager.GetString("MenuNext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Next/Previous.
+        /// </summary>
+        internal static string MenuNextPrevious {
+            get {
+                return ResourceManager.GetString("MenuNextPrevious", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Off.
         /// </summary>
         internal static string MenuOff {
@@ -984,6 +1002,15 @@ namespace Strategy.Properties {
         internal static string MenuOptions {
             get {
                 return ResourceManager.GetString("MenuOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Previous.
+        /// </summary>
+        internal static string MenuPrevious {
+            get {
+                return ResourceManager.GetString("MenuPrevious", resourceCulture);
             }
         }
         

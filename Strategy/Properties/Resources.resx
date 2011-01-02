@@ -417,6 +417,12 @@
   <data name="MenuMusic" xml:space="preserve">
     <value>Music</value>
   </data>
+  <data name="MenuNext" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="MenuNextPrevious" xml:space="preserve">
+    <value>Next/Previous</value>
+  </data>
   <data name="MenuOff" xml:space="preserve">
     <value>Off</value>
   </data>
@@ -425,6 +431,9 @@
   </data>
   <data name="MenuOptions" xml:space="preserve">
     <value>Options</value>
+  </data>
+  <data name="MenuPrevious" xml:space="preserve">
+    <value>Previous</value>
   </data>
   <data name="MenuPurchase" xml:space="preserve">
     <value>Get Full Version</value>
