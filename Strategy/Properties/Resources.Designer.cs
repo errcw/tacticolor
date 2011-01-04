@@ -889,6 +889,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Press A to Join.
+        /// </summary>
+        internal static string MenuJoin {
+            get {
+                return ResourceManager.GetString("MenuJoin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Join Match.
         /// </summary>
         internal static string MenuJoinMatch {

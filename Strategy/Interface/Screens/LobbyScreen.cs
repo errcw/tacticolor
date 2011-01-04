@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Input;
@@ -31,6 +32,12 @@ namespace Strategy.Interface.Screens
         {
             _input = game.Services.GetService<MenuInput>();
             _players = new List<Player>();
+
+            _slots = new List<PlayerSlot>();
+            for (int p = 0; p < session.MaxGamers; p++)
+            {
+                _slots.Add(new PlayerSlot(game.Content, p));
+            }
 
             _session = session;
             _session.GamerJoined += OnGamerJoined;
@@ -78,6 +85,8 @@ namespace Strategy.Interface.Screens
 
             _configuration.Update(); // network input
             HandleLocalInput();
+
+            _slots.ForEach(slot => slot.Update(gameTime.GetElapsedSeconds()));
         }
 
         protected override void UpdateInactive(GameTime gameTime)
@@ -112,6 +121,7 @@ namespace Strategy.Interface.Screens
             Matrix m = Matrix.CreateTranslation(slidePosition, 0f, 0f);
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, m);
             _background.Draw(_spriteBatch);
+            _slots.ForEach(slot => slot.Draw(_spriteBatch));
             _spriteBatch.End();
         }
 
@@ -228,17 +238,25 @@ namespace Strategy.Interface.Screens
         private void OnConfigurationChanged(object sender, EventArgs args)
         {
             Debug.WriteLine("Configuration changed");
+            //TODO show the new configuration
         }
 
         private void OnReadyChanged(object sender, ReadyChangedEventArgs args)
         {
             Debug.WriteLine(args.Gamer.Gamertag + " is ready changed to " + args.IsReady);
+
+            Player player = _players.Single(p => p.Gamer == args.Gamer);
+            PlayerSlot slot = FindSlotByPlayer(player);
+            slot.IsReady = args.IsReady;
         }
 
         private void AddPlayer(NetworkGamer gamer)
         {
             Player player = new Player() { Gamer = gamer };
             _players.Add(player);
+
+            PlayerSlot slot = FindSlotByPlayer(null);
+            slot.Player = player;
 
             // for local players find the local controller
             if (gamer.IsLocal)
@@ -264,6 +282,9 @@ namespace Strategy.Interface.Screens
             Player playerToRemove = _players.Single(player => player.Gamer == gamer);
             _players.Remove(playerToRemove);
 
+            PlayerSlot slot = FindSlotByPlayer(playerToRemove);
+            slot.Player = null;
+
             if (_players.Count == 0 && !_isMatchRunning)
             {
                 // lost all the players, back out to the main menu
@@ -274,6 +295,11 @@ namespace Strategy.Interface.Screens
         private Player FindPlayerByController(PlayerIndex index)
         {
             return _players.FirstOrDefault(player => player.Controller == index);
+        }
+
+        private PlayerSlot FindSlotByPlayer(Player player)
+        {
+            return _slots.First(slot => slot.Player == player);
         }
 
         /// <summary>
@@ -359,7 +385,79 @@ namespace Strategy.Interface.Screens
         private bool _isMatchRunning = false;
 
         private Sprite _background;
+        private List<PlayerSlot> _slots;
         private SpriteBatch _spriteBatch;
         private float _transitionProgress;
+    }
+
+    /// <summary>
+    /// Displays a match slot for a player.
+    /// </summary>
+    class PlayerSlot
+    {
+        public Player Player
+        {
+            get { return _player; }
+            set { SetPlayer(value); }
+        }
+
+        public bool IsReady
+        {
+            get { return _ready; }
+            set { _ready = value; }
+        }
+
+        public PlayerSlot(ContentManager content, int index)
+        {
+            _backgroundSprite = new ImageSprite(content.Load<Texture2D>("Images/LobbyBox"));
+            _backgroundSprite.Position = new Vector2(
+                (1280 - _backgroundSprite.Size.X) / 2,
+                100 + (_backgroundSprite.Size.Y + 20) * index);
+
+            _nameSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextSmall"));
+            _nameSprite.Color = Color.Black;
+            _nameSprite.Position = new Vector2(
+                (int)_backgroundSprite.Position.X + 15,
+                (int)_backgroundSprite.Position.Y + 20);
+
+            _readySprite = new ImageSprite(content.Load<Texture2D>("Images/Piece"));
+            _readySprite.Position = new Vector2(
+                _backgroundSprite.Position.X + _backgroundSprite.Size.X - _readySprite.Size.X - 15,
+                _backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _readySprite.Size.Y) / 2);
+
+            Player = null;
+            IsReady = false;
+        }
+
+        public void Update(float time)
+        {
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            _backgroundSprite.Draw(spriteBatch);
+            _nameSprite.Draw(spriteBatch);
+            _readySprite.Draw(spriteBatch);
+        }
+
+        private void SetPlayer(Player player)
+        {
+            _player = player;
+            if (player != null)
+            {
+                _nameSprite.Text = player.DisplayName;
+            }
+            else
+            {
+                _nameSprite.Text = Resources.MenuJoin;
+            }
+        }
+
+        private Player _player;
+        private bool _ready;
+
+        private ImageSprite _backgroundSprite;
+        private TextSprite _nameSprite;
+        private ImageSprite _readySprite;
     }
 }

@@ -393,6 +393,9 @@
   <data name="MenuInstructions" xml:space="preserve">
     <value>Instructions</value>
   </data>
+  <data name="MenuJoin" xml:space="preserve">
+    <value>Press A to Join</value>
+  </data>
   <data name="MenuJoinMatch" xml:space="preserve">
     <value>Join Match</value>
   </data>
