@@ -16,6 +16,7 @@ using Strategy.Interface;
 using Strategy.Interface.Gameplay;
 using Strategy.Net;
 using Strategy.Properties;
+using Strategy.Library;
 using Strategy.Library.Extensions;
 using Strategy.Library.Input;
 using Strategy.Library.Screen;
@@ -404,7 +405,7 @@ namespace Strategy.Interface.Screens
         public bool IsReady
         {
             get { return _ready; }
-            set { _ready = value; }
+            set { SetReady(value); }
         }
 
         public PlayerSlot(ContentManager content, int index)
@@ -414,15 +415,15 @@ namespace Strategy.Interface.Screens
                 (1280 - _backgroundSprite.Size.X) / 2,
                 100 + (_backgroundSprite.Size.Y + 20) * index);
 
-            _nameSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextSmall"));
+            _nameSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextSmall"), " ");
             _nameSprite.Color = Color.Black;
             _nameSprite.Position = new Vector2(
-                (int)_backgroundSprite.Position.X + 15,
-                (int)_backgroundSprite.Position.Y + 20);
+                (int)(_backgroundSprite.Position.X + 25),
+                (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _nameSprite.Size.Y) / 2));
 
             _readySprite = new ImageSprite(content.Load<Texture2D>("Images/Piece"));
             _readySprite.Position = new Vector2(
-                _backgroundSprite.Position.X + _backgroundSprite.Size.X - _readySprite.Size.X - 15,
+                _backgroundSprite.Position.X + _backgroundSprite.Size.X - _readySprite.Size.X - 25,
                 _backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _readySprite.Size.Y) / 2);
 
             Player = null;
@@ -431,6 +432,13 @@ namespace Strategy.Interface.Screens
 
         public void Update(float time)
         {
+            if (_animation != null)
+            {
+                if (!_animation.Update(time))
+                {
+                    _animation = null;
+                }
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -443,14 +451,23 @@ namespace Strategy.Interface.Screens
         private void SetPlayer(Player player)
         {
             _player = player;
+
+            string newName = Resources.MenuJoin;
             if (player != null)
             {
-                _nameSprite.Text = player.DisplayName;
+                newName = player.DisplayName;
             }
-            else
-            {
-                _nameSprite.Text = Resources.MenuJoin;
-            }
+
+            _animation = new SequentialAnimation(
+                new ColorAnimation(_nameSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
+                new TextAnimation(_nameSprite, newName),
+                new ColorAnimation(_nameSprite, Color.Black, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)));
+        }
+
+        private void SetReady(bool ready)
+        {
+            _ready = ready;
+            _readySprite.Color = ColorExtensions.FromPremultiplied(_readySprite.Color, _ready ? 1f : 0.5f);
         }
 
         private Player _player;
@@ -459,5 +476,7 @@ namespace Strategy.Interface.Screens
         private ImageSprite _backgroundSprite;
         private TextSprite _nameSprite;
         private ImageSprite _readySprite;
+
+        private IAnimation _animation;
     }
 }
