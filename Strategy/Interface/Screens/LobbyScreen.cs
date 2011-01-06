@@ -415,29 +415,37 @@ namespace Strategy.Interface.Screens
                 (1280 - _backgroundSprite.Size.X) / 2,
                 100 + (_backgroundSprite.Size.Y + 20) * index);
 
-            _nameSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextSmall"), " ");
+            _nameSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextSmall"), Resources.MenuJoin);
             _nameSprite.Color = Color.Black;
+            _nameSprite.Origin = new Vector2(
+                (int)(_nameSprite.Size.X / 2),
+                (int)(_nameSprite.Size.Y / 2));
             _nameSprite.Position = new Vector2(
                 (int)(_backgroundSprite.Position.X + 25),
-                (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _nameSprite.Size.Y) / 2));
+                (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _nameSprite.Size.Y) / 2))
+                + _nameSprite.Origin;
 
-            _readySprite = new ImageSprite(content.Load<Texture2D>("Images/Piece"));
+            _readySprite = new ImageSprite(content.Load<Texture2D>("Images/PieceAvailable"));
             _readySprite.Position = new Vector2(
                 _backgroundSprite.Position.X + _backgroundSprite.Size.X - _readySprite.Size.X - 25,
                 _backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _readySprite.Size.Y) / 2);
-
-            Player = null;
-            IsReady = false;
+            _readySprite.Color = Color.White;
         }
 
         public void Update(float time)
         {
-            if (_animation != null)
+            if (_labelAnimation != null)
             {
-                if (!_animation.Update(time))
+                if (!_labelAnimation.Update(time))
                 {
-                    _animation = null;
+                    _labelAnimation = null;
                 }
+            }
+            if (_labelAnimation == null && _player == null)
+            {
+                _labelAnimation = new SequentialAnimation(
+                    new ScaleAnimation(_nameSprite, new Vector2(1.1f, 1.1f), 1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
+                    new ScaleAnimation(_nameSprite, Vector2.One, 1f, Interpolation.InterpolateVector2(Easing.QuadraticIn)));
             }
         }
 
@@ -450,24 +458,29 @@ namespace Strategy.Interface.Screens
 
         private void SetPlayer(Player player)
         {
-            _player = player;
-
-            string newName = Resources.MenuJoin;
-            if (player != null)
+            // skip the transition if the set is a no-op
+            if (_player == player)
             {
-                newName = player.DisplayName;
+               return;
             }
 
-            _animation = new SequentialAnimation(
+            _player = player;
+
+            string newName = (player != null) ? player.DisplayName : Resources.MenuJoin;
+            Color readyColor = (player != null) ? ReadyColor : NoPlayerColor;
+            _labelAnimation = new SequentialAnimation(
                 new ColorAnimation(_nameSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
                 new TextAnimation(_nameSprite, newName),
-                new ColorAnimation(_nameSprite, Color.Black, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)));
+                new ScaleAnimation(_nameSprite, Vector2.One, 0f, Interpolation.InterpolateVector2(Easing.Uniform)),
+                new CompositeAnimation(
+                    new ColorAnimation(_nameSprite, Color.Black, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
+                    new ColorAnimation(_readySprite, readyColor, 0.25f, Interpolation.InterpolateColor(Easing.Uniform))));
         }
 
         private void SetReady(bool ready)
         {
             _ready = ready;
-            _readySprite.Color = ColorExtensions.FromPremultiplied(_readySprite.Color, _ready ? 1f : 0.5f);
+            _readySprite.Color = _ready ? ReadyColor : UnreadyColor;
         }
 
         private Player _player;
@@ -477,6 +490,10 @@ namespace Strategy.Interface.Screens
         private TextSprite _nameSprite;
         private ImageSprite _readySprite;
 
-        private IAnimation _animation;
+        private IAnimation _labelAnimation;
+
+        private const Color ReadyColor = PlayerId.A.GetPieceColor();
+        private const Color UnreadyColor = PlayerId.C.GetPieceColor();
+        private const Color NoPlayerColor = Color.White;
     }
 }
