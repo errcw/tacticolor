@@ -3,8 +3,11 @@ To Do
 
 * Menu
   - Add the lobby screen
-* Trial
-  - Limit options in the lobby
+    + add controls for changing the game parameters
+    + add better ready images
+    + add a controls legend
+    + limit the options in the trial
+    + handle host switching
 * Sound
 
 * To try
