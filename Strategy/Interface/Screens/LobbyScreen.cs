@@ -27,9 +27,9 @@ namespace Strategy.Interface.Screens
     /// <summary>
     /// Sets up the networking.
     /// </summary>
-    public class LobbyScreen : Screen
+    public class LobbyScreen : MenuScreen
     {
-        public LobbyScreen(Game game, NetworkSession session)
+        public LobbyScreen(Game game, NetworkSession session) : base(game)
         {
             _input = game.Services.GetService<MenuInput>();
             _players = new List<Player>();
@@ -64,6 +64,13 @@ namespace Strategy.Interface.Screens
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundLobby"));
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
+            new MenuBuilder(this, game)
+                .CreateButtonEntry(Resources.MenuStartGame, OnStartGame)
+                .CreateCycleButtonEntry(Resources.MapType, OnMapTypeCycled, _configuration.MapType)
+                .CreateCycleButtonEntry(Resources.MapSize, OnMapSizeCycled, _configuration.MapSize)
+                .CreateCycleButtonEntry(Resources.AiDifficulty, OnDifficultyCycled, _configuration.Difficulty);
+
+            BasePosition = new Vector2(250f, 600f);
             TransitionOnTime = 0.5f;
             TransitionOffTime = 0.5f;
             ShowBeneath = true; // for the transition on
@@ -88,6 +95,8 @@ namespace Strategy.Interface.Screens
             HandleLocalInput();
 
             _slots.ForEach(slot => slot.Update(gameTime.GetElapsedSeconds()));
+
+            base.UpdateActive(gameTime);
         }
 
         protected override void UpdateInactive(GameTime gameTime)
@@ -98,6 +107,7 @@ namespace Strategy.Interface.Screens
                 _session.Update();
                 _configuration.Update();
             }
+            base.UpdateInactive(gameTime);
         }
 
         protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
@@ -106,6 +116,7 @@ namespace Strategy.Interface.Screens
             {
                 _transitionProgress = progress;
             }
+            base.UpdateTransitionOn(gameTime, progress, pushed);
         }
 
         protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
@@ -114,6 +125,7 @@ namespace Strategy.Interface.Screens
             {
                 _transitionProgress = 1 - progress;
             }
+            base.UpdateTransitionOff(gameTime, progress, popped);
         }
 
         public override void Draw()
@@ -124,6 +136,7 @@ namespace Strategy.Interface.Screens
             _background.Draw(_spriteBatch);
             _slots.ForEach(slot => slot.Draw(_spriteBatch));
             _spriteBatch.End();
+            base.Draw();
         }
 
         protected internal override void Show(bool pushed)
@@ -249,6 +262,25 @@ namespace Strategy.Interface.Screens
             Player player = _players.Single(p => p.Gamer == args.Gamer);
             PlayerSlot slot = FindSlotByPlayer(player);
             slot.IsReady = args.IsReady;
+        }
+
+        private void OnMapSizeCycled(object sender, EventArgs args)
+        {
+            _configuration.MapSize += 1;
+        }
+
+        private void OnMapTypeCycled(object sender, EventArgs args)
+        {
+            _configuration.MapType += 1;
+        }
+
+        private void OnDifficultyCycled(object sender, EventArgs args)
+        {
+            _configuration.Difficulty += 1;
+        }
+
+        private void OnStartGame(object sender, EventArgs args)
+        {
         }
 
         private void AddPlayer(NetworkGamer gamer)
@@ -415,15 +447,15 @@ namespace Strategy.Interface.Screens
                 (1280 - _backgroundSprite.Size.X) / 2,
                 100 + (_backgroundSprite.Size.Y + 20) * index);
 
-            _nameSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextSmall"), Resources.MenuJoin);
-            _nameSprite.Color = Color.Black;
-            _nameSprite.Origin = new Vector2(
-                (int)(_nameSprite.Size.X / 2),
-                (int)(_nameSprite.Size.Y / 2));
-            _nameSprite.Position = new Vector2(
+            _labelSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextSmall"), Resources.MenuJoin);
+            _labelSprite.Color = Color.Black;
+            _labelSprite.Origin = new Vector2(
+                (int)(_labelSprite.Size.X / 2),
+                (int)(_labelSprite.Size.Y / 2));
+            _labelSprite.Position = new Vector2(
                 (int)(_backgroundSprite.Position.X + 25),
-                (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _nameSprite.Size.Y) / 2))
-                + _nameSprite.Origin;
+                (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _labelSprite.Size.Y) / 2))
+                + _labelSprite.Origin;
 
             _readySprite = new ImageSprite(content.Load<Texture2D>("Images/PieceAvailable"));
             _readySprite.Position = new Vector2(
@@ -444,15 +476,15 @@ namespace Strategy.Interface.Screens
             if (_labelAnimation == null && _player == null)
             {
                 _labelAnimation = new SequentialAnimation(
-                    new ScaleAnimation(_nameSprite, new Vector2(1.1f, 1.1f), 1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
-                    new ScaleAnimation(_nameSprite, Vector2.One, 1f, Interpolation.InterpolateVector2(Easing.QuadraticIn)));
+                    new ScaleAnimation(_labelSprite, new Vector2(1.1f, 1.1f), 1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
+                    new ScaleAnimation(_labelSprite, Vector2.One, 1f, Interpolation.InterpolateVector2(Easing.QuadraticIn)));
             }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             _backgroundSprite.Draw(spriteBatch);
-            _nameSprite.Draw(spriteBatch);
+            _labelSprite.Draw(spriteBatch);
             _readySprite.Draw(spriteBatch);
         }
 
@@ -466,14 +498,14 @@ namespace Strategy.Interface.Screens
 
             _player = player;
 
-            string newName = (player != null) ? player.DisplayName : Resources.MenuJoin;
+            string newLabel = GetLabel();
             Color readyColor = (player != null) ? ReadyColor : NoPlayerColor;
             _labelAnimation = new SequentialAnimation(
-                new ColorAnimation(_nameSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
-                new TextAnimation(_nameSprite, newName),
-                new ScaleAnimation(_nameSprite, Vector2.One, 0f, Interpolation.InterpolateVector2(Easing.Uniform)),
+                new ColorAnimation(_labelSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
+                new TextAnimation(_labelSprite, newLabel),
+                new ScaleAnimation(_labelSprite, Vector2.One, 0f, Interpolation.InterpolateVector2(Easing.Uniform)),
                 new CompositeAnimation(
-                    new ColorAnimation(_nameSprite, Color.Black, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
+                    new ColorAnimation(_labelSprite, Color.Black, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
                     new ColorAnimation(_readySprite, readyColor, 0.25f, Interpolation.InterpolateColor(Easing.Uniform))));
         }
 
@@ -483,17 +515,24 @@ namespace Strategy.Interface.Screens
             _readySprite.Color = _ready ? ReadyColor : UnreadyColor;
         }
 
+        private string GetLabel()
+        {
+            return (_player != null)
+                ? string.Format(_player.Gamer.IsHost ? Resources.MenuPlayerSlotHost : Resources.MenuPlayerSlot, _player.DisplayName)
+                : Resources.MenuJoin;
+        }
+
         private Player _player;
         private bool _ready;
 
         private ImageSprite _backgroundSprite;
-        private TextSprite _nameSprite;
+        private TextSprite _labelSprite;
         private ImageSprite _readySprite;
 
         private IAnimation _labelAnimation;
 
-        private const Color ReadyColor = PlayerId.A.GetPieceColor();
-        private const Color UnreadyColor = PlayerId.C.GetPieceColor();
-        private const Color NoPlayerColor = Color.White;
+        private readonly Color ReadyColor = PlayerId.A.GetPieceColor();
+        private readonly Color UnreadyColor = PlayerId.C.GetPieceColor();
+        private readonly Color NoPlayerColor = Color.White;
     }
 }

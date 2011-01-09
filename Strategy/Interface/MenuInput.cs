@@ -55,7 +55,7 @@ namespace Strategy.Interface
                 Activate[index] = new ControlState();
                 _inputs[index].Register(Activate[index], Polling.One(Buttons.Start));
                 Join[index] = new ControlState();
-                _inputs[index].Register(Join[index], Polling.One(Buttons.A));
+                _inputs[index].Register(Join[index], Polling.One(Buttons.Y));
                 Leave[index] = new ControlState();
                 _inputs[index].Register(Leave[index], Polling.One(Buttons.B));
             }

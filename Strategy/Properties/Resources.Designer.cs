@@ -61,6 +61,42 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Difficulty.
+        /// </summary>
+        internal static string AiDifficulty {
+            get {
+                return ResourceManager.GetString("AiDifficulty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Easy.
+        /// </summary>
+        internal static string AiDifficultyEasy {
+            get {
+                return ResourceManager.GetString("AiDifficultyEasy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hard.
+        /// </summary>
+        internal static string AiDifficultyHard {
+            get {
+                return ResourceManager.GetString("AiDifficultyHard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normal.
+        /// </summary>
+        internal static string AiDifficultyNormal {
+            get {
+                return ResourceManager.GetString("AiDifficultyNormal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Win the match after losing all but one territory..
         /// </summary>
         internal static string AwardmentBrinkDescription {
@@ -484,33 +520,6 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Easy.
-        /// </summary>
-        internal static string DifficultyEasy {
-            get {
-                return ResourceManager.GetString("DifficultyEasy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Hard.
-        /// </summary>
-        internal static string DifficultyHard {
-            get {
-                return ResourceManager.GetString("DifficultyHard", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Normal.
-        /// </summary>
-        internal static string DifficultyNormal {
-            get {
-                return ResourceManager.GetString("DifficultyNormal", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Exception: {0}.
         /// </summary>
         internal static string ExceptionException {
@@ -835,6 +844,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cycle.
+        /// </summary>
+        internal static string MenuCycle {
+            get {
+                return ResourceManager.GetString("MenuCycle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exit to Dashboard.
         /// </summary>
         internal static string MenuExit {
@@ -1015,6 +1033,24 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}.
+        /// </summary>
+        internal static string MenuPlayerSlot {
+            get {
+                return ResourceManager.GetString("MenuPlayerSlot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} (Host).
+        /// </summary>
+        internal static string MenuPlayerSlotHost {
+            get {
+                return ResourceManager.GetString("MenuPlayerSlotHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Previous.
         /// </summary>
         internal static string MenuPrevious {
@@ -1056,6 +1092,15 @@ namespace Strategy.Properties {
         internal static string MenuSounds {
             get {
                 return ResourceManager.GetString("MenuSounds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Game.
+        /// </summary>
+        internal static string MenuStartGame {
+            get {
+                return ResourceManager.GetString("MenuStartGame", resourceCulture);
             }
         }
         

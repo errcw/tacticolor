@@ -77,6 +77,27 @@ namespace Strategy.Interface.Screens
             return this;
         }
 
+        public MenuBuilder CreateCycleButtonEntry<T>(string labelText, EventHandler<EventArgs> cycledHandler, T initialState)
+        {
+            string[] states = Enum.GetNames(typeof(T));
+            int state = Array.FindIndex(states, s => s == initialState.ToString());
+
+            TextSprite labelSprite = new TextSprite(_font, labelText);
+            TextSprite textSprite = new TextSprite(_font, states[state]);
+            TextMenuEntry entry = new TextMenuEntry(labelSprite, textSprite);
+            entry.SelectText = Resources.MenuCycle;
+            entry.Selected += cycledHandler;
+
+            entry.Selected += (s, a) =>
+            {
+                state = (state + 1) % states.Length;
+                textSprite.Text = states[state];
+            };
+
+            _screen.AddEntry(entry);
+            return this;
+        }
+
         public MenuBuilder CreateImageEntry(Sprite sprite)
         {
             MenuEntry entry = new MenuEntry(sprite);
