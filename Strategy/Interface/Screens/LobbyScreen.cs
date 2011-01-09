@@ -79,11 +79,7 @@ namespace Strategy.Interface.Screens
         protected override void UpdateActive(GameTime gameTime)
         {
             _session.Update();
-            if (_session.IsHost && _session.SessionState == NetworkSessionState.Lobby && _configuration.IsEveryoneReady)
-            {
-                _session.StartGame();
-            }
-            else if (_session.IsHost && _session.SessionState == NetworkSessionState.Playing && !_isMatchRunning)
+            if (_session.IsHost && _session.SessionState == NetworkSessionState.Playing && !_isMatchRunning)
             {
                 // if we are in the lobby and in the playing state but the match is not running
                 // then something has gone wrong and we should move back to the lobby state
@@ -281,6 +277,10 @@ namespace Strategy.Interface.Screens
 
         private void OnStartGame(object sender, EventArgs args)
         {
+            if (_session.IsHost && _session.SessionState == NetworkSessionState.Lobby && _configuration.IsEveryoneReady)
+            {
+                _session.StartGame();
+            }
         }
 
         private void AddPlayer(NetworkGamer gamer)
@@ -343,15 +343,13 @@ namespace Strategy.Interface.Screens
             for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
             {
                 Player player = FindPlayerByController(p);
-                if (_input.Join[(int)p].Pressed)
+                if (_input.ToggleReady[(int)p].Pressed)
                 {
                     if (player != null)
                     {
-                        // mark this player as ready
-                        if (_configuration.HasValidConfiguration)
-                        {
-                            _configuration.SetIsReady((LocalNetworkGamer)player.Gamer, true);
-                        }
+                        // switch the ready state for this player
+                        LocalNetworkGamer gamer = (LocalNetworkGamer)player.Gamer;
+                        _configuration.SetIsReady(gamer, !_configuration.IsReady(gamer));
                     }
                     else
                     {
@@ -380,26 +378,6 @@ namespace Strategy.Interface.Screens
                             {
                                 // join the existing session
                                 _session.AddLocalGamer(p.GetSignedInGamer());
-                            }
-                        }
-                    }
-                }
-                else if (_input.Leave[(int)p].Pressed)
-                {
-                    // ignore leave requests from non-players
-                    if (player != null)
-                    {
-                        if (_configuration.IsReady(player.Gamer))
-                        {
-                            // back out of the ready state
-                            _configuration.SetIsReady((LocalNetworkGamer)player.Gamer, false);
-                        }
-                        else
-                        {
-                            // leave the session if the request came from the main controller
-                            if (p == _input.Controller)
-                            {
-                                Stack.Pop();
                             }
                         }
                     }
@@ -499,7 +477,7 @@ namespace Strategy.Interface.Screens
             _player = player;
 
             string newLabel = GetLabel();
-            Color readyColor = (player != null) ? ReadyColor : NoPlayerColor;
+            Color readyColor = (player != null) ? UnreadyColor : NoPlayerColor;
             _labelAnimation = new SequentialAnimation(
                 new ColorAnimation(_labelSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
                 new TextAnimation(_labelSprite, newLabel),
@@ -531,8 +509,8 @@ namespace Strategy.Interface.Screens
 
         private IAnimation _labelAnimation;
 
-        private readonly Color ReadyColor = PlayerId.A.GetPieceColor();
-        private readonly Color UnreadyColor = PlayerId.C.GetPieceColor();
+        private readonly Color ReadyColor = PlayerId.C.GetPieceColor();
+        private readonly Color UnreadyColor = PlayerId.A.GetPieceColor();
         private readonly Color NoPlayerColor = Color.White;
     }
 }
