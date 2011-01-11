@@ -187,6 +187,17 @@ namespace Strategy.Interface.Screens
                 // use a new configuration with the new host to sync all players
                 _configuration.Seed = _random.Next(1, int.MaxValue);
             }
+
+            // update the slots to show the new host
+            Player oldHostPlayer = FindPlayerByGamer(args.OldHost);
+            if (oldHostPlayer != null)
+            {
+                PlayerSlot oldHostSlot = FindSlotByPlayer(oldHostPlayer);
+                oldHostSlot.UpdateHostStatus();
+            }
+            Player newHostPlayer = FindPlayerByGamer(args.NewHost);
+            PlayerSlot newHostSlot = FindSlotByPlayer(newHostPlayer);
+            newHostSlot.UpdateHostStatus();
         }
 
         private void OnGameStarted(object sender, GameStartedEventArgs args)
@@ -255,7 +266,7 @@ namespace Strategy.Interface.Screens
         {
             Debug.WriteLine(args.Gamer.Gamertag + " is ready changed to " + args.IsReady);
 
-            Player player = _players.Single(p => p.Gamer == args.Gamer);
+            Player player = FindPlayerByGamer(args.Gamer);
             PlayerSlot slot = FindSlotByPlayer(player);
             slot.IsReady = args.IsReady;
         }
@@ -312,7 +323,7 @@ namespace Strategy.Interface.Screens
 
         private void RemovePlayer(NetworkGamer gamer)
         {
-            Player playerToRemove = _players.Single(player => player.Gamer == gamer);
+            Player playerToRemove = FindPlayerByGamer(gamer);
             _players.Remove(playerToRemove);
 
             PlayerSlot slot = FindSlotByPlayer(playerToRemove);
@@ -323,6 +334,11 @@ namespace Strategy.Interface.Screens
                 // lost all the players, back out to the main menu
                 Stack.Pop();
             }
+        }
+
+        private Player FindPlayerByGamer(Gamer gamer)
+        {
+            return _players.FirstOrDefault(player => player.Gamer == gamer);
         }
 
         private Player FindPlayerByController(PlayerIndex index)
@@ -464,6 +480,11 @@ namespace Strategy.Interface.Screens
             _backgroundSprite.Draw(spriteBatch);
             _labelSprite.Draw(spriteBatch);
             _readySprite.Draw(spriteBatch);
+        }
+
+        public void UpdateHostStatus()
+        {
+            _labelSprite.Text = GetLabel();
         }
 
         private void SetPlayer(Player player)
