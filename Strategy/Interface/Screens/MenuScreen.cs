@@ -278,7 +278,6 @@ namespace Strategy.Interface.Screens
             {
                 //_soundMove.Play();
             }
-
         }
 
         /// <summary>
@@ -428,11 +427,17 @@ namespace Strategy.Interface.Screens
         {
             if (_positionAnimation != null)
             {
-                _positionAnimation.Update(time);
+                if (!_positionAnimation.Update(time))
+                {
+                    _positionAnimation = null;
+                }
             }
             if (_colorAnimation != null)
             {
-                _colorAnimation.Update(time);
+                if (!_colorAnimation.Update(time))
+                {
+                    _colorAnimation = null;
+                }
             }
         }
 
@@ -542,5 +547,60 @@ namespace Strategy.Interface.Screens
 
         private readonly Color OutlineColor = new Color(207, 115, 115);
         private const float FadeDuration = 0.6f;
+    }
+
+    /// <summary>
+    /// A text menu entry with more than one value.
+    /// </summary>
+    public class CyclingTextMenuEntry : TextMenuEntry
+    {
+        public CyclingTextMenuEntry(TextSprite label, TextSprite text, string[] entries, int initialEntry) : base(label, text)
+        {
+            _entries = entries;
+            _entryIndex = initialEntry;
+            TextSprite.Text = _entries[_entryIndex];
+            SelectText = Resources.MenuCycle;
+        }
+
+        public bool SetEntry(string entry)
+        {
+            int newIndex = Array.IndexOf(_entries, entry);
+            if (newIndex < 0 || _entryIndex == newIndex)
+            {
+                return false;
+            }
+            _entryIndex = newIndex;
+            string newText = _entries[_entryIndex];
+            _entryChangeAnimation = new SequentialAnimation(
+                new ColorAnimation(TextSprite, Color.Transparent, 0.5f, Interpolation.InterpolateColor(Easing.Uniform)),
+                new TextAnimation(TextSprite, newText),
+                new ColorAnimation(TextSprite, TextSprite.Color, 0.5f, Interpolation.InterpolateColor(Easing.Uniform)));
+            return true;
+        }
+
+        public override void Update(float time)
+        {
+            if (_entryChangeAnimation != null)
+            {
+                if (!_entryChangeAnimation.Update(time))
+                {
+                    _entryChangeAnimation = null;
+                }
+            }
+            base.Update(time);
+        }
+
+        public override void OnSelected()
+        {
+            // cycle to the next entry
+            _entryIndex = (_entryIndex + 1) % _entries.Length;
+            TextSprite.Text = _entries[_entryIndex];
+            base.OnSelected();
+        }
+
+        private string[] _entries;
+        private int _entryIndex;
+
+        private IAnimation _entryChangeAnimation;
     }
 }

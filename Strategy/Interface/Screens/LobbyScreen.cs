@@ -62,15 +62,14 @@ namespace Strategy.Interface.Screens
             }
 
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundLobby"));
-            _spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
             new MenuBuilder(this, game)
                 .CreateButtonEntry(Resources.MenuStartGame, OnStartGame)
-                .CreateCycleButtonEntry(Resources.MapType, OnMapTypeCycled, _configuration.MapType)
-                .CreateCycleButtonEntry(Resources.MapSize, OnMapSizeCycled, _configuration.MapSize)
-                .CreateCycleButtonEntry(Resources.AiDifficulty, OnDifficultyCycled, _configuration.Difficulty);
+                .CreateCycleButtonEntry(Resources.MenuMapType, OnMapTypeCycled, _configuration.MapType, out _mapTypeEntry)
+                .CreateCycleButtonEntry(Resources.MenuMapSize, OnMapSizeCycled, _configuration.MapSize, out _mapSizeEntry)
+                .CreateCycleButtonEntry(Resources.MenuAiDifficulty, OnDifficultyCycled, _configuration.Difficulty, out _difficultyEntry);
 
-            BasePosition = new Vector2(250f, 600f);
+            BasePosition = new Vector2(250f, 590f);
             TransitionOnTime = 0.5f;
             TransitionOffTime = 0.5f;
             ShowBeneath = true; // for the transition on
@@ -259,7 +258,14 @@ namespace Strategy.Interface.Screens
         private void OnConfigurationChanged(object sender, EventArgs args)
         {
             Debug.WriteLine("Configuration changed");
-            //TODO show the new configuration
+            if (_mapTypeEntry == null || _mapSizeEntry == null || _difficultyEntry == null)
+            {
+                // menu creation has not yet happened; nothing to update
+                return;
+            }
+            _mapTypeEntry.SetEntry(_configuration.MapType.ToString());
+            _mapSizeEntry.SetEntry(_configuration.MapSize.ToString());
+            _difficultyEntry.SetEntry(_configuration.Difficulty.ToString());
         }
 
         private void OnReadyChanged(object sender, ReadyChangedEventArgs args)
@@ -273,17 +279,32 @@ namespace Strategy.Interface.Screens
 
         private void OnMapSizeCycled(object sender, EventArgs args)
         {
-            _configuration.MapSize += 1;
+            switch (_configuration.MapSize)
+            {
+                case MapSize.Tiny: _configuration.MapSize = MapSize.Small; break;
+                case MapSize.Small: _configuration.MapSize = MapSize.Normal; break;
+                case MapSize.Normal: _configuration.MapSize = MapSize.Large; break;
+                case MapSize.Large: _configuration.MapSize = MapSize.Tiny; break;
+            }
         }
 
         private void OnMapTypeCycled(object sender, EventArgs args)
         {
-            _configuration.MapType += 1;
+            switch (_configuration.MapType)
+            {
+                case MapType.LandRush: _configuration.MapType = MapType.Filled; break;
+                case MapType.Filled: _configuration.MapType = MapType.LandRush; break;
+            }
         }
 
         private void OnDifficultyCycled(object sender, EventArgs args)
         {
-            _configuration.Difficulty += 1;
+            switch (_configuration.Difficulty)
+            {
+                case AiDifficulty.Easy: _configuration.Difficulty = AiDifficulty.Normal; break;
+                case AiDifficulty.Normal: _configuration.Difficulty = AiDifficulty.Hard; break;
+                case AiDifficulty.Hard: _configuration.Difficulty = AiDifficulty.Easy; break;
+            }
         }
 
         private void OnStartGame(object sender, EventArgs args)
@@ -413,7 +434,9 @@ namespace Strategy.Interface.Screens
 
         private Sprite _background;
         private List<PlayerSlot> _slots;
-        private SpriteBatch _spriteBatch;
+        private CyclingTextMenuEntry _mapTypeEntry;
+        private CyclingTextMenuEntry _mapSizeEntry;
+        private CyclingTextMenuEntry _difficultyEntry;
         private float _transitionProgress;
     }
 

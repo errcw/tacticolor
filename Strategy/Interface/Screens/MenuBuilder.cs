@@ -26,6 +26,7 @@ namespace Strategy.Interface.Screens
             _screen = screen;
             _game = game;
             _font = _game.Content.Load<SpriteFont>("Fonts/TextLarge");
+            _fontSmall = _game.Content.Load<SpriteFont>("Fonts/TextSmall");
         }
 
         public MenuBuilder CreateButtonEntry(string buttonText, EventHandler<EventArgs> selectedHandler)
@@ -60,18 +61,14 @@ namespace Strategy.Interface.Screens
 
         public MenuBuilder CreateToggleButtonEntry(string labelText, EventHandler<EventArgs> toggledHandler, bool initialState)
         {
+            string[] states = { Resources.MenuOn, Resources.MenuOff };
+            int state = initialState ? 0 : 1;
+
             TextSprite labelSprite = new TextSprite(_font, labelText);
-            TextSprite textSprite = new TextSprite(_font, initialState ? Resources.MenuOn : Resources.MenuOff);
-            TextMenuEntry entry = new TextMenuEntry(labelSprite, textSprite);
+            TextSprite textSprite = new TextSprite(_fontSmall);
+            CyclingTextMenuEntry entry = new CyclingTextMenuEntry(labelSprite, textSprite, states, state);
             entry.SelectText = Resources.MenuToggle;
             entry.Selected += toggledHandler;
-
-            bool state = initialState;
-            entry.Selected += (s, a) =>
-            {
-                state = !state;
-                textSprite.Text = state ? Resources.MenuOn : Resources.MenuOff;
-            };
 
             _screen.AddEntry(entry);
             return this;
@@ -79,22 +76,22 @@ namespace Strategy.Interface.Screens
 
         public MenuBuilder CreateCycleButtonEntry<T>(string labelText, EventHandler<EventArgs> cycledHandler, T initialState)
         {
+            CyclingTextMenuEntry dummy;
+            return CreateCycleButtonEntry(labelText, cycledHandler, initialState, out dummy);
+        }
+
+        public MenuBuilder CreateCycleButtonEntry<T>(string labelText, EventHandler<EventArgs> cycledHandler, T initialState, out CyclingTextMenuEntry createdEntry)
+        {
             string[] states = Enum.GetNames(typeof(T));
-            int state = Array.FindIndex(states, s => s == initialState.ToString());
+            int state = Array.IndexOf(states, initialState.ToString());
 
             TextSprite labelSprite = new TextSprite(_font, labelText);
-            TextSprite textSprite = new TextSprite(_font, states[state]);
-            TextMenuEntry entry = new TextMenuEntry(labelSprite, textSprite);
-            entry.SelectText = Resources.MenuCycle;
+            TextSprite textSprite = new TextSprite(_fontSmall);
+            CyclingTextMenuEntry entry = new CyclingTextMenuEntry(labelSprite, textSprite, states, state);
             entry.Selected += cycledHandler;
 
-            entry.Selected += (s, a) =>
-            {
-                state = (state + 1) % states.Length;
-                textSprite.Text = states[state];
-            };
-
             _screen.AddEntry(entry);
+            createdEntry = entry;
             return this;
         }
 
@@ -110,5 +107,6 @@ namespace Strategy.Interface.Screens
         private MenuScreen _screen;
 
         private SpriteFont _font;
+        private SpriteFont _fontSmall;
     }
 }

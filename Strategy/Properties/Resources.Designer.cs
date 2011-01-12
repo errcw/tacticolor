@@ -61,15 +61,6 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Difficulty.
-        /// </summary>
-        internal static string AiDifficulty {
-            get {
-                return ResourceManager.GetString("AiDifficulty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Easy.
         /// </summary>
         internal static string AiDifficultyEasy {
@@ -718,15 +709,6 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Map Size.
-        /// </summary>
-        internal static string MapSize {
-            get {
-                return ResourceManager.GetString("MapSize", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Large.
         /// </summary>
         internal static string MapSizeLarge {
@@ -763,15 +745,6 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Map Type.
-        /// </summary>
-        internal static string MapType {
-            get {
-                return ResourceManager.GetString("MapType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Filled.
         /// </summary>
         internal static string MapTypeFilled {
@@ -786,6 +759,15 @@ namespace Strategy.Properties {
         internal static string MapTypeLandRush {
             get {
                 return ResourceManager.GetString("MapTypeLandRush", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Difficulty:.
+        /// </summary>
+        internal static string MenuAiDifficulty {
+            get {
+                return ResourceManager.GetString("MenuAiDifficulty", resourceCulture);
             }
         }
         
@@ -957,6 +939,24 @@ namespace Strategy.Properties {
         internal static string MenuLocalGame {
             get {
                 return ResourceManager.GetString("MenuLocalGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map Size:.
+        /// </summary>
+        internal static string MenuMapSize {
+            get {
+                return ResourceManager.GetString("MenuMapSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map Type:.
+        /// </summary>
+        internal static string MenuMapType {
+            get {
+                return ResourceManager.GetString("MenuMapType", resourceCulture);
             }
         }
         
