@@ -763,7 +763,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Difficulty:.
+        ///   Looks up a localized string similar to Difficulty.
         /// </summary>
         internal static string MenuAiDifficulty {
             get {
@@ -943,7 +943,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Map Size:.
+        ///   Looks up a localized string similar to Map Size.
         /// </summary>
         internal static string MenuMapSize {
             get {
@@ -952,7 +952,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Map Type:.
+        ///   Looks up a localized string similar to Map Type.
         /// </summary>
         internal static string MenuMapType {
             get {

@@ -352,7 +352,7 @@
     <value>Land Rush</value>
   </data>
   <data name="MenuAiDifficulty" xml:space="preserve">
-    <value>Difficulty:</value>
+    <value>Difficulty</value>
   </data>
   <data name="MenuAwardments" xml:space="preserve">
     <value>Awardments</value>
@@ -412,10 +412,10 @@
     <value>Local Game</value>
   </data>
   <data name="MenuMapSize" xml:space="preserve">
-    <value>Map Size:</value>
+    <value>Map Size</value>
   </data>
   <data name="MenuMapType" xml:space="preserve">
-    <value>Map Type:</value>
+    <value>Map Type</value>
   </data>
   <data name="MenuMultiplayerGame" xml:space="preserve">
     <value>Xbox LIVE Game</value>
