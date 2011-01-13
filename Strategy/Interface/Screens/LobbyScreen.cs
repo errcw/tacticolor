@@ -64,10 +64,18 @@ namespace Strategy.Interface.Screens
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundLobby"));
 
             new MenuBuilder(this, game)
-                .CreateButtonEntry(Resources.MenuStartGame, OnStartGame)
+                .CreateButtonEntry(Resources.MenuStartGame, OnStartGame, out _startEntry)
                 .CreateCycleButtonEntry(Resources.MenuMapType, OnMapTypeCycled, _configuration.MapType, out _mapTypeEntry)
                 .CreateCycleButtonEntry(Resources.MenuMapSize, OnMapSizeCycled, _configuration.MapSize, out _mapSizeEntry)
                 .CreateCycleButtonEntry(Resources.MenuAiDifficulty, OnDifficultyCycled, _configuration.Difficulty, out _difficultyEntry);
+
+            if (!_session.IsHost)
+            {
+                _startEntry.IsSelectable = false;
+                _mapTypeEntry.IsSelectable = false;
+                _mapSizeEntry.IsSelectable = false;
+                _difficultyEntry.IsSelectable = false;
+            }
 
             BasePosition = new Vector2(250f, 590f);
             TransitionOnTime = 0.5f;
@@ -162,13 +170,41 @@ namespace Strategy.Interface.Screens
         {
             Debug.WriteLine(args.Gamer.Gamertag + " joined");
             Debug.Assert(_session.SessionState == NetworkSessionState.Lobby);
-            AddPlayer(args.Gamer);
+
+            Player player = new Player() { Gamer = args.Gamer };
+            _players.Add(player);
+
+            PlayerSlot slot = FindSlotByPlayer(null);
+            slot.Player = player;
+
+            // for local players find the local controller
+            if (args.Gamer.IsLocal)
+            {
+                for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
+                {
+                    if (Gamer.SignedInGamers[p].Gamertag == args.Gamer.Gamertag)
+                    {
+                        player.Controller = p;
+                        break;
+                    }
+                }
+                if (!player.Controller.HasValue)
+                {
+                    Debug.WriteLine("Local player with no controller! Falling back to controller one.");
+                    player.Controller = PlayerIndex.One;
+                }
+            }
         }
 
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
         {
             Debug.WriteLine(args.Gamer.Gamertag + " left");
-            RemovePlayer(args.Gamer);
+
+            Player playerToRemove = FindPlayerByGamer(args.Gamer);
+            _players.Remove(playerToRemove);
+
+            PlayerSlot slot = FindSlotByPlayer(playerToRemove);
+            slot.Player = null;
         }
 
         private void OnHostChanged(object sender, HostChangedEventArgs args)
@@ -434,6 +470,7 @@ namespace Strategy.Interface.Screens
 
         private Sprite _background;
         private List<PlayerSlot> _slots;
+        private MenuEntry _startEntry;
         private CyclingTextMenuEntry _mapTypeEntry;
         private CyclingTextMenuEntry _mapSizeEntry;
         private CyclingTextMenuEntry _difficultyEntry;

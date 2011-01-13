@@ -594,7 +594,6 @@ namespace Strategy.Interface.Screens
 
         public override void OnSelected()
         {
-            // cycle to the next entry
             _entryIndex = (_entryIndex + 1) % _entries.Length;
             TextSprite.Text = _entries[_entryIndex];
             base.OnSelected();
