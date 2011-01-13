@@ -69,13 +69,8 @@ namespace Strategy.Interface.Screens
                 .CreateCycleButtonEntry(Resources.MenuMapSize, OnMapSizeCycled, _configuration.MapSize, out _mapSizeEntry)
                 .CreateCycleButtonEntry(Resources.MenuAiDifficulty, OnDifficultyCycled, _configuration.Difficulty, out _difficultyEntry);
 
-            if (!_session.IsHost)
-            {
-                _startEntry.IsSelectable = false;
-                _mapTypeEntry.IsSelectable = false;
-                _mapSizeEntry.IsSelectable = false;
-                _difficultyEntry.IsSelectable = false;
-            }
+            // seed the UI with the host status
+            UpdateUiForHostChange();
 
             BasePosition = new Vector2(250f, 590f);
             TransitionOnTime = 0.5f;
@@ -223,6 +218,9 @@ namespace Strategy.Interface.Screens
                 _configuration.Seed = _random.Next(1, int.MaxValue);
             }
 
+            // update the configuration ui
+            UpdateUiForHostChange();
+
             // update the slots to show the new host
             Player oldHostPlayer = FindPlayerByGamer(args.OldHost);
             if (oldHostPlayer != null)
@@ -349,6 +347,15 @@ namespace Strategy.Interface.Screens
             {
                 _session.StartGame();
             }
+        }
+
+        private void UpdateUiForHostChange()
+        {
+            _startEntry.IsVisible = _session.IsHost;
+            _startEntry.IsSelectable = _session.IsHost;
+            _mapTypeEntry.IsSelectable = _session.IsHost;
+            _mapSizeEntry.IsSelectable = _session.IsHost;
+            _difficultyEntry.IsSelectable = _session.IsHost;
         }
 
         private void AddPlayer(NetworkGamer gamer)

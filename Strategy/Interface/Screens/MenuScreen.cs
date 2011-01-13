@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -129,7 +130,7 @@ namespace Strategy.Interface.Screens
         public override void Draw()
         {
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            _entries.ForEach(entry => entry.Sprite.Draw(_spriteBatch));
+            _entries.Where(entry => entry.IsVisible).ForEach(entry => entry.Sprite.Draw(_spriteBatch));
             _selectSprite.Draw(_spriteBatch);
             _backSprite.Draw(_spriteBatch);
             _moveSprite.Draw(_spriteBatch);
@@ -395,6 +396,11 @@ namespace Strategy.Interface.Screens
         }
 
         /// <summary>
+        /// If this entry is visible. Invisible entries still contribute to layout.
+        /// </summary>
+        public bool IsVisible { get; set; }
+
+        /// <summary>
         /// If this entry can be selected.
         /// </summary>
         public bool IsSelectable { get; set; }
@@ -416,6 +422,7 @@ namespace Strategy.Interface.Screens
         public MenuEntry(Sprite sprite)
         {
             Sprite = sprite;
+            IsVisible = true;
             IsSelectable = true;
             SelectText = Resources.MenuSelect;
         }
@@ -504,20 +511,18 @@ namespace Strategy.Interface.Screens
         /// <param name="time">The elapsed time, in seconds, since the last update.</param>
         public override void Update(float time)
         {
-            if (!IsSelectable)
+            if (IsSelectable)
             {
-                return;
+                _fadeElapsed += time;
+                if (_fadeElapsed >= FadeDuration)
+                {
+                    _fadeElapsed = 0;
+                    _fadeIn = !_fadeIn;
+                }
+                float p = _fadeElapsed / FadeDuration;
+                float a = (_fadeIn) ? p : 1 - p;
+                TextSprite.OutlineColor = ColorExtensions.FromPremultiplied(OutlineColor, a);
             }
-            _fadeElapsed += time;
-            if (_fadeElapsed >= FadeDuration)
-            {
-                _fadeElapsed = 0;
-                _fadeIn = !_fadeIn;
-            }
-            float p = _fadeElapsed / FadeDuration;
-            float a = (_fadeIn) ? p : 1 - p;
-            TextSprite.OutlineColor = ColorExtensions.FromPremultiplied(OutlineColor, a);
-
             base.Update(time);
         }
 
@@ -526,21 +531,21 @@ namespace Strategy.Interface.Screens
         /// </summary>
         public override void OnFocusChanged(bool focused)
         {
-            if (!IsSelectable)
+            if (IsSelectable)
             {
-                return;
+                if (focused)
+                {
+                    TextSprite.OutlineColor = OutlineColor;
+                    TextSprite.OutlineWidth = 2;
+                    _fadeIn = false;
+                    _fadeElapsed = 0;
+                }
+                else
+                {
+                    TextSprite.OutlineWidth = 0;
+                }
             }
-            if (focused)
-            {
-                TextSprite.OutlineColor = OutlineColor;
-                TextSprite.OutlineWidth = 2;
-                _fadeIn = false;
-                _fadeElapsed = 0;
-            }
-            else
-            {
-                TextSprite.OutlineWidth = 0;
-            }
+            base.OnFocusChanged(focused);
         }
 
         private bool _fadeIn;
