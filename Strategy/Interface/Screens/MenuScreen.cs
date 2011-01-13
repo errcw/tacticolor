@@ -559,6 +559,7 @@ namespace Strategy.Interface.Screens
         {
             _entries = entries;
             _entryIndex = initialEntry;
+            _textColor = TextSprite.Color;
             TextSprite.Text = _entries[_entryIndex];
             SelectText = Resources.MenuCycle;
         }
@@ -573,9 +574,9 @@ namespace Strategy.Interface.Screens
             _entryIndex = newIndex;
             string newText = _entries[_entryIndex];
             _entryChangeAnimation = new SequentialAnimation(
-                new ColorAnimation(TextSprite, Color.Transparent, 0.5f, Interpolation.InterpolateColor(Easing.Uniform)),
+                new ColorAnimation(TextSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
                 new TextAnimation(TextSprite, newText),
-                new ColorAnimation(TextSprite, TextSprite.Color, 0.5f, Interpolation.InterpolateColor(Easing.Uniform)));
+                new ColorAnimation(TextSprite, _textColor, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)));
             return true;
         }
 
@@ -603,5 +604,6 @@ namespace Strategy.Interface.Screens
         private int _entryIndex;
 
         private IAnimation _entryChangeAnimation;
+        private Color _textColor;
     }
 }

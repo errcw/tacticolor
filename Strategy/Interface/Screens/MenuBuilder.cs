@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Strategy.Properties;
 using Strategy.Library.Components;
 using Strategy.Library.Extensions;
+using Strategy.Library.Helper;
 using Strategy.Library.Sprite;
 
 namespace Strategy.Interface.Screens
@@ -82,7 +83,7 @@ namespace Strategy.Interface.Screens
 
         public MenuBuilder CreateCycleButtonEntry<T>(string labelText, EventHandler<EventArgs> cycledHandler, T initialState, out CyclingTextMenuEntry createdEntry)
         {
-            string[] states = Enum.GetNames(typeof(T));
+            string[] states = EnumHelper.GetNames(typeof(T));
             int state = Array.IndexOf(states, initialState.ToString());
 
             TextSprite labelSprite = new TextSprite(_font, labelText);

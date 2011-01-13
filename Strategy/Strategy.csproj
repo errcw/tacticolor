@@ -173,7 +173,8 @@
     <Compile Include="Library\Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Library\Extensions\NetworkSessionExtensions.cs" />
     <Compile Include="Library\Extensions\PlayerIndexExtensions.cs" />
-    <Compile Include="Library\Helper\MathHelperExtensions.cs" />
+    <Compile Include="Library\Helper\EnumHelper.cs" />
+    <Compile Include="Library\Helper\ExtendedMathHelper.cs" />
     <Compile Include="Library\Input\ControlPosition.cs" />
     <Compile Include="Library\Input\ControlState.cs" />
     <Compile Include="Library\Input\Input.cs" />
