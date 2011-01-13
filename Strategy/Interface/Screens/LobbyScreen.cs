@@ -315,6 +315,7 @@ namespace Strategy.Interface.Screens
         {
             if (Guide.IsTrialMode)
             {
+                _mapSizeEntry.SetEntry(_configuration.MapSize.ToString()); // force the entry back
                 PurchaseScreen purchaseScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchConfiguration, typeof(LobbyScreen));
                 Stack.Push(purchaseScreen);
                 return;
@@ -332,6 +333,7 @@ namespace Strategy.Interface.Screens
         {
             if (Guide.IsTrialMode)
             {
+                _mapTypeEntry.SetEntry(_configuration.MapType.ToString()); // force the entry back
                 PurchaseScreen purchaseScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchConfiguration, typeof(LobbyScreen));
                 Stack.Push(purchaseScreen);
                 return;
@@ -347,6 +349,7 @@ namespace Strategy.Interface.Screens
         {
             if (Guide.IsTrialMode)
             {
+                _difficultyEntry.SetEntry(_configuration.Difficulty.ToString()); // force the entry back
                 PurchaseScreen purchaseScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchConfiguration, typeof(LobbyScreen));
                 Stack.Push(purchaseScreen);
                 return;
