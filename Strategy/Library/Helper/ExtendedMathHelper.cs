@@ -2,12 +2,12 @@
 
 using Microsoft.Xna.Framework;
 
-namespace Strategy.Library.Extensions
+namespace Strategy.Library.Helper
 {
     /// <summary>
     /// Extensions to MathHelper.
     /// </summary>
-    public static class MathHelperExtensions
+    public static class ExtendedMathHelper
     {
         /// <summary>
         /// Returns abs(a - b) <= epsilon.

@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Strategy.Gameplay;
 using Strategy.Library;
 using Strategy.Library.Extensions;
+using Strategy.Library.Helper;
 using Strategy.Library.Screen;
 using Strategy.Library.Sprite;
 
@@ -257,8 +258,8 @@ namespace Strategy.Interface.Screens
                 LayoutEntries();
             }
 
-            _selectedEntryRel = MathHelperExtensions.Clamp(nextRelEntry, 0, VisibleEntryCount - 1);
-            _selectedEntryAbs = MathHelperExtensions.Clamp(nextAbsEntry, 0, _entries.Count - 1);
+            _selectedEntryRel = ExtendedMathHelper.Clamp(nextRelEntry, 0, VisibleEntryCount - 1);
+            _selectedEntryAbs = ExtendedMathHelper.Clamp(nextAbsEntry, 0, _entries.Count - 1);
 
             if (_entries.Count > VisibleEntryCount)
             {

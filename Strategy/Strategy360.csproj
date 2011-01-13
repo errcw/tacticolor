@@ -123,7 +123,7 @@
     <Compile Include="Library\Extensions\GameServiceContainerExtensions.cs" />
     <Compile Include="Library\Extensions\GameTimeExtensions.cs" />
     <Compile Include="Library\Extensions\IEnumerableExtensions.cs" />
-    <Compile Include="Library\Extensions\MathHelperExtensions.cs" />
+    <Compile Include="Library\Helper\MathHelperExtensions.cs" />
     <Compile Include="Library\Extensions\NetworkSessionExtensions.cs" />
     <Compile Include="Library\Extensions\PlayerIndexExtensions.cs" />
     <Compile Include="Library\Input\ControlPosition.cs" />
