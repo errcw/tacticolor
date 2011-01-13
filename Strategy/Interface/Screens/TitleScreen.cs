@@ -47,8 +47,6 @@ namespace Strategy.Interface.Screens
             _loadingText = new TextSprite(font, Resources.Loading);
             _loadingText.Position = new Vector2((1280 - loadingTextSize.X) / 2, 720 - 200);
             _loadingText.Color = Color.White;
-            _loadingText.OutlineColor = Color.Black;
-            _loadingText.OutlineWidth = 2;
 
             Vector2 readyTextSize = font.MeasureString(Resources.PressStart);
             _readyText = new TextSprite(font, Resources.PressStart);
