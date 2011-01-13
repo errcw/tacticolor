@@ -72,7 +72,7 @@ namespace Strategy.Interface.Screens
             // seed the UI with the host status
             UpdateUiForHostChange();
 
-            BasePosition = new Vector2(250f, 590f);
+            BasePosition = new Vector2(270f, 590f);
             TransitionOnTime = 0.5f;
             TransitionOffTime = 0.5f;
             ShowBeneath = true; // for the transition on
