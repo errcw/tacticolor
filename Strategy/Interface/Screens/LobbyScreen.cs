@@ -313,6 +313,12 @@ namespace Strategy.Interface.Screens
 
         private void OnMapSizeCycled(object sender, EventArgs args)
         {
+            if (Guide.IsTrialMode)
+            {
+                PurchaseScreen purchaseScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchConfiguration, typeof(LobbyScreen));
+                Stack.Push(purchaseScreen);
+                return;
+            }
             switch (_configuration.MapSize)
             {
                 case MapSize.Tiny: _configuration.MapSize = MapSize.Small; break;
@@ -324,6 +330,12 @@ namespace Strategy.Interface.Screens
 
         private void OnMapTypeCycled(object sender, EventArgs args)
         {
+            if (Guide.IsTrialMode)
+            {
+                PurchaseScreen purchaseScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchConfiguration, typeof(LobbyScreen));
+                Stack.Push(purchaseScreen);
+                return;
+            }
             switch (_configuration.MapType)
             {
                 case MapType.LandRush: _configuration.MapType = MapType.Filled; break;
@@ -333,6 +345,12 @@ namespace Strategy.Interface.Screens
 
         private void OnDifficultyCycled(object sender, EventArgs args)
         {
+            if (Guide.IsTrialMode)
+            {
+                PurchaseScreen purchaseScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchConfiguration, typeof(LobbyScreen));
+                Stack.Push(purchaseScreen);
+                return;
+            }
             switch (_configuration.Difficulty)
             {
                 case AiDifficulty.Easy: _configuration.Difficulty = AiDifficulty.Normal; break;

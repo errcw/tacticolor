@@ -3,14 +3,12 @@ To Do
 
 * Menu
   - Add the lobby screen
-    + add controls for changing the game parameters
-      - update controls when the remote values change
     + add better ready images
     + add a controls legend
     + limit the options in the trial
-    + handle host switching
-      - fix host labeling to update on host switch
-      - fix game parameter controls
+    + figure out a good ready design
+      - necessary for local games?
+      - changing parameters resets ready?
 * Sound
 
 * To try

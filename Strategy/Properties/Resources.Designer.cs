@@ -1285,6 +1285,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Get the full version to customize your match!.
+        /// </summary>
+        internal static string TrialMatchConfiguration {
+            get {
+                return ResourceManager.GetString("TrialMatchConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Get the full version to keep playing and finish your conquest!.
         /// </summary>
         internal static string TrialMatchEnd {

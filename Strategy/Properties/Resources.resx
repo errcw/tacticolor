@@ -527,6 +527,9 @@
   <data name="Strategy" xml:space="preserve">
     <value>Strategy</value>
   </data>
+  <data name="TrialMatchConfiguration" xml:space="preserve">
+    <value>Get the full version to customize your match!</value>
+  </data>
   <data name="TrialMatchEnd" xml:space="preserve">
     <value>Get the full version to keep playing and finish your conquest!</value>
   </data>
