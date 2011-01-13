@@ -531,19 +531,16 @@ namespace Strategy.Interface.Screens
         /// </summary>
         public override void OnFocusChanged(bool focused)
         {
-            if (IsSelectable)
+            if (focused)
             {
-                if (focused)
-                {
-                    TextSprite.OutlineColor = OutlineColor;
-                    TextSprite.OutlineWidth = 2;
-                    _fadeIn = false;
-                    _fadeElapsed = 0;
-                }
-                else
-                {
-                    TextSprite.OutlineWidth = 0;
-                }
+                TextSprite.OutlineColor = IsSelectable ? OutlineColor : Color.Transparent;
+                TextSprite.OutlineWidth = 2;
+                _fadeIn = false;
+                _fadeElapsed = 0;
+            }
+            else
+            {
+                TextSprite.OutlineWidth = 0;
             }
             base.OnFocusChanged(focused);
         }
