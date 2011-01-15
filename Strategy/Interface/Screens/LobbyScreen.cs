@@ -548,7 +548,7 @@ namespace Strategy.Interface.Screens
                 (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _labelSprite.Size.Y) / 2))
                 + _labelSprite.Origin;
 
-            _readySprite = new ImageSprite(content.Load<Texture2D>("Images/PieceAvailable"));
+            _readySprite = new ImageSprite(content.Load<Texture2D>("Images/Ready"));
             _readySprite.Position = new Vector2(
                 _backgroundSprite.Position.X + _backgroundSprite.Size.X - _readySprite.Size.X - 25,
                 _backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _readySprite.Size.Y) / 2);
