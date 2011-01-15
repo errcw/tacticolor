@@ -371,7 +371,8 @@ namespace Strategy.Interface.Screens
 
         private void OnStartGame(object sender, EventArgs args)
         {
-            if (_session.IsHost && _session.SessionState == NetworkSessionState.Lobby && _configuration.IsEveryoneReady)
+            bool readyOk = (_session.IsLocalSession() || _configuration.IsEveryoneReady);
+            if (_session.IsHost && _session.SessionState == NetworkSessionState.Lobby && readyOk)
             {
                 _session.StartGame();
             }
@@ -551,7 +552,7 @@ namespace Strategy.Interface.Screens
             _readySprite.Position = new Vector2(
                 _backgroundSprite.Position.X + _backgroundSprite.Size.X - _readySprite.Size.X - 25,
                 _backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _readySprite.Size.Y) / 2);
-            _readySprite.Color = Color.White;
+            _readySprite.Color = NoPlayerColor;
         }
 
         public void Update(float time)
@@ -628,6 +629,6 @@ namespace Strategy.Interface.Screens
 
         private readonly Color ReadyColor = PlayerId.C.GetPieceColor();
         private readonly Color UnreadyColor = PlayerId.A.GetPieceColor();
-        private readonly Color NoPlayerColor = Color.White;
+        private readonly Color NoPlayerColor = Color.Transparent;
     }
 }
