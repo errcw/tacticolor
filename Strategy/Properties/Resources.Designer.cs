@@ -1114,6 +1114,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Toggle Ready.
+        /// </summary>
+        internal static string MenuToggleReady {
+            get {
+                return ResourceManager.GetString("MenuToggleReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while accessing the network..
         /// </summary>
         internal static string NetworkError {

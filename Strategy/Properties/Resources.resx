@@ -469,6 +469,9 @@
   <data name="MenuToggle" xml:space="preserve">
     <value>Toggle</value>
   </data>
+  <data name="MenuToggleReady" xml:space="preserve">
+    <value>Toggle Ready</value>
+  </data>
   <data name="NetworkError" xml:space="preserve">
     <value>There was an error while accessing the network.</value>
   </data>

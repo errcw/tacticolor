@@ -366,7 +366,7 @@ namespace Strategy.Interface.Screens
         private int _selectedEntryAbs; /// absolute index inside all entries
         private int _listWindowBaseIndex; /// index of top entry
 
-        private readonly Vector2 ControlsBasePosition = new Vector2(130f, 565f);
+        protected readonly Vector2 ControlsBasePosition = new Vector2(130f, 565f);
     }
 
     /// <summary>

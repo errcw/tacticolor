@@ -63,6 +63,12 @@ namespace Strategy.Interface.Screens
 
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundLobby"));
 
+            ImageSprite readyImage = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonX"));
+            TextSprite readyText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuToggleReady);
+            readyText.Position = new Vector2(readyImage.Size.X + 5, (readyImage.Size.Y - readyText.Size.Y) / 2);
+            _legend = new CompositeSprite(readyImage, readyText);
+            _legend.Position = new Vector2(ControlsBasePosition.X, ControlsBasePosition.Y - _legend.Size.Y - 10);
+
             new MenuBuilder(this, game)
                 .CreateButtonEntry(Resources.MenuStartGame, OnStartGame, out _startEntry)
                 .CreateCycleButtonEntry(Resources.MenuMapType, OnMapTypeCycled, _configuration.MapType, out _mapTypeEntry)
@@ -132,6 +138,7 @@ namespace Strategy.Interface.Screens
             Matrix m = Matrix.CreateTranslation(slidePosition, 0f, 0f);
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, m);
             _background.Draw(_spriteBatch);
+            _legend.Draw(_spriteBatch);
             _slots.ForEach(slot => slot.Draw(_spriteBatch));
             _spriteBatch.End();
             base.Draw();
@@ -497,6 +504,7 @@ namespace Strategy.Interface.Screens
         private bool _isMatchRunning = false;
 
         private Sprite _background;
+        private Sprite _legend;
         private List<PlayerSlot> _slots;
         private MenuEntry _startEntry;
         private CyclingTextMenuEntry _mapTypeEntry;
