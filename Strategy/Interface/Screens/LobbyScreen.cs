@@ -265,9 +265,14 @@ namespace Strategy.Interface.Screens
             // manipulate the list of remaining gamers while the match runs
             List<Player> gamePlayers = new List<Player>(_players);
 
-            // assign ids to players by sorting based on unique id
-            // this assignment guarantees identical assignments across machines
-            gamePlayers.Sort((a, b) => a.Gamer.Id.CompareTo(b.Gamer.Id));
+            if (!_session.IsLocalSession())
+            {
+                // net games: assign ids to players by sorting based on unique id
+                // this assignment guarantees identical assignments across machines
+                // local games: assign ids based on order joined because that order
+                // corresponds to the piece colours displayed in the interface
+                gamePlayers.Sort((a, b) => a.Gamer.Id.CompareTo(b.Gamer.Id));
+            }
             for (int p = 0; p < gamePlayers.Count; p++)
             {
                 gamePlayers[p].Id = (PlayerId)p;
