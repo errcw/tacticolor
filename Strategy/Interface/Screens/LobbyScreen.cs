@@ -37,7 +37,9 @@ namespace Strategy.Interface.Screens
             _slots = new List<PlayerSlot>();
             for (int p = 0; p < session.MaxGamers; p++)
             {
-                _slots.Add(new PlayerSlot(game.Content, p));
+                _slots.Add(session.IsLocalSession()
+                    ? (PlayerSlot)(new LocalPlayerSlot((PlayerId)p, game.Content))
+                    : (PlayerSlot)(new NetworkPlayerSlot(p, game.Content)));
             }
 
             _session = session;
@@ -63,11 +65,14 @@ namespace Strategy.Interface.Screens
 
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundLobby"));
 
-            ImageSprite readyImage = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonX"));
-            TextSprite readyText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuToggleReady);
-            readyText.Position = new Vector2(readyImage.Size.X + 5, (readyImage.Size.Y - readyText.Size.Y) / 2);
-            _legend = new CompositeSprite(readyImage, readyText);
-            _legend.Position = new Vector2(ControlsBasePosition.X, ControlsBasePosition.Y - _legend.Size.Y - 10);
+            if (!_session.IsLocalSession())
+            {
+                ImageSprite readyImage = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonX"));
+                TextSprite readyText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuToggleReady);
+                readyText.Position = new Vector2(readyImage.Size.X + 5, (readyImage.Size.Y - readyText.Size.Y) / 2);
+                _legend = new CompositeSprite(readyImage, readyText);
+                _legend.Position = new Vector2(ControlsBasePosition.X, ControlsBasePosition.Y - _legend.Size.Y - 10);
+            }
 
             new MenuBuilder(this, game)
                 .CreateButtonEntry(Resources.MenuStartGame, OnStartGame, out _startEntry)
@@ -138,7 +143,10 @@ namespace Strategy.Interface.Screens
             Matrix m = Matrix.CreateTranslation(slidePosition, 0f, 0f);
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, m);
             _background.Draw(_spriteBatch);
-            _legend.Draw(_spriteBatch);
+            if (_legend != null)
+            {
+                _legend.Draw(_spriteBatch);
+            }
             _slots.ForEach(slot => slot.Draw(_spriteBatch));
             _spriteBatch.End();
             base.Draw();
@@ -232,11 +240,11 @@ namespace Strategy.Interface.Screens
             Player oldHostPlayer = FindPlayerByGamer(args.OldHost);
             if (oldHostPlayer != null)
             {
-                PlayerSlot oldHostSlot = FindSlotByPlayer(oldHostPlayer);
+                NetworkPlayerSlot oldHostSlot = FindSlotByPlayer(oldHostPlayer) as NetworkPlayerSlot;
                 oldHostSlot.UpdateHostStatus();
             }
             Player newHostPlayer = FindPlayerByGamer(args.NewHost);
-            PlayerSlot newHostSlot = FindSlotByPlayer(newHostPlayer);
+            NetworkPlayerSlot newHostSlot = FindSlotByPlayer(newHostPlayer) as NetworkPlayerSlot;
             newHostSlot.UpdateHostStatus();
         }
 
@@ -312,9 +320,8 @@ namespace Strategy.Interface.Screens
         private void OnReadyChanged(object sender, ReadyChangedEventArgs args)
         {
             Debug.WriteLine(args.Gamer.Gamertag + " is ready changed to " + args.IsReady);
-
             Player player = FindPlayerByGamer(args.Gamer);
-            PlayerSlot slot = FindSlotByPlayer(player);
+            NetworkPlayerSlot slot = FindSlotByPlayer(player) as NetworkPlayerSlot;
             slot.IsReady = args.IsReady;
         }
 
@@ -452,42 +459,40 @@ namespace Strategy.Interface.Screens
             for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
             {
                 Player player = FindPlayerByController(p);
-                if (_input.ToggleReady[(int)p].Pressed)
+                if (player != null && _input.ToggleReady[(int)p].Pressed && !_session.IsLocalSession())
                 {
-                    if (player != null)
+                    // switch the ready state for this player
+                    LocalNetworkGamer gamer = (LocalNetworkGamer)player.Gamer;
+                    _configuration.SetIsReady(gamer, !_configuration.IsReady(gamer));
+                }
+                if (player == null && _input.Join[(int)p].Pressed)
+                {
+                    // first time we saw this player
+                    if (!p.IsSignedIn() && !Guide.IsVisible)
                     {
-                        // switch the ready state for this player
-                        LocalNetworkGamer gamer = (LocalNetworkGamer)player.Gamer;
-                        _configuration.SetIsReady(gamer, !_configuration.IsReady(gamer));
-                    }
-                    else
-                    {
-                        // first time we saw this player
-                        if (!p.IsSignedIn() && !Guide.IsVisible)
+                        try
                         {
-                            try
-                            {
-                                // prompt the player to sign in
-                                Guide.ShowSignIn(1, _session.IsOnlineSession());
-                            }
-                            catch
-                            {
-                                // ignore whatever guide errors occur
-                            }
+                            // prompt the player to sign in
+                            Guide.ShowSignIn(1, _session.IsOnlineSession());
                         }
-                        if (p.IsSignedIn())
+                        catch
                         {
-                            if (_session.IsOnlineSession() && !p.CanPlayOnline())
-                            {
-                                // cannot join this online session
-                                MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkErrorCannotPlayOnline);
-                                Stack.Push(messageScreen);
-                            }
-                            else
-                            {
-                                // join the existing session
-                                _session.AddLocalGamer(p.GetSignedInGamer());
-                            }
+                            // ignore whatever guide errors occur
+                        }
+                    }
+                    if (p.IsSignedIn())
+                    {
+                        if (_session.IsOnlineSession() && !p.CanPlayOnline())
+                        {
+                            // cannot join this online session
+                            MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkErrorCannotPlayOnline);
+                            Stack.Push(messageScreen);
+                        }
+                        else
+                        {
+                            // join the existing session
+                            // may not succeed if the session is full
+                            _session.AddLocalGamer(p.GetSignedInGamer());
                         }
                     }
                 }
@@ -517,7 +522,7 @@ namespace Strategy.Interface.Screens
     /// <summary>
     /// Displays a match slot for a player.
     /// </summary>
-    class PlayerSlot
+    abstract class PlayerSlot
     {
         public Player Player
         {
@@ -525,18 +530,12 @@ namespace Strategy.Interface.Screens
             set { SetPlayer(value); }
         }
 
-        public bool IsReady
-        {
-            get { return _ready; }
-            set { SetReady(value); }
-        }
-
-        public PlayerSlot(ContentManager content, int index)
+        public PlayerSlot(int slotNumber, Sprite iconSprite, ContentManager content)
         {
             _backgroundSprite = new ImageSprite(content.Load<Texture2D>("Images/LobbyBox"));
             _backgroundSprite.Position = new Vector2(
                 (1280 - _backgroundSprite.Size.X) / 2,
-                100 + (_backgroundSprite.Size.Y + 20) * index);
+                100 + (_backgroundSprite.Size.Y + 20) * slotNumber);
 
             _labelSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextSmall"), Resources.MenuJoin);
             _labelSprite.Color = Color.Black;
@@ -548,25 +547,25 @@ namespace Strategy.Interface.Screens
                 (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _labelSprite.Size.Y) / 2))
                 + _labelSprite.Origin;
 
-            _readySprite = new ImageSprite(content.Load<Texture2D>("Images/Ready"));
-            _readySprite.Position = new Vector2(
-                _backgroundSprite.Position.X + _backgroundSprite.Size.X - _readySprite.Size.X - 25,
-                _backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _readySprite.Size.Y) / 2);
-            _readySprite.Color = NoPlayerColor;
+            _iconSprite = iconSprite;
+            _iconSprite.Position = new Vector2(
+                _backgroundSprite.Position.X + _backgroundSprite.Size.X - _iconSprite.Size.X - 25,
+                _backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _iconSprite.Size.Y) / 2);
+            _iconSprite.Color = Color.Transparent;
         }
 
         public void Update(float time)
         {
-            if (_labelAnimation != null)
+            if (_animation != null)
             {
-                if (!_labelAnimation.Update(time))
+                if (!_animation.Update(time))
                 {
-                    _labelAnimation = null;
+                    _animation = null;
                 }
             }
-            if (_labelAnimation == null && _player == null)
+            if (_animation == null && _player == null)
             {
-                _labelAnimation = new SequentialAnimation(
+                _animation = new SequentialAnimation(
                     new ScaleAnimation(_labelSprite, new Vector2(1.1f, 1.1f), 1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
                     new ScaleAnimation(_labelSprite, Vector2.One, 1f, Interpolation.InterpolateVector2(Easing.QuadraticIn)));
             }
@@ -576,12 +575,7 @@ namespace Strategy.Interface.Screens
         {
             _backgroundSprite.Draw(spriteBatch);
             _labelSprite.Draw(spriteBatch);
-            _readySprite.Draw(spriteBatch);
-        }
-
-        public void UpdateHostStatus()
-        {
-            _labelSprite.Text = GetLabel();
+            _iconSprite.Draw(spriteBatch);
         }
 
         private void SetPlayer(Player player)
@@ -594,38 +588,92 @@ namespace Strategy.Interface.Screens
 
             _player = player;
 
-            string newLabel = GetLabel();
-            Color readyColor = (player != null) ? UnreadyColor : NoPlayerColor;
-            _labelAnimation = new SequentialAnimation(
+            string newLabelText = GetLabelText();
+            Color newIconColor = GetIconColor();
+            _animation = new SequentialAnimation(
                 new ColorAnimation(_labelSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
-                new TextAnimation(_labelSprite, newLabel),
+                new TextAnimation(_labelSprite, newLabelText),
                 new ScaleAnimation(_labelSprite, Vector2.One, 0f, Interpolation.InterpolateVector2(Easing.Uniform)),
                 new CompositeAnimation(
                     new ColorAnimation(_labelSprite, Color.Black, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
-                    new ColorAnimation(_readySprite, readyColor, 0.25f, Interpolation.InterpolateColor(Easing.Uniform))));
+                    new ColorAnimation(_iconSprite, newIconColor, 0.25f, Interpolation.InterpolateColor(Easing.Uniform))));
+        }
+
+        protected abstract string GetLabelText();
+
+        protected abstract Color GetIconColor();
+
+        private Player _player;
+
+        protected ImageSprite _backgroundSprite;
+        protected TextSprite _labelSprite;
+        protected Sprite _iconSprite;
+
+        private IAnimation _animation;
+    }
+
+    class LocalPlayerSlot : PlayerSlot
+    {
+        public LocalPlayerSlot(PlayerId playerId, ContentManager content)
+            : base((int)playerId, new ImageSprite(content.Load<Texture2D>("Images/PieceAvailable")), content)
+        {
+            _playerId = playerId;
+        }
+
+        protected override string GetLabelText()
+        {
+            return (Player != null)
+                ? string.Format(Resources.MenuPlayerSlot, Player.DisplayName)
+                : Resources.MenuJoin;
+        }
+
+        protected override Color GetIconColor()
+        {
+            return _playerId.GetPieceColor();
+        }
+
+        private PlayerId _playerId;
+    }
+
+    class NetworkPlayerSlot : PlayerSlot
+    {
+        public bool IsReady
+        {
+            get { return _ready; }
+            set { SetReady(value); }
+        }
+
+        public NetworkPlayerSlot(int slotNumber, ContentManager content)
+            : base(slotNumber, new ImageSprite(content.Load<Texture2D>("Images/Ready")), content)
+        {
+        }
+
+        public void UpdateHostStatus()
+        {
+            _labelSprite.Text = GetLabelText();
+        }
+
+        protected override string GetLabelText()
+        {
+            return (Player != null)
+                ? string.Format(
+                    Player.Gamer.IsHost ? Resources.MenuPlayerSlotHost : Resources.MenuPlayerSlot,
+                    Player.DisplayName)
+                : Resources.MenuJoin;
+        }
+
+        protected override Color GetIconColor()
+        {
+            return _ready ? ReadyColor : UnreadyColor;
         }
 
         private void SetReady(bool ready)
         {
             _ready = ready;
-            _readySprite.Color = _ready ? ReadyColor : UnreadyColor;
+            _iconSprite.Color = GetIconColor();
         }
 
-        private string GetLabel()
-        {
-            return (_player != null)
-                ? string.Format(_player.Gamer.IsHost ? Resources.MenuPlayerSlotHost : Resources.MenuPlayerSlot, _player.DisplayName)
-                : Resources.MenuJoin;
-        }
-
-        private Player _player;
         private bool _ready;
-
-        private ImageSprite _backgroundSprite;
-        private TextSprite _labelSprite;
-        private ImageSprite _readySprite;
-
-        private IAnimation _labelAnimation;
 
         private readonly Color ReadyColor = PlayerId.C.GetPieceColor();
         private readonly Color UnreadyColor = PlayerId.A.GetPieceColor();

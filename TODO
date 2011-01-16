@@ -4,11 +4,9 @@ To Do
 * Menu
   - Add the lobby screen
     + add better ready images
-    + add a controls legend
     + figure out a good ready design
-      - necessary for local games?
       - changing parameters resets ready?
-      - how to show everyone ready?
+      - how to indicate when the game can start?
 * Sound
 
 * To try

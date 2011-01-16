@@ -26,6 +26,7 @@ namespace Strategy.Interface
         public readonly ControlState Debug = new ControlState();
 
         public readonly ControlState[] Activate;
+        public readonly ControlState[] Join;
         public readonly ControlState[] ToggleReady;
 
         public MenuInput(Game game) : base(game)
@@ -44,6 +45,7 @@ namespace Strategy.Interface
             // register the lobby inputs
             _inputs = new Input[4];
             Activate = new ControlState[4];
+            Join = new ControlState[4];
             ToggleReady = new ControlState[4];
             for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
             {
@@ -52,6 +54,8 @@ namespace Strategy.Interface
                 _inputs[index].Controller = p;
                 Activate[index] = new ControlState();
                 _inputs[index].Register(Activate[index], Polling.One(Buttons.Start));
+                Join[index] = new ControlState();
+                _inputs[index].Register(Join[index], Polling.One(Buttons.A));
                 ToggleReady[index] = new ControlState();
                 _inputs[index].Register(ToggleReady[index], Polling.One(Buttons.X));
             }
