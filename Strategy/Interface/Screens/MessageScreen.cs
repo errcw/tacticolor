@@ -32,7 +32,7 @@ namespace Strategy.Interface.Screens
 
             ImageSprite background = new ImageSprite(game.Content.Load<Texture2D>("Images/Colourable"));
             background.Scale = new Vector2(1280, 720);
-            background.Color = Color.FromNonPremultiplied(255, 255, 255, 128);
+            background.Color = Color.FromNonPremultiplied(64, 64, 64, 190);
             background.Position = Vector2.Zero;
 
             ImageSprite box = new ImageSprite(game.Content.Load<Texture2D>("Images/MessageBox"));
@@ -58,7 +58,7 @@ namespace Strategy.Interface.Screens
 
             TextSprite instructions = new TextSprite(font, Resources.MenuContinue);
             instructions.Position = new Vector2(_boxRightX - instructions.Size.X, _boxBottomY + 5);
-            instructions.Color = Color.FromNonPremultiplied(60, 60, 60, 255);
+            instructions.Color = Color.White;
 
             ImageSprite button = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonA"));
             button.Position = new Vector2(

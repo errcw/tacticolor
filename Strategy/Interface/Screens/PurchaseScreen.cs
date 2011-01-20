@@ -27,7 +27,7 @@ namespace Strategy.Interface.Screens
             instructions.Position = new Vector2(
                 _boxRightX - instructions.Size.X,
                 _boxBottomY + instructions.Size.Y + 15);
-            instructions.Color = new Color(60, 60, 60);
+            instructions.Color = Color.White;
 
             ImageSprite button = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonX"));
             button.Position = new Vector2(
@@ -56,7 +56,7 @@ namespace Strategy.Interface.Screens
 
                 TextSprite textSprite = new TextSprite(font);
                 textSprite.Text = Resources.ResourceManager.GetString("TrialUpsellReason" + i, Resources.Culture);
-                textSprite.Color = new Color(90, 90, 90);
+                textSprite.Color = Color.White;
                 textSprite.Position = new Vector2(x, 0f);
                 x += textSprite.Size.X + TextSeparation;
 
@@ -65,7 +65,7 @@ namespace Strategy.Interface.Screens
             }
             reasonSprite.Position = new Vector2(
                 (1280 - reasonSprite.Size.X) / 2,
-                600f);
+                570f);
 
             _sprite.Add(reasonSprite);
 

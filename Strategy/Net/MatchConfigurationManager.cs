@@ -60,14 +60,12 @@ namespace Strategy.Net
         }
 
         /// <summary>
-        /// Returns true if the configuration is valid; otherwise, false.
-        /// </summary>
-        public bool HasValidConfiguration { get { return Seed != 0; } }
-
-        /// <summary>
         /// Determines if all players are ready to begin the match.
         /// </summary>
-        public bool IsEveryoneReady { get { return _ready.All(kv => kv.Value); } }
+        public bool IsEveryoneReady
+        {
+            get { return _ready.All(kv => kv.Value); }
+        }
 
         public MatchConfigurationManager(NetworkSession session)
         {

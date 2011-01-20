@@ -273,6 +273,7 @@ namespace Strategy.Interface.Screens
                 // corresponds to the piece colours displayed in the interface
                 gamePlayers.Sort((a, b) => a.Gamer.Id.CompareTo(b.Gamer.Id));
             }
+
             for (int p = 0; p < gamePlayers.Count; p++)
             {
                 gamePlayers[p].Id = (PlayerId)p;
@@ -325,9 +326,12 @@ namespace Strategy.Interface.Screens
         private void OnReadyChanged(object sender, ReadyChangedEventArgs args)
         {
             Debug.WriteLine(args.Gamer.Gamertag + " is ready changed to " + args.IsReady);
+
             Player player = FindPlayerByGamer(args.Gamer);
             NetworkPlayerSlot slot = FindSlotByPlayer(player) as NetworkPlayerSlot;
             slot.IsReady = args.IsReady;
+
+            _startEntry.TargetColor = CanStartGame() ? Color.White : CannotStartGameColor;
         }
 
         private void OnMapSizeCycled(object sender, EventArgs args)
@@ -383,11 +387,16 @@ namespace Strategy.Interface.Screens
 
         private void OnStartGame(object sender, EventArgs args)
         {
-            bool readyOk = (_session.IsLocalSession() || _configuration.IsEveryoneReady);
-            if (_session.IsHost && _session.SessionState == NetworkSessionState.Lobby && readyOk)
+            if (CanStartGame())
             {
                 _session.StartGame();
             }
+        }
+
+        private bool CanStartGame()
+        {
+            bool readyOk = (_session.IsLocalSession() || _configuration.IsEveryoneReady);
+            return readyOk && _session.IsHost && _session.SessionState == NetworkSessionState.Lobby;
         }
 
         private void UpdateUiForHostChange()
@@ -522,6 +531,8 @@ namespace Strategy.Interface.Screens
         private CyclingTextMenuEntry _mapSizeEntry;
         private CyclingTextMenuEntry _difficultyEntry;
         private float _transitionProgress;
+
+        private static readonly Color CannotStartGameColor = new Color(100, 100, 100);
     }
 
     /// <summary>

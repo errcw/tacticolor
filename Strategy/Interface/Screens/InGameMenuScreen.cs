@@ -34,7 +34,7 @@ namespace Strategy.Interface.Screens
 
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/Colourable"));
             _background.Scale = new Vector2(1280, 720);
-            _background.Color = Color.FromNonPremultiplied(64, 64, 64, 215);
+            _background.Color = Color.FromNonPremultiplied(64, 64, 64, 190);
             _background.Position = Vector2.Zero;
 
             TransitionOnTime = 0.5f;
@@ -65,7 +65,7 @@ namespace Strategy.Interface.Screens
         {
             if (pushed)
             {
-                _background.Color = ColorExtensions.FromNonPremultiplied(new Color(128, 128, 128), progress * 0.5f);
+                _background.Color = ColorExtensions.FromNonPremultiplied(new Color(64, 64, 64), progress * 0.75f);
             }
             base.UpdateTransitionOn(gameTime, progress, pushed);
         }
@@ -74,7 +74,7 @@ namespace Strategy.Interface.Screens
         {
             if (popped)
             {
-                _background.Color = ColorExtensions.FromNonPremultiplied(new Color(128, 128, 128), (1 - progress) * 0.5f);
+                _background.Color = ColorExtensions.FromNonPremultiplied(new Color(64, 64, 64), (1 - progress) * 0.75f);
             }
             base.UpdateTransitionOff(gameTime, progress, popped);
         }
