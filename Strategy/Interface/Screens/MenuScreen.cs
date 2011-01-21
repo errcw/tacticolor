@@ -130,7 +130,7 @@ namespace Strategy.Interface.Screens
         public override void Draw()
         {
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            _entries.Where(entry => entry.IsVisible).ForEach(entry => entry.Sprite.Draw(_spriteBatch));
+            _entries.ForEach(entry => entry.Sprite.Draw(_spriteBatch));
             _selectSprite.Draw(_spriteBatch);
             _backSprite.Draw(_spriteBatch);
             _moveSprite.Draw(_spriteBatch);
@@ -176,7 +176,7 @@ namespace Strategy.Interface.Screens
                 foreach (MenuEntry entry in _entries)
                 {
                     entry.TargetPosition = BasePosition;
-                    entry.TargetColor = Color.Transparent;
+                    entry.TargetIsVisible = false;
                 }
             }
             else
@@ -293,7 +293,7 @@ namespace Strategy.Interface.Screens
             {
                 Vector2 position = new Vector2(previousX, BasePosition.Y);
                 _entries[i].TargetPosition = position;
-                _entries[i].TargetColor = IsEntryVisible(i) ? Color.White : Color.Transparent;
+                _entries[i].TargetIsVisible = IsEntryVisible(i);
                 previousX = position.X + _entries[i].Sprite.Size.X + Spacing;
             }
             // then lay out backwards from the base
@@ -303,7 +303,7 @@ namespace Strategy.Interface.Screens
                 float width = _entries[i].Sprite.Size.X;
                 Vector2 position = new Vector2(previousX - width, BasePosition.Y);
                 _entries[i].TargetPosition = position;
-                _entries[i].TargetColor = IsEntryVisible(i) ? Color.White : Color.Transparent;
+                _entries[i].TargetIsVisible = IsEntryVisible(i);
                 previousX = position.X - width - Spacing;
             }
         }
@@ -384,7 +384,11 @@ namespace Strategy.Interface.Screens
         /// </summary>
         public Vector2 TargetPosition
         {
-            set { _positionAnimation = new PositionAnimation(Sprite, value, 0.75f, Interpolation.InterpolateVector2(Easing.QuadraticOut)); }
+            set
+            {
+                _targetPosition = value;
+                _positionAnimation = new PositionAnimation(Sprite, _targetPosition, 0.75f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
+            }
         }
 
         /// <summary>
@@ -392,13 +396,23 @@ namespace Strategy.Interface.Screens
         /// </summary>
         public Color TargetColor
         {
-            set { _colorAnimation = new ColorAnimation(Sprite, value, 0.5f, Interpolation.InterpolateColor(Easing.Uniform)); }
+            set
+            {
+                _targetColor = value;
+                _colorAnimation = new ColorAnimation(Sprite, value, 0.5f, Interpolation.InterpolateColor(Easing.Uniform));
+            }
         }
 
         /// <summary>
-        /// If this entry is visible. Invisible entries still contribute to layout.
+        /// The desired visibility of this entry. Invisible entries still contribute to layout.
         /// </summary>
-        public bool IsVisible { get; set; }
+        public bool TargetIsVisible
+        {
+            set
+            {
+                _colorAnimation = new ColorAnimation(Sprite, value ? _targetColor : Color.Transparent, 0.5f, Interpolation.InterpolateColor(Easing.Uniform));
+            }
+        }
 
         /// <summary>
         /// If this entry can be selected.
@@ -422,7 +436,8 @@ namespace Strategy.Interface.Screens
         public MenuEntry(Sprite sprite)
         {
             Sprite = sprite;
-            IsVisible = true;
+            _targetColor = (Sprite != null) ? Sprite.Color : Color.White;
+            _targetPosition = (Sprite != null) ? Sprite.Position : Vector2.Zero;
             IsSelectable = true;
             SelectText = Resources.MenuSelect;
         }
@@ -467,6 +482,9 @@ namespace Strategy.Interface.Screens
         public virtual void OnFocusChanged(bool focused)
         {
         }
+
+        private Vector2 _targetPosition;
+        private Color _targetColor;
 
         private IAnimation _positionAnimation;
         private IAnimation _colorAnimation;

@@ -80,7 +80,8 @@ namespace Strategy.Interface.Screens
                 .CreateCycleButtonEntry(Resources.MenuMapSize, OnMapSizeCycled, _configuration.MapSize, out _mapSizeEntry)
                 .CreateCycleButtonEntry(Resources.MenuAiDifficulty, OnDifficultyCycled, _configuration.Difficulty, out _difficultyEntry);
 
-            // seed the UI with the host status
+            // seed the UI with the host/ready status
+            UpdateUiForReadyChange();
             UpdateUiForHostChange();
 
             BasePosition = new Vector2(270f, 590f);
@@ -331,7 +332,7 @@ namespace Strategy.Interface.Screens
             NetworkPlayerSlot slot = FindSlotByPlayer(player) as NetworkPlayerSlot;
             slot.IsReady = args.IsReady;
 
-            _startEntry.TargetColor = CanStartGame() ? Color.White : CannotStartGameColor;
+            UpdateUiForReadyChange();
         }
 
         private void OnMapSizeCycled(object sender, EventArgs args)
@@ -399,9 +400,14 @@ namespace Strategy.Interface.Screens
             return readyOk && _session.IsHost && _session.SessionState == NetworkSessionState.Lobby;
         }
 
+        private void UpdateUiForReadyChange()
+        {
+            _startEntry.TargetColor = CanStartGame() ? Color.White : CannotStartGameColor;
+        }
+
         private void UpdateUiForHostChange()
         {
-            _startEntry.IsVisible = _session.IsHost;
+            _startEntry.TargetIsVisible = _session.IsHost;
             _startEntry.IsSelectable = _session.IsHost;
             _mapTypeEntry.IsSelectable = _session.IsHost;
             _mapSizeEntry.IsSelectable = _session.IsHost;
