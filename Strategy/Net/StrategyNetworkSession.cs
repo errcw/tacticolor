@@ -10,7 +10,7 @@ namespace Strategy.Net
     /// <summary>
     /// Wraps a network session.
     /// </summary>
-    public class NetworkSessionComponent
+    public class StrategyNetworkSession
     {
         /// <summary>
         /// Occurs when the underlying session receives a GameStarted event.
@@ -98,7 +98,7 @@ namespace Strategy.Net
         /// <summary>
         /// Creates a new component wrapping the given session.
         /// </summary>
-        public NetworkSessionComponent(NetworkSession session)
+        public StrategyNetworkSession(NetworkSession session)
         {
             Session = session;
             Session.GameStarted += OnGameStarted;

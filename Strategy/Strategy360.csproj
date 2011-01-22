@@ -155,6 +155,7 @@
     <Compile Include="Net\LockstepMatch.cs" />
     <Compile Include="Net\MatchConfigurationManager.cs" />
     <Compile Include="Net\NetworkSessionProvider.cs" />
+    <Compile Include="Net\StrategyNetworkSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
