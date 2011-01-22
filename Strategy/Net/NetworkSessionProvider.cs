@@ -163,7 +163,7 @@ namespace Strategy.Net
                     // wait for QOS data if we need to choose between sessions
                     if (availableSessions.Count > 1)
                     {
-                        int timeoutMs = 3000;
+                        int timeoutMs = QualityOfServiceTimeout;
                         bool allAvailable = true;
                         while (true)
                         {
@@ -311,5 +311,7 @@ namespace Strategy.Net
             private NetworkSession _result;
             private readonly object _syncRoot;
         }
+
+        private const int QualityOfServiceTimeout = 3000;
     }
 }
