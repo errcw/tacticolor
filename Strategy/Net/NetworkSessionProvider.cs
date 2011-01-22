@@ -126,8 +126,6 @@ namespace Strategy.Net
             {
                 try
                 {
-                    SetProcessorAffinity();
-
                     NetworkSession session = NetworkSession.Create(
                         type,
                         Enumerable.Repeat(creator, 1),
@@ -157,8 +155,6 @@ namespace Strategy.Net
             {
                 try
                 {
-                    SetProcessorAffinity();
-
                     AvailableNetworkSessionCollection availableSessions = NetworkSession.Find(
                         type,
                         Enumerable.Repeat(joiner, 1),
@@ -229,8 +225,6 @@ namespace Strategy.Net
             {
                 try
                 {
-                    SetProcessorAffinity();
-
                     NetworkSession session = NetworkSession.JoinInvited(Enumerable.Repeat(accepter, 1));
                     SetCurrentSession(session);
                     result.Complete(session, false);
@@ -241,16 +235,6 @@ namespace Strategy.Net
                     result.Complete(null, false);
                 }
             };
-        }
-
-        /// <summary>
-        /// Sets the processor affinity on Xbox devices.
-        /// </summary>
-        private static void SetProcessorAffinity()
-        {
-#if XBOX
-            Thread.CurrentThread.SetProcessorAffinity(3);
-#endif
         }
 
         /// <summary>
