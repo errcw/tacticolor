@@ -33,38 +33,42 @@ namespace Strategy.Interface.Gameplay
 
             Texture2D tile = context.Content.Load<Texture2D>("Images/Tile");
             Texture2D tileHolder = context.Content.Load<Texture2D>("Images/TileHolder");
-            Color color = territory.Owner.GetTerritoryColor();
 
-            _sprites = new Sprite[_territory.Area.Count];
-            int s = 0;
+            // build the tiles in the territory
+            IsometricView isoView = new IsometricView();
             foreach (Cell cell in territory.Area)
             {
                 Texture2D spriteImage = IsHolder(cell) ? tileHolder : tile;
                 Point spritePosition = context.IsoParams.GetPoint(cell);
-                _sprites[s] = new ImageSprite(spriteImage);
-                _sprites[s].X = spritePosition.X;
-                _sprites[s].Y = spritePosition.Y;
-                _sprites[s].Color = color;
-                s += 1;
+                Sprite sprite = new ImageSprite(spriteImage);
+                sprite.X = spritePosition.X;
+                sprite.Y = spritePosition.Y;
+                isoView.Add(sprite);
             }
 
+            // build the territory sprite using the isometric draw order
+            _sprite = new CompositeSprite();
+            _sprite.Color = territory.Owner.GetTerritoryColor();
+            foreach (Sprite sprite in isoView.GetSpritesInDrawOrder())
+            {
+                _sprite.Add(sprite);
+            }
         }
 
         public void Update(float time)
         {
-            if (_colorAnims != null)
+            if (_colorAnimation != null)
             {
-                bool running = _colorAnims.All(anim => anim.Update(time));
-                if (!running)
+                if (!_colorAnimation.Update(time))
                 {
-                    _colorAnims = null;
+                    _colorAnimation = null;
                 }
             }
         }
 
         public void Draw(IsometricView isoView)
         {
-            _sprites.ForEach(sprite => isoView.Add(sprite));
+            isoView.Add(_sprite);
         }
 
         /// <summary>
@@ -99,13 +103,9 @@ namespace Strategy.Interface.Gameplay
             if (_territory.Owner != _lastOwner)
             {
                 Color newColor = _territory.Owner.GetTerritoryColor();
-                _colorAnims = new IAnimation[_sprites.Length];
-                for (int i = 0; i < _sprites.Length; i++)
-                {
-                    _colorAnims[i] = new SequentialAnimation(
-                        new DelayAnimation(delay),
-                        new ColorAnimation(_sprites[i], newColor, 1f, Interpolation.InterpolateColor(Easing.Uniform)));
-                }
+                _colorAnimation = new SequentialAnimation(
+                    new DelayAnimation(delay),
+                    new ColorAnimation(_sprite, newColor, 1f, Interpolation.InterpolateColor(Easing.Uniform)));
 
                 _lastOwner = _territory.Owner;
             }
@@ -152,11 +152,10 @@ namespace Strategy.Interface.Gameplay
         private InterfaceContext _context;
         private PlayerId? _lastOwner;
 
-        private Sprite[] _sprites;
-
         private Stack<Cell> _freeHolders;
         private Dictionary<PieceView, Cell> _usedHolders;
 
-        private IAnimation[] _colorAnims;
+        private CompositeSprite _sprite;
+        private IAnimation _colorAnimation;
     }
 }

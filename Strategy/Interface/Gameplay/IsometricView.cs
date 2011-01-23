@@ -28,6 +28,12 @@ namespace Strategy.Interface.Gameplay
             _sprites.Clear();
         }
 
+        public IEnumerable<Sprite> GetSpritesInDrawOrder()
+        {
+            _sprites.Sort(RenderOrderComparison);
+            return _sprites;
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             _sprites.Sort(RenderOrderComparison);
