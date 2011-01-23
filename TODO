@@ -1,20 +1,15 @@
 To Do
 -----
 
-* Menu
-  - Add the lobby screen
-    + add better ready images
-    + figure out a good ready design
-      - changing parameters resets ready?
-      - how to indicate when the game can start?
+* Fix packet loss!
 * Sound
-
-* To try
+* To try:
   - Show large numbers over the territory representing
     the attack total; add attack/defense markers too
     * Replace the how to play illustration?
   - Better ready indicator for available pieces
   - Navigation with paths
+  - Better ready images? Box/checkmark?
 
 Menu Structure
 --------------

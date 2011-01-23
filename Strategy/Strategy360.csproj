@@ -114,7 +114,9 @@
     <Compile Include="Interface\SlidingPanel.cs" />
     <Compile Include="Library\BresenhamIterator.cs" />
     <Compile Include="Library\Components\ExceptionDebugGame.cs" />
-    <Compile Include="Library\Components\FPSOverlayComponent.cs" />
+    <Compile Include="Library\Components\FpsOverlayComponent.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Library\Components\TrialModeObserverComponent.cs" />
     <Compile Include="Library\Components\TitleSafeAreaOverlayComponent.cs" />
     <Compile Include="Library\Easing.cs" />

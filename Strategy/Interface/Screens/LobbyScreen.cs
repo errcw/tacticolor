@@ -402,12 +402,15 @@ namespace Strategy.Interface.Screens
 
         private void UpdateUiForReadyChange()
         {
-            _startEntry.TargetColor = CanStartGame() ? Color.White : CannotStartGameColor;
+            if (_session.IsHost)
+            {
+                _startEntry.TargetColor = CanStartGame() ? Color.White : CannotStartGameColor;
+            }
         }
 
         private void UpdateUiForHostChange()
         {
-            _startEntry.TargetIsVisible = _session.IsHost;
+            _startEntry.TargetColor = _session.IsHost ? Color.White : Color.Transparent;
             _startEntry.IsSelectable = _session.IsHost;
             _mapTypeEntry.IsSelectable = _session.IsHost;
             _mapSizeEntry.IsSelectable = _session.IsHost;
