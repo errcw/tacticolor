@@ -29,6 +29,9 @@ namespace Strategy.Library.Components
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _font = Game.Content.Load<SpriteFont>(FontName);
+            _position = new Vector2(
+                (int)(GraphicsDevice.Viewport.Width * 0.05),
+                (int)(GraphicsDevice.Viewport.Height * 0.05));
         }
 
         public override void Update(GameTime gameTime)
@@ -46,17 +49,16 @@ namespace Strategy.Library.Components
         {
             _frameCounter += 1;
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            _spriteBatch.DrawString(_font, _frameRate.ToString(), TextOffset, Color.White);
+            _spriteBatch.DrawString(_font, _frameRate.ToString(), _position, Color.White);
             _spriteBatch.End();
         }
 
         private SpriteFont _font;
+        private Vector2 _position;
         private SpriteBatch _spriteBatch;
 
         private float _elapsed;
         private int _frameCounter;
         private int _frameRate;
-
-        private readonly Vector2 TextOffset = new Vector2(10, 10);
     }
 }
