@@ -36,19 +36,26 @@ namespace Strategy.Interface.Gameplay
                 }
             }
 
-            // create the connection sprites
+            // create the connection pieces
             bool sameRow = (closestA.Row == closestB.Row);
             Texture2D connectionTex = context.Content.Load<Texture2D>(sameRow ? "Images/ConnectionRow" : "Images/ConnectionCol");
-            _sprites = new List<Sprite>(4);
+            IsometricView isoView = new IsometricView();
             foreach (Point p in BresenhamIterator.GetPointsOnLine(closestA.Row, closestA.Col, closestB.Row, closestB.Col))
             {
                 Sprite sprite = new ImageSprite(connectionTex);
                 sprite.X = context.IsoParams.GetX(p.X, p.Y);
                 sprite.Y = context.IsoParams.GetY(p.X, p.Y);
-                sprite.Color = new Color(200, 200, 200);
-                sprite.Layer = 0.9f;
-                _sprites.Add(sprite);
+                isoView.Add(sprite);
             }
+
+            // build the connection sprite using the isometric draw order
+            _sprite = new CompositeSprite();
+            foreach (Sprite sprite in isoView.GetSpritesInDrawOrder())
+            {
+                _sprite.Add(sprite);
+            }
+            _sprite.Color = new Color(200, 200, 200);
+            _sprite.Layer = 0.9f;
         }
 
         public void Update(float time)
@@ -58,9 +65,9 @@ namespace Strategy.Interface.Gameplay
 
         public void Draw(IsometricView isoView)
         {
-            _sprites.ForEach(sprite => isoView.Add(sprite));
+            isoView.Add(_sprite);
         }
 
-        private List<Sprite> _sprites;
+        private CompositeSprite _sprite;
     }
 }
