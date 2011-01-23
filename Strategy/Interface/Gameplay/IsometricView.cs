@@ -45,7 +45,7 @@ namespace Strategy.Interface.Gameplay
             }
             if (a.Layer != b.Layer)
             {
-                return -a.Layer.CompareTo(b.Layer);
+                return b.Layer > a.Layer ? 1 : -1;
             }
             Vector2 apos = a.Position + a.Origin;
             Vector2 bpos = b.Position + b.Origin;
