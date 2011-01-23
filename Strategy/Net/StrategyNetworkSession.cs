@@ -141,7 +141,7 @@ namespace Strategy.Net
         public void BroadcastCommand(Command command, LocalNetworkGamer sender, SendDataOptions options)
         {
             _writer.Write(command);
-            sender.SendData(_writer, SendDataOptions.ReliableInOrder);
+            sender.SendData(_writer, options);
         }
 
         /// <summary>

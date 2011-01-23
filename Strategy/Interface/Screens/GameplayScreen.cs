@@ -243,9 +243,6 @@ namespace Strategy.Interface.Screens
                     _session.SessionEnded -= OnSessionEnded;
                 }
 
-                // unhook listeners to allow garbage collection
-                _lockstepMatch.Match.ResetEvents();
-
                 // notify the awardments the match was abandonned
                 if (!_isEnded)
                 {

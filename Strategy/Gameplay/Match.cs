@@ -428,20 +428,6 @@ namespace Strategy.Gameplay
         }
 
         /// <summary>
-        /// Clears the listeners from the match events. Used to unhook external
-        /// references to this match so it may be garbage collected.
-        /// </summary>
-        public void ResetEvents()
-        {
-            PieceCreated = null;
-            PiecePlaced = null;
-            PiecesMoved = null;
-            TerritoryAttacked = null;
-            PlayerEliminated = null;
-            Ended = null;
-        }
-
-        /// <summary>
         /// Configures the initial territory counts and state.
         /// </summary>
         private void SetInitialTerritoryState()
