@@ -19,16 +19,6 @@ namespace Strategy.Net
         public byte Id { get; private set; }
 
         /// <summary>
-        /// The player issuing this command.
-        /// </summary>
-        public PlayerId Player { get; private set; }
-
-        /// <summary>
-        /// The game time when this command should execute.
-        /// </summary>
-        public long Time { get; set; }
-
-        /// <summary>
         /// A simple constructor for packet reading.
         /// </summary>
         public Command(byte id)
@@ -37,56 +27,19 @@ namespace Strategy.Net
         }
 
         /// <summary>
-        /// Creates a new command.
-        /// </summary>
-        /// <param name="id">The identifier for the type of command.</param>
-        /// <param name="player">The player issuing this command.</param>
-        /// <param name="time">The game time when the command should execute.</param>
-        public Command(byte id, PlayerId player)
-        {
-            Id = id;
-            Player = player;
-            Time = 0; // filled out later
-        }
-
-        /// <summary>
-        /// Execute this action on the given match.
-        /// </summary>
-        /// <param name="match">The match to operate on.</param>
-        /// <returns>True if the command is valid; otherwise, false.</returns>
-        public virtual bool Execute(Match match)
-        {
-            // by default a command cannot be executed
-            return false;
-        }
-
-        /// <summary>
         /// Reads the data for this command from the given packet reader.
         /// </summary>
-        public void Read(PacketReader reader)
-        {
-            Player = (PlayerId)reader.ReadByte();
-            Time = reader.ReadInt64();
-            ReadImpl(reader);
-        }
+        public virtual void Read(PacketReader reader) { }
 
         /// <summary>
-        /// Writes the data for this command.
+        /// Writes the data for this command to the given packet writer.
         /// </summary>
-        public void Write(PacketWriter writer)
-        {
-            writer.Write((byte)Player);
-            writer.Write(Time);
-            WriteImpl(writer);
-        }
+        public virtual void Write(PacketWriter writer) { }
 
         public override string ToString()
         {
-            return String.Format("{0}[Id={1},Player={2},Time={3}]", GetType().Name, Id, Player, Time);
+            return String.Format("{0}[Id={1}]", GetType().Name);
         }
-
-        protected virtual void ReadImpl(PacketReader reader) { }
-        protected virtual void WriteImpl(PacketWriter writer) { }
     }
 
     /// <summary>
@@ -110,7 +63,7 @@ namespace Strategy.Net
         {
         }
 
-        public MatchConfigurationCommand(int randomSeed, MapType mapType, MapSize mapSize, AiDifficulty difficulty, bool isConfiguration) : base(Code, PlayerId.A)
+        public MatchConfigurationCommand(int randomSeed, MapType mapType, MapSize mapSize, AiDifficulty difficulty, bool isConfiguration) : base(Code)
         {
             RandomSeed = randomSeed;
             MapType = mapType;
@@ -119,8 +72,9 @@ namespace Strategy.Net
             IsConfiguration = isConfiguration;
         }
 
-        protected override void ReadImpl(PacketReader reader)
+        public override void Read(PacketReader reader)
         {
+            base.Read(reader);
             RandomSeed = reader.ReadInt32();
             MapType = (MapType)reader.ReadByte();
             MapSize = (MapSize)reader.ReadByte();
@@ -128,8 +82,9 @@ namespace Strategy.Net
             IsConfiguration = reader.ReadBoolean();
         }
 
-        protected override void WriteImpl(PacketWriter writer)
+        public override void Write(PacketWriter writer)
         {
+            base.Write(writer);
             writer.Write(RandomSeed);
             writer.Write((byte)MapType);
             writer.Write((byte)MapSize);
@@ -139,14 +94,69 @@ namespace Strategy.Net
     }
 
     /// <summary>
+    /// A command influencing match state.
+    /// </summary>
+    public abstract class MatchCommand : Command
+    {
+        /// <summary>
+        /// The player issuing this command.
+        /// </summary>
+        public PlayerId Player { get; private set; }
+
+        /// <summary>
+        /// The game time when this command should execute.
+        /// </summary>
+        public long Time { get; set; }
+
+        public MatchCommand(byte code) : base(code)
+        {
+        }
+
+        public MatchCommand(byte code, PlayerId player) : base(code)
+        {
+            Player = player;
+            Time = 0; // filled out later
+        }
+
+        /// <summary>
+        /// Execute this action in the given match.
+        /// </summary>
+        /// <param name="match">The match to operate on.</param>
+        /// <returns>True if the command is valid; otherwise, false.</returns>
+        public virtual bool Execute(Match match)
+        {
+            return false;
+        }
+
+        public override void Read(PacketReader reader)
+        {
+            base.Read(reader);
+            Player = (PlayerId)reader.ReadByte();
+            Time = reader.ReadInt64();
+        }
+
+        public override void Write(PacketWriter writer)
+        {
+            base.Write(writer);
+            writer.Write((byte)Player);
+            writer.Write(Time);
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0}[Id={1},Player={2},Time={3}]", GetType().Name, Id, Player, Time);
+        }
+    }
+
+    /// <summary>
     /// Marks a synchronization point in the match. A player sending a
     /// synchronization command for time T indicates that she has sent all her
     /// input for up to match time T.
     /// </summary>
-    public abstract class SynchronizationCommand : Command
+    public abstract class SynchronizationCommand : MatchCommand
     {
         /// <summary>
-        /// A hash of the game state prior to synchronization point.
+        /// A hash of the game state prior to the synchronization point.
         /// </summary>
         public long Hash { get; private set; }
 
@@ -165,14 +175,16 @@ namespace Strategy.Net
             HashTime = hashTime;
         }
 
-        protected override void ReadImpl(PacketReader reader)
+        public override void Read(PacketReader reader)
         {
+            base.Read(reader);
             Hash = reader.ReadInt64();
             HashTime = reader.ReadInt64();
         }
 
-        protected override void WriteImpl(PacketWriter writer)
+        public override void Write(PacketWriter writer)
         {
+            base.Write(writer);
             writer.Write(Hash);
             writer.Write(HashTime);
         }
@@ -213,7 +225,7 @@ namespace Strategy.Net
     /// <summary>
     /// Places a piece on a territory.
     /// </summary>
-    public class PlaceCommand : Command
+    public class PlaceCommand : MatchCommand
     {
         public const byte Code = 4;
 
@@ -237,15 +249,17 @@ namespace Strategy.Net
             return true;
         }
 
-        protected override void ReadImpl(PacketReader reader)
+        public override void Read(PacketReader reader)
         {
+            base.Read(reader);
             int r = reader.ReadInt16();
             int c = reader.ReadInt16();
             _placementCell = new Cell(r, c);
         }
 
-        protected override void WriteImpl(PacketWriter writer)
+        public override void Write(PacketWriter writer)
         {
+            base.Write(writer);
             writer.Write((short)_placementCell.Row);
             writer.Write((short)_placementCell.Col);
         }
@@ -256,7 +270,7 @@ namespace Strategy.Net
     /// <summary>
     /// Moves pieces between two territories.
     /// </summary>
-    public class MoveCommand : Command
+    public class MoveCommand : MatchCommand
     {
         public const byte Code = 5;
 
@@ -282,8 +296,9 @@ namespace Strategy.Net
             return true;
         }
 
-        protected override void ReadImpl(PacketReader reader)
+        public override void Read(PacketReader reader)
         {
+            base.Read(reader);
             int r, c;
             r = reader.ReadInt16();
             c = reader.ReadInt16();
@@ -293,8 +308,9 @@ namespace Strategy.Net
             _destinationCell = new Cell(r, c);
         }
 
-        protected override void WriteImpl(PacketWriter writer)
+        public override void Write(PacketWriter writer)
         {
+            base.Write(writer);
             writer.Write((short)_sourceCell.Row);
             writer.Write((short)_sourceCell.Col);
             writer.Write((short)_destinationCell.Row);
@@ -308,7 +324,7 @@ namespace Strategy.Net
     /// <summary>
     /// Attacks from one territory to another.
     /// </summary>
-    public class AttackCommand : Command
+    public class AttackCommand : MatchCommand
     {
         public const byte Code = 6;
 
@@ -334,8 +350,9 @@ namespace Strategy.Net
             return true;
         }
 
-        protected override void ReadImpl(PacketReader reader)
+        public override void Read(PacketReader reader)
         {
+            base.Read(reader);
             int r, c;
             r = reader.ReadInt16();
             c = reader.ReadInt16();
@@ -345,8 +362,9 @@ namespace Strategy.Net
             _defenderCell = new Cell(r, c);
         }
 
-        protected override void WriteImpl(PacketWriter writer)
+        public override void Write(PacketWriter writer)
         {
+            base.Write(writer);
             writer.Write((short)_attackerCell.Row);
             writer.Write((short)_attackerCell.Col);
             writer.Write((short)_defenderCell.Row);
@@ -362,7 +380,7 @@ namespace Strategy.Net
     /// to allow AI players to make decisions at fixed points in time to
     /// guarantee consistency across machines.
     /// </summary>
-    public class AiDecisionCommand : Command
+    public class AiDecisionCommand : MatchCommand
     {
         public const byte Code = 7;
 
@@ -379,12 +397,12 @@ namespace Strategy.Net
             return true;
         }
 
-        protected override void ReadImpl(PacketReader reader)
+        public override void Read(PacketReader reader)
         {
             throw new InvalidOperationException("AiActionCommands cannot be transmitted");
         }
 
-        protected override void WriteImpl(PacketWriter writer)
+        public override void Write(PacketWriter writer)
         {
             throw new InvalidOperationException("AiActionCommands cannot be transmitted");
         }

@@ -22,16 +22,16 @@ namespace Strategy.Net
         /// </summary>
         public CommandList()
         {
-            _commands = new LinkedList<Command>();
+            _commands = new LinkedList<MatchCommand>();
         }
 
         /// <summary>
         /// Adds the specified command to the list.
         /// </summary>
         /// <param name="command">The command to add.</param>
-        public void Add(Command command)
+        public void Add(MatchCommand command)
         {
-            LinkedListNode<Command> node = _commands.Last;
+            LinkedListNode<MatchCommand> node = _commands.Last;
             while (node != null && HappensBefore(command, node.Value))
             {
                 node = node.Previous;
@@ -49,7 +49,7 @@ namespace Strategy.Net
         /// <summary>
         /// Returns the earliest command in the list without removing it.
         /// </summary>
-        public Command Peek()
+        public MatchCommand Peek()
         {
             if (_commands.Count == 0)
             {
@@ -61,18 +61,18 @@ namespace Strategy.Net
         /// <summary>
         /// Removes and returns the earliest command in the list.
         /// </summary>
-        public Command Pop()
+        public MatchCommand Pop()
         {
             if (_commands.Count == 0)
             {
                 throw new InvalidOperationException("List contains no commands");
             }
-            Command first = Peek();
+            MatchCommand first = Peek();
             _commands.RemoveFirst();
             return first;
         }
 
-        private bool HappensBefore(Command ca, Command cb)
+        private bool HappensBefore(MatchCommand ca, MatchCommand cb)
         {
             long dt = ca.Time - cb.Time;
             if (dt != 0)
@@ -85,6 +85,6 @@ namespace Strategy.Net
             }
         }
 
-        private LinkedList<Command> _commands;
+        private LinkedList<MatchCommand> _commands;
     }
 }

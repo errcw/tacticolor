@@ -71,7 +71,7 @@ namespace Strategy.Net
         /// <summary>
         /// Schedules a command to be executed in the match.
         /// </summary>
-        public void ScheduleCommand(Command command)
+        public void ScheduleCommand(MatchCommand command)
         {
             if (command is SynchronizationCommand)
             {
@@ -96,7 +96,7 @@ namespace Strategy.Net
             while (_commands.Count > 0)
             {
                 // grab the next command to execute
-                Command command = _commands.Peek();
+                MatchCommand command = _commands.Peek();
 
                 // bail if we have executed all the commands for this update
                 if (command.Time > updateEndTime)

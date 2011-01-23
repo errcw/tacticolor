@@ -79,9 +79,9 @@ namespace Strategy.Interface.Gameplay
         /// <summary>
         /// Updates the input state.
         /// </summary>
-        public Command Update(int time)
+        public MatchCommand Update(int time)
         {
-            Command command = null;
+            MatchCommand command = null;
 
             _input.Update(time / 1000f);
 

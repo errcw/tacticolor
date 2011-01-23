@@ -191,8 +191,7 @@ namespace Strategy.Net
             {
                 executionState = NetworkSessionState.Lobby;
             }
-            else if (command is SynchronizationCommand || command is MoveCommand ||
-                     command is AttackCommand || command is PlaceCommand)
+            else if (command is MatchCommand)
             {
                 executionState = NetworkSessionState.Playing;
             }

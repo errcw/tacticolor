@@ -14,7 +14,7 @@ namespace Strategy.Net
     /// </summary>
     public interface ICommandProvider
     {
-        Command Update(int elapsed);
+        MatchCommand Update(int elapsed);
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ namespace Strategy.Net
             {
                 if (RequiresLocalInput(player, suppressLocalInput))
                 {
-                    Command command = player.Input.Update(time);
+                    MatchCommand command = player.Input.Update(time);
                     if (command != null)
                     {
                         if (command.Time <= 0) // some commands may ask for a specific execution time
@@ -133,7 +133,7 @@ namespace Strategy.Net
                         receiver.ReceiveData(_reader, out sender);
                         if (receiver == _sendReceiveGamer)
                         {
-                            Command command = _reader.ReadCommand();
+                            MatchCommand command = _reader.ReadCommand() as MatchCommand;
                             if (command != null)
                             {
                                 _match.ScheduleCommand(command);
@@ -148,7 +148,7 @@ namespace Strategy.Net
         /// <summary>
         /// Sends a command to all remote players.
         /// </summary>
-        private void BroadcastCommand(Command command, Player sender)
+        private void BroadcastCommand(MatchCommand command, Player sender)
         {
             _match.ScheduleCommand(command);
             if (RequiresRemoteBroadcastFrom(sender))

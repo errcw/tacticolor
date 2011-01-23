@@ -53,9 +53,9 @@ namespace Strategy.AI
         /// <summary>
         /// Updates the input state.
         /// </summary>
-        public Command Update(int time)
+        public MatchCommand Update(int time)
         {
-            Command command = null;
+            MatchCommand command = null;
 
             if (_shouldScheduleCommand)
             {
@@ -86,7 +86,7 @@ namespace Strategy.AI
                 {
                     var bestCommands = sortedCommands.TakeWhile(cmd => cmd.Score == bestScore);
                     int randomBest = _random.Next(bestCommands.Count());
-                    Command command = bestCommands.ElementAt(randomBest).GetCommand(_player);
+                    MatchCommand command = bestCommands.ElementAt(randomBest).GetCommand(_player);
                     command.Execute(match);
                 }
             }
@@ -184,7 +184,7 @@ namespace Strategy.AI
             /// Returns the associated command for this potential command.
             /// </summary>
             /// <param name="player">The player to construct the command for.</param>
-            public Command GetCommand(PlayerId player)
+            public MatchCommand GetCommand(PlayerId player)
             {
                 switch (CommandType)
                 {
