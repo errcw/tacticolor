@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using Microsoft.Xna.Framework;
@@ -107,7 +108,7 @@ namespace Strategy.Net
             Session.GamerLeft += OnGamerLeft;
             Session.HostChanged += OnHostChanged;
             Session.SessionEnded += OnSessionEnded;
-            UpdateDeferUntilState();
+            OnStateChanged();
         }
 
         /// <summary>
@@ -127,6 +128,7 @@ namespace Strategy.Net
         /// <param name="options">The options to send with.</param>
         public void SendCommand(Command command, LocalNetworkGamer sender, NetworkGamer recipient, SendDataOptions options)
         {
+            command.Sequence = _sequence;
             _writer.Write(command);
             sender.SendData(_writer, options, recipient);
         }
@@ -140,6 +142,7 @@ namespace Strategy.Net
         /// <param name="options">The options to send with.</param>
         public void BroadcastCommand(Command command, LocalNetworkGamer sender, SendDataOptions options)
         {
+            command.Sequence = _sequence;
             _writer.Write(command);
             sender.SendData(_writer, options);
         }
@@ -150,13 +153,14 @@ namespace Strategy.Net
         /// <returns>An enumeration of the commands received.</returns>
         public IEnumerable<Command> ReceiveCommands()
         {
-            if (ShouldReleaseDeferredCommands())
+            if (_releaseDeferredCommands)
             {
                 foreach (Command command in _deferredCommands)
                 {
                     yield return command;
                 }
                 _deferredCommands.Clear();
+                _releaseDeferredCommands = false;
             }
 
             foreach (LocalNetworkGamer gamer in Session.LocalGamers)
@@ -166,13 +170,16 @@ namespace Strategy.Net
                     NetworkGamer sender;
                     gamer.ReceiveData(_reader, out sender);
                     Command command = _reader.ReadCommand();
-                    if (ShouldDeferCommand(command))
+                    switch (GetCommandAction(command, sender))
                     {
-                        _deferredCommands.Add(command);
-                    }
-                    else
-                    {
-                        yield return command;
+                        case CommandAction.Execute:
+                            yield return command;
+                            break;
+                        case CommandAction.Defer:
+                            _deferredCommands.Add(command);
+                            break;
+                        case CommandAction.Discard:
+                            break;
                     }
                 }
             }
@@ -184,41 +191,60 @@ namespace Strategy.Net
         /// of the network session, or if it should be deferred for execution
         /// once the state changes appropriately.
         /// </summary>
-        private bool ShouldDeferCommand(Command command)
+        private CommandAction GetCommandAction(Command command, NetworkGamer sender)
         {
-            NetworkSessionState executionState = Session.SessionState; // by default allow execution
-            if (command is MatchConfigurationCommand)
-            {
-                executionState = NetworkSessionState.Lobby;
-            }
-            else if (command is MatchCommand)
-            {
-                executionState = NetworkSessionState.Playing;
-            }
-            return (executionState != Session.SessionState);
-        }
+            long expectedSequence;
 
-        /// <summary>
-        /// Checks if the collection of deferred commands may now be executed.
-        /// </summary>
-        private bool ShouldReleaseDeferredCommands()
-        {
-            return (_deferUntilState == Session.SessionState);
+            if (!_expectedSequences.TryGetValue(sender, out expectedSequence))
+            {
+                // if this is the first command we have seen from this gamer
+                // then set the initial expectation to be the command sequence
+                expectedSequence = command.Sequence;
+                _expectedSequences[sender] = expectedSequence;
+            }
+
+            if (command.Sequence == expectedSequence)
+            {
+                // the sender has the same sequence as we expect and so must be
+                // in the same state as us, so execute the command now
+                return CommandAction.Execute;
+            }
+            else if (command.Sequence > expectedSequence)
+            {
+                Debug.Assert(command.Sequence == expectedSequence + 1);
+
+                // the sender has a sequence in the future from what we expect
+                // so defer the command until the local state changes to match
+                return CommandAction.Defer;
+            }
+            else
+            {
+                // the sender has a sequence in the past from what we expect
+                // so the command is no longer relevant and may be discarded
+                return CommandAction.Discard;
+            }
         }
 
         /// <summary>
         /// Sets the state commands should be deferred for.
         /// </summary>
-        private void UpdateDeferUntilState()
+        private void OnStateChanged()
         {
-            _deferUntilState = (Session.SessionState == NetworkSessionState.Lobby)
-                ? NetworkSessionState.Playing
-                : NetworkSessionState.Lobby;
+            // nudge all the expected sequences forward by one
+            _sequence += 1;
+            foreach (var entry in _expectedSequences)
+            {
+                //TODO: concurrent modification exception?
+                _expectedSequences[entry.Key] = entry.Value + 1;
+            }
+
+            // release the commands deferred for this new state
+            _releaseDeferredCommands = true;
         }
 
         private void OnGameStarted(object sender, GameStartedEventArgs args)
         {
-            UpdateDeferUntilState();
+            OnStateChanged();
             if (GameStarted != null)
             {
                 GameStarted(this, args);
@@ -227,7 +253,7 @@ namespace Strategy.Net
 
         private void OnGameEnded(object sender, GameEndedEventArgs args)
         {
-            UpdateDeferUntilState();
+            OnStateChanged();
             if (GameEnded != null)
             {
                 GameEnded(this, args);
@@ -298,8 +324,21 @@ namespace Strategy.Net
             }
         }
 
+        /// <summary>
+        /// Describes how a received command should be handled.
+        /// </summary>
+        private enum CommandAction
+        {
+            Defer,
+            Execute,
+            Discard
+        }
+
         private ICollection<Command> _deferredCommands = new List<Command>();
-        private NetworkSessionState _deferUntilState;
+        private bool _releaseDeferredCommands;
+
+        private long _sequence = 1;
+        private IDictionary<NetworkGamer, long> _expectedSequences = new Dictionary<NetworkGamer, long>();
 
         private CommandReader _reader = new CommandReader();
         private CommandWriter _writer = new CommandWriter();

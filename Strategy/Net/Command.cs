@@ -19,6 +19,12 @@ namespace Strategy.Net
         public byte Id { get; private set; }
 
         /// <summary>
+        /// The sequence number for the command, reflecting the current state
+        /// and progression of the network session.
+        /// </summary>
+        public long Sequence { get; set; }
+
+        /// <summary>
         /// A simple constructor for packet reading.
         /// </summary>
         public Command(byte id)
@@ -29,12 +35,18 @@ namespace Strategy.Net
         /// <summary>
         /// Reads the data for this command from the given packet reader.
         /// </summary>
-        public virtual void Read(PacketReader reader) { }
+        public virtual void Read(PacketReader reader)
+        {
+            Sequence = reader.ReadInt64();
+        }
 
         /// <summary>
         /// Writes the data for this command to the given packet writer.
         /// </summary>
-        public virtual void Write(PacketWriter writer) { }
+        public virtual void Write(PacketWriter writer)
+        {
+            writer.Write(Sequence)
+        }
 
         public override string ToString()
         {
