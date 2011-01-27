@@ -80,7 +80,7 @@ namespace Strategy.Interface.Screens
             }
             if (session != null)
             {
-                LobbyScreen lobbyScreen = new LobbyScreen(Stack.Game, session);
+                LobbyScreen lobbyScreen = new LobbyScreen(Stack.Game, new StrategyNetworkSession(session));
                 Stack.Push(lobbyScreen);
             }
             else

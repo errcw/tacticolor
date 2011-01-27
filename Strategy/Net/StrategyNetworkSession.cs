@@ -6,91 +6,15 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Net;
 
+using Strategy.Library.Extensions;
+
 namespace Strategy.Net
 {
     /// <summary>
     /// Wraps a network session.
     /// </summary>
-    public class StrategyNetworkSession
+    public class StrategyNetworkSession : IDisposable
     {
-        /// <summary>
-        /// Occurs when the underlying session receives a GameStarted event.
-        /// </summary>
-        public event EventHandler<GameStartedEventArgs> GameStarted;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a GameEnded event.
-        /// </summary>
-        public event EventHandler<GameEndedEventArgs> GameEnded;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a GamerHostChangedent.
-        /// </summary>
-        public event EventHandler<GamerJoinedEventArgs> GamerJoined;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a GamerJoined event
-        /// and the session is in the Lobby state.
-        /// </summary>
-        public event EventHandler<GamerJoinedEventArgs> GamerJoinedInLobby;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a GamerJoined event
-        /// and the session is in the Playing state.
-        /// </summary>
-        public event EventHandler<GamerJoinedEventArgs> GamerJoinedInGame;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a GamerLeft event.
-        /// </summary>
-        public event EventHandler<GamerLeftEventArgs> GamerLeft;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a GamerLeft event
-        /// and the session is in the Lobby state.
-        /// </summary>
-        public event EventHandler<GamerLeftEventArgs> GamerLeftInLobby;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a GamerLeft event
-        /// and the session is in the Playing state.
-        /// </summary>
-        public event EventHandler<GamerLeftEventArgs> GamerLeftInGame;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a HostChanged event.
-        /// </summary>
-        public event EventHandler<HostChangedEventArgs> HostChanged;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a HostChanged event
-        /// and the session is in the Lobby state.
-        /// </summary>
-        public event EventHandler<HostChangedEventArgs> HostChangedInLobby;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a HostChanged event
-        /// and the session is in the Playing state.
-        /// </summary>
-        public event EventHandler<HostChangedEventArgs> HostChangedInGame;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a SessionEnded event.
-        /// </summary>
-        public event EventHandler<NetworkSessionEndedEventArgs> SessionEnded;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a SessionEnded event
-        /// and the session is in the Lobby state.
-        /// </summary>
-        public event EventHandler<NetworkSessionEndedEventArgs> SessionEndedInLobby;
-
-        /// <summary>
-        /// Occurs when the underlying session receives a SessionEnded event
-        /// and the session is in the Playing state.
-        /// </summary>
-        public event EventHandler<NetworkSessionEndedEventArgs> SessionEndedInGame;
-
         /// <summary>
         /// The underlying network session.
         /// </summary>
@@ -104,10 +28,6 @@ namespace Strategy.Net
             Session = session;
             Session.GameStarted += OnGameStarted;
             Session.GameEnded += OnGameEnded;
-            Session.GamerJoined += OnGamerJoined;
-            Session.GamerLeft += OnGamerLeft;
-            Session.HostChanged += OnHostChanged;
-            Session.SessionEnded += OnSessionEnded;
             OnStateChanged();
         }
 
@@ -117,6 +37,38 @@ namespace Strategy.Net
         public void Update()
         {
             Session.Update();
+        }
+
+        /// <summary>
+        /// Disposes the underlying network session.
+        /// </summary>
+        public void Dispose()
+        {
+            Session.Dispose();
+        }
+
+        /// <summary>
+        /// Starts the match and moves from Lobby to Playing state.
+        /// </summary>
+        public void StartGame()
+        {
+            Debug.Assert(Session.IsHost);
+            if (Session.SessionState == NetworkSessionState.Lobby)
+            {
+                Session.StartGame();
+            }
+        }
+
+        /// <summary>
+        /// Ends the match and moves from Playing to Lobby state.
+        /// </summary>
+        public void EndGame()
+        {
+            Debug.Assert(Session.IsHost);
+            if (Session.SessionState == NetworkSessionState.Playing)
+            {
+                Session.EndGame();
+            }
         }
 
         /// <summary>
@@ -151,11 +103,11 @@ namespace Strategy.Net
         /// Receives commands.
         /// </summary>
         /// <returns>An enumeration of the commands received.</returns>
-        public IEnumerable<Command> ReceiveCommands()
+        public IEnumerable<ReceivedCommand> ReceiveCommands()
         {
             if (_releaseDeferredCommands)
             {
-                foreach (Command command in _deferredCommands)
+                foreach (ReceivedCommand command in _deferredCommands)
                 {
                     yield return command;
                 }
@@ -163,20 +115,21 @@ namespace Strategy.Net
                 _releaseDeferredCommands = false;
             }
 
-            foreach (LocalNetworkGamer gamer in Session.LocalGamers)
+            foreach (LocalNetworkGamer receiver in Session.LocalGamers)
             {
-                while (gamer.IsDataAvailable)
+                while (receiver.IsDataAvailable)
                 {
                     NetworkGamer sender;
-                    gamer.ReceiveData(_reader, out sender);
+                    receiver.ReceiveData(_reader, out sender);
                     Command command = _reader.ReadCommand();
+                    ReceivedCommand receivedCommand = new ReceivedCommand(command, sender, receiver);
                     switch (GetCommandAction(command, sender))
                     {
                         case CommandAction.Execute:
-                            yield return command;
+                            yield return receivedCommand;
                             break;
                         case CommandAction.Defer:
-                            _deferredCommands.Add(command);
+                            _deferredCommands.Add(receivedCommand);
                             break;
                         case CommandAction.Discard:
                             break;
@@ -230,13 +183,15 @@ namespace Strategy.Net
         /// </summary>
         private void OnStateChanged()
         {
-            // nudge all the expected sequences forward by one
+            // nudge all the sequences forward by one
             _sequence += 1;
+
+            var newExpectedSequences = new Dictionary<NetworkGamer, long>();
             foreach (var entry in _expectedSequences)
             {
-                //TODO: concurrent modification exception?
-                _expectedSequences[entry.Key] = entry.Value + 1;
+                newExpectedSequences[entry.Key] = entry.Value + 1;
             }
+            _expectedSequences = newExpectedSequences;
 
             // release the commands deferred for this new state
             _releaseDeferredCommands = true;
@@ -245,83 +200,11 @@ namespace Strategy.Net
         private void OnGameStarted(object sender, GameStartedEventArgs args)
         {
             OnStateChanged();
-            if (GameStarted != null)
-            {
-                GameStarted(this, args);
-            }
         }
 
         private void OnGameEnded(object sender, GameEndedEventArgs args)
         {
             OnStateChanged();
-            if (GameEnded != null)
-            {
-                GameEnded(this, args);
-            }
-        }
-
-        private void OnGamerJoined(object sender, GamerJoinedEventArgs args)
-        {
-            if (GamerJoined != null)
-            {
-                GamerJoined(this, args);
-            }
-            if (GamerJoinedInLobby != null && Session.SessionState == NetworkSessionState.Lobby)
-            {
-                GamerJoinedInLobby(this, args);
-            }
-            if (GamerJoinedInGame != null && Session.SessionState == NetworkSessionState.Playing)
-            {
-                GamerJoinedInGame(this, args);
-            }
-        }
-
-        private void OnGamerLeft(object sender, GamerLeftEventArgs args)
-        {
-            if (GamerLeft != null)
-            {
-                GamerLeft(this, args);
-            }
-            if (GamerLeftInLobby != null && Session.SessionState == NetworkSessionState.Lobby)
-            {
-                GamerLeftInLobby(this, args);
-            }
-            if (GamerLeftInGame != null && Session.SessionState == NetworkSessionState.Playing)
-            {
-                GamerLeftInGame(this, args);
-            }
-        }
-
-        private void OnHostChanged(object sender, HostChangedEventArgs args)
-        {
-            if (HostChanged != null)
-            {
-                HostChanged(this, args);
-            }
-            if (HostChangedInLobby != null && Session.SessionState == NetworkSessionState.Lobby)
-            {
-                HostChangedInLobby(this, args);
-            }
-            if (HostChangedInGame != null && Session.SessionState == NetworkSessionState.Playing)
-            {
-                HostChangedInGame(this, args);
-            }
-        }
-
-        private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
-        {
-            if (SessionEnded != null)
-            {
-                SessionEnded(this, args);
-            }
-            if (SessionEndedInLobby != null && Session.SessionState == NetworkSessionState.Lobby)
-            {
-                SessionEndedInLobby(this, args);
-            }
-            if (SessionEndedInGame != null && Session.SessionState == NetworkSessionState.Playing)
-            {
-                SessionEndedInGame(this, args);
-            }
         }
 
         /// <summary>
@@ -334,7 +217,7 @@ namespace Strategy.Net
             Discard
         }
 
-        private ICollection<Command> _deferredCommands = new List<Command>();
+        private ICollection<ReceivedCommand> _deferredCommands = new List<ReceivedCommand>();
         private bool _releaseDeferredCommands;
 
         private long _sequence = 1;
@@ -342,5 +225,22 @@ namespace Strategy.Net
 
         private CommandReader _reader = new CommandReader();
         private CommandWriter _writer = new CommandWriter();
+    }
+
+    /// <summary>
+    /// Describes a received command.
+    /// </summary>
+    public struct ReceivedCommand
+    {
+        public readonly Command Command;
+        public readonly NetworkGamer Sender;
+        public readonly LocalNetworkGamer Receiver;
+
+        public ReceivedCommand(Command command, NetworkGamer sender, LocalNetworkGamer receiver)
+        {
+            Command = command;
+            Sender = sender;
+            Receiver = receiver;
+        }
     }
 }

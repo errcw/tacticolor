@@ -24,13 +24,13 @@ namespace Strategy.Interface.Screens
         /// </summary>
         public static readonly IsometricParameters IsoParams = new IsometricParameters(17, 9, 16, -9);
 
-        public GameplayScreen(Game game, NetworkSession session, ICollection<Player> players, Match match)
+        public GameplayScreen(Game game, StrategyNetworkSession net, ICollection<Player> players, Match match)
         {
-            _session = session;
-            if (_session != null)
+            _net = net;
+            if (_net != null)
             {
-                _session.GamerLeft += OnGamerLeft;
-                _session.SessionEnded += OnSessionEnded;
+                _net.Session.GamerLeft += OnGamerLeft;
+                _net.Session.SessionEnded += OnSessionEnded;
             }
 
             _players = players;
@@ -43,14 +43,14 @@ namespace Strategy.Interface.Screens
             _lockstepMatch.Match.PlayerEliminated += OnPlayerEliminated;
             _lockstepMatch.Match.Ended += OnMatchEndedWithWinner;
 
-            if (session.IsLocalSession())
+            if (_net.Session.IsLocalSession())
             {
                 // local matches should execute commands immediately
                 _lockstepMatch.SchedulingOffset = 0;
                 _lockstepMatch.StepTime = int.MaxValue;
             }
 
-            _lockstepInput = new LockstepInput(_lockstepMatch, players);
+            _lockstepInput = new LockstepInput(_lockstepMatch, players, _net);
 
             // while the game is starting send out start game synchronization commands
             // by the time the commands arrive the game should be ready
@@ -87,12 +87,12 @@ namespace Strategy.Interface.Screens
                 }
             }
 
-            if (_session != null)
+            if (_net != null)
             {
                 Gamer primaryGamer = game.Services.GetService<MenuInput>().Controller.Value.GetSignedInGamer();
                 LocalInput primaryInput = (LocalInput)players.Single(p => p.Gamer != null ? p.Gamer.Gamertag == primaryGamer.Gamertag : false).Input;
                 _instructions = new Instructions(primaryInput, match, _context);
-                _instructions.Enabled = (_session.LocalGamers.Count == 1); // only instuct with one local player
+                _instructions.Enabled = (_net.Session.LocalGamers.Count == 1); // only instuct with one local player
             }
             else
             {
@@ -116,7 +116,7 @@ namespace Strategy.Interface.Screens
         protected override void UpdateInactive(GameTime gameTime)
         {
             // for local games pause
-            if (_session == null || _session.IsLocalSession())
+            if (_net == null || _net.Session.IsLocalSession())
             {
                 return;
             }
@@ -143,9 +143,9 @@ namespace Strategy.Interface.Screens
 
         private void UpdateInternal(GameTime gameTime, bool isActive)
         {
-            if (_session != null && _session.SessionState == NetworkSessionState.Playing)
+            if (_net != null)
             {
-                _session.Update();
+                _net.Update();
             }
 
             if (!_isEnded)
@@ -216,10 +216,10 @@ namespace Strategy.Interface.Screens
             if (popped)
             {
                 // unwire the handlers once this screen disappears
-                if (_session != null)
+                if (_net != null)
                 {
-                    _session.GamerLeft -= OnGamerLeft;
-                    _session.SessionEnded -= OnSessionEnded;
+                    _net.Session.GamerLeft -= OnGamerLeft;
+                    _net.Session.SessionEnded -= OnSessionEnded;
                 }
 
                 // notify the awardments the match was abandonned
@@ -296,9 +296,9 @@ namespace Strategy.Interface.Screens
 
         private void OnMatchEnded(string message, PlayerId winner)
         {
-            if (_session != null && _session.IsHost && _session.SessionState == NetworkSessionState.Playing)
+            if (_net != null && _net.Session.IsHost)
             {
-                _session.EndGame();
+                _net.EndGame();
             }
 
             _awardments.MatchEnded(winner);
@@ -310,7 +310,7 @@ namespace Strategy.Interface.Screens
 
         private void OnControllerDisconnected(object sender, EventArgs args)
         {
-            if (_session.IsLocalSession())
+            if (_net.Session.IsLocalSession())
             {
                 Player player = _players.Single(p => p.Id == ((LocalInput)sender).Player);
                 InGameMenuScreen menuScreen = new InGameMenuScreen(Stack.Game, player.Controller.Value);
@@ -320,7 +320,7 @@ namespace Strategy.Interface.Screens
 
         private void HandleNetworkError()
         {
-            _session = null;
+            _net = null;
             _isEnded = true;
 
             MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkError);
@@ -348,7 +348,7 @@ namespace Strategy.Interface.Screens
             }
         }
 
-        private NetworkSession _session;
+        private StrategyNetworkSession _net;
 
         private Awardments _awardments;
 

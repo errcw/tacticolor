@@ -22,11 +22,12 @@ namespace Strategy.Net
     /// </summary>
     public class LockstepInput
     {
-        public LockstepInput(LockstepMatch match, ICollection<Player> players)
+        public LockstepInput(LockstepMatch match, ICollection<Player> players, StrategyNetworkSession session)
         {
             _match = match;
             _match.StepEnded += OnStepEnded;
             _players = players;
+            _session = session;
 
             // find a local player we can use to send and receive messages
             foreach (Player player in _players)
@@ -38,9 +39,6 @@ namespace Strategy.Net
                 }
             }
             Debug.Assert(_sendReceiveGamer != null);
-
-            _writer = new CommandWriter();
-            _reader = new CommandReader();
         }
 
         /// <summary>
@@ -122,24 +120,12 @@ namespace Strategy.Net
         /// </summary>
         private void ReadNetworkCommands()
         {
-            foreach (Player player in _players)
+            foreach (ReceivedCommand received in _session.ReceiveCommands())
             {
-                if (player.Gamer != null && player.Gamer.IsLocal)
+                MatchCommand command = received.Command as MatchCommand;
+                if (command != null && received.Receiver == _sendReceiveGamer)
                 {
-                    LocalNetworkGamer receiver = (LocalNetworkGamer)player.Gamer;
-                    NetworkGamer sender;
-                    while (receiver.IsDataAvailable)
-                    {
-                        receiver.ReceiveData(_reader, out sender);
-                        if (receiver == _sendReceiveGamer)
-                        {
-                            MatchCommand command = _reader.ReadCommand() as MatchCommand;
-                            if (command != null)
-                            {
-                                _match.ScheduleCommand(command);
-                            }
-                        }
-                    }
+                    _match.ScheduleCommand(command);
                 }
             }
         }
@@ -157,8 +143,7 @@ namespace Strategy.Net
                 {
                     if (RequiresRemoteBroadcastTo(player))
                     {
-                        _writer.Write(command);
-                        _sendReceiveGamer.SendData(_writer, SendDataOptions.Reliable, player.Gamer);
+                        _session.SendCommand(command, _sendReceiveGamer, player.Gamer, SendDataOptions.Reliable);
                     }
                 }
             }
@@ -186,9 +171,7 @@ namespace Strategy.Net
 
         private LockstepMatch _match;
         private ICollection<Player> _players;
-
+        private StrategyNetworkSession _session;
         private LocalNetworkGamer _sendReceiveGamer;
-        private CommandWriter _writer;
-        private CommandReader _reader;
     }
 }

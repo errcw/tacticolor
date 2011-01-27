@@ -29,31 +29,31 @@ namespace Strategy.Interface.Screens
     /// </summary>
     public class LobbyScreen : MenuScreen
     {
-        public LobbyScreen(Game game, NetworkSession session) : base(game)
+        public LobbyScreen(Game game, StrategyNetworkSession net) : base(game)
         {
             _input = game.Services.GetService<MenuInput>();
             _players = new List<Player>();
 
             _slots = new List<PlayerSlot>();
-            for (int p = 0; p < session.MaxGamers; p++)
+            for (int p = 0; p < net.Session.MaxGamers; p++)
             {
-                _slots.Add(session.IsLocalSession()
+                _slots.Add(net.Session.IsLocalSession()
                     ? (PlayerSlot)(new LocalPlayerSlot((PlayerId)p, game.Content))
                     : (PlayerSlot)(new NetworkPlayerSlot(p, game.Content)));
             }
 
-            _session = session;
-            _session.GamerJoined += OnGamerJoined;
-            _session.GamerLeft += OnGamerLeft;
-            _session.HostChanged += OnHostChanged;
-            _session.GameStarted += OnGameStarted;
-            _session.SessionEnded += OnSessionEnded;
+            _net = net;
+            _net.Session.GamerJoined += OnGamerJoined;
+            _net.Session.GamerLeft += OnGamerLeft;
+            _net.Session.GameStarted += OnGameStarted;
+            _net.Session.HostChanged += OnHostChanged;
+            _net.Session.SessionEnded += OnSessionEnded;
 
-            _configuration = new MatchConfigurationManager(_session);
+            _configuration = new MatchConfigurationManager(_net);
             _configuration.ConfigurationChanged += OnConfigurationChanged;
             _configuration.ReadyChanged += OnReadyChanged;
 
-            if (_session.IsHost)
+            if (_net.Session.IsHost)
             {
                 // choose a default configuration to start
                 _configuration.SetConfiguration(
@@ -65,7 +65,7 @@ namespace Strategy.Interface.Screens
 
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundLobby"));
 
-            if (!_session.IsLocalSession())
+            if (!_net.Session.IsLocalSession())
             {
                 ImageSprite readyImage = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonX"));
                 TextSprite readyText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuToggleReady);
@@ -92,13 +92,13 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateActive(GameTime gameTime)
         {
-            _session.Update();
-            if (_session.IsHost && _session.SessionState == NetworkSessionState.Playing && !_isMatchRunning)
+            _net.Update();
+            if (_net.Session.IsHost && _net.Session.SessionState == NetworkSessionState.Playing && !_isMatchRunning)
             {
                 // if we are in the lobby and in the playing state but the match is not running
                 // then something has gone wrong and we should move back to the lobby state
                 // (probably the host died before its end game packets were sent)
-                _session.EndGame();
+                _net.Session.EndGame();
             }
 
             _configuration.Update(); // network input
@@ -112,9 +112,9 @@ namespace Strategy.Interface.Screens
         protected override void UpdateInactive(GameTime gameTime)
         {
             // continue updating the network session even if other temporary screens are on top
-            if (_session != null && _session.SessionState == NetworkSessionState.Lobby)
+            if (_net != null && _net.Session.SessionState == NetworkSessionState.Lobby)
             {
-                _session.Update();
+                _net.Update();
                 _configuration.Update();
             }
             base.UpdateInactive(gameTime);
@@ -171,8 +171,8 @@ namespace Strategy.Interface.Screens
         {
             if (popped)
             {
-                _session.Dispose();
-                _session = null;
+                _net.Dispose();
+                _net = null;
             }
             base.Hide(popped);
         }
@@ -180,7 +180,7 @@ namespace Strategy.Interface.Screens
         private void OnGamerJoined(object sender, GamerJoinedEventArgs args)
         {
             Debug.WriteLine(args.Gamer.Gamertag + " joined");
-            Debug.Assert(_session.SessionState == NetworkSessionState.Lobby);
+            Debug.Assert(_net.Session.SessionState == NetworkSessionState.Lobby);
 
             Player player = new Player() { Gamer = args.Gamer };
             _players.Add(player);
@@ -222,13 +222,13 @@ namespace Strategy.Interface.Screens
         {
             Debug.WriteLine(args.NewHost.Gamertag + " is now host (was " + args.OldHost.Gamertag + ")");
 
-            // once the game has started host changes do not matter
-            if (_session.SessionState == NetworkSessionState.Playing)
+            if (_net.Session.SessionState == NetworkSessionState.Playing)
             {
+                // once the game has started host changes do not matter
                 return;
             }
 
-            if (_session.IsHost)
+            if (_net.Session.IsHost)
             {
                 // use a new configuration with the new host to sync all players
                 _configuration.Seed = _random.Next(1, int.MaxValue);
@@ -266,7 +266,7 @@ namespace Strategy.Interface.Screens
             // manipulate the list of remaining gamers while the match runs
             List<Player> gamePlayers = new List<Player>(_players);
 
-            if (!_session.IsLocalSession())
+            if (!_net.Session.IsLocalSession())
             {
                 // net games: assign ids to players by sorting based on unique id
                 // this assignment guarantees identical assignments across machines
@@ -295,7 +295,7 @@ namespace Strategy.Interface.Screens
                 gamePlayers.Add(aiPlayer);
             }
 
-            GameplayScreen gameplayScreen = new GameplayScreen(Stack.Game, _session, gamePlayers, match);
+            GameplayScreen gameplayScreen = new GameplayScreen(Stack.Game, _net, gamePlayers, match);
             Stack.Push(gameplayScreen);
         }
 
@@ -390,19 +390,19 @@ namespace Strategy.Interface.Screens
         {
             if (CanStartGame())
             {
-                _session.StartGame();
+                _net.Session.StartGame();
             }
         }
 
         private bool CanStartGame()
         {
-            bool readyOk = (_session.IsLocalSession() || _configuration.IsEveryoneReady);
-            return readyOk && _session.IsHost && _session.SessionState == NetworkSessionState.Lobby;
+            bool readyOk = (_net.Session.IsLocalSession() || _configuration.IsEveryoneReady);
+            return readyOk && _net.Session.IsHost;
         }
 
         private void UpdateUiForReadyChange()
         {
-            if (_session.IsHost)
+            if (_net.Session.IsHost)
             {
                 _startEntry.TargetColor = CanStartGame() ? Color.White : CannotStartGameColor;
             }
@@ -410,11 +410,11 @@ namespace Strategy.Interface.Screens
 
         private void UpdateUiForHostChange()
         {
-            _startEntry.TargetColor = _session.IsHost ? Color.White : Color.Transparent;
-            _startEntry.IsSelectable = _session.IsHost;
-            _mapTypeEntry.IsSelectable = _session.IsHost;
-            _mapSizeEntry.IsSelectable = _session.IsHost;
-            _difficultyEntry.IsSelectable = _session.IsHost;
+            _startEntry.TargetColor = _net.Session.IsHost ? Color.White : Color.Transparent;
+            _startEntry.IsSelectable = _net.Session.IsHost;
+            _mapTypeEntry.IsSelectable = _net.Session.IsHost;
+            _mapSizeEntry.IsSelectable = _net.Session.IsHost;
+            _difficultyEntry.IsSelectable = _net.Session.IsHost;
         }
 
         private void AddPlayer(NetworkGamer gamer)
@@ -482,7 +482,7 @@ namespace Strategy.Interface.Screens
             for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
             {
                 Player player = FindPlayerByController(p);
-                if (player != null && _input.ToggleReady[(int)p].Pressed && !_session.IsLocalSession())
+                if (player != null && _input.ToggleReady[(int)p].Pressed && !_net.Session.IsLocalSession())
                 {
                     // switch the ready state for this player
                     LocalNetworkGamer gamer = (LocalNetworkGamer)player.Gamer;
@@ -496,7 +496,7 @@ namespace Strategy.Interface.Screens
                         try
                         {
                             // prompt the player to sign in
-                            Guide.ShowSignIn(1, _session.IsOnlineSession());
+                            Guide.ShowSignIn(1, _net.Session.IsOnlineSession());
                         }
                         catch
                         {
@@ -505,7 +505,7 @@ namespace Strategy.Interface.Screens
                     }
                     if (p.IsSignedIn())
                     {
-                        if (_session.IsOnlineSession() && !p.CanPlayOnline())
+                        if (_net.Session.IsOnlineSession() && !p.CanPlayOnline())
                         {
                             // cannot join this online session
                             MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkErrorCannotPlayOnline);
@@ -515,14 +515,14 @@ namespace Strategy.Interface.Screens
                         {
                             // join the existing session
                             // may not succeed if the session is full
-                            _session.AddLocalGamer(p.GetSignedInGamer());
+                            _net.Session.AddLocalGamer(p.GetSignedInGamer());
                         }
                     }
                 }
             }
         }
 
-        private NetworkSession _session = null;
+        private StrategyNetworkSession _net = null;
         private List<Player> _players;
 
         private MenuInput _input;

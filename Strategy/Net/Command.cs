@@ -45,7 +45,7 @@ namespace Strategy.Net
         /// </summary>
         public virtual void Write(PacketWriter writer)
         {
-            writer.Write(Sequence)
+            writer.Write(Sequence);
         }
 
         public override string ToString()

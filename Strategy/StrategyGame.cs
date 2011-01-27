@@ -182,7 +182,7 @@ namespace Strategy
             if (session != null)
             {
 
-                LobbyScreen lobbyScreen = new LobbyScreen(this, session);
+                LobbyScreen lobbyScreen = new LobbyScreen(this, new StrategyNetworkSession(session));
                 _screens.Push(lobbyScreen);
             }
             else

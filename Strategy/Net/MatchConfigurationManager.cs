@@ -67,11 +67,11 @@ namespace Strategy.Net
             get { return _ready.All(kv => kv.Value); }
         }
 
-        public MatchConfigurationManager(NetworkSession session)
+        public MatchConfigurationManager(StrategyNetworkSession net)
         {
-            _session = session;
-            _session.GamerJoined += OnGamerJoined;
-            _session.GamerLeft += OnGamerLeft;
+            _net = net;
+            _net.Session.GamerJoined += OnGamerJoined;
+            _net.Session.GamerLeft += OnGamerLeft;
         }
 
         /// <summary>
@@ -79,25 +79,20 @@ namespace Strategy.Net
         /// </summary>
         public void Update()
         {
-            foreach (LocalNetworkGamer gamer in _session.LocalGamers)
+            foreach (ReceivedCommand received in _net.ReceiveCommands())
             {
-                while (gamer.IsDataAvailable)
+                MatchConfigurationCommand command = received.Command as MatchConfigurationCommand;
+                if (command != null)
                 {
-                    NetworkGamer sender;
-                    gamer.ReceiveData(_reader, out sender);
-                    MatchConfigurationCommand command = _reader.ReadCommand() as MatchConfigurationCommand;
-                    if (command != null)
+                    if (command.IsConfiguration)
                     {
-                        if (command.IsConfiguration)
-                        {
-                            // received new configuration from the host
-                            OnConfigurationReceived(command);
-                        }
-                        else
-                        {
-                            // received ready signal from a gamer
-                            OnReadyReceived(sender, command);
-                        }
+                        // received new configuration from the host
+                        OnConfigurationReceived(command);
+                    }
+                    else
+                    {
+                        // received ready signal from a gamer
+                        OnReadyReceived(received.Sender, command);
                     }
                 }
             }
@@ -140,7 +135,7 @@ namespace Strategy.Net
             // across matches
             _seed += 1;
 
-            foreach (NetworkGamer gamer in _session.AllGamers)
+            foreach (NetworkGamer gamer in _net.Session.AllGamers)
             {
                 SetIsReadyInternal(gamer, false);
             }
@@ -180,7 +175,7 @@ namespace Strategy.Net
             _ready[args.Gamer] = false;
             _lastReadied[args.Gamer] = null;
 
-            if (_session.IsHost)
+            if (_net.Session.IsHost)
             {
                 // the newly added gamer needs to get the current configuration
                 SendConfigurationFromHost(args.Gamer);
@@ -199,13 +194,13 @@ namespace Strategy.Net
         private void OnConfigurationChanged()
         {
             // host broadcasts the new configuration to every gamer
-            if (_session.IsHost)
+            if (_net.Session.IsHost)
             {
                 BroadcastConfigurationFromHost();
             }
 
             // set the ready state based on the last readied configuration
-            foreach (NetworkGamer gamer in _session.AllGamers)
+            foreach (NetworkGamer gamer in _net.Session.AllGamers)
             {
                 MatchConfigurationCommand lastReady = _lastReadied[gamer];
                 SetIsReadyInternal(gamer, MatchesLocalConfiguration(lastReady));
@@ -255,30 +250,36 @@ namespace Strategy.Net
 
         private void BroadcastReady(LocalNetworkGamer gamer)
         {
-            _writer.Write(new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty, false));
-            gamer.SendData(_writer, SendDataOptions.ReliableInOrder);
+            _net.BroadcastCommand(
+                new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty, false),
+                gamer,
+                SendDataOptions.ReliableInOrder);
         }
 
         private void BroadcastUnready(LocalNetworkGamer gamer)
         {
-            _writer.Write(UnreadyCommand);
-            gamer.SendData(_writer, SendDataOptions.ReliableInOrder);
+            _net.BroadcastCommand(UnreadyCommand, gamer, SendDataOptions.ReliableInOrder);
         }
 
         private void SendConfigurationFromHost(NetworkGamer receiver)
         {
-            if (receiver.Equals(_session.Host))
+            if (receiver.Equals(_net.Session.Host))
             {
                 return;
             }
-            _writer.Write(new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty, true));
-            ((LocalNetworkGamer)_session.Host).SendData(_writer, SendDataOptions.ReliableInOrder, receiver);
+            _net.SendCommand(
+                new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty, true),
+                (LocalNetworkGamer)_net.Session.Host,
+                receiver,
+                SendDataOptions.ReliableInOrder);
         }
 
         private void BroadcastConfigurationFromHost()
         {
-            _writer.Write(new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty, true));
-            ((LocalNetworkGamer)_session.Host).SendData(_writer, SendDataOptions.ReliableInOrder);
+            _net.BroadcastCommand(
+                new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty, true),
+                (LocalNetworkGamer)_net.Session.Host,
+                SendDataOptions.ReliableInOrder);
         }
 
         private int _seed = 0;
@@ -286,9 +287,7 @@ namespace Strategy.Net
         private MapSize _mapSize = MapSize.Normal;
         private AiDifficulty _difficulty = AiDifficulty.Easy;
 
-        private NetworkSession _session;
-        private CommandReader _reader = new CommandReader();
-        private CommandWriter _writer = new CommandWriter();
+        private StrategyNetworkSession _net;
 
         private Dictionary<NetworkGamer, bool> _ready = new Dictionary<NetworkGamer, bool>();
         private Dictionary<NetworkGamer, MatchConfigurationCommand> _lastReadied = new Dictionary<NetworkGamer, MatchConfigurationCommand>();
