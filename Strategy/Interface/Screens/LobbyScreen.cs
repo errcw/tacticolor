@@ -46,6 +46,7 @@ namespace Strategy.Interface.Screens
             _net.Session.GamerJoined += OnGamerJoined;
             _net.Session.GamerLeft += OnGamerLeft;
             _net.Session.GameStarted += OnGameStarted;
+            _net.Session.GameEnded += OnGameEnded;
             _net.Session.HostChanged += OnHostChanged;
             _net.Session.SessionEnded += OnSessionEnded;
 
@@ -157,12 +158,7 @@ namespace Strategy.Interface.Screens
         {
             if (!pushed)
             {
-                // handle the case where we are returning to the lobby after a game
-                if (_isMatchRunning)
-                {
-                    _isMatchRunning = false;
-                    _configuration.ResetForNextMatch();
-                }
+                _isMatchRunning = false;
             }
             base.Show(pushed);
         }
@@ -297,6 +293,11 @@ namespace Strategy.Interface.Screens
 
             GameplayScreen gameplayScreen = new GameplayScreen(Stack.Game, _net, gamePlayers, match);
             Stack.Push(gameplayScreen);
+        }
+
+        private void OnGameEnded(object sender, GameEndedEventArgs args)
+        {
+            _configuration.ResetForNextMatch();
         }
 
         private void OnSessionEnded(object sender, NetworkSessionEndedEventArgs args)
