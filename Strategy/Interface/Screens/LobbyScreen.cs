@@ -82,8 +82,8 @@ namespace Strategy.Interface.Screens
                 .CreateCycleButtonEntry(Resources.MenuAiDifficulty, OnDifficultyCycled, _configuration.Difficulty, out _difficultyEntry);
 
             // seed the UI with the host/ready status
-            UpdateUiForReadyChange();
             UpdateUiForHostChange();
+            UpdateUiForReadyChange();
 
             BasePosition = new Vector2(270f, 590f);
             TransitionOnTime = 0.5f;
