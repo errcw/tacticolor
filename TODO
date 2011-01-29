@@ -4,13 +4,21 @@ To Do
 * Fix
   - Ready state showing when a player joins
 * Sound
+* Polish
+  - Eliminate visual piece bugs: consistent up/down state
+  - Eliminate frustration selecting territories
+    + Allow selecting nearby territories even when unavailable for action?
+    + Clearly mark which territories are cooling down
+    + Match cooldowns to visual action
+  - Clarify the interface
+    + Animation (zoom) for created pieces?
+    + A button icon for the lobby
+    + Better ready icons
 * To try:
   - Show large numbers over the territory representing
     the attack total; add attack/defense markers too
     * Replace the how to play illustration?
-  - Better ready indicator for available pieces
   - Navigation with paths
-  - Better ready images? Box/checkmark?
 
 Menu Structure
 --------------
