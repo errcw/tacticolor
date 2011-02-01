@@ -140,8 +140,8 @@ namespace Strategy.Interface.Gameplay
                     pieceAction);
             }
 
-            // hide the selected state if necessary 
-            if (_showingSelected)
+            // hide the selected state if necessary
+            if (_showingSelected && !_piece.Ready)
             {
                 pieceAction = new CompositeAnimation(
                     GetDeselectedAnimation(),
