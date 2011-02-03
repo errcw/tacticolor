@@ -175,10 +175,23 @@ namespace Strategy.Net
             _ready[args.Gamer] = false;
             _lastReadied[args.Gamer] = null;
 
-            if (_net.Session.IsHost)
+            // only remote gamers are missing information
+            if (!args.Gamer.IsLocal)
             {
                 // the newly added gamer needs to get the current configuration
-                SendConfigurationFromHost(args.Gamer);
+                if (_net.Session.IsHost)
+                {
+                    SendConfigurationFromHost(args.Gamer);
+                }
+
+                // the gamer also needs to know about the local ready state
+                foreach (var entry in _ready)
+                {
+                    if (entry.Key.IsLocal && entry.Value)
+                    {
+                        SendReady((LocalNetworkGamer)entry.Key, args.Gamer);
+                    }
+                }
             }
         }
 
@@ -256,6 +269,15 @@ namespace Strategy.Net
                 SendDataOptions.ReliableInOrder);
         }
 
+        private void SendReady(LocalNetworkGamer gamer, NetworkGamer receiver)
+        {
+            _net.SendCommand(
+                new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty, false),
+                gamer,
+                receiver,
+                SendDataOptions.ReliableInOrder);
+        }
+
         private void BroadcastUnready(LocalNetworkGamer gamer)
         {
             _net.BroadcastCommand(UnreadyCommand, gamer, SendDataOptions.ReliableInOrder);
@@ -263,10 +285,6 @@ namespace Strategy.Net
 
         private void SendConfigurationFromHost(NetworkGamer receiver)
         {
-            if (receiver.Equals(_net.Session.Host))
-            {
-                return;
-            }
             _net.SendCommand(
                 new MatchConfigurationCommand(Seed, MapType, MapSize, Difficulty, true),
                 (LocalNetworkGamer)_net.Session.Host,
