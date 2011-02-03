@@ -105,7 +105,7 @@ namespace Strategy.Interface.Screens
 
             TransitionOnTime = 0.5f;
             TransitionOffTime = 0.5f;
-            ShowBeneath = true;
+            StateChanged += (s, a) => ShowBeneath = (State == ScreenState.TransitionOn || State == ScreenState.TransitionOff);
         }
 
         protected override void UpdateActive(GameTime gameTime)

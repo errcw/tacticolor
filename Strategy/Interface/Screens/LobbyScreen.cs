@@ -88,7 +88,7 @@ namespace Strategy.Interface.Screens
             BasePosition = new Vector2(270f, 590f);
             TransitionOnTime = 0.5f;
             TransitionOffTime = 0.5f;
-            ShowBeneath = true; // for the transition on
+            StateChanged += (s, a) => ShowBeneath = (State == ScreenState.TransitionOn || State == ScreenState.TransitionOff);
         }
 
         protected override void UpdateActive(GameTime gameTime)
