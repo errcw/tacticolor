@@ -130,7 +130,7 @@ namespace Strategy.Interface.Screens
         public override void Draw()
         {
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            _entries.ForEach(entry => entry.Sprite.Draw(_spriteBatch));
+            _entries.Where(entry => entry.IsVisible).ForEach(entry => entry.Sprite.Draw(_spriteBatch));
             _selectSprite.Draw(_spriteBatch);
             _backSprite.Draw(_spriteBatch);
             _moveSprite.Draw(_spriteBatch);
@@ -412,6 +412,14 @@ namespace Strategy.Interface.Screens
             {
                 _colorAnimation = new ColorAnimation(Sprite, value ? _targetColor : Color.Transparent, 0.5f, Interpolation.InterpolateColor(Easing.Uniform));
             }
+        }
+
+        /// <summary>
+        /// Returns whether this menu entry is currently visible.
+        /// </summary>
+        public bool IsVisible
+        {
+            get { return Sprite.Color.A > 0; }
         }
 
         /// <summary>
