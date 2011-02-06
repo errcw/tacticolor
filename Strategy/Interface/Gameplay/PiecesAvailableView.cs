@@ -36,6 +36,7 @@ namespace Strategy.Interface.Gameplay
                 Sprite sprite = new ImageSprite(pieceSprite);
                 sprite.Y = BasePosition.Y;
                 sprite.Color = TransparentColor;
+                sprite.Origin = new Vector2((int)(sprite.Size.X / 2), (int)(sprite.Size.Y / 2));
                 _unused.Enqueue(sprite);
             }
 
@@ -50,7 +51,13 @@ namespace Strategy.Interface.Gameplay
                 _creatingSprite.Color = ColorExtensions.FromNonPremultiplied(SolidColor, progress);
                 _creatingSprite.X = Interpolation.InterpolateFloat(Easing.Uniform)(_creatingSprite.X, _creatingTargetX, 8f * time);
             }
-
+            if (_createdAnimation != null)
+            {
+                if (!_createdAnimation.Update(time))
+                {
+                    _createdAnimation = null;
+                }
+            }
             if (_hideAnimation != null)
             {
                 if (!_hideAnimation.Update(time))
@@ -98,6 +105,10 @@ namespace Strategy.Interface.Gameplay
                 _creatingSprite.Color = SolidColor;
                 _creatingSprite.X = _creatingTargetX;
                 _created.Push(_creatingSprite);
+
+                _createdAnimation = new SequentialAnimation(
+                    new ScaleAnimation(_creatingSprite, new Vector2(1.25f, 1.25f), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
+                    new ScaleAnimation(_creatingSprite, Vector2.One, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
 
                 _creatingSprite = null;
                 if (_match.PiecesAvailable[(int)Player] < _match.MaxPiecesAvailable)
@@ -161,8 +172,8 @@ namespace Strategy.Interface.Gameplay
         /// </summary>
         private Vector2 GetBasePosition(PlayerId player)
         {
-            const int BaseX = 80;
-            const int BaseY = 80;
+            const int BaseX = 92;
+            const int BaseY = 92;
             const int SpacingY = 100;
             switch (player)
             {
@@ -181,6 +192,7 @@ namespace Strategy.Interface.Gameplay
         private Sprite _creatingSprite;
         private float _creatingTargetX;
 
+        private IAnimation _createdAnimation;
         private IAnimation _hideAnimation;
 
         private readonly Color TransparentColor;
