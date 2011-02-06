@@ -51,8 +51,16 @@ namespace Strategy.AI
         }
 
         /// <summary>
-        /// Updates the input state.
+        /// Provides a new command to execute.
         /// </summary>
+        /// <remarks>
+        /// AI players return AI decision commands which schedule command
+        /// decision making at a fixed future point in the match. This
+        /// mechanism ensures that AI players make the same decisions across
+        /// machines, because Update is not guaranteed to be called at the
+        /// same match time so decision making in Update is subject to local
+        /// variable timing (badness for lockstep!).
+        /// </remarks>
         public MatchCommand Update(int time)
         {
             MatchCommand command = null;
@@ -60,7 +68,7 @@ namespace Strategy.AI
             if (_shouldScheduleCommand)
             {
                 command = new AiDecisionCommand(_player, OnAiDecision);
-                command.Time = _lastCommandTime + GetCooldownTime();
+                command.Time = _lastCommandTime + GetCommandWaitTime();
 
                 _lastCommandTime = command.Time;
                 _shouldScheduleCommand = false;
@@ -71,6 +79,11 @@ namespace Strategy.AI
             return command;
         }
 
+        /// <summary>
+        /// Callback invoked when the match has scheduled the AiDecisionCommand
+        /// to execute. Looks at the current game state and executes the best
+        /// possbile command, if any.
+        /// </summary>
         private void OnAiDecision(Match match)
         {
             Debug.Assert(match == _match);
@@ -99,7 +112,6 @@ namespace Strategy.AI
         {
             List<PotentialCommand> commands = new List<PotentialCommand>(32);
 
-            // moving and attacking
             foreach (Territory src in GetOwnedTerritories())
             {
                 // placement
@@ -140,7 +152,7 @@ namespace Strategy.AI
             return territory.Pieces.Any(p => p.Ready);
         }
 
-        private int GetCooldownTime()
+        private int GetCommandWaitTime()
         {
             int baseTime = 0;
             switch (_difficulty)
@@ -407,6 +419,11 @@ namespace Strategy.AI
                 return 0;
             }
 
+            /// <summary>
+            /// Performs a breadth-first search and returns the shortest
+            /// distance from the specified start territory to the
+            /// closest territory satisfying the given predicate.
+            /// </summary>
             private int DistanceTo(Territory start, Predicate<Territory> destinationCheck)
             {
                 Queue<Territory> visit = new Queue<Territory>();
