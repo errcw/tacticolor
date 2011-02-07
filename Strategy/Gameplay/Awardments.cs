@@ -106,7 +106,7 @@ namespace Strategy.Gameplay
             AwardmentTypes = GetAwardmentTypes();
         }
 
-        public void MatchStarted(IDictionary<string, PlayerId> players, Match match)
+        public void MatchStarted(Match match, IDictionary<string, PlayerId> players)
         {
             _match = match;
             _players = players;
@@ -169,6 +169,7 @@ namespace Strategy.Gameplay
             catch (Exception e)
             {
                 Debug.WriteLine(e);
+                // simply create new awardments
             }
         }
 

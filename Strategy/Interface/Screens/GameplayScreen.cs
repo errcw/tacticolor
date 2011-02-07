@@ -65,7 +65,7 @@ namespace Strategy.Interface.Screens
                 }
             }
             _awardments = game.Services.GetService<Awardments>();
-            _awardments.MatchStarted(awardmentPlayers, match);
+            _awardments.MatchStarted(match, awardmentPlayers);
 
             // create the views
             _context = new InterfaceContext(game, game.Content, IsoParams);
