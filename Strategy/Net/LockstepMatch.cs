@@ -46,19 +46,20 @@ namespace Strategy.Net
         /// <summary>
         /// Creates a new lockstep match for a given game.
         /// </summary>
-        /// <param name="match"></param>
+        /// <param name="match">The match to run in lockstep</param>
         public LockstepMatch(Match match)
         {
             _match = match;
             _commands = new CommandList();
 
+            // start the match before time
             StepStart = -100;
             StepTime = 100;
             _stepEndTime = StepStart + StepTime;
 
             SchedulingOffset = 2 * StepTime;
 
-            _readyStepStartTime = -1; // wait for start game command
+            _readyStepStartTime = StepStart;
             _readyStepStartTimes = new long[match.PlayerCount];
             for (int i = 0; i < _readyStepStartTimes.Length; i++)
             {
@@ -129,6 +130,12 @@ namespace Strategy.Net
             UpdateMatch(dtUpdateEndTime);
         }
 
+        /// <summary>
+        /// Updates the match, moving forward in time the specified number of
+        /// milliseconds. Handles step transitions.
+        /// </summary>
+        /// <param name="deltaTime">The amount of time, in milliseconds.</param>
+        /// <returns>True if the match was updated; otherwise, false.</returns>
         private bool UpdateMatch(int deltaTime)
         {
             Debug.Assert(deltaTime >= 0);
