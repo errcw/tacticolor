@@ -356,7 +356,7 @@ namespace Strategy.Gameplay
         public void Move(Territory source, Territory destination)
         {
             int toMove = Math.Min(destination.Capacity - destination.Pieces.Count, source.Pieces.Count - 1);
-            List<Piece> moved = new List<Piece>(source.Pieces.Where(piece => piece.Ready).Take(toMove));
+            List<Piece> moved = source.Pieces.Where(piece => piece.Ready).Take(toMove).ToList();
             foreach (Piece piece in moved)
             {
                 source.Pieces.Remove(piece);
@@ -364,7 +364,8 @@ namespace Strategy.Gameplay
                 piece.DidPerformAction();
             }
             destination.Cooldown = CooldownMove;
-            if (moved.Count > 0 && PiecesMoved != null)
+
+            if (PiecesMoved != null)
             {
                 PiecesMoved(this, new PiecesMovedEventArgs(source, destination, moved));
             }
@@ -417,7 +418,7 @@ namespace Strategy.Gameplay
         }
 
         /// <summary>
-        /// Calculates a hash of the match state.
+        /// Calculates a simple hash of the match state.
         /// </summary>
         public long GetStateHash()
         {
@@ -505,9 +506,10 @@ namespace Strategy.Gameplay
                     _pieceCreationElapsed[p] -= PieceCreationTicks;
                     PieceCreationProgress[p] = 0f;
 
-                    // because piece creation may happen at different times on different machines
-                    // the elapsed remainder may be different and conflict in the state hash
-                    // because it is no longer continually updated
+                    // because piece creation may happen at different times on
+                    // different machines, the elapsed remainder may be
+                    // different and conflict in the state hash because it is
+                    // no longer continually updated
                     if (PiecesAvailable[p] == MaxPiecesAvailable)
                     {
                         _pieceCreationElapsed[p] = 0;
