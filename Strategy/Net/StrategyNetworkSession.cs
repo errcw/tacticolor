@@ -13,6 +13,15 @@ namespace Strategy.Net
     /// <summary>
     /// Wraps a network session.
     /// </summary>
+    /// <remarks>
+    /// Handles the ugly realities of peer-to-peer distributed game state
+    /// changes. Because different machines will transition between the Playing
+    /// and Lobby states at different times, a machine may receive a command
+    /// for the next or previous state. Commands for the next state must be
+    /// saved and executed when appropriate; commands for the previous state
+    /// must be discarded. Here we use a system of state sequence numbers to
+    /// track to which state a command belongs then handle it appropriately.
+    /// </remarks>
     public class StrategyNetworkSession : IDisposable
     {
         /// <summary>
