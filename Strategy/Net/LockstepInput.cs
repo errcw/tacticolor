@@ -18,7 +18,8 @@ namespace Strategy.Net
     }
 
     /// <summary>
-    /// Gathers local input feeds it both to the match and to remote players.
+    /// Gathers local input feeds it both to the match and to remote players;
+    /// gathers remote input and feeds it to the match.
     /// </summary>
     public class LockstepInput
     {
@@ -130,9 +131,8 @@ namespace Strategy.Net
             }
         }
 
-
         /// <summary>
-        /// Sends a command to all remote players.
+        /// Sends a command to all remote players and schedules it locally.
         /// </summary>
         private void BroadcastCommand(MatchCommand command, Player sender)
         {
