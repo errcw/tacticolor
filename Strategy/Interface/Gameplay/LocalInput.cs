@@ -85,6 +85,14 @@ namespace Strategy.Interface.Gameplay
 
             _input.Update(time / 1000f);
 
+            // the selected territory may have been captured;
+            // if so, it is no longer a valid selection
+            if (Selected != null && Selected.Owner != Player)
+            {
+                _actionPending = false;
+                SetSelected(null);
+            }
+
             if (Action.Pressed)
             {
                 if (_actionPending)
