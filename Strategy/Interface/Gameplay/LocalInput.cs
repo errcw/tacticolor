@@ -155,9 +155,10 @@ namespace Strategy.Interface.Gameplay
 
                 foreach (Territory other in Hovered.Neighbors)
                 {
-                    if (!CanActBetween(Selected, other))
+                    if (Selected != null && Selected != other && !Selected.Neighbors.Contains(other))
                     {
-                        continue; // cannot move to invalid territory
+                        // cannot move beyone one territory from the current selection
+                        continue;
                     }
                     Point otherLoc = GetPointInInputSpace(other.Location);
                     Vector2 toOtherLoc = new Vector2(otherLoc.X - curLoc.X, otherLoc.Y - curLoc.Y);
@@ -205,14 +206,6 @@ namespace Strategy.Interface.Gameplay
         private bool CanSelect(Territory territory)
         {
             return territory.Owner == Player && territory.Pieces.Count > 1;
-        }
-
-        private bool CanActBetween(Territory source, Territory destination)
-        {
-            return source == null ||
-                   source == destination ||
-                   _match.CanMove(Player, source, destination) ||
-                   _match.CanAttack(Player, source, destination);
         }
 
         private void NotifyActionRejected()

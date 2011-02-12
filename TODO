@@ -3,11 +3,6 @@ To Do
 
 * Sound
 * Polish
-  - Eliminate visual piece bugs: consistent up/down state
-  - Eliminate frustration selecting territories
-    + Allow selecting nearby territories even when unavailable for action?
-    + Clearly mark which territories are cooling down
-    + Match cooldowns to visual action
   - Clarify the interface
     + A button icon for the lobby
     + Better ready icons
