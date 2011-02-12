@@ -57,6 +57,7 @@ namespace Strategy.Interface.Gameplay
 
         public void Update(float time)
         {
+            _sprite.Color = _territory.Cooldown > 0 ? Color.Gray : Color.White;
             if (_colorAnimation != null)
             {
                 if (!_colorAnimation.Update(time))
