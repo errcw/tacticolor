@@ -557,7 +557,7 @@ namespace Strategy.Interface.Screens
             set { SetPlayer(value); }
         }
 
-        public PlayerSlot(int slotNumber, Sprite iconSprite, ContentManager content)
+        public PlayerSlot(int slotNumber, ImageSprite iconSprite, ContentManager content)
         {
             _backgroundSprite = new ImageSprite(content.Load<Texture2D>("Images/LobbyBox"));
             _backgroundSprite.Position = new Vector2(
@@ -590,8 +590,8 @@ namespace Strategy.Interface.Screens
 
             _iconSprite = iconSprite;
             _iconSprite.Position = new Vector2(
-                _backgroundSprite.Position.X + _backgroundSprite.Size.X - _iconSprite.Size.X - 25,
-                _backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _iconSprite.Size.Y) / 2);
+                (int)(_backgroundSprite.Position.X + _backgroundSprite.Size.X - _iconSprite.Size.X - 25),
+                (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _iconSprite.Size.Y) / 2));
             _iconSprite.Color = Color.Transparent;
         }
 
@@ -662,7 +662,7 @@ namespace Strategy.Interface.Screens
         protected ImageSprite _backgroundSprite;
         protected ImageSprite _labelImageSprite;
         protected TextSprite _labelTextSprite;
-        protected Sprite _iconSprite;
+        protected ImageSprite _iconSprite;
 
         protected IAnimation _labelAnimation;
         protected IAnimation _iconAnimation;
@@ -700,8 +700,10 @@ namespace Strategy.Interface.Screens
         }
 
         public NetworkPlayerSlot(int slotNumber, ContentManager content)
-            : base(slotNumber, new ImageSprite(content.Load<Texture2D>("Images/Ready")), content)
+            : base(slotNumber, new ImageSprite(content.Load<Texture2D>("Images/LobbyUnready")), content)
         {
+            _unreadyTexture = content.Load<Texture2D>("Images/LobbyUnready");
+            _readyTexture = content.Load<Texture2D>("Images/LobbyReady");
         }
 
         public void UpdateHostStatus()
@@ -720,17 +722,19 @@ namespace Strategy.Interface.Screens
 
         protected override Color GetIconColor()
         {
-            return _ready ? ReadyColor : UnreadyColor;
+            return Color.White;
         }
 
         private void SetReady(bool ready)
         {
             _ready = ready;
-            _iconSprite.Color = GetIconColor();
-            _iconAnimation = null; // force it to stop, lest it overwrite the new color
+            _iconSprite.Texture = _ready ? _readyTexture : _unreadyTexture;
         }
 
         private bool _ready;
+
+        private Texture2D _readyTexture;
+        private Texture2D _unreadyTexture;
 
         private readonly Color ReadyColor = PlayerId.C.GetPieceColor();
         private readonly Color UnreadyColor = PlayerId.A.GetPieceColor();
