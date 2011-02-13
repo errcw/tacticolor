@@ -392,10 +392,10 @@
   </data>
   <data name="MenuInstructions" xml:space="preserve">
     <value>Instructions</value>
-    <comment>Spacing used as a hacky layout workaround</comment>
   </data>
   <data name="MenuJoin" xml:space="preserve">
     <value>         to join</value>
+    <comment>Spacing used as a hacky layout workaround</comment>
   </data>
   <data name="MenuJoinMatch" xml:space="preserve">
     <value>Join Match</value>
@@ -465,7 +465,7 @@
     <value>Sounds</value>
   </data>
   <data name="MenuStartGame" xml:space="preserve">
-    <value>Start Game        </value>
+    <value>Start Game  </value>
   </data>
   <data name="MenuToggle" xml:space="preserve">
     <value>Toggle</value>

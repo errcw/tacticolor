@@ -1096,7 +1096,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start Game        .
+        ///   Looks up a localized string similar to Start Game  .
         /// </summary>
         internal static string MenuStartGame {
             get {
