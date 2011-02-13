@@ -563,15 +563,21 @@ namespace Strategy.Interface.Screens
                 (1280 - _backgroundSprite.Size.X) / 2,
                 100 + (_backgroundSprite.Size.Y + 20) * slotNumber);
 
-            _labelSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextSmall"), Resources.MenuJoin);
-            _labelSprite.Color = Color.Black;
-            _labelSprite.Origin = new Vector2(
-                (int)(_labelSprite.Size.X / 2),
-                (int)(_labelSprite.Size.Y / 2));
-            _labelSprite.Position = new Vector2(
+            _labelImageSprite = new ImageSprite(content.Load<Texture2D>("Images/ButtonA"));
+            _labelImageSprite.Origin = new Vector2(
+                (int)(_labelImageSprite.Size.X / 2),
+                (int)(_labelImageSprite.Size.Y / 2));
+            _labelImageSprite.Position = new Vector2(
                 (int)(_backgroundSprite.Position.X + 25),
-                (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _labelSprite.Size.Y) / 2))
-                + _labelSprite.Origin;
+                (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _labelImageSprite.Size.Y) / 2))
+                + _labelImageSprite.Origin;
+
+            _labelTextSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextSmall"), Resources.MenuJoin);
+            _labelTextSprite.Color = Color.Black;
+            _labelTextSprite.Position = new Vector2(
+                (int)(_backgroundSprite.Position.X + 25),
+                (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _labelTextSprite.Size.Y) / 2))
+                + _labelTextSprite.Origin;
 
             _iconSprite = iconSprite;
             _iconSprite.Position = new Vector2(
@@ -599,15 +605,16 @@ namespace Strategy.Interface.Screens
             if (_labelAnimation == null && _player == null)
             {
                 _labelAnimation = new SequentialAnimation(
-                    new ScaleAnimation(_labelSprite, new Vector2(1.1f, 1.1f), 1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
-                    new ScaleAnimation(_labelSprite, Vector2.One, 1f, Interpolation.InterpolateVector2(Easing.QuadraticIn)));
+                    new ScaleAnimation(_labelImageSprite, new Vector2(1.1f, 1.1f), 1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
+                    new ScaleAnimation(_labelImageSprite, Vector2.One, 1f, Interpolation.InterpolateVector2(Easing.QuadraticIn)));
             }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             _backgroundSprite.Draw(spriteBatch);
-            _labelSprite.Draw(spriteBatch);
+            _labelImageSprite.Draw(spriteBatch);
+            _labelTextSprite.Draw(spriteBatch);
             _iconSprite.Draw(spriteBatch);
         }
 
@@ -622,11 +629,16 @@ namespace Strategy.Interface.Screens
             _player = player;
 
             string newLabelText = GetLabelText();
+            Color newLabelColor = (_player != null) ? Color.Transparent : Color.White;
             _labelAnimation = new SequentialAnimation(
-                new ColorAnimation(_labelSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
-                new TextAnimation(_labelSprite, newLabelText),
-                new ScaleAnimation(_labelSprite, Vector2.One, 0f, Interpolation.InterpolateVector2(Easing.Uniform)),
-                new ColorAnimation(_labelSprite, Color.Black, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)));
+                new CompositeAnimation(
+                    new ColorAnimation(_labelImageSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
+                    new ColorAnimation(_labelTextSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform))),
+                new TextAnimation(_labelTextSprite, newLabelText),
+                new ScaleAnimation(_labelImageSprite, Vector2.One, 0f, Interpolation.InterpolateVector2(Easing.Uniform)),
+                new CompositeAnimation(
+                    new ColorAnimation(_labelImageSprite, newLabelColor, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
+                    new ColorAnimation(_labelTextSprite, Color.Black, 0.25f, Interpolation.InterpolateColor(Easing.Uniform))));
 
             Color newIconColor = GetIconColor();
             _iconAnimation = new ColorAnimation(_iconSprite, newIconColor, 0.25f, Interpolation.InterpolateColor(Easing.Uniform));
@@ -639,7 +651,8 @@ namespace Strategy.Interface.Screens
         private Player _player;
 
         protected ImageSprite _backgroundSprite;
-        protected TextSprite _labelSprite;
+        protected ImageSprite _labelImageSprite;
+        protected TextSprite _labelTextSprite;
         protected Sprite _iconSprite;
 
         protected IAnimation _labelAnimation;
@@ -684,7 +697,7 @@ namespace Strategy.Interface.Screens
 
         public void UpdateHostStatus()
         {
-            _labelSprite.Text = GetLabelText();
+            _labelTextSprite.Text = GetLabelText();
         }
 
         protected override string GetLabelText()

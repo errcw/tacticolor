@@ -889,7 +889,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Press A to Join.
+        ///   Looks up a localized string similar to          to join.
         /// </summary>
         internal static string MenuJoin {
             get {

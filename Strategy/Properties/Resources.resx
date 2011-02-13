@@ -392,9 +392,10 @@
   </data>
   <data name="MenuInstructions" xml:space="preserve">
     <value>Instructions</value>
+    <comment>Spacing used as a hacky layout workaround</comment>
   </data>
   <data name="MenuJoin" xml:space="preserve">
-    <value>Press A to Join</value>
+    <value>         to join</value>
   </data>
   <data name="MenuJoinMatch" xml:space="preserve">
     <value>Join Match</value>
