@@ -190,7 +190,7 @@ namespace Strategy.Interface.Screens
             {
                 for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
                 {
-                    if (Gamer.SignedInGamers[p].Gamertag == args.Gamer.Gamertag)
+                    if (Gamer.SignedInGamers[p] != null && Gamer.SignedInGamers[p].Gamertag == args.Gamer.Gamertag)
                     {
                         player.Controller = p;
                         break;
