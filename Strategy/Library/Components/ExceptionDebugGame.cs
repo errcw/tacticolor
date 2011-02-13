@@ -58,7 +58,6 @@ namespace Strategy.Library.Components
                     if (!Guide.IsVisible)
                     {
                         Guide.BeginShowMessageBox(
-                            PlayerIndex.One,
                             Resources.ExceptionMessageTitle,
                             Resources.ExceptionMessage,
                             new string[] { Resources.ExceptionMessageExit,
