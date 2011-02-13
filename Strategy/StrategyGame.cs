@@ -68,6 +68,16 @@ namespace Strategy
                 _options.Load(_storage);
                 _awardments.Load(_storage);
             };
+            _storage.DeviceDisconnected += delegate(object s, StorageEventArgs a)
+            {
+                a.ShouldPrompt = true;
+                a.PlayerToPrompt = _input.Controller.GetValueOrDefault(PlayerIndex.One);
+            };
+            _storage.DeviceSelectorCanceled += delegate(object s, StorageEventArgs a)
+            {
+                a.ShouldPrompt = true;
+                a.PlayerToPrompt = _input.Controller.GetValueOrDefault(PlayerIndex.One);
+            };
 
             SignedInGamer.SignedOut += OnGamerSignedOut;
 
