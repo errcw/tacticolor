@@ -85,7 +85,8 @@ namespace Strategy.Interface.Screens
             UpdateUiForHostChange();
             UpdateUiForReadyChange();
 
-            BasePosition = new Vector2(270f, 590f);
+            //BasePosition = new Vector2(270f, 590f);
+            BasePosition = new Vector2(130f, 80f);
             TransitionOnTime = 0.5f;
             TransitionOffTime = 0.5f;
             StateChanged += (s, a) => ShowBeneath = (State == ScreenState.TransitionOn || State == ScreenState.TransitionOff);
@@ -151,7 +152,7 @@ namespace Strategy.Interface.Screens
             }
             _slots.ForEach(slot => slot.Draw(_spriteBatch));
             _spriteBatch.End();
-            base.Draw();
+            base.Draw(m);
         }
 
         protected internal override void Show(bool pushed)
@@ -560,8 +561,16 @@ namespace Strategy.Interface.Screens
         {
             _backgroundSprite = new ImageSprite(content.Load<Texture2D>("Images/LobbyBox"));
             _backgroundSprite.Position = new Vector2(
-                (1280 - _backgroundSprite.Size.X) / 2,
-                100 + (_backgroundSprite.Size.Y + 20) * slotNumber);
+                (1280 - _backgroundSprite.Size.X * 2 + 30) / 2,
+                (720 - _backgroundSprite.Size.Y * 2 + 30) / 2 - 60);
+            if (slotNumber == 1 || slotNumber == 3)
+            {
+                _backgroundSprite.Position += new Vector2(_backgroundSprite.Size.X + 30, 0);
+            }
+            if (slotNumber == 2 || slotNumber == 3)
+            {
+                _backgroundSprite.Position += new Vector2(0, _backgroundSprite.Size.Y + 30);
+            }
 
             _labelImageSprite = new ImageSprite(content.Load<Texture2D>("Images/ButtonA"));
             _labelImageSprite.Origin = new Vector2(

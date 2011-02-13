@@ -129,7 +129,15 @@ namespace Strategy.Interface.Screens
         /// </summary>
         public override void Draw()
         {
-            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            Draw(Matrix.Identity);
+        }
+
+        /// <summary>
+        /// Draws this screen with the given transformation applied.
+        /// </summary>
+        protected void Draw(Matrix transformation)
+        {
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, transformation);
             _entries.Where(entry => entry.IsVisible).ForEach(entry => entry.Sprite.Draw(_spriteBatch));
             _selectSprite.Draw(_spriteBatch);
             _backSprite.Draw(_spriteBatch);
