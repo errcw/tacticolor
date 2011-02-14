@@ -101,15 +101,6 @@ namespace Strategy.Library.Storage
         }
 
         /// <summary>
-        /// Clears the current storage device, if any.
-        /// </summary>
-        public void ClearDevice()
-        {
-            _storageDevice = null;
-            _deviceWasConnected = false;
-        }
-
-        /// <summary>
         /// Determines if an IStoredData object is already saved.
         /// </summary>
         /// <param name="storeable">The object to query.</param>
@@ -309,7 +300,8 @@ namespace Strategy.Library.Storage
         private void StorageDeviceSelectorCallback(IAsyncResult result)
         {
             _storageDevice = StorageDevice.EndShowSelector(result);
-            if (_storageDevice != null && _storageDevice.IsConnected)
+            _deviceWasConnected = (_storageDevice != null && _storageDevice.IsConnected);
+            if (_deviceWasConnected)
             {
                 if (DeviceSelected != null)
                 {

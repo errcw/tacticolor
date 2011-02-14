@@ -76,8 +76,6 @@ namespace Strategy.Interface.Screens
         {
             // unset the controller value so a new controller may take control
             _input.Controller = null;
-            // unset the device before selecting a new one
-            _storage.ClearDevice();
 
             base.Show(pushed);
         }
