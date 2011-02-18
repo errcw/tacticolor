@@ -186,6 +186,7 @@ namespace Strategy.Interface.Screens
                     entry.TargetPosition = BasePosition;
                     entry.TargetIsVisible = false;
                 }
+                _soundBack.Play();
             }
             else
             {
@@ -219,6 +220,7 @@ namespace Strategy.Interface.Screens
             else if (_input.Action.Pressed && _entries[_selectedEntryAbs].IsSelectable)
             {
                 _entries[_selectedEntryAbs].OnSelected();
+                _soundSelect.Play();
             }
 
             float time = gameTime.GetElapsedSeconds();
@@ -286,7 +288,7 @@ namespace Strategy.Interface.Screens
 
             if (selected != _selectedEntryAbs)
             {
-                //_soundMove.Play();
+                _soundMove.Play();
             }
         }
 
@@ -356,6 +358,10 @@ namespace Strategy.Interface.Screens
                 moveImage.Position.Y + (moveImage.Size.Y - _moveTextSprite.Size.Y) / 2);
             _moveSprite = new CompositeSprite(moveImage, _moveTextSprite);
             _moveSprite.Position = ControlsBasePosition;
+
+            _soundMove = content.Load<SoundEffect>("Sounds/MenuMove");
+            _soundSelect = content.Load<SoundEffect>("Sounds/MenuSelect");
+            _soundBack = content.Load<SoundEffect>("Sounds/MenuBack");
         }
 
         private Sprite _selectSprite;
@@ -366,6 +372,8 @@ namespace Strategy.Interface.Screens
         protected SpriteBatch _spriteBatch;
 
         private SoundEffect _soundMove;
+        private SoundEffect _soundSelect;
+        private SoundEffect _soundBack;
 
         private MenuInput _input;
 
