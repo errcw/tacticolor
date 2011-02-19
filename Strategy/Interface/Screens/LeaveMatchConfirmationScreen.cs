@@ -21,9 +21,14 @@ namespace Strategy.Interface.Screens
     {
         public LeaveMatchConfirmationScreen(Game game) : base(game)
         {
+            MenuEntry returnEntry, leaveEntry;
+
             new MenuBuilder(this, game)
-                .CreateButtonEntry(Resources.MenuLeaveNo, OnReturnSelected)
-                .CreateButtonEntry(Resources.MenuLeaveYes, OnLeaveSelected);
+                .CreateButtonEntry(Resources.MenuLeaveNo, OnReturnSelected, out returnEntry)
+                .CreateButtonEntry(Resources.MenuLeaveYes, OnLeaveSelected, out leaveEntry);
+
+            returnEntry.SuppressSelectSound = true;
+            leaveEntry.SuppressSelectSound = true;
 
             TransitionOnTime = 0.01f;
             BasePosition = new Vector2(150f, 120f);

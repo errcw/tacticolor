@@ -220,7 +220,10 @@ namespace Strategy.Interface.Screens
             else if (_input.Action.Pressed && _entries[_selectedEntryAbs].IsSelectable)
             {
                 _entries[_selectedEntryAbs].OnSelected();
-                _soundSelect.Play();
+                if (!_entries[_selectedEntryAbs].SuppressSelectSound)
+                {
+                    _soundSelect.Play();
+                }
             }
 
             float time = gameTime.GetElapsedSeconds();
@@ -454,6 +457,11 @@ namespace Strategy.Interface.Screens
         public event EventHandler<EventArgs> Selected;
 
         /// <summary>
+        /// If the default selection sound should not be played when this entry is selected.
+        /// </summary>
+        public bool SuppressSelectSound { get; set; }
+
+        /// <summary>
         /// Creates a new menu entry.
         /// </summary>
         /// <param name="sprite">The sprite to show.</param>
@@ -464,6 +472,7 @@ namespace Strategy.Interface.Screens
             _targetPosition = (Sprite != null) ? Sprite.Position : Vector2.Zero;
             IsSelectable = true;
             SelectText = Resources.MenuSelect;
+            SuppressSelectSound = false;
         }
 
         /// <summary>

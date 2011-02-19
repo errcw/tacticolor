@@ -21,9 +21,14 @@ namespace Strategy.Interface.Screens
     {
         public ExitGameConfirmationScreen(Game game) : base(game)
         {
+            MenuEntry returnEntry, exitEntry;
+
             new MenuBuilder(this, game)
-                .CreateButtonEntry(Resources.MenuExitNo, OnReturnSelected)
-                .CreateButtonEntry(Resources.MenuExitYes, OnExitSelected);
+                .CreateButtonEntry(Resources.MenuExitNo, OnReturnSelected, out returnEntry)
+                .CreateButtonEntry(Resources.MenuExitYes, OnExitSelected, out exitEntry);
+
+            returnEntry.SuppressSelectSound = true;
+            exitEntry.SuppressSelectSound = true;
 
             TransitionOnTime = 0.01f;
             BasePosition = new Vector2(150f, 120f);

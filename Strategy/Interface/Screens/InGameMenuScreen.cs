@@ -21,11 +21,15 @@ namespace Strategy.Interface.Screens
     {
         public InGameMenuScreen(Game game, PlayerIndex controller) : base(game)
         {
+            MenuEntry returnEntry;
+
             new MenuBuilder(this, game)
-                .CreateButtonEntry(Resources.MenuReturnMatch, OnReturnSelected)
+                .CreateButtonEntry(Resources.MenuReturnMatch, OnReturnSelected, out returnEntry)
                 .CreatePurchaseButtonEntry(Resources.MenuPurchase)
                 .CreateButtonEntry(Resources.MenuHelpOptions, OnHelpOptionsSelected)
                 .CreateButtonEntry(Resources.MenuLeaveMatch, OnLeaveSelected);
+
+            returnEntry.SuppressSelectSound = true;
 
             // transfer control to the player opening the menu
             _input = game.Services.GetService<MenuInput>();
