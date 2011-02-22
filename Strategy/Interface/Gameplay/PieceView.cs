@@ -143,9 +143,7 @@ namespace Strategy.Interface.Gameplay
             // hide the selected state if necessary
             if (_showingSelected && !_piece.Ready)
             {
-                pieceAction = new CompositeAnimation(
-                    GetDeselectedAnimation(),
-                    pieceAction);
+                _selectionAnimation = GetDeselectedAnimation();
             }
 
             // put together the sequence
@@ -203,7 +201,7 @@ namespace Strategy.Interface.Gameplay
                     _actionAnimation = null;
                 }
             }
-            else if (_selectionAnimation != null)
+            if (_selectionAnimation != null)
             {
                 if (!_selectionAnimation.Update(time))
                 {
