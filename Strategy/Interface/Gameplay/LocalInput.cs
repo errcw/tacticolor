@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.Xna.Framework;
@@ -151,25 +152,37 @@ namespace Strategy.Interface.Gameplay
 
                 Territory newHovered = null;
                 float minAngle = float.MaxValue;
+                float minDistance2 = float.MaxValue;
                 Point curLoc = GetPointInInputSpace(Hovered.Location);
 
-                foreach (Territory other in Hovered.Neighbors)
+                IEnumerable<Territory> territoriesToConsider = (Selected != null)
+                    ? Selected.Neighbors.Concat(Enumerable.Repeat(Selected, 1))
+                    : _match.Map.Territories.Where(t => t.Owner == Player);
+
+                foreach (Territory other in territoriesToConsider)
                 {
-                    if (Selected != null && Selected != other && !Selected.Neighbors.Contains(other))
+                    if (other == Hovered)
                     {
-                        // cannot move beyone one territory from the current selection
+                        // zero-distance moves are invalid
                         continue;
                     }
+
                     Point otherLoc = GetPointInInputSpace(other.Location);
                     Vector2 toOtherLoc = new Vector2(otherLoc.X - curLoc.X, otherLoc.Y - curLoc.Y);
+
+                    float distance2 = toOtherLoc.LengthSquared();
 
                     float dot = Vector2.Dot(direction, toOtherLoc);
                     float crossMag = direction.X * toOtherLoc.Y - direction.Y * toOtherLoc.X;
                     float angle = (float)Math.Abs(Math.Atan2(crossMag, dot));
 
-                    if (angle < MoveAngleThreshold && angle < minAngle)
+                    // choose the best angle and distance, but favour localaity over minimizing the angle
+                    bool areAnglesClose = Math.Abs(angle - minAngle) < MoveAngleThreshold;
+                    if ((angle < minAngle && distance2 < minDistance2) ||
+                        (areAnglesClose && distance2 < minDistance2) || (!areAnglesClose && angle < minAngle))
                     {
                         minAngle = angle;
+                        minDistance2 = distance2;
                         newHovered = other;
                     }
                 }
@@ -251,7 +264,7 @@ namespace Strategy.Interface.Gameplay
         private readonly ControlState Place = new ControlState();
 
         private const float MoveTolerance = 0.5f * 0.5f;
-        private const float MoveAngleThreshold = MathHelper.PiOver2;
+        private const float MoveAngleThreshold = MathHelper.Pi / 6f;
     }
 
     /// <summary>
