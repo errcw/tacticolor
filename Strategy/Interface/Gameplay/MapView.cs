@@ -145,6 +145,8 @@ namespace Strategy.Interface.Gameplay
                 pieceView.OnAttacked(data.Roll, data.Survived, null, delay, totalDelay - delay);
                 delay += PieceDelay;
             }
+            defenderView.OnAttacked(false, args.Defenders.Select(d => d.Roll), args.Attackers.Count * PieceDelay);
+            defenderView.MaybeChangedOwners(totalDelay + 0.25f);
 
             // handle the attackers
             delay = 0f;
@@ -166,8 +168,7 @@ namespace Strategy.Interface.Gameplay
                 pieceView.OnAttacked(data.Roll, data.Survived, destination, delay, totalDelay - delay);
                 delay += PieceDelay;
             }
-
-            defenderView.MaybeChangedOwners(totalDelay + 0.25f);
+            attackerView.OnAttacked(true, args.Attackers.Select(d => d.Roll), 0f);
         }
 
         /// <summary>

@@ -53,6 +53,34 @@ namespace Strategy.Interface.Gameplay
             {
                 _sprite.Add(sprite);
             }
+
+            // build the attack sprites
+            SpriteFont font = context.Content.Load<SpriteFont>("Fonts/TextSmallBold");
+            Point territoryPosition = context.IsoParams.GetPoint(territory.Location);
+
+            _attackPartySprite = new TextSprite(font, "ATK");
+            _attackPartySprite.Position = new Vector2(
+                territoryPosition.X - _attackPartySprite.Size.X,
+                territoryPosition.Y - _attackPartySprite.Size.Y / 2);
+            _attackPartySprite.Color = Color.White;
+
+            _attackPartyShadowSprite = new TextSprite(font, "ATK");
+            _attackPartyShadowSprite.Position = _attackPartySprite.Position + new Vector2(1, 1);
+            _attackPartyShadowSprite.Color = new Color(30, 30, 30, 160);
+
+            _attackRollSprite = new TextSprite(font, "1");
+            _attackRollSprite.Origin = new Vector2(0, _attackRollSprite.Size.Y / 2);
+            _attackRollSprite.Position = _attackPartySprite.Position + _attackRollSprite.Origin + new Vector2(50, 0);
+            _attackRollSprite.Color = Color.White;
+
+            _attackRollShadowSprite = new TextSprite(font, "1");
+            _attackRollShadowSprite.Origin = new Vector2(0, _attackRollSprite.Size.Y / 2);
+            _attackRollShadowSprite.Position = _attackRollSprite.Position + new Vector2(1, 1);
+            _attackRollShadowSprite.Color = new Color(30, 30, 30, 160);
+
+            _attackSprite = new CompositeSprite(_attackPartyShadowSprite, _attackPartySprite, _attackRollShadowSprite, _attackRollSprite);
+            _attackSprite.Color = Color.Transparent;
+            _attackSprite.Layer = 0f;
         }
 
         public void Update(float time)
@@ -64,11 +92,19 @@ namespace Strategy.Interface.Gameplay
                     _colorAnimation = null;
                 }
             }
+            if (_attackAnimation != null)
+            {
+                if (!_attackAnimation.Update(time))
+                {
+                    _attackAnimation = null;
+                }
+            }
         }
 
         public void Draw(IsometricView isoView)
         {
             isoView.Add(_sprite);
+            isoView.Add(_attackSprite);
         }
 
         /// <summary>
@@ -109,6 +145,43 @@ namespace Strategy.Interface.Gameplay
 
                 _lastOwner = _territory.Owner;
             }
+        }
+
+        /// <summary>
+        /// Notifies this view that it participated in an attack.
+        /// </summary>
+        public void OnAttacked(bool wasAttacker, IEnumerable<int> pieceRolls, float rollDelay)
+        {
+            string type = wasAttacker ? "ATK" : "DEF";
+            _attackPartySprite.Text = type;
+            _attackPartyShadowSprite.Text = type;
+
+            _attackRollSprite.Text = "";
+            _attackRollShadowSprite.Text = "";
+
+            List<IAnimation> animations = new List<IAnimation>();
+            animations.Add(new ColorAnimation(_attackSprite, Color.White, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)));
+            animations.Add(new DelayAnimation(rollDelay));
+            int sum = 0;
+            foreach (int roll in pieceRolls)
+            {
+                sum += roll;
+                animations.Add(new SequentialAnimation(
+                    new CompositeAnimation(
+                        new ScaleAnimation(_attackRollSprite, Vector2.UnitX, 0.1f, Interpolation.InterpolateVector2(Easing.Uniform)),
+                        new ScaleAnimation(_attackRollShadowSprite, Vector2.UnitX, 0.1f, Interpolation.InterpolateVector2(Easing.Uniform))),
+                    new CompositeAnimation(
+                        new TextAnimation(_attackRollSprite, sum.ToString()),
+                        new TextAnimation(_attackRollShadowSprite, sum.ToString())),
+                    new DelayAnimation(0.05f),
+                    new CompositeAnimation(
+                        new ScaleAnimation(_attackRollSprite, Vector2.One, 0.1f, Interpolation.InterpolateVector2(Easing.Uniform)),
+                        new ScaleAnimation(_attackRollShadowSprite, Vector2.One, 0.1f, Interpolation.InterpolateVector2(Easing.Uniform)))));
+            }
+            animations.Add(new DelayAnimation(1f));
+            animations.Add(new ColorAnimation(_attackSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)));
+
+            _attackAnimation = new SequentialAnimation(animations.ToArray());
         }
 
         /// <summary>
@@ -157,5 +230,12 @@ namespace Strategy.Interface.Gameplay
 
         private CompositeSprite _sprite;
         private IAnimation _colorAnimation;
+
+        private TextSprite _attackPartySprite;
+        private TextSprite _attackPartyShadowSprite;
+        private TextSprite _attackRollSprite;
+        private TextSprite _attackRollShadowSprite;
+        private Sprite _attackSprite;
+        private IAnimation _attackAnimation;
     }
 }

@@ -52,9 +52,9 @@ namespace Strategy.Interface.Gameplay
             SpriteFont rollFont = context.Content.Load<SpriteFont>("Fonts/Roll");
             _rollSprite = new TextSprite(rollFont);
             _rollSprite.Color = Color.White;
-            _rollSprite.OutlineWidth = 1;
-            _rollSprite.OutlineColor = Color.Black;
-            _rollSprite.Layer = 0f;
+            //_rollSprite.OutlineWidth = 1;
+            //_rollSprite.OutlineColor = Color.Black;
+            _rollSprite.Layer = 0.1f;
 
             _wasReady = _piece.Ready;
             _wasSelected = false;
