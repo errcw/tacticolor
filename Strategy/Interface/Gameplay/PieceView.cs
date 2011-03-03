@@ -49,14 +49,6 @@ namespace Strategy.Interface.Gameplay
             _pyramidSprite = new CompositeSprite(pieceBase, _readySprite);
             _pieceSprite = new CompositeSprite(_shadowSprite, _pyramidSprite);
 
-            SpriteFont rollFont = context.Content.Load<SpriteFont>("Fonts/Roll");
-            _rollSprite = new TextSprite(rollFont);
-            _rollSprite.Color = Color.White;
-            _rollSprite.Effect = TextSprite.TextEffect.Shadow;
-            _rollSprite.EffectColor = new Color(30, 30, 30, 160);
-            _rollSprite.EffectSize = 1;
-            _rollSprite.Layer = 0.1f;
-
             _wasReady = _piece.Ready;
             _wasSelected = false;
         }
@@ -98,28 +90,14 @@ namespace Strategy.Interface.Gameplay
         /// <summary>
         /// Notifies this piece it participated in an attack.
         /// </summary>
-        public void OnAttacked(int roll, bool survived, Cell? destination, float showDelay, float actionDelay)
+        public void OnAttacked(bool survived, Cell? destination, float attackDelay, float actionDelay)
         {
-            // build the roll animations
-            _rollSprite.Position = _pieceSprite.Position + new Vector2(-5, -20);
-            _rollSprite.Text = roll.ToString("D1", CultureInfo.CurrentCulture);
-            _rollSprite.Color = Color.Transparent;
-
-            IAnimation showRoll =
-                new CompositeAnimation(
-                    new ColorAnimation(_rollSprite, Color.Transparent, 0.15f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
-                    new PositionAnimation(_rollSprite, _rollSprite.Position + new Vector2(0, -10), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
-
-            IAnimation hideRoll =
-                new CompositeAnimation(
-                    new ColorAnimation(_rollSprite, Color.Transparent, 0.15f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
-                    new PositionAnimation(_rollSprite, _rollSprite.Position + new Vector2(0, -30), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
-
-            IAnimation showPiece = new SequentialAnimation(
+            // build the attack animation
+            IAnimation pieceAttack = new SequentialAnimation(
                 new PositionAnimation(_pyramidSprite, SelectionOffset, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
                 new PositionAnimation(_pyramidSprite, Vector2.Zero, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
 
-            // build the piece animations
+            // build the action animations
             IAnimation pieceAction = null;
             if (survived && destination.HasValue) // survived and moved
             {
@@ -153,10 +131,10 @@ namespace Strategy.Interface.Gameplay
 
             // put together the sequence
             IAnimation animation = new SequentialAnimation(
-                new DelayAnimation(showDelay),
-                showPiece,
+                new DelayAnimation(attackDelay),
+                pieceAttack,
                 new DelayAnimation(actionDelay),
-                new CompositeAnimation(pieceAction, hideRoll));
+                pieceAction);
 
             if (_actionAnimation == null)
             {
@@ -218,7 +196,6 @@ namespace Strategy.Interface.Gameplay
         public void Draw(IsometricView isoView)
         {
             isoView.Add(_pieceSprite);
-            isoView.Add(_rollSprite);
         }
 
         private Vector2 GetPosition(Cell cell)
@@ -263,7 +240,6 @@ namespace Strategy.Interface.Gameplay
 
         private Sprite _pieceSprite;
         private Sprite _shadowSprite, _pyramidSprite, _readySprite; // parts of the piece
-        private TextSprite _rollSprite;
 
         private IAnimation _actionAnimation;
         private IAnimation _selectionAnimation;

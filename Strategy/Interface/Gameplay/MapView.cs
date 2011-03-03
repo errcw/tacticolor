@@ -132,7 +132,7 @@ namespace Strategy.Interface.Gameplay
             float totalDelay = (args.Attackers.Count + args.Defenders.Count) * PerPieceTime + 0.25f;
 
             // handle the defenders
-            delay = args.Attackers.Count * PerPieceTime;
+            delay = args.Attackers.Count * PerPieceTime + 0.4f;
             foreach (PieceAttackData data in args.Defenders)
             {
                 PieceView pieceView = _pieceViews[data.Piece];
@@ -142,14 +142,14 @@ namespace Strategy.Interface.Gameplay
                     _pieceViews.Remove(data.Piece);
                     _removedPieces.Add(pieceView);
                 }
-                pieceView.OnAttacked(data.Roll, data.Survived, null, delay, totalDelay - delay);
+                pieceView.OnAttacked(data.Survived, null, delay, totalDelay - delay);
                 delay += PerPieceTime;
             }
             defenderView.OnAttacked(false, args.Defenders.Select(d => d.Roll), args.Attackers.Count * PerPieceTime + 0.25f, 1f);
             defenderView.MaybeChangedOwners(totalDelay + 0.25f);
 
             // handle the attackers
-            delay = 0.25f;
+            delay = 0.4f;
             foreach (PieceAttackData data in args.Attackers)
             {
                 PieceView pieceView = _pieceViews[data.Piece];
@@ -165,7 +165,7 @@ namespace Strategy.Interface.Gameplay
                     _pieceViews.Remove(data.Piece);
                     _removedPieces.Add(pieceView);
                 }
-                pieceView.OnAttacked(data.Roll, data.Survived, destination, delay, totalDelay - delay);
+                pieceView.OnAttacked(data.Survived, destination, delay, totalDelay - delay);
                 delay += PerPieceTime;
             }
             attackerView.OnAttacked(true, args.Attackers.Select(d => d.Roll), 0.25f, args.Defenders.Count * PerPieceTime + 1f);
