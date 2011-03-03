@@ -127,12 +127,12 @@ namespace Strategy.Interface.Gameplay
             TerritoryView attackerView = _territoryViews[args.Attacker];
             TerritoryView defenderView = _territoryViews[args.Defender];
 
-            const float PieceDelay = 0.15f;
+            const float PerPieceTime = 0.25f;
             float delay = 0f;
-            float totalDelay = (args.Attackers.Count + args.Defenders.Count) * PieceDelay + 0.25f;
+            float totalDelay = (args.Attackers.Count + args.Defenders.Count) * PerPieceTime + 0.25f;
 
             // handle the defenders
-            delay = args.Attackers.Count * PieceDelay;
+            delay = args.Attackers.Count * PerPieceTime;
             foreach (PieceAttackData data in args.Defenders)
             {
                 PieceView pieceView = _pieceViews[data.Piece];
@@ -143,13 +143,13 @@ namespace Strategy.Interface.Gameplay
                     _removedPieces.Add(pieceView);
                 }
                 pieceView.OnAttacked(data.Roll, data.Survived, null, delay, totalDelay - delay);
-                delay += PieceDelay;
+                delay += PerPieceTime;
             }
-            defenderView.OnAttacked(false, args.Defenders.Select(d => d.Roll), args.Attackers.Count * PieceDelay);
+            defenderView.OnAttacked(false, args.Defenders.Select(d => d.Roll), args.Attackers.Count * PerPieceTime + 0.25f, 1f);
             defenderView.MaybeChangedOwners(totalDelay + 0.25f);
 
             // handle the attackers
-            delay = 0f;
+            delay = 0.25f;
             foreach (PieceAttackData data in args.Attackers)
             {
                 PieceView pieceView = _pieceViews[data.Piece];
@@ -166,9 +166,9 @@ namespace Strategy.Interface.Gameplay
                     _removedPieces.Add(pieceView);
                 }
                 pieceView.OnAttacked(data.Roll, data.Survived, destination, delay, totalDelay - delay);
-                delay += PieceDelay;
+                delay += PerPieceTime;
             }
-            attackerView.OnAttacked(true, args.Attackers.Select(d => d.Roll), 0f);
+            attackerView.OnAttacked(true, args.Attackers.Select(d => d.Roll), 0.25f, args.Defenders.Count * PerPieceTime + 1f);
         }
 
         /// <summary>

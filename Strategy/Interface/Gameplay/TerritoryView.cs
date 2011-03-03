@@ -55,21 +55,20 @@ namespace Strategy.Interface.Gameplay
             }
 
             // build the attack sprites
-            SpriteFont font = context.Content.Load<SpriteFont>("Fonts/TextSmallBold");
             Point territoryPosition = context.IsoParams.GetPoint(territory.Location);
 
-            _attackPartySprite = new TextSprite(font, "ATK");
+            _attackPartySprite = new TextSprite(context.Content.Load<SpriteFont>("Fonts/TextVeryLarge"), "ATK");
             _attackPartySprite.Position = new Vector2(
-                territoryPosition.X - _attackPartySprite.Size.X,
-                territoryPosition.Y - _attackPartySprite.Size.Y / 2);
+                (int)(territoryPosition.X - _attackPartySprite.Size.X + 15f),
+                (int)(territoryPosition.Y - _attackPartySprite.Size.Y / 2));
             _attackPartySprite.Color = Color.White;
             _attackPartySprite.Effect = TextSprite.TextEffect.Shadow;
             _attackPartySprite.EffectColor = new Color(30, 30, 30, 160);
             _attackPartySprite.EffectSize = 1;
 
-            _attackRollSprite = new TextSprite(font, "1");
-            _attackRollSprite.Origin = new Vector2(0, _attackRollSprite.Size.Y / 2);
-            _attackRollSprite.Position = _attackPartySprite.Position + _attackRollSprite.Origin + new Vector2(50, 0);
+            _attackRollSprite = new TextSprite(context.Content.Load<SpriteFont>("Fonts/TextSmallBold"), "1");
+            _attackRollSprite.Origin = new Vector2(0, (int)(_attackRollSprite.Size.Y / 2));
+            _attackRollSprite.Position = _attackPartySprite.Position + _attackRollSprite.Origin + new Vector2(60, 5);
             _attackRollSprite.Color = Color.White;
             _attackRollSprite.Effect = TextSprite.TextEffect.Shadow;
             _attackRollSprite.EffectColor = new Color(30, 30, 30, 160);
@@ -147,14 +146,15 @@ namespace Strategy.Interface.Gameplay
         /// <summary>
         /// Notifies this view that it participated in an attack.
         /// </summary>
-        public void OnAttacked(bool wasAttacker, IEnumerable<int> pieceRolls, float rollDelay)
+        public void OnAttacked(bool wasAttacker, IEnumerable<int> pieceRolls, float showRollDelay, float hideRollDelay)
         {
             _attackPartySprite.Text = wasAttacker ? "ATK" : "DEF";
             _attackRollSprite.Text = "";
 
             List<IAnimation> animations = new List<IAnimation>();
-            animations.Add(new ColorAnimation(_attackSprite, Color.White, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)));
-            animations.Add(new DelayAnimation(rollDelay));
+            animations.Add(new CompositeAnimation(
+                new ColorAnimation(_attackSprite, Color.White, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)),
+                new DelayAnimation(showRollDelay)));
             int sum = 0;
             foreach (int roll in pieceRolls)
             {
@@ -165,7 +165,7 @@ namespace Strategy.Interface.Gameplay
                     new DelayAnimation(0.05f),
                     new ScaleAnimation(_attackRollSprite, Vector2.One, 0.1f, Interpolation.InterpolateVector2(Easing.Uniform))));
             }
-            animations.Add(new DelayAnimation(1f));
+            animations.Add(new DelayAnimation(hideRollDelay));
             animations.Add(new ColorAnimation(_attackSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)));
 
             _attackAnimation = new SequentialAnimation(animations.ToArray());

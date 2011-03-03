@@ -52,8 +52,9 @@ namespace Strategy.Interface.Gameplay
             SpriteFont rollFont = context.Content.Load<SpriteFont>("Fonts/Roll");
             _rollSprite = new TextSprite(rollFont);
             _rollSprite.Color = Color.White;
-            //_rollSprite.OutlineWidth = 1;
-            //_rollSprite.OutlineColor = Color.Black;
+            _rollSprite.Effect = TextSprite.TextEffect.Shadow;
+            _rollSprite.EffectColor = new Color(30, 30, 30, 160);
+            _rollSprite.EffectSize = 1;
             _rollSprite.Layer = 0.1f;
 
             _wasReady = _piece.Ready;
@@ -106,13 +107,17 @@ namespace Strategy.Interface.Gameplay
 
             IAnimation showRoll =
                 new CompositeAnimation(
-                    new ColorAnimation(_rollSprite, Color.White, 0.15f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
+                    new ColorAnimation(_rollSprite, Color.Transparent, 0.15f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
                     new PositionAnimation(_rollSprite, _rollSprite.Position + new Vector2(0, -10), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
 
             IAnimation hideRoll =
                 new CompositeAnimation(
                     new ColorAnimation(_rollSprite, Color.Transparent, 0.15f, Interpolation.InterpolateColor(Easing.QuadraticIn)),
                     new PositionAnimation(_rollSprite, _rollSprite.Position + new Vector2(0, -30), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
+
+            IAnimation showPiece = new SequentialAnimation(
+                new PositionAnimation(_pyramidSprite, SelectionOffset, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
+                new PositionAnimation(_pyramidSprite, Vector2.Zero, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
 
             // build the piece animations
             IAnimation pieceAction = null;
@@ -149,7 +154,7 @@ namespace Strategy.Interface.Gameplay
             // put together the sequence
             IAnimation animation = new SequentialAnimation(
                 new DelayAnimation(showDelay),
-                showRoll,
+                showPiece,
                 new DelayAnimation(actionDelay),
                 new CompositeAnimation(pieceAction, hideRoll));
 

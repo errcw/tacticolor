@@ -283,10 +283,6 @@ namespace Strategy.Gameplay
 
             // set the cooldowns
             int cooldown = CooldownAttackBase + CooldownAttackPerPiece * (attackers.Count + defenders.Count);
-            if (success)
-            {
-                cooldown += CooldownAttackSuccess;
-            }
             attacker.Cooldown = cooldown;
             defender.Cooldown = cooldown;
 
@@ -596,9 +592,8 @@ namespace Strategy.Gameplay
         private const int PieceCreationMillisToTicksPerTerritory = 80;
 
         private const int CooldownMove = 500;
-        private const int CooldownAttackBase = 750;
-        private const int CooldownAttackPerPiece = 150;
-        private const int CooldownAttackSuccess = 500;
+        private const int CooldownAttackBase = 1250;
+        private const int CooldownAttackPerPiece = 250;
     }
 
     /// <summary>
