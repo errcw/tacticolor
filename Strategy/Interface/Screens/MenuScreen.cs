@@ -538,6 +538,7 @@ namespace Strategy.Interface.Screens
         public TextMenuEntry(TextSprite text) : base(text)
         {
             TextSprite = text;
+            TextSprite.Effect = TextSprite.TextEffect.Outline;
         }
 
         /// <summary>
@@ -550,10 +551,10 @@ namespace Strategy.Interface.Screens
             LabelSprite = label;
             TextSprite = text;
 
-            CompositeSprite composite = new CompositeSprite(LabelSprite, TextSprite);
             LabelSprite.Position = Vector2.Zero;
             TextSprite.Position = new Vector2(LabelSprite.Size.X + LabelSprite.Font.MeasureString(" ").X, 0);
-            Sprite = composite;
+            TextSprite.Effect = TextSprite.TextEffect.Outline;
+            Sprite = new CompositeSprite(LabelSprite, TextSprite);
         }
 
         /// <summary>
@@ -572,7 +573,7 @@ namespace Strategy.Interface.Screens
                 }
                 float p = _fadeElapsed / FadeDuration;
                 float a = (_fadeIn) ? p : 1 - p;
-                TextSprite.OutlineColor = ColorExtensions.FromPremultiplied(OutlineColor, a);
+                TextSprite.EffectColor = ColorExtensions.FromPremultiplied(OutlineColor, a);
             }
             base.Update(time);
         }
@@ -584,14 +585,14 @@ namespace Strategy.Interface.Screens
         {
             if (focused)
             {
-                TextSprite.OutlineColor = IsSelectable ? OutlineColor : Color.Transparent;
-                TextSprite.OutlineWidth = 2;
+                TextSprite.EffectColor = IsSelectable ? OutlineColor : Color.Transparent;
+                TextSprite.EffectSize = 2;
                 _fadeIn = false;
                 _fadeElapsed = 0;
             }
             else
             {
-                TextSprite.OutlineWidth = 0;
+                TextSprite.EffectSize = 0;
             }
             base.OnFocusChanged(focused);
         }

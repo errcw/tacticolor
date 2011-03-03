@@ -33,10 +33,9 @@ namespace Strategy.Interface.Gameplay
             _name = new TextSprite(font, name);
             _name.Color = Color.White;
             _name.Position = position;
-
-            _nameShadow = new TextSprite(font, name);
-            _nameShadow.Color = new Color(30, 30, 30, 160);
-            _nameShadow.Position = position + new Vector2(1, 1);
+            _name.Effect = TextSprite.TextEffect.Shadow;
+            _name.EffectColor = new Color(30, 30, 30, 160);
+            _name.EffectSize = 1;
 
             Texture2D voiceTex = context.Content.Load<Texture2D>("Images/Voice");
             _voiceSprite = new ImageSprite(voiceTex);
@@ -97,7 +96,6 @@ namespace Strategy.Interface.Gameplay
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            _nameShadow.Draw(spriteBatch);
             _name.Draw(spriteBatch);
             _voiceSprite.Draw(spriteBatch);
             _lagSprite.Draw(spriteBatch);
@@ -108,9 +106,7 @@ namespace Strategy.Interface.Gameplay
         /// </summary>
         public void ShowLeft()
         {
-            _nameAnimation = new CompositeAnimation(
-                new ColorAnimation(_name, new Color(176, 176, 176), 1f, Interpolation.InterpolateColor(Easing.Uniform)),
-                new ColorAnimation(_nameShadow, new Color(64, 64, 64, 64), 1f, Interpolation.InterpolateColor(Easing.Uniform)));
+            _nameAnimation = new ColorAnimation(_name, new Color(176, 176, 176), 1f, Interpolation.InterpolateColor(Easing.Uniform));
         }
 
         /// <summary>
@@ -132,7 +128,6 @@ namespace Strategy.Interface.Gameplay
         }
 
         private TextSprite _name;
-        private TextSprite _nameShadow;
         private ImageSprite _voiceSprite;
         private ImageSprite _lagSprite;
 
