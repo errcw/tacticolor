@@ -48,9 +48,6 @@ namespace Strategy.Interface.Gameplay
 
             _pyramidSprite = new CompositeSprite(pieceBase, _readySprite);
             _pieceSprite = new CompositeSprite(_shadowSprite, _pyramidSprite);
-
-            _wasReady = _piece.Ready;
-            _wasSelected = false;
         }
 
         /// <summary>
@@ -59,7 +56,6 @@ namespace Strategy.Interface.Gameplay
         public void SetTerritory(TerritoryView territoryView)
         {
             _territoryView = territoryView;
-            _wasSelected = _territoryView.IsSelected;
         }
 
         /// <summary>
@@ -81,10 +77,7 @@ namespace Strategy.Interface.Gameplay
         /// <param name="destination">The destination cell on the map.</param>
         public void OnMoved(Cell destination)
         {
-            _actionAnimation = new CompositeAnimation(
-                GetMoveAnimation(destination),
-                GetUnreadyAnimation(),
-                GetDeselectedAnimation());
+            _actionAnimation = GetMoveAnimation(destination);
         }
 
         /// <summary>
@@ -93,9 +86,11 @@ namespace Strategy.Interface.Gameplay
         public void OnAttacked(bool survived, Cell? destination, float attackDelay, float actionDelay)
         {
             // build the attack animation
+            Vector2 attackPosition = ShouldShowSelected() ? SelectionOffset + AttackOffset : AttackOffset;
+            Vector2 returnPosition = attackPosition - AttackOffset;
             IAnimation pieceAttack = new SequentialAnimation(
-                new PositionAnimation(_pyramidSprite, SelectionOffset, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
-                new PositionAnimation(_pyramidSprite, Vector2.Zero, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
+                new PositionAnimation(_pyramidSprite, attackPosition, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
+                new PositionAnimation(_pyramidSprite, returnPosition, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));
 
             // build the action animations
             IAnimation pieceAction = null;
@@ -112,21 +107,6 @@ namespace Strategy.Interface.Gameplay
                 pieceAction = new CompositeAnimation(
                     new ScaleAnimation(_pieceSprite, Vector2.Zero, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
                     new ColorAnimation(_pieceSprite, Color.Transparent, 0.45f, Interpolation.InterpolateColor(Easing.QuadraticOut)));
-                _dying = true;
-            }
-
-            // hide the ready state if necessary
-            if (!_piece.Ready)
-            {
-                pieceAction = new CompositeAnimation(
-                    GetUnreadyAnimation(),
-                    pieceAction);
-            }
-
-            // hide the selected state if necessary
-            if (_showingSelected && !_piece.Ready)
-            {
-                _selectionAnimation = GetDeselectedAnimation();
             }
 
             // put together the sequence
@@ -149,32 +129,20 @@ namespace Strategy.Interface.Gameplay
 
         public void Update(float time)
         {
-            if (!_dying)
+            // show the selected state
+            if (ShouldShowSelected() && !_showingSelected)
             {
-                // check if the territory holding us changed selected state
-                if (!_wasSelected && _territoryView.IsSelected && _piece.Ready && !_showingSelected)
-                {
-                    _selectionAnimation = GetSelectedAnimation();
-                }
-                else if (_wasSelected && !_territoryView.IsSelected && _piece.Ready && _showingSelected)
-                {
-                    _selectionAnimation = GetDeselectedAnimation();
-                }
-                _wasSelected = _territoryView.IsSelected;
-
-                // check if we just became ready and the territory is selected
-                if (_piece.Ready && !_wasReady && _territoryView.IsSelected)
-                {
-                    _selectionAnimation = GetSelectedAnimation();
-                }
-                _wasReady = _piece.Ready;
-
-                // show the readiness
-                if (_actionAnimation == null)
-                {
-                    _readySprite.Color = Interpolation.InterpolateColor(Easing.Uniform)(UnreadyColor, PlayerColor, _piece.ReadyProgress);
-                }
+                _selectionAnimation = new PositionAnimation(_pyramidSprite, SelectionOffset, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn));
+                _showingSelected = true;
             }
+            else if (!ShouldShowSelected() && _showingSelected)
+            {
+                _selectionAnimation = new PositionAnimation(_pyramidSprite, Vector2.Zero, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
+                _showingSelected = false;
+            }
+
+            // show the readiness
+            _readySprite.Color = Interpolation.InterpolateColor(Easing.Uniform)(UnreadyColor, PlayerColor, _piece.ReadyProgress);
 
             // update the animation
             if (_actionAnimation != null)
@@ -212,30 +180,15 @@ namespace Strategy.Interface.Gameplay
             return new PositionAnimation(_pieceSprite, newPosition, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
         }
 
-        private IAnimation GetUnreadyAnimation()
+        private bool ShouldShowSelected()
         {
-            return new ColorAnimation(_readySprite, UnreadyColor, 0.5f, Interpolation.InterpolateColor(Easing.Uniform));
-        }
-
-        private IAnimation GetSelectedAnimation()
-        {
-            _showingSelected = true;
-            return new PositionAnimation(_pyramidSprite, SelectionOffset, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn));
-        }
-
-        private IAnimation GetDeselectedAnimation()
-        {
-            _showingSelected = false;
-            return new PositionAnimation(_pyramidSprite, Vector2.Zero, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
+            return _territoryView.IsSelected && _piece.Ready;
         }
 
         private Piece _piece;
         private InterfaceContext _context;
 
-        private bool _wasReady;
-        private bool _wasSelected;
         private bool _showingSelected;
-        private bool _dying;
         private TerritoryView _territoryView;
 
         private Sprite _pieceSprite;
@@ -247,5 +200,6 @@ namespace Strategy.Interface.Gameplay
         private readonly Color PlayerColor;
         private readonly Color UnreadyColor;
         private readonly Vector2 SelectionOffset = new Vector2(0, -5);
+        private readonly Vector2 AttackOffset = new Vector2(0, -5);
     }
 }
