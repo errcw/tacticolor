@@ -141,6 +141,16 @@ namespace Strategy.Interface.Gameplay
                 _showingSelected = false;
             }
 
+            // corner case: territory is selected, piece is not ready, territory
+            // is attacked, piece becomes ready during the attack; attack
+            // animation cancels out the selection--cope with this case by
+            // forcing the piece to show as selected
+            if (ShouldShowSelected() && _showingSelected &&
+                _pyramidSprite.Position != SelectionOffset && _selectionAnimation == null && _actionAnimation == null)
+            {
+                _selectionAnimation = new PositionAnimation(_pyramidSprite, SelectionOffset, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn));
+            }
+
             // show the readiness
             _readySprite.Color = Interpolation.InterpolateColor(Easing.Uniform)(UnreadyColor, PlayerColor, _piece.ReadyProgress);
 
