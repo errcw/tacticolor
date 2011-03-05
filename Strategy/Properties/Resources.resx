@@ -393,6 +393,9 @@
   <data name="MenuInstructions" xml:space="preserve">
     <value>Instructions</value>
   </data>
+  <data name="MenuInvite" xml:space="preserve">
+    <value>Invite</value>
+  </data>
   <data name="MenuJoin" xml:space="preserve">
     <value>         to join</value>
     <comment>Spacing used as a hacky layout workaround</comment>

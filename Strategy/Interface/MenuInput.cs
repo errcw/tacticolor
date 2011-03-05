@@ -21,6 +21,7 @@ namespace Strategy.Interface
         public readonly ControlState Next = new ControlState() { RepeatEnabled = true };
         public readonly ControlState Previous = new ControlState() { RepeatEnabled = true };
         public readonly ControlState Buy = new ControlState();
+        public readonly ControlState Invite = new ControlState();
         public readonly ControlState Debug = new ControlState();
 
         public readonly ControlState[] Activate;
@@ -36,6 +37,7 @@ namespace Strategy.Interface
             _input.Register(Next, Polling.Any(Polling.One(Buttons.DPadRight), Polling.One(Buttons.LeftThumbstickRight)));
             _input.Register(Previous, Polling.Any(Polling.One(Buttons.DPadLeft), Polling.One(Buttons.LeftThumbstickLeft)));
             _input.Register(Buy, Polling.One(Buttons.X));
+            _input.Register(Invite, Polling.One(Buttons.Y));
             _input.Register(Debug, Polling.All(Polling.One(Buttons.LeftShoulder), Polling.One(Buttons.RightShoulder)));
 
             // register the lobby inputs

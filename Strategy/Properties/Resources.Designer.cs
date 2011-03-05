@@ -889,6 +889,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invite.
+        /// </summary>
+        internal static string MenuInvite {
+            get {
+                return ResourceManager.GetString("MenuInvite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to          to join.
         /// </summary>
         internal static string MenuJoin {
