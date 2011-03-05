@@ -209,11 +209,11 @@ namespace Strategy.Interface.Screens
                 Stack.Pop();
                 return;
             }
-            else if (_input.Left.Pressed)
+            else if (_input.Previous.Pressed)
             {
                 SetSelected(-1);
             }
-            else if (_input.Right.Pressed)
+            else if (_input.Next.Pressed)
             {
                 SetSelected(1);
             }
