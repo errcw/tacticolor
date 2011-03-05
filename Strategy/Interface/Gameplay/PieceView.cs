@@ -150,6 +150,14 @@ namespace Strategy.Interface.Gameplay
             {
                 _selectionAnimation = new PositionAnimation(_pyramidSprite, SelectionOffset, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn));
             }
+            // corner case: sometimes pieces are not unselected correctly, for
+            // whatever obscure bug that is not yet fixed--cope with this case
+            // by forcing the piece to show as unselected
+            if (!ShouldShowSelected() && !_showingSelected &&
+                _pyramidSprite.Position != Vector2.Zero && _selectionAnimation == null && _actionAnimation == null)
+            {
+                _selectionAnimation = new PositionAnimation(_pyramidSprite, Vector2.Zero, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
+            }
 
             // show the readiness
             _readySprite.Color = Interpolation.InterpolateColor(Easing.Uniform)(UnreadyColor, PlayerColor, _piece.ReadyProgress);
