@@ -57,14 +57,17 @@ namespace Strategy.Interface.Gameplay
             // build the attack sprites
             Point territoryPosition = context.IsoParams.GetPoint(territory.Location);
 
-            _attackPartySprite = new TextSprite(context.Content.Load<SpriteFont>("Fonts/TextVeryLarge"), "ATK");
+            _attackTex = context.Content.Load<Texture2D>("Images/TerritoryAttack");
+            _defendTex = context.Content.Load<Texture2D>("Images/TerritoryDefend");
+
+            _attackPartySprite = new ImageSprite(_attackTex);
             _attackPartySprite.Position = new Vector2(
                 (int)(territoryPosition.X - _attackPartySprite.Size.X + 15f),
                 (int)(territoryPosition.Y - _attackPartySprite.Size.Y / 2));
             _attackPartySprite.Color = Color.White;
-            _attackPartySprite.Effect = TextSprite.TextEffect.Shadow;
-            _attackPartySprite.EffectColor = new Color(30, 30, 30, 160);
-            _attackPartySprite.EffectSize = 1;
+            //_attackPartySprite.Effect = TextSprite.TextEffect.Shadow;
+            //_attackPartySprite.EffectColor = new Color(30, 30, 30, 160);
+            //_attackPartySprite.EffectSize = 1;
 
             _attackRollSprite = new TextSprite(context.Content.Load<SpriteFont>("Fonts/TextSmallBold"), "1");
             _attackRollSprite.Origin = new Vector2(0, (int)(_attackRollSprite.Size.Y / 2));
@@ -148,7 +151,8 @@ namespace Strategy.Interface.Gameplay
         /// </summary>
         public void OnAttacked(bool wasAttacker, IEnumerable<int> pieceRolls, float showRollDelay, float hideRollDelay)
         {
-            _attackPartySprite.Text = wasAttacker ? "ATK" : "DEF";
+            //_attackPartySprite.Text = wasAttacker ? "ATK" : "DEF";
+            _attackPartySprite.Texture = wasAttacker ? _attackTex : _defendTex;
             _attackRollSprite.Text = "";
 
             List<IAnimation> animations = new List<IAnimation>();
@@ -218,8 +222,9 @@ namespace Strategy.Interface.Gameplay
         private CompositeSprite _sprite;
         private IAnimation _colorAnimation;
 
-        private TextSprite _attackPartySprite;
+        private ImageSprite _attackPartySprite;
         private TextSprite _attackRollSprite;
+        private Texture2D _attackTex, _defendTex;
         private Sprite _attackSprite;
         private IAnimation _attackAnimation;
     }
