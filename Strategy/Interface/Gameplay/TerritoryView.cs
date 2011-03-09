@@ -65,13 +65,10 @@ namespace Strategy.Interface.Gameplay
                 (int)(territoryPosition.X - _attackPartySprite.Size.X + 15f),
                 (int)(territoryPosition.Y - _attackPartySprite.Size.Y / 2));
             _attackPartySprite.Color = Color.White;
-            //_attackPartySprite.Effect = TextSprite.TextEffect.Shadow;
-            //_attackPartySprite.EffectColor = new Color(30, 30, 30, 160);
-            //_attackPartySprite.EffectSize = 1;
 
             _attackRollSprite = new TextSprite(context.Content.Load<SpriteFont>("Fonts/TextSmallBold"), "1");
             _attackRollSprite.Origin = new Vector2(0, (int)(_attackRollSprite.Size.Y / 2));
-            _attackRollSprite.Position = _attackPartySprite.Position + _attackRollSprite.Origin + new Vector2(60, 5);
+            _attackRollSprite.Position = _attackPartySprite.Position + _attackRollSprite.Origin + new Vector2(_attackPartySprite.Size.X + 3, 1);
             _attackRollSprite.Color = Color.White;
             _attackRollSprite.Effect = TextSprite.TextEffect.Shadow;
             _attackRollSprite.EffectColor = new Color(30, 30, 30, 160);
@@ -151,7 +148,6 @@ namespace Strategy.Interface.Gameplay
         /// </summary>
         public void OnAttacked(bool wasAttacker, IEnumerable<int> pieceRolls, float showRollDelay, float hideRollDelay)
         {
-            //_attackPartySprite.Text = wasAttacker ? "ATK" : "DEF";
             _attackPartySprite.Texture = wasAttacker ? _attackTex : _defendTex;
             _attackRollSprite.Text = "";
 
