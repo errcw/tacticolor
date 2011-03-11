@@ -186,6 +186,7 @@
     <Compile Include="Library\Screen\Screen.cs" />
     <Compile Include="Library\Screen\ScreenStack.cs" />
     <Compile Include="Library\Animation\CompositeAnimation.cs" />
+    <Compile Include="Library\Sound\SoundAnimation.cs" />
     <Compile Include="Library\Sprite\CompositeSprite.cs" />
     <Compile Include="Library\Animation\DelayAnimation.cs" />
     <Compile Include="Library\Animation\IAnimation.cs" />

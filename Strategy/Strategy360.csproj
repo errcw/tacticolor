@@ -141,6 +141,7 @@
     <Compile Include="Library\Interpolation.cs" />
     <Compile Include="Library\Screen\Screen.cs" />
     <Compile Include="Library\Screen\ScreenStack.cs" />
+    <Compile Include="Library\Sound\SoundAnimation.cs" />
     <Compile Include="Library\Sprite\CompositeSprite.cs" />
     <Compile Include="Library\Sprite\ImageSprite.cs" />
     <Compile Include="Library\Sprite\Sprite.cs" />
