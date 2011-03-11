@@ -1,5 +1,20 @@
 To Do
 -----
 
-* Sound
 * Tone down normal AI movement frequency?
+* Sound
+  - pick up pieces
+  - put down pieces
+  - attack action
+  - move action
+  - place piece action
+  - invalid action
+  - attack?
+  - move?
+  - place?
+  - menu music
+  - game music
+* Testing
+  - trial experience testing
+  - simulated network latency testing
+  - online: playing, invites, etc.
