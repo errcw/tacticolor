@@ -8,6 +8,7 @@ using Strategy.Gameplay;
 using Strategy.Net;
 using Strategy.Properties;
 using Strategy.Library;
+using Strategy.Library.Animation;
 using Strategy.Library.Extensions;
 using Strategy.Library.Sprite;
 

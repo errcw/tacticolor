@@ -3,6 +3,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Strategy.Library.Animation;
+
 namespace Strategy.Library.Sprite
 {
     /// <summary>

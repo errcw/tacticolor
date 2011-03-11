@@ -112,6 +112,10 @@
     <Compile Include="Interface\Screens\PurchaseScreen.cs" />
     <Compile Include="Interface\Screens\TitleScreen.cs" />
     <Compile Include="Interface\SlidingPanel.cs" />
+    <Compile Include="Library\Animation\CompositeAnimation.cs" />
+    <Compile Include="Library\Animation\DelayAnimation.cs" />
+    <Compile Include="Library\Animation\IAnimation.cs" />
+    <Compile Include="Library\Animation\SequentialAnimation.cs" />
     <Compile Include="Library\BresenhamIterator.cs" />
     <Compile Include="Library\Components\ExceptionDebugGame.cs" />
     <Compile Include="Library\Components\FpsOverlayComponent.cs">
@@ -137,12 +141,8 @@
     <Compile Include="Library\Interpolation.cs" />
     <Compile Include="Library\Screen\Screen.cs" />
     <Compile Include="Library\Screen\ScreenStack.cs" />
-    <Compile Include="Library\Sprite\CompositeAnimation.cs" />
     <Compile Include="Library\Sprite\CompositeSprite.cs" />
-    <Compile Include="Library\Sprite\DelayAnimation.cs" />
-    <Compile Include="Library\Sprite\IAnimation.cs" />
     <Compile Include="Library\Sprite\ImageSprite.cs" />
-    <Compile Include="Library\Sprite\SequentialAnimation.cs" />
     <Compile Include="Library\Sprite\Sprite.cs" />
     <Compile Include="Library\Sprite\SpriteAnimation.cs" />
     <Compile Include="Library\Sprite\TextSprite.cs" />

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Strategy.Library.Sprite
+namespace Strategy.Library.Animation
 {
     /// <summary>
     /// Animates multiple child animations simultaneously.

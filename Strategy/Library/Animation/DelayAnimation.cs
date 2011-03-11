@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Strategy.Library.Sprite
+namespace Strategy.Library.Animation
 {
     /// <summary>
     /// Does nothing for a given duration. Useful for padding sequential animations.

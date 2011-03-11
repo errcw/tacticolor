@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
 using Strategy.Library;
+using Strategy.Library.Animation;
 using Strategy.Library.Sprite;
 
 namespace Strategy.Interface.Gameplay
