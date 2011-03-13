@@ -42,6 +42,7 @@ namespace Strategy.Interface.Screens
 
             _title = new ImageSprite(game.Content.Load<Texture2D>("Images/Title"));
             _title.Position = new Vector2((1280 - _title.Size.X) / 2, (720 - _title.Size.Y) / 2);
+            _title.Color = Color.White;
 
             SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextLarge");
             Vector2 loadingTextSize = font.MeasureString(Resources.Loading);
@@ -91,14 +92,14 @@ namespace Strategy.Interface.Screens
 
         protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
         {
-            _title.Color = ColorExtensions.FromNonPremultiplied(_readyText.Color, 0.8f * progress + 0.2f);
-            _readyText.Color = ColorExtensions.FromNonPremultiplied(_readyText.Color, progress);
+            _title.Color = ColorExtensions.FromNonPremultiplied(Color.White, 0.8f * progress + 0.2f);
+            _readyText.Color = ColorExtensions.FromNonPremultiplied(Color.Black, progress);
         }
 
         protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
         {
-            _title.Color = ColorExtensions.FromNonPremultiplied(_readyText.Color, 0.8f * (1 - progress) + 0.2f);
-            _readyText.Color = ColorExtensions.FromNonPremultiplied(_readyText.Color, 1 - progress);
+            _title.Color = ColorExtensions.FromNonPremultiplied(Color.White, 0.8f * (1 - progress) + 0.2f);
+            _readyText.Color = ColorExtensions.FromNonPremultiplied(Color.Black, 1 - progress);
         }
 
         protected override void UpdateActive(GameTime gameTime)
