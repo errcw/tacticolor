@@ -36,7 +36,7 @@ namespace Strategy.Interface.Gameplay
             _cursorHover.Origin = new Vector2(0, 14);
 
             _cursorSelect = new ImageSprite(cursorTex);
-            _cursorSelect.Color = ColorExtensions.FromNonPremultiplied(cursorColor, 0.5f);
+            _cursorSelect.Color = ColorExtensions.FromNonPremultiplied(cursorColor, 0.75f);
             _cursorSelect.Origin = new Vector2(0, 14);
 
             // bounce the cursor until the player acts
