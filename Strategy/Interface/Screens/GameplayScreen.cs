@@ -260,7 +260,7 @@ namespace Strategy.Interface.Screens
 
         private void OnTerritoryAttacked(object matchObj, TerritoryAttackedEventArgs args)
         {
-            // stop the match before it finished in trial mode
+            // stop the match before it finishes in trial mode
             if (Guide.IsTrialMode)
             {
                 Match match = _lockstepMatch.Match;
