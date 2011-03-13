@@ -62,8 +62,6 @@ namespace Strategy.Interface.Gameplay
 
             _attackTex = context.Content.Load<Texture2D>("Images/TerritoryAttack");
             _defendTex = context.Content.Load<Texture2D>("Images/TerritoryDefend");
-            _attackEffect = context.Content.Load<SoundEffect>("Sounds/TerritoryAttack");
-            _defendEffect = context.Content.Load<SoundEffect>("Sounds/TerritoryDefend");
 
             _attackPartySprite = new ImageSprite(_attackTex);
             _attackPartySprite.Position = new Vector2(
@@ -164,15 +162,11 @@ namespace Strategy.Interface.Gameplay
             foreach (int roll in pieceRolls)
             {
                 sum += roll;
-                SoundAnimation s = new SoundAnimation(wasAttacker ? _attackEffect : _defendEffect);
                 animations.Add(new SequentialAnimation(
                     new ScaleAnimation(_attackRollSprite, Vector2.UnitX, 0.1f, Interpolation.InterpolateVector2(Easing.Uniform)),
                     new TextAnimation(_attackRollSprite, sum.ToString()),
                     new DelayAnimation(0.05f),
-                    new CompositeAnimation(
-                        s,
-                        new ScaleAnimation(_attackRollSprite, Vector2.One, 0.1f, Interpolation.InterpolateVector2(Easing.Uniform)))));
-                s.Stop();
+                    new ScaleAnimation(_attackRollSprite, Vector2.One, 0.1f, Interpolation.InterpolateVector2(Easing.Uniform))));
             }
             animations.Add(new DelayAnimation(hideRollDelay));
             animations.Add(new ColorAnimation(_attackSprite, Color.Transparent, 0.25f, Interpolation.InterpolateColor(Easing.Uniform)));
@@ -230,7 +224,6 @@ namespace Strategy.Interface.Gameplay
         private ImageSprite _attackPartySprite;
         private TextSprite _attackRollSprite;
         private Texture2D _attackTex, _defendTex;
-        private SoundEffect _attackEffect, _defendEffect;
         private Sprite _attackSprite;
         private IAnimation _attackAnimation;
     }
