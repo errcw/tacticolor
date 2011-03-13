@@ -535,13 +535,19 @@
     <value>Strategy</value>
   </data>
   <data name="TrialMatchConfiguration" xml:space="preserve">
-    <value>Get the full version to customize your match!</value>
+    <value>Buy Tacticolor to customize your match!</value>
   </data>
   <data name="TrialMatchEnd" xml:space="preserve">
-    <value>Get the full version to keep playing and finish your conquest!</value>
+    <value>Buy Tacticolor to keep playing and finish your conquest!</value>
   </data>
   <data name="TrialMultiplayer" xml:space="preserve">
-    <value>Get the full version to play online!</value>
+    <value>Buy Tacticolor to play online!</value>
+  </data>
+  <data name="TrialUpsellAwardments" xml:space="preserve">
+    <value>Buy Tacticolor to save your Awardments!</value>
+  </data>
+  <data name="TrialUpsellExit" xml:space="preserve">
+    <value>Buy Tacticolor and experience all the fun!</value>
   </data>
   <data name="TrialUpsellReason0" xml:space="preserve">
     <value>Play online!</value>

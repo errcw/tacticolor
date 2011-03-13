@@ -46,13 +46,10 @@ namespace Strategy.Interface.Screens
             BasePosition = new Vector2(130f, 80f);
         }
 
-        public override void Draw()
+        protected override void OnDraw()
         {
-            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             _background.Draw(_spriteBatch);
-            _spriteBatch.End();
-
-            base.Draw();
+            base.OnDraw();
         }
 
         protected internal override void Hide(bool popped)

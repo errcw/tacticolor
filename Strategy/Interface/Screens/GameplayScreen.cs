@@ -189,6 +189,13 @@ namespace Strategy.Interface.Screens
                     break;
                 }
             }
+
+            if (_input.Debug.Pressed)
+            {
+                // game is almost over, show the purchase screen
+                _endScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd, typeof(LobbyScreen));
+                _endTime = 0f;
+            }
         }
 
         public override void Draw()
@@ -267,7 +274,7 @@ namespace Strategy.Interface.Screens
                         if (remainingCount <= 3)
                         {
                             // game is almost over, show the purchase screen
-                            _endScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd, typeof(MainMenuScreen));
+                            _endScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd, typeof(LobbyScreen));
                             _endTime = 0f;
                         }
                     }

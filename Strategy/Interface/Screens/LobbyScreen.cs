@@ -151,15 +151,18 @@ namespace Strategy.Interface.Screens
         {
             float slidePosition = 1280 * (1 - _transitionProgress);
             Matrix m = Matrix.CreateTranslation(slidePosition, 0f, 0f);
-            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, m);
+            base.Draw(m);
+        }
+
+        protected override void OnDraw()
+        {
             _background.Draw(_spriteBatch);
             if (_legend != null)
             {
                 _legend.Draw(_spriteBatch);
             }
             _slots.ForEach(slot => slot.Draw(_spriteBatch));
-            _spriteBatch.End();
-            base.Draw(m);
+            base.OnDraw();
         }
 
         protected internal override void Show(bool pushed)

@@ -139,11 +139,19 @@ namespace Strategy.Interface.Screens
         protected void Draw(Matrix transformation)
         {
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, transformation);
+            OnDraw();
             _entries.Where(entry => entry.IsVisible).ForEach(entry => entry.Sprite.Draw(_spriteBatch));
             _selectSprite.Draw(_spriteBatch);
             _backSprite.Draw(_spriteBatch);
             _moveSprite.Draw(_spriteBatch);
             _spriteBatch.End();
+        }
+
+        /// <summary>
+        /// Gives children screens an opportunity to draw themselves inside the parent sprite batch.
+        /// </summary>
+        protected virtual void OnDraw()
+        {
         }
 
         /// <summary>

@@ -65,13 +65,21 @@ namespace Strategy.Interface
         }
 
         /// <summary>
+        /// Slides out the panel if it is hidden.
+        /// </summary>
+        public void Show()
+        {
+            Show(_textSprite.Text, _imageSprite.Texture);
+        }
+
+        /// <summary>
         /// Changes the contents of the panel. Slides out the panel if it is hidden.
         /// </summary>
         /// <param name="newText">The new text to display.</param>
         /// <param name="newImage">The new image to display.</param>
         public void Show(string newText, Texture2D newImage)
         {
-            IAnimation setNewInstructions = new CompositeAnimation(
+            IAnimation setNewContents = new CompositeAnimation(
                 new TextAnimation(_textSprite, newText),
                 new ImageAnimation(_imageSprite, newImage));
             if (IsVisible)
@@ -82,7 +90,7 @@ namespace Strategy.Interface
                         new ColorAnimation(_textSprite, Color.Transparent, 0.2f, Interpolation.InterpolateColor(Easing.Uniform)),
                         new ColorAnimation(_imageSprite, Color.Transparent, 0.2f, Interpolation.InterpolateColor(Easing.Uniform))),
                     new DelayAnimation(0.1f),
-                    setNewInstructions,
+                    setNewContents,
                     new CompositeAnimation(
                         new ColorAnimation(_textSprite, Color.Black, 0.2f, Interpolation.InterpolateColor(Easing.Uniform)),
                         new ColorAnimation(_imageSprite, Color.White, 0.2f, Interpolation.InterpolateColor(Easing.Uniform))));
@@ -100,7 +108,7 @@ namespace Strategy.Interface
                 // show the panel with the new content
                 _animation = new SequentialAnimation(
                     new CompositeAnimation(
-                        setNewInstructions,
+                        setNewContents,
                         new ColorAnimation(_textSprite, Color.Black, 0f, Interpolation.InterpolateColor(Easing.Uniform)),
                         new ColorAnimation(_imageSprite, Color.White, 0f, Interpolation.InterpolateColor(Easing.Uniform))),
                     new PositionAnimation(_sprite, Visible, 1f, Interpolation.InterpolateVector2(Easing.QuadraticOut)));

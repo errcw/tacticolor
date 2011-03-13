@@ -53,9 +53,55 @@ namespace Strategy.Interface.Screens
                 builder.CreateImageEntry(awardmentSprite);
             }
 
+            // build an upsell panel
+            _upsellPanel = new SlidingPanel(Resources.TrialUpsellAwardments, game.Content.Load<Texture2D>("Images/PieceAvailable"), 720 - 40 - 75, game.Content);
+            TrialModeObserverComponent trialObserver = game.Services.GetService<TrialModeObserverComponent>();
+            trialObserver.TrialModeEnded += (s, a) => _upsellPanel.Hide();
+
             TransitionOnTime = 0.01f;
             BasePosition = new Vector2(150f, 120f);
             VisibleEntryCount = 1;
         }
+
+        protected internal override void Show(bool pushed)
+        {
+            if (Guide.IsTrialMode)
+            {
+                _upsellPanel.Show();
+            }
+            base.Show(pushed);
+        }
+
+        protected internal override void Hide(bool popped)
+        {
+            _upsellPanel.Hide();
+            base.Hide(popped);
+        }
+
+        protected override void OnDraw()
+        {
+            _upsellPanel.Draw(_spriteBatch);
+            base.OnDraw();
+        }
+
+        protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)
+        {
+            _upsellPanel.Update(gameTime.GetElapsedSeconds());
+            base.UpdateTransitionOn(gameTime, progress, pushed);
+        }
+        protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
+        {
+            _upsellPanel.Update(gameTime.GetElapsedSeconds());
+            base.UpdateTransitionOff(gameTime, progress, popped);
+        }
+
+        protected override void UpdateActive(GameTime gameTime)
+        {
+            _upsellPanel.Update(gameTime.GetElapsedSeconds());
+            base.UpdateActive(gameTime);
+        }
+
+        private SlidingPanel _upsellPanel;
     }
+
 }

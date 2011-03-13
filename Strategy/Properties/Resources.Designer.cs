@@ -1303,7 +1303,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Get the full version to customize your match!.
+        ///   Looks up a localized string similar to Buy Tacticolor to customize your match!.
         /// </summary>
         internal static string TrialMatchConfiguration {
             get {
@@ -1312,7 +1312,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Get the full version to keep playing and finish your conquest!.
+        ///   Looks up a localized string similar to Buy Tacticolor to keep playing and finish your conquest!.
         /// </summary>
         internal static string TrialMatchEnd {
             get {
@@ -1321,11 +1321,29 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Get the full version to play online!.
+        ///   Looks up a localized string similar to Buy Tacticolor to play online!.
         /// </summary>
         internal static string TrialMultiplayer {
             get {
                 return ResourceManager.GetString("TrialMultiplayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buy Tacticolor to save your Awardments!.
+        /// </summary>
+        internal static string TrialUpsellAwardments {
+            get {
+                return ResourceManager.GetString("TrialUpsellAwardments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buy Tacticolor and experience all the fun!.
+        /// </summary>
+        internal static string TrialUpsellExit {
+            get {
+                return ResourceManager.GetString("TrialUpsellExit", resourceCulture);
             }
         }
         
