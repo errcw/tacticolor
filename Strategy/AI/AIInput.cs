@@ -332,7 +332,7 @@ namespace Strategy.AI
                 int dstEnemyNeighbors = dst.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
                 int diffEnemyNeighbors = dstEnemyNeighbors - srcEnemyNeighbors;
                 int diffNeighbors = dst.Neighbors.Count - src.Neighbors.Count;
-                return BaseMovementRating + diffEnemyNeighbors + diffNeighbors;
+                return (diffEnemyNeighbors > 0) ? BaseMovementRating + diffEnemyNeighbors + diffNeighbors : 0;
             }
         }
 
