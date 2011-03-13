@@ -54,7 +54,7 @@ namespace Strategy.Interface.Screens
             }
 
             // build an upsell panel
-            _upsellPanel = new SlidingPanel(Resources.TrialUpsellAwardments, game.Content.Load<Texture2D>("Images/PieceAvailable"), 720 - 40 - 75, game.Content);
+            _upsellPanel = new SlidingPanel(Resources.TrialUpsellAwardments, game.Content.Load<Texture2D>("Images/TrialUpsellIcon"), 720 - 40 - 75, game.Content);
             TrialModeObserverComponent trialObserver = game.Services.GetService<TrialModeObserverComponent>();
             trialObserver.TrialModeEnded += (s, a) => _upsellPanel.Hide();
 

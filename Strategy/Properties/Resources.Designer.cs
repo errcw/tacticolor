@@ -1294,7 +1294,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Strategy.
+        ///   Looks up a localized string similar to Tacticolor.
         /// </summary>
         internal static string Strategy {
             get {
