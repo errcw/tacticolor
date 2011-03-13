@@ -17,8 +17,7 @@ namespace Strategy.Interface.Screens
     {
         public PurchaseScreen(Game game, string messageText, Type popUntilScreen) : base(game, messageText, popUntilScreen)
         {
-            // pop this screen if the player buys the game
-            game.Services.GetService<TrialModeObserverComponent>().TrialModeEnded += (s, a) => Stack.Pop();
+            _trialComponent = game.Services.GetService<TrialModeObserverComponent>();
 
             SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextLarge");
 
@@ -72,6 +71,24 @@ namespace Strategy.Interface.Screens
             TransitionOnTime = 0.5f; 
         }
 
+        protected internal override void Show(bool pushed)
+        {
+            if (pushed)
+            {
+                _trialComponent.TrialModeEnded += OnPurchased;
+            }
+            base.Show(pushed);
+        }
+
+        protected internal override void Hide(bool popped)
+        {
+            if (popped)
+            {
+                _trialComponent.TrialModeEnded -= OnPurchased;
+            }
+            base.Hide(popped);
+        }
+
         protected override void UpdateActive(GameTime gameTime)
         {
             if (_input.Buy.Pressed)
@@ -82,6 +99,14 @@ namespace Strategy.Interface.Screens
             // defer to hitting continue
             base.UpdateActive(gameTime);
         }
+
+        private void OnPurchased(object sender, EventArgs args)
+        {
+            // hide this purchase screen
+            Stack.Pop();
+        }
+
+        private TrialModeObserverComponent _trialComponent;
 
         private const float PieceSeparation = 5f;
         private const float TextSeparation = 40f;
