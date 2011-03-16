@@ -520,7 +520,7 @@ namespace Strategy.Interface.Screens
                         if (_net.Session.IsOnlineSession() && !p.CanPlayOnline())
                         {
                             // cannot join this online session
-                            MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkErrorCannotPlayOnline);
+                            MessageScreen messageScreen = new MessageScreen(Stack.Game, Resources.NetworkErrorCannotPlayOnline, typeof(LobbyScreen));
                             Stack.Push(messageScreen);
                         }
                         else
