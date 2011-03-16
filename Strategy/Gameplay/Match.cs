@@ -227,15 +227,16 @@ namespace Strategy.Gameplay
             bool success = attackerSum - defenderSum > 0;
             if (success) // attack succeeded
             {
-                // remove all the killed defenders
+                // lose all the defenders
                 defender.Pieces.Clear();
                 for (int i = 0; i < defenders.Count; i++)
                 {
                     defenders[i].Survived = false;
                 }
 
-                // can lose all the attackers but must have a piece ready to move
-                int attackersLost = (int)(3f * (float)defenderSum / attackerSum);
+                // lose attackers proportional to the ratio of sums,
+                // but save at least one piece to capture the new territory
+                int attackersLost = (int)Math.Floor(attackers.Count * Math.Pow(0.4, attackerSum / (double)defenderSum - 1));
                 attackersLost = Math.Min(attackers.Count - (attackerTotal > attackers.Count ? 1 : 2), attackersLost);
                 int attackersMoved = attackers.Count - attackersLost - (attackerTotal > attackers.Count ? 0 : 1);
                 attackersMoved = Math.Min(defender.Capacity, attackersMoved);
@@ -259,10 +260,13 @@ namespace Strategy.Gameplay
             }
             else // attack failed
             {
-                // can lose all attackers or defenders but must leave a single piece
+                // lose all the attackers, but save a single piece to keep the territory
                 int attackersLost = attackers.Count;
                 attackersLost = Math.Min(attacker.Pieces.Count - 1, attackersLost);
-                int defendersLost = (int)(3f * (float)attackerSum / defenderSum);
+
+                // lose defenders proportional to the ratio of sums
+                // lose at least one defender, but keep one to hold the territory
+                int defendersLost = (int)Math.Floor(defenders.Count * Math.Pow(0.4, defenderSum / (double)attackerSum - 1));
                 defendersLost = Math.Max(1, defendersLost);
                 defendersLost = Math.Min(defender.Pieces.Count - 1, defendersLost);
 
