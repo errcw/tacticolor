@@ -466,6 +466,24 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Additional Art.
+        /// </summary>
+        internal static string CreditsArt {
+            get {
+                return ResourceManager.GetString("CreditsArt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to box-art-maker.
+        /// </summary>
+        internal static string CreditsArtList {
+            get {
+                return ResourceManager.GetString("CreditsArtList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Designed and built by Eric Woroshow.
         /// </summary>
         internal static string CreditsMain {
@@ -475,38 +493,20 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Music.
+        ///   Looks up a localized string similar to Sound &amp; Music.
         /// </summary>
-        internal static string CreditsMusic {
+        internal static string CreditsSoundMusic {
             get {
-                return ResourceManager.GetString("CreditsMusic", resourceCulture);
+                return ResourceManager.GetString("CreditsSoundMusic", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An Artist, Another Artist.
+        ///   Looks up a localized string similar to John Bura.
         /// </summary>
-        internal static string CreditsMusicList {
+        internal static string CreditsSoundMusicList {
             get {
-                return ResourceManager.GetString("CreditsMusicList", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sound.
-        /// </summary>
-        internal static string CreditsSound {
-            get {
-                return ResourceManager.GetString("CreditsSound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sound Guy, Some Other Guy, strangename.
-        /// </summary>
-        internal static string CreditsSoundList {
-            get {
-                return ResourceManager.GetString("CreditsSoundList", resourceCulture);
+                return ResourceManager.GetString("CreditsSoundMusicList", resourceCulture);
             }
         }
         
