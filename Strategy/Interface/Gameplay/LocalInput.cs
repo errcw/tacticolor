@@ -79,7 +79,7 @@ namespace Strategy.Interface.Gameplay
             _input.ControllerDisconnected += (s, a) => ControllerDisconnected(this, a);
 
             SetHovered(_match.Map.Territories.First(t => t.Owner == Player));
-            SetSelected(null, true);
+            SetSelected(null, false);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Strategy.Interface.Gameplay
             if (Selected != null && Selected.Owner != Player)
             {
                 _actionPending = false;
-                SetSelected(null, true);
+                SetSelected(null, false);
             }
 
             if (Action.Pressed)
@@ -119,14 +119,14 @@ namespace Strategy.Interface.Gameplay
                     }
                     if (!_actionPending)
                     {
-                        SetSelected(null, true);
+                        SetSelected(null, false);
                     }
                 }
                 else
                 {
                     if (CanSelect(Hovered))
                     {
-                        SetSelected(Hovered, false);
+                        SetSelected(Hovered, true);
                         _actionPending = true;
                     }
                     else
@@ -138,7 +138,7 @@ namespace Strategy.Interface.Gameplay
             else if (Cancel.Pressed)
             {
                 _actionPending = false;
-                SetSelected(null, false);
+                SetSelected(null, true);
             }
             else if (Place.Pressed)
             {
@@ -216,13 +216,13 @@ namespace Strategy.Interface.Gameplay
             }
         }
 
-        private void SetSelected(Territory territory, bool wasForced)
+        private void SetSelected(Territory territory, bool wasPlayerInitiated)
         {
             Territory previous = Selected;
             Selected = territory;
             if (SelectedChanged != null && Selected != previous)
             {
-                SelectedChanged(this, new InputChangedEventArgs(previous, wasForced));
+                SelectedChanged(this, new InputChangedEventArgs(previous, wasPlayerInitiated));
             }
         }
 
@@ -291,11 +291,11 @@ namespace Strategy.Interface.Gameplay
     public class InputChangedEventArgs : EventArgs
     {
         public readonly Territory PreviousInput;
-        public readonly bool WasForced;
-        public InputChangedEventArgs(Territory previousInput, bool wasForced)
+        public readonly bool WasPlayerInitiated;
+        public InputChangedEventArgs(Territory previousInput, bool wasPlayerInitiated)
         {
             PreviousInput = previousInput;
-            WasForced = wasForced;
+            WasPlayerInitiated = wasPlayerInitiated;
         }
     }
 

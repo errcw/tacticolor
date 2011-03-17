@@ -127,7 +127,7 @@ namespace Strategy.Interface.Gameplay
                 {
                     _cursorHover.Position -= HoverOffset;
                 }
-                if (!args.WasForced)
+                if (args.WasPlayerInitiated)
                 {
                     _putDownEffect.Play();
                 }
