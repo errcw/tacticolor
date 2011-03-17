@@ -27,6 +27,11 @@ namespace Strategy.Interface.Gameplay
         public event EventHandler<InputChangedEventArgs> SelectedChanged;
 
         /// <summary>
+        /// Occurs when the player performs an action.
+        /// </summary>
+        public event EventHandler<ActionEventArgs> ActionPerformed;
+
+        /// <summary>
         /// Occurs when the player attempts an invalid action.
         /// </summary>
         public event EventHandler<EventArgs> ActionRejected;
@@ -74,7 +79,7 @@ namespace Strategy.Interface.Gameplay
             _input.ControllerDisconnected += (s, a) => ControllerDisconnected(this, a);
 
             SetHovered(_match.Map.Territories.First(t => t.Owner == Player));
-            SetSelected(null);
+            SetSelected(null, true);
         }
 
         /// <summary>
@@ -91,7 +96,7 @@ namespace Strategy.Interface.Gameplay
             if (Selected != null && Selected.Owner != Player)
             {
                 _actionPending = false;
-                SetSelected(null);
+                SetSelected(null, true);
             }
 
             if (Action.Pressed)
@@ -114,14 +119,14 @@ namespace Strategy.Interface.Gameplay
                     }
                     if (!_actionPending)
                     {
-                        SetSelected(null);
+                        SetSelected(null, true);
                     }
                 }
                 else
                 {
                     if (CanSelect(Hovered))
                     {
-                        SetSelected(Hovered);
+                        SetSelected(Hovered, false);
                         _actionPending = true;
                     }
                     else
@@ -133,7 +138,7 @@ namespace Strategy.Interface.Gameplay
             else if (Cancel.Pressed)
             {
                 _actionPending = false;
-                SetSelected(null);
+                SetSelected(null, false);
             }
             else if (Place.Pressed)
             {
@@ -193,6 +198,11 @@ namespace Strategy.Interface.Gameplay
                 }
             }
 
+            if (command != null)
+            {
+                NotifyActionPerformed(command);
+            }
+
             return command;
         }
 
@@ -202,23 +212,31 @@ namespace Strategy.Interface.Gameplay
             Hovered = territory;
             if (HoveredChanged != null && Hovered != previous)
             {
-                HoveredChanged(this, new InputChangedEventArgs(previous));
+                HoveredChanged(this, new InputChangedEventArgs(previous, false));
             }
         }
 
-        private void SetSelected(Territory territory)
+        private void SetSelected(Territory territory, bool wasForced)
         {
             Territory previous = Selected;
             Selected = territory;
             if (SelectedChanged != null && Selected != previous)
             {
-                SelectedChanged(this, new InputChangedEventArgs(previous));
+                SelectedChanged(this, new InputChangedEventArgs(previous, wasForced));
             }
         }
 
         private bool CanSelect(Territory territory)
         {
             return territory.Owner == Player && territory.Pieces.Count > 1;
+        }
+
+        private void NotifyActionPerformed(Command command)
+        {
+            if (ActionPerformed != null)
+            {
+                ActionPerformed(this, new ActionEventArgs(command));
+            }
         }
 
         private void NotifyActionRejected()
@@ -273,9 +291,23 @@ namespace Strategy.Interface.Gameplay
     public class InputChangedEventArgs : EventArgs
     {
         public readonly Territory PreviousInput;
-        public InputChangedEventArgs(Territory previousInput)
+        public readonly bool WasForced;
+        public InputChangedEventArgs(Territory previousInput, bool wasForced)
         {
             PreviousInput = previousInput;
+            WasForced = wasForced;
+        }
+    }
+
+    /// <summary>
+    /// Event data for when the player submits an action.
+    /// </summary>
+    public class ActionEventArgs : EventArgs
+    {
+        public readonly Command Command;
+        public ActionEventArgs(Command command)
+        {
+            Command = command;
         }
     }
 }

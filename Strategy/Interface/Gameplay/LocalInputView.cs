@@ -2,9 +2,11 @@
 using System.Linq;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
+using Strategy.Net;
 using Strategy.Library;
 using Strategy.Library.Animation;
 using Strategy.Library.Extensions;
@@ -26,6 +28,8 @@ namespace Strategy.Interface.Gameplay
 
             Input.HoveredChanged += OnHoveredChanged;
             Input.SelectedChanged += OnSelectedChanged;
+            Input.ActionPerformed += OnActionPerformed;
+            Input.ActionRejected += OnActionRejected;
 
             Texture2D cursorTex = context.Content.Load<Texture2D>("Images/Cursor");
             Color cursorColor = GetCursorColor(input.Player);
@@ -38,6 +42,13 @@ namespace Strategy.Interface.Gameplay
             _cursorSelect = new ImageSprite(cursorTex);
             _cursorSelect.Color = ColorExtensions.FromNonPremultiplied(cursorColor, 0.75f);
             _cursorSelect.Origin = new Vector2(0, 14);
+
+            _pickUpEffect = context.Content.Load<SoundEffect>("Sounds/PlayerPickUp");
+            _putDownEffect = context.Content.Load<SoundEffect>("Sounds/PlayerPutDown");
+            _attackEffect = context.Content.Load<SoundEffect>("Sounds/PlayerAttack");
+            _moveEffect = context.Content.Load<SoundEffect>("Sounds/PlayerMove");
+            _placeEffect = context.Content.Load<SoundEffect>("Sounds/PlayerPlace");
+            _invalidEffect = context.Content.Load<SoundEffect>("Sounds/PlayerInvalid");
 
             // bounce the cursor until the player acts
             _animation = new SequentialAnimation(
@@ -107,6 +118,7 @@ namespace Strategy.Interface.Gameplay
                 Cell cell = ChooseCell(Input.Selected);
                 _cursorSelect.Position = GetPosition(cell);
                 _cursorHover.Position += HoverOffset;
+                _pickUpEffect.Play();
                 _showSelect = true;
             }
             else
@@ -115,6 +127,10 @@ namespace Strategy.Interface.Gameplay
                 {
                     _cursorHover.Position -= HoverOffset;
                 }
+                if (!args.WasForced)
+                {
+                    _putDownEffect.Play();
+                }
                 _showSelect = false;
             }
 
@@ -122,11 +138,30 @@ namespace Strategy.Interface.Gameplay
         }
 
         /// <summary>
+        /// Updates the view when a player performs an action.
+        /// </summary>
+        private void OnActionPerformed(object input, ActionEventArgs args)
+        {
+            if (args.Command is PlaceCommand)
+            {
+                _placeEffect.Play();
+            }
+            else if (args.Command is MoveCommand)
+            {
+                _moveEffect.Play();
+            }
+            else if (args.Command is AttackCommand)
+            {
+                _attackEffect.Play();
+            }
+        }
+
+        /// <summary>
         /// Updates the view when a player attempted an invalid action.
         /// </summary>
         private void OnActionRejected(object input, EventArgs args)
         {
-            // vibrate the controller? play a sound?
+            _invalidEffect.Play();
         }
 
         /// <summary>
@@ -188,6 +223,13 @@ namespace Strategy.Interface.Gameplay
 
         private IAnimation _animation;
         private bool _repeatAnimation;
+
+        private SoundEffect _pickUpEffect;
+        private SoundEffect _putDownEffect;
+        private SoundEffect _attackEffect;
+        private SoundEffect _moveEffect;
+        private SoundEffect _placeEffect;
+        private SoundEffect _invalidEffect;
 
         private readonly Vector2 HoverOffset = new Vector2(0, -10);
     }
