@@ -23,7 +23,11 @@ namespace Strategy.Interface.Gameplay
         /// <summary>
         /// If a player has selected this territory.
         /// </summary>
-        public bool IsSelected { get; set; }
+        public bool IsSelected
+        {
+            get { return _selected; }
+            set { OnSelectedChanged(value); }
+        }
 
         public TerritoryView(Territory territory, InterfaceContext context)
         {
@@ -174,6 +178,24 @@ namespace Strategy.Interface.Gameplay
             _attackAnimation = new SequentialAnimation(animations.ToArray());
         }
 
+        private void OnSelectedChanged(bool selected)
+        {
+            _selected = selected;
+            if (_selected)
+            {
+                // remember the color of the territory before selection, in
+                // case deselection happens as a consequence of losing the
+                // territory in an attack
+                _lastSelectedColor = _territory.Owner.GetTerritoryColor();
+            }
+
+            Color newColor = _selected
+                ? GetSelectionColor(_territory.Owner.Value)
+                : _lastSelectedColor;
+            //_colorAnimation = new ColorAnimation(_sprite, newColor, 0.25f, Interpolation.InterpolateColor(Easing.Uniform));
+            _sprite.Color = newColor;
+        }
+
         /// <summary>
         /// Checks if the given cell acts as a piece holder for the territory.
         /// </summary>
@@ -211,9 +233,24 @@ namespace Strategy.Interface.Gameplay
             _freeHolders.Push(new Cell(0, 0));
         }
 
+        private Color GetSelectionColor(PlayerId playerId)
+        {
+            switch (playerId)
+            {
+                case PlayerId.A: return new Color(249, 39, 155);
+                case PlayerId.B: return new Color(112, 207, 255);
+                case PlayerId.C: return new Color(66, 206, 119);
+                case PlayerId.D: return new Color(255, 242, 147);
+                default: throw new ArgumentException("Invalid player id " + playerId);
+            }
+        }
+
         private Territory _territory;
         private InterfaceContext _context;
         private PlayerId? _lastOwner;
+
+        private bool _selected;
+        private Color _lastSelectedColor;
 
         private Stack<Cell> _freeHolders;
         private Dictionary<PieceView, Cell> _usedHolders;
