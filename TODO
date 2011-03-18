@@ -1,17 +1,9 @@
 To Do
 -----
 
+* Fix trial game over conditions
 * Better cursor?
 * Sound
-  - pick up pieces
-  - put down pieces
-  - attack action
-  - move action
-  - place piece action
-  - invalid action
-  - attack?
-  - move?
-  - place?
   - menu music
   - game music
 * Testing
