@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Gameplay;
@@ -50,6 +51,10 @@ namespace Strategy.Interface.Gameplay
                 }
             }
             _removedPieces = new List<PieceView>(16);
+
+            _moveEffect = context.Content.Load<SoundEffect>("Sounds/OtherMove");
+            _placeEffect = context.Content.Load<SoundEffect>("Sounds/OtherPlace");
+            _attackEffect = context.Content.Load<SoundEffect>("Sounds/OtherAttack");
         }
 
         /// <summary>
@@ -100,6 +105,11 @@ namespace Strategy.Interface.Gameplay
             PieceView pieceView = new PieceView(args.Piece, _context);
             pieceView.OnPlaced(territoryView.PieceAdded(pieceView), true);
             _pieceViews.Add(args.Piece, pieceView);
+
+            if (!IsLocalHumanPlayer(args.Location.Owner.Value))
+            {
+                _placeEffect.Play();
+            }
         }
 
         /// <summary>
@@ -117,6 +127,11 @@ namespace Strategy.Interface.Gameplay
                 pieceView.OnMoved(cell);
             }
             destinationView.MaybeChangedOwners(0f);
+
+            if (!IsLocalHumanPlayer(args.Source.Owner.Value))
+            {
+                _moveEffect.Play();
+            }
         }
 
         /// <summary>
@@ -169,6 +184,11 @@ namespace Strategy.Interface.Gameplay
                 delay += PerPieceTime;
             }
             attackerView.OnAttacked(true, args.Attackers.Select(d => d.Roll), 0.25f, args.Defenders.Count * PerPieceTime + 1f);
+
+            if (!IsLocalHumanPlayer(args.Attacker.Owner.Value))
+            {
+                _attackEffect.Play();
+            }
         }
 
         /// <summary>
@@ -206,6 +226,15 @@ namespace Strategy.Interface.Gameplay
             return new Rectangle(minX, minY, maxX - minX + 42, maxY - minY + 27);
         }
 
+        /// <summary>
+        /// Returns whether the given logical player is a local, human player.
+        /// </summary>
+        private bool IsLocalHumanPlayer(PlayerId playerId)
+        {
+            Player player = _context.Players.Single(p => p.Id == playerId);
+            return player.Gamer != null && player.Gamer.IsLocal;
+        }
+
         private Map _map;
 
         private InterfaceContext _context;
@@ -213,5 +242,9 @@ namespace Strategy.Interface.Gameplay
         private Dictionary<Piece, PieceView> _pieceViews;
         private List<ConnectionView> _connectionViews;
         private List<PieceView> _removedPieces;
+
+        private SoundEffect _placeEffect;
+        private SoundEffect _moveEffect;
+        private SoundEffect _attackEffect;
     }
 }

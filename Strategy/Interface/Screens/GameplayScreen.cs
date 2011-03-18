@@ -39,7 +39,6 @@ namespace Strategy.Interface.Screens
 
             // create the model
             _lockstepMatch = new LockstepMatch(match);
-            _lockstepMatch.Match.TerritoryAttacked += OnTerritoryAttacked;
             _lockstepMatch.Match.PlayerEliminated += OnPlayerEliminated;
             _lockstepMatch.Match.Ended += OnMatchEndedWithWinner;
 
@@ -68,7 +67,7 @@ namespace Strategy.Interface.Screens
             _awardments.MatchStarted(match, awardmentPlayers);
 
             // create the views
-            _context = new InterfaceContext(game, game.Content, IsoParams);
+            _context = new InterfaceContext(game, game.Content, IsoParams, players);
             _backgroundView = new BackgroundView(_context);
             _mapView = new MapView(match, _context); // created first to center subsequent views
             _inputViews = new List<LocalInputView>(players.Count);
@@ -256,29 +255,14 @@ namespace Strategy.Interface.Screens
                 PlayerId aiWinner = _players.First(p => p.Gamer == null).Id; // have an arbitrary AI player "win"
                 OnMatchEnded(Resources.GameLost, aiWinner);
             }
-        }
 
-        private void OnTerritoryAttacked(object matchObj, TerritoryAttackedEventArgs args)
-        {
             // stop the match before it finishes in trial mode
-            if (Guide.IsTrialMode)
+            Match match = _lockstepMatch.Match;
+            if (Guide.IsTrialMode && match.RemainingPlayerCount == 2)
             {
-                Match match = _lockstepMatch.Match;
-                if (match.RemainingPlayerCount == 2 && args.Successful)
-                {
-                    PlayerId playerId = args.Defenders.First().Piece.Owner;
-                    Player player = _players.Single(p => p.Id == playerId);
-                    if (player.Gamer == null) // computer player lost a territory
-                    {
-                        int remainingCount = match.TerritoriesOwnedCount[(int)playerId];
-                        if (remainingCount <= 3)
-                        {
-                            // game is almost over, show the purchase screen
-                            _endScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd, typeof(LobbyScreen));
-                            _endTime = 0f;
-                        }
-                    }
-                }
+                // game is almost over, show the purchase screen
+                _endScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd, typeof(LobbyScreen));
+                _endTime = 0f;
             }
         }
 
