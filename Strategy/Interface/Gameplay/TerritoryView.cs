@@ -23,11 +23,7 @@ namespace Strategy.Interface.Gameplay
         /// <summary>
         /// If a player has selected this territory.
         /// </summary>
-        public bool IsSelected
-        {
-            get { return _selected; }
-            set { OnSelectedChanged(value); }
-        }
+        public bool IsSelected { get; set; }
 
         public TerritoryView(Territory territory, InterfaceContext context)
         {
@@ -88,6 +84,14 @@ namespace Strategy.Interface.Gameplay
 
         public void Update(float time)
         {
+            Color selectionColor = IsSelected
+                ? GetSelectionColor(_territory.Owner.Value)
+                : _territory.Owner.GetTerritoryColor();
+            if (_sprite.Color != selectionColor && _colorAnimation == null)
+            {
+                _colorAnimation = new ColorAnimation(_sprite, selectionColor, 0.1f, Interpolation.InterpolateColor(Easing.Uniform));
+            }
+
             if (_colorAnimation != null)
             {
                 if (!_colorAnimation.Update(time))
@@ -178,24 +182,6 @@ namespace Strategy.Interface.Gameplay
             _attackAnimation = new SequentialAnimation(animations.ToArray());
         }
 
-        private void OnSelectedChanged(bool selected)
-        {
-            _selected = selected;
-            if (_selected)
-            {
-                // remember the color of the territory before selection, in
-                // case deselection happens as a consequence of losing the
-                // territory in an attack
-                _lastSelectedColor = _territory.Owner.GetTerritoryColor();
-            }
-
-            Color newColor = _selected
-                ? GetSelectionColor(_territory.Owner.Value)
-                : _lastSelectedColor;
-            //_colorAnimation = new ColorAnimation(_sprite, newColor, 0.25f, Interpolation.InterpolateColor(Easing.Uniform));
-            _sprite.Color = newColor;
-        }
-
         /// <summary>
         /// Checks if the given cell acts as a piece holder for the territory.
         /// </summary>
@@ -248,9 +234,6 @@ namespace Strategy.Interface.Gameplay
         private Territory _territory;
         private InterfaceContext _context;
         private PlayerId? _lastOwner;
-
-        private bool _selected;
-        private Color _lastSelectedColor;
 
         private Stack<Cell> _freeHolders;
         private Dictionary<PieceView, Cell> _usedHolders;
