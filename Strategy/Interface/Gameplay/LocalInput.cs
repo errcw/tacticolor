@@ -228,7 +228,7 @@ namespace Strategy.Interface.Gameplay
 
         private bool CanSelect(Territory territory)
         {
-            return territory.Owner == Player && territory.Pieces.Count > 1;
+            return territory.Owner == Player && territory.Pieces.Count > 1 && territory.Cooldown <= 0;
         }
 
         private void NotifyActionPerformed(Command command)
