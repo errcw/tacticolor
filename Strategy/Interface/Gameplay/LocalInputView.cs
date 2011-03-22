@@ -121,8 +121,6 @@ namespace Strategy.Interface.Gameplay
                     _putDownEffect.Play();
                 }
             }
-
-            //_animation = null; // end the bounce animation
         }
 
         /// <summary>
