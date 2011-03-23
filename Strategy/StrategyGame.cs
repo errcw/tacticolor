@@ -66,15 +66,21 @@ namespace Strategy
         {
             base.Initialize();
 
+            bool loaded = false;
             _storage.DeviceSelected += delegate(object s, EventArgs a)
             {
-                _options.Load(_storage);
-                _awardments.Load(_storage);
+                if (!loaded)
+                {
+                    _options.Load(_storage);
+                    _awardments.Load(_storage);
+                    loaded = true;
+                }
             };
             _storage.DeviceDisconnected += delegate(object s, StorageEventArgs a)
             {
                 a.ShouldPrompt = true;
                 a.PlayerToPrompt = _input.Controller.GetValueOrDefault(PlayerIndex.One);
+                loaded = false;
             };
             _storage.DeviceSelectorCanceled += delegate(object s, StorageEventArgs a)
             {
