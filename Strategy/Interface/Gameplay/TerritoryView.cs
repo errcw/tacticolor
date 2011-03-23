@@ -85,7 +85,7 @@ namespace Strategy.Interface.Gameplay
         public void Update(float time)
         {
             Color selectionColor = IsSelected
-                ? GetSelectionColor(_territory.Owner.Value)
+                ? _territory.Owner.Value.GetSelectionColor()
                 : _territory.Owner.GetTerritoryColor();
             if (_sprite.Color != selectionColor && _colorAnimation == null)
             {
@@ -217,28 +217,6 @@ namespace Strategy.Interface.Gameplay
             _freeHolders.Push(new Cell(1, 0));
             _freeHolders.Push(new Cell(-1, 0));
             _freeHolders.Push(new Cell(0, 0));
-        }
-
-        private Color GetSelectionColor(PlayerId playerId)
-        {
-            switch (playerId)
-            {
-                case PlayerId.A: return new Color(255, 109, 189);
-                case PlayerId.B: return new Color(112, 207, 255);
-                case PlayerId.C: return new Color(66, 206, 119);
-                case PlayerId.D: return new Color(255, 242, 147);
-                default: throw new ArgumentException("Invalid player id " + playerId);
-            }
-            /*
-            switch (playerId)
-            {
-                case PlayerId.A: return new Color(249, 39, 155);
-                case PlayerId.B: return new Color(112, 207, 255);
-                case PlayerId.C: return new Color(66, 206, 119);
-                case PlayerId.D: return new Color(255, 242, 147);
-                default: throw new ArgumentException("Invalid player id " + playerId);
-            }
-            */
         }
 
         private Territory _territory;

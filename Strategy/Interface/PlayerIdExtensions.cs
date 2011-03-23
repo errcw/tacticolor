@@ -40,5 +40,17 @@ namespace Strategy.Interface
                 default: throw new ArgumentException("Invalid player id " + playerId);
             }
         }
+
+        public static Color GetSelectionColor(this PlayerId playerId)
+        {
+            switch (playerId)
+            {
+                case PlayerId.A: return new Color(255, 109, 189);
+                case PlayerId.B: return new Color(112, 207, 255);
+                case PlayerId.C: return new Color(66, 206, 119);
+                case PlayerId.D: return new Color(255, 242, 147);
+                default: throw new ArgumentException("Invalid player id " + playerId);
+            }
+        }
     }
 }
