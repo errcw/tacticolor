@@ -37,7 +37,7 @@ namespace Strategy.Interface
             set
             {
                 _options.MusicToggle = value;
-                MediaPlayer.Volume = _options.MusicToggle ? 1f : 0f;
+                MediaPlayer.IsMuted = !_options.MusicToggle;
             }
         }
 

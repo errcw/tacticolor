@@ -4,15 +4,16 @@ using System.Diagnostics;
 using System.Threading;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 
 using Strategy.Properties;
 using Strategy.Library;
 using Strategy.Library.Animation;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
+using Strategy.Library.Sound;
 using Strategy.Library.Sprite;
 using Strategy.Library.Storage;
 
@@ -36,6 +37,7 @@ namespace Strategy.Interface.Screens
 
             _input = game.Services.GetService<MenuInput>();
             _storage = game.Services.GetService<Storage>();
+            _music = game.Services.GetService<MusicController>();
 
             // load the initial content for the loading screen
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundUI"));
@@ -116,10 +118,7 @@ namespace Strategy.Interface.Screens
                 _workerThread.Join();
                 _workerThread = null;
 
-                if (ContentLoaded != null)
-                {
-                    ContentLoaded(this, EventArgs.Empty);
-                }
+                OnContentLoaded();
             }
             else
             {
@@ -152,6 +151,18 @@ namespace Strategy.Interface.Screens
             foreach (string contentFile in contentFiles)
             {
                 Stack.Game.Content.Load<object>(contentFile);
+            }
+        }
+
+        /// <summary>
+        /// Notifies this screen and listeners that the content finished loading.
+        /// </summary>
+        private void OnContentLoaded()
+        {
+            _music.FadeTo(Stack.Game.Content.Load<Song>("Music/Menu"), 0f, 1f);
+            if (ContentLoaded != null)
+            {
+                ContentLoaded(this, EventArgs.Empty);
             }
         }
 
@@ -224,6 +235,7 @@ namespace Strategy.Interface.Screens
 
         private MenuInput _input;
         private Storage _storage;
+        private MusicController _music;
 
         private const int WorkerUpdateTime = 1000 / 30;
     }

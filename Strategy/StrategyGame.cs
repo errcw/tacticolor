@@ -17,6 +17,7 @@ using Strategy.Library;
 using Strategy.Library.Components;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
+using Strategy.Library.Sound;
 using Strategy.Library.Storage;
 using Strategy.Properties;
 
@@ -39,6 +40,7 @@ namespace Strategy
             Components.Add(_screens = new ScreenStack(this));
             Components.Add(_input = new MenuInput(this));
             Components.Add(_storage = new SharedStorage(this, "Strategy"));
+            Components.Add(_music = new MusicController(this));
             Components.Add(_trial = new TrialModeObserverComponent(this));
 
             //Components.Add(new TitleSafeAreaOverlayComponent(this));
@@ -47,6 +49,7 @@ namespace Strategy
 
             Services.AddService<MenuInput>(_input);
             Services.AddService<Storage>(_storage);
+            Services.AddService<MusicController>(_music);
             Services.AddService<TrialModeObserverComponent>(_trial);
             Services.AddService<Options>(_options = new Options());
             Services.AddService<Awardments>(_awardments = new Awardments());
@@ -263,5 +266,6 @@ namespace Strategy
         private Storage _storage;
         private Awardments _awardments;
         private TrialModeObserverComponent _trial;
+        private MusicController _music;
     }
 }
