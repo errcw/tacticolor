@@ -249,7 +249,7 @@ namespace Strategy.Interface.Screens
                     _awardments.MatchEnded(null);
                 }
 
-                // return to the menu music
+                // always return to the menu music
                 _music.FadeTo(_menuMusic, MusicTransitionTime, MusicTransitionTime);
             }
             base.Hide(popped);

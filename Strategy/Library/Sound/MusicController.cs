@@ -59,7 +59,7 @@ namespace Strategy.Library.Sound
         {
             _nextSongToPlay = song;
             _fadeOutAnimation = new VolumeAnimation(0f, fadeOutDuration, Interpolation.InterpolateFloat(Easing.Uniform));
-            _fadeInAnimation = new VolumeAnimation(1f, fadeInDuration, Interpolation.InterpolateFloat(Easing.Uniform));
+            _fadeInAnimation = new VolumeAnimation(MusicVolume, fadeInDuration, Interpolation.InterpolateFloat(Easing.Uniform));
         }
 
         /// <summary>
@@ -108,5 +108,7 @@ namespace Strategy.Library.Sound
         private VolumeAnimation _fadeInAnimation;
 
         private Song _nextSongToPlay;
+
+        private const float MusicVolume = 0.6f;
     }
 }
