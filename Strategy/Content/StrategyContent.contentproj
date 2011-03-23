@@ -490,18 +490,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sounds\MusicGame.wav">
-      <Name>MusicGame</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-    </Compile>
-    <Compile Include="Sounds\MusicMenu.wav">
-      <Name>MusicMenu</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Music\Menu.wma">
       <Name>Menu</Name>
       <Importer>WmaImporter</Importer>

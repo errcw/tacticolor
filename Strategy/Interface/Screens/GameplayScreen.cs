@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Net;
 
 using Strategy.Gameplay;
@@ -14,6 +15,7 @@ using Strategy.Net;
 using Strategy.Properties;
 using Strategy.Library.Extensions;
 using Strategy.Library.Screen;
+using Strategy.Library.Sound;
 
 namespace Strategy.Interface.Screens
 {
@@ -36,6 +38,10 @@ namespace Strategy.Interface.Screens
             _players = players;
 
             _input = game.Services.GetService<MenuInput>();
+
+            _music = game.Services.GetService<MusicController>();
+            _menuMusic = game.Content.Load<Song>("Music/Menu");
+            _gameMusic = game.Content.Load<Song>("Music/Game");
 
             // create the model
             _lockstepMatch = new LockstepMatch(match);
@@ -217,6 +223,15 @@ namespace Strategy.Interface.Screens
             _spriteBatch.End();
         }
 
+        protected internal override void Show(bool pushed)
+        {
+            if (pushed)
+            {
+                _music.FadeTo(_gameMusic, MusicTransitionTime, MusicTransitionTime);
+            }
+            base.Show(pushed);
+        }
+
         protected internal override void Hide(bool popped)
         {
             if (popped)
@@ -233,6 +248,9 @@ namespace Strategy.Interface.Screens
                 {
                     _awardments.MatchEnded(null);
                 }
+
+                // return to the menu music
+                _music.FadeTo(_menuMusic, MusicTransitionTime, MusicTransitionTime);
             }
             base.Hide(popped);
         }
@@ -357,6 +375,10 @@ namespace Strategy.Interface.Screens
 
         private MenuInput _input;
 
+        private MusicController _music;
+        private Song _menuMusic;
+        private Song _gameMusic;
+
         private Screen _endScreen;
         private float _endTime;
         private bool _isEnded;
@@ -365,5 +387,7 @@ namespace Strategy.Interface.Screens
         private IsometricView _isoView;
 
         private float _transitionProgress;
+
+        private const float MusicTransitionTime = 0.6f;
     }
 }
