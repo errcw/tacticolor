@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+
+using Strategy.Library.Helper;
 
 namespace Strategy.Library.Extensions
 {
@@ -43,6 +44,17 @@ namespace Strategy.Library.Extensions
                 index += 1;
             }
             return -1;
+        }
+
+        /// <summary>
+        /// Concatenates a single element to a sequence.
+        /// </summary>
+        /// <param name="enumerable">The IEnumerable<T> to operate on.</param>
+        /// <param name="element">The element to concatenate.</param>
+        /// <returns>An IEnumerable<T> containing the original sequence followed by the specified element.</returns>
+        public static IEnumerable<T> Concat<T>(this IEnumerable<T> enumerable, T element)
+        {
+            return enumerable.Concat(IEnumerableHelper.Single(element));
         }
     }
 }
