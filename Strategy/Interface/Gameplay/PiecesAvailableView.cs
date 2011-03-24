@@ -9,6 +9,7 @@ using Strategy.Gameplay;
 using Strategy.Library;
 using Strategy.Library.Animation;
 using Strategy.Library.Extensions;
+using Strategy.Library.Helper;
 using Strategy.Library.Sprite;
 
 namespace Strategy.Interface.Gameplay
@@ -83,7 +84,7 @@ namespace Strategy.Interface.Gameplay
             IEnumerable<Sprite> sprites = _created;
             if (_creatingSprite != null)
             {
-                sprites = sprites.Concat(Enumerable.Repeat(_creatingSprite, 1));
+                sprites = sprites.Concat(_creatingSprite);
                 _creatingSprite = null; // force it to stop updating
             }
             var animations = sprites.Select(s => new ColorAnimation(s, TransparentColor, 1f, Interpolation.InterpolateColor(Easing.QuadraticOut)));

@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 using Strategy.Gameplay;
 using Strategy.Net;
+using Strategy.Library.Extensions;
 using Strategy.Library.Input;
 
 namespace Strategy.Interface.Gameplay
@@ -161,7 +162,7 @@ namespace Strategy.Interface.Gameplay
                 Point curLoc = GetPointInInputSpace(Hovered.Location);
 
                 IEnumerable<Territory> territoriesToConsider = (Selected != null)
-                    ? Selected.Neighbors.Concat(Enumerable.Repeat(Selected, 1))
+                    ? Selected.Neighbors.Concat(Selected)
                     : _match.Map.Territories.Where(t => t.Owner == Player);
 
                 foreach (Territory other in territoriesToConsider)
