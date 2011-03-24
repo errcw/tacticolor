@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Net;
 
 using Strategy.AI;
 using Strategy.Gameplay;
+using Strategy.Library.Helper;
 
 namespace Strategy.Net
 {
@@ -477,7 +478,7 @@ namespace Strategy.Net
     {
         public void Write(Command command)
         {
-            Write(Enumerable.Repeat(command, 1));
+            Write(IEnumerableHelper.Single(command));
         }
 
         public void Write(IEnumerable<Command> commands)
