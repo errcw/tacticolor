@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Net;
 
 using Strategy.Library.Extensions;
+using Strategy.Library.Helper;
 
 namespace Strategy.Net
 {
@@ -81,30 +82,44 @@ namespace Strategy.Net
         }
 
         /// <summary>
-        /// Sends a command to a specific gamer.
+        /// Sends a single command to a specific gamer. See SendCommands.
         /// </summary>
-        /// <param name="command">The command to send.</param>
+        public void SendCommand(Command command, LocalNetworkGamer sender, NetworkGamer recipient, SendDataOptions options)
+        {
+            SendCommands(IEnumerableHelper.Single(command), sender, recipient, options);
+        }
+
+        /// <summary>
+        /// Sends commands to a specific gamer.
+        /// </summary>
+        /// <param name="commands">The commands to send.</param>
         /// <param name="sender">The sender gamer of the command.</param>
         /// <param name="recipient">The recipient gamer of the command.</param>
         /// <param name="options">The options to send with.</param>
-        public void SendCommand(Command command, LocalNetworkGamer sender, NetworkGamer recipient, SendDataOptions options)
+        public void SendCommands(IEnumerable<Command> commands, LocalNetworkGamer sender, NetworkGamer recipient, SendDataOptions options)
         {
-            command.Sequence = _sequence;
-            _writer.Write(command);
+            PrepareCommandPacket(commands);
             sender.SendData(_writer, options, recipient);
         }
 
         /// <summary>
-        /// Broadcasts a command to all gamers in the session.
+        /// Broadcasts a single command to all gamers in the session. See BroadcastCommands.
+        /// </summary>
+        public void BroadcastCommand(Command command, LocalNetworkGamer sender, SendDataOptions options)
+        {
+            BroadcastCommands(IEnumerableHelper.Single(command), sender, options);
+        }
+
+        /// <summary>
+        /// Broadcasts commands to all gamers in the session.
         /// </summary>
         /// <param name="command">The command to send.</param>
         /// <param name="sender">The sender gamer of the command.</param>
         /// <param name="recipient">The recipient gamer of the command.</param>
         /// <param name="options">The options to send with.</param>
-        public void BroadcastCommand(Command command, LocalNetworkGamer sender, SendDataOptions options)
+        public void BroadcastCommands(IEnumerable<Command> commands, LocalNetworkGamer sender, SendDataOptions options)
         {
-            command.Sequence = _sequence;
-            _writer.Write(command);
+            PrepareCommandPacket(commands);
             sender.SendData(_writer, options);
         }
 
@@ -148,6 +163,18 @@ namespace Strategy.Net
                 }
             }
             yield break;
+        }
+
+        /// <summary>
+        /// Prepares a packet of commands for sending.
+        /// </summary>
+        private void PrepareCommandPacket(IEnumerable<Command> commands)
+        {
+            foreach (Command command in commands)
+            {
+                command.Sequence = _sequence;
+            }
+            _writer.Write(commands);
         }
 
         /// <summary>

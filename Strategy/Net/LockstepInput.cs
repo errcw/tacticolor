@@ -40,19 +40,26 @@ namespace Strategy.Net
                 }
             }
             Debug.Assert(_sendReceiveGamer != null);
+
+            // build the pending command dictionary
+            _pendingCommands = new Dictionary<Player, ICollection<Command>>();
+            foreach (Player player in _players)
+            {
+                _pendingCommands[player] = new List<Command>();
+            }
         }
 
         /// <summary>
         /// Updates the local and remote input for this frame.
         /// </summary>
         /// <param name="time">The elapsed time, in milliseconds, since the last update.</param>
-        /// <param name="suppressLocalInput">True if local human players should be ignored.</param>
-        public void Update(int time, bool suppressLocalInput)
+        /// <param name="suppressLocalHumanInput">True if local human players should be ignored.</param>
+        public void Update(int time, bool suppressLocalHumanInput)
         {
             ReadNetworkCommands();
             foreach (Player player in _players)
             {
-                if (RequiresLocalInput(player, suppressLocalInput))
+                if (RequiresLocalInput(player, suppressLocalHumanInput))
                 {
                     MatchCommand command = player.Input.Update(time);
                     if (command != null)
@@ -133,25 +140,38 @@ namespace Strategy.Net
 
         /// <summary>
         /// Sends a command to all remote players and schedules it locally.
+        /// Commands destined for remote players are buffered then sent in
+        /// a batch following each synchronization command. This scheme
+        /// conserves network bandwith, and guarantees correctness. Without
+        /// batching, out of order delivery could have a match command
+        /// arrive at a remote machine after its step was already executed.
         /// </summary>
         private void BroadcastCommand(MatchCommand command, Player sender)
         {
             _match.ScheduleCommand(command);
             if (RequiresRemoteBroadcastFrom(sender))
             {
-                foreach (Player player in _players)
+                _pendingCommands[sender].Add(command);
+                if (command is SynchronizationCommand)
                 {
-                    if (RequiresRemoteBroadcastTo(player))
+                    // flush all the buffered commands to the network
+                    ICollection<Command> commands = _pendingCommands[sender];
+                    foreach (Player player in _players)
                     {
-                        _session.SendCommand(command, _sendReceiveGamer, player.Gamer, SendDataOptions.Reliable);
+                        if (RequiresRemoteBroadcastTo(player))
+                        {
+                            _session.SendCommands(commands, _sendReceiveGamer, player.Gamer, SendDataOptions.Reliable);
+                        }
                     }
+                    // buffer a new set of commands
+                    commands.Clear();
                 }
             }
         }
 
-        private bool RequiresLocalInput(Player player, bool suppressLocalInput)
+        private bool RequiresLocalInput(Player player, bool suppressLocalHumanInput)
         {
-            return player.Input != null && (player.Gamer == null || player.Gamer != null && !suppressLocalInput);
+            return player.Input != null && (player.Gamer == null || player.Gamer != null && !suppressLocalHumanInput);
         }
 
         private bool RequiresLocalSynchronization(Player player)
@@ -173,5 +193,6 @@ namespace Strategy.Net
         private ICollection<Player> _players;
         private StrategyNetworkSession _session;
         private LocalNetworkGamer _sendReceiveGamer;
+        private IDictionary<Player, ICollection<Command>> _pendingCommands;
     }
 }
