@@ -133,6 +133,7 @@
     <Compile Include="Library\Extensions\PlayerIndexExtensions.cs" />
     <Compile Include="Library\Helper\EnumHelper.cs" />
     <Compile Include="Library\Helper\ExtendedMathHelper.cs" />
+    <Compile Include="Library\Helper\IEnumerableHelper.cs" />
     <Compile Include="Library\Input\ControlPosition.cs" />
     <Compile Include="Library\Input\ControlState.cs" />
     <Compile Include="Library\Input\Input.cs" />
