@@ -706,7 +706,7 @@ namespace Strategy.Interface.Screens
 
         protected override Color GetIconColor()
         {
-            return _playerId.GetPieceColor();
+            return (Player != null) ? _playerId.GetPieceColor() : Color.White;
         }
 
         private PlayerId _playerId;
@@ -743,7 +743,7 @@ namespace Strategy.Interface.Screens
 
         protected override Color GetIconColor()
         {
-            return Color.White;
+            return (Player != null) ? Color.White : Color.Transparent;
         }
 
         private void SetReady(bool ready)
