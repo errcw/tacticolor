@@ -109,6 +109,6 @@ namespace Strategy.Library.Sound
 
         private Song _nextSongToPlay;
 
-        private const float MusicVolume = 0.6f;
+        private const float MusicVolume = 0.3f;
     }
 }

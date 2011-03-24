@@ -24,7 +24,7 @@ namespace Strategy.Interface
             set
             {
                 _options.SoundEffectsToggle = value;
-                SoundEffect.MasterVolume = _options.SoundEffectsToggle ? 1f : 0f;
+                SoundEffect.MasterVolume = _options.SoundEffectsToggle ? 0.5f : 0f;
             }
         }
 
