@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Net;
@@ -427,39 +429,44 @@ namespace Strategy.Net
     /// </summary>
     public class CommandReader : PacketReader
     {
-        public Command ReadCommand()
+        public IEnumerable<Command> ReadCommands()
         {
-            Command command = null;
-
-            int code = ReadByte();
-            switch (code)
+            int count = ReadInt32();
+            for (int c = 0; c < count; c++)
             {
-                case MatchConfigurationCommand.Code:
-                    command = new MatchConfigurationCommand();
-                    break;
-                case StartSynchronizationCommand.Code:
-                    command = new StartSynchronizationCommand();
-                    break;
-                case StepSynchronizationCommand.Code:
-                    command = new StepSynchronizationCommand();
-                    break;
-                case PlaceCommand.Code:
-                    command = new PlaceCommand();
-                    break;
-                case MoveCommand.Code:
-                    command = new MoveCommand();
-                    break;
-                case AttackCommand.Code:
-                    command = new AttackCommand();
-                    break;
-                default:
-                    // invalid/unknown command type
-                    return null;
+                Command command = null;
+
+                byte code = ReadByte();
+                switch (code)
+                {
+                    case MatchConfigurationCommand.Code:
+                        command = new MatchConfigurationCommand();
+                        break;
+                    case StartSynchronizationCommand.Code:
+                        command = new StartSynchronizationCommand();
+                        break;
+                    case StepSynchronizationCommand.Code:
+                        command = new StepSynchronizationCommand();
+                        break;
+                    case PlaceCommand.Code:
+                        command = new PlaceCommand();
+                        break;
+                    case MoveCommand.Code:
+                        command = new MoveCommand();
+                        break;
+                    case AttackCommand.Code:
+                        command = new AttackCommand();
+                        break;
+                    default:
+                        throw new InvalidOperationException("Invalid command type " + code);
+                }
+
+                command.Read(this);
+
+                yield return command;
             }
 
-            command.Read(this);
-
-            return command;
+            yield break;
         }
     }
 
@@ -470,8 +477,17 @@ namespace Strategy.Net
     {
         public void Write(Command command)
         {
-            Write((byte)command.Id);
-            command.Write(this);
+            Write(Enumerable.Repeat(command, 1));
+        }
+
+        public void Write(IEnumerable<Command> commands)
+        {
+            Write((int)commands.Count());
+            foreach (Command command in commands)
+            {
+                Write((byte)command.Id);
+                command.Write(this);
+            }
         }
     }
 }

@@ -130,18 +130,20 @@ namespace Strategy.Net
                 {
                     NetworkGamer sender;
                     receiver.ReceiveData(_reader, out sender);
-                    Command command = _reader.ReadCommand();
-                    ReceivedCommand receivedCommand = new ReceivedCommand(command, sender, receiver);
-                    switch (GetCommandAction(command, sender))
+                    foreach (Command command in _reader.ReadCommands())
                     {
-                        case CommandAction.Execute:
-                            yield return receivedCommand;
-                            break;
-                        case CommandAction.Defer:
-                            _deferredCommands.Add(receivedCommand);
-                            break;
-                        case CommandAction.Discard:
-                            break;
+                        ReceivedCommand receivedCommand = new ReceivedCommand(command, sender, receiver);
+                        switch (GetCommandAction(command, sender))
+                        {
+                            case CommandAction.Execute:
+                                yield return receivedCommand;
+                                break;
+                            case CommandAction.Defer:
+                                _deferredCommands.Add(receivedCommand);
+                                break;
+                            case CommandAction.Discard:
+                                break;
+                        }
                     }
                 }
             }
