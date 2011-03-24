@@ -1,6 +1,9 @@
 To Do
 -----
 
+* Clean up command batching implementation
+* Fix movement sound on non-host lobby screen
+* Sync memory leak?
 * Testing
   - simulated network latency testing
   - online: playing, invites, etc.
