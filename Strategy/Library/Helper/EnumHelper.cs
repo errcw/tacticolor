@@ -8,7 +8,7 @@ namespace Strategy.Library.Helper
     /// <summary>
     /// Methods for manipulating enumerations.
     /// </summary>
-    public class EnumHelper
+    public static class EnumHelper
     {
         /// <summary>
         /// Returns an array of the names of the constants in a given enumeration.
