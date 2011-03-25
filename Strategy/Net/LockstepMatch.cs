@@ -53,8 +53,8 @@ namespace Strategy.Net
             _commands = new CommandList();
 
             // start the match before time
-            StepStart = -150;
             StepTime = 150;
+            StepStart = -StepTime;
             _stepEndTime = StepStart + StepTime;
 
             SchedulingOffset = 2 * StepTime;
