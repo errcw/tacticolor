@@ -427,6 +427,17 @@ namespace Strategy.Interface.Screens
             _mapTypeEntry.IsSelectable = _net.Session.IsHost;
             _mapSizeEntry.IsSelectable = _net.Session.IsHost;
             _difficultyEntry.IsSelectable = _net.Session.IsHost;
+            SetSelected(0);
+        }
+        
+        protected override void SetSelected(int deltaIdx)
+        {
+            // only allow moving between menu items as the host
+            if (!_net.Session.IsHost && deltaIdx != 0)
+            {
+                return;
+            }
+            base.SetSelected(deltaIdx);
         }
 
         private void AddPlayer(NetworkGamer gamer)
