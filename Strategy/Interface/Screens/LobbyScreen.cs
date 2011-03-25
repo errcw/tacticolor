@@ -427,7 +427,8 @@ namespace Strategy.Interface.Screens
             _mapTypeEntry.IsSelectable = _net.Session.IsHost;
             _mapSizeEntry.IsSelectable = _net.Session.IsHost;
             _difficultyEntry.IsSelectable = _net.Session.IsHost;
-            SetSelected(0);
+            UpdateUiForReadyChange();
+            SetSelected(0); // propagate the selectable state to the legend
         }
         
         protected override void SetSelected(int deltaIdx)
