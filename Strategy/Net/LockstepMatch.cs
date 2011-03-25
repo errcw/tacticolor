@@ -66,7 +66,7 @@ namespace Strategy.Net
                 _readyStepStartTimes[i] = _readyStepStartTime;
             }
 
-            _stepHashes = new Dictionary<long, long>(2);
+            _stepHashes = new Dictionary<long, HashState>(2);
         }
 
         /// <summary>
@@ -197,18 +197,30 @@ namespace Strategy.Net
                 throw new OutOfSyncException("Got a sync command from too far in the future");
             }
 
-            long expectedHash;
-            if (_stepHashes.TryGetValue(command.HashTime, out expectedHash))
+            HashState hashState;
+            if (_stepHashes.TryGetValue(command.HashTime, out hashState))
             {
-                if (command.Hash != expectedHash)
+                if (command.Hash != hashState.Hash)
                 {
-                    Log("Got hash " + command.Hash + " from " + command.Player + " but expected hash " + expectedHash);
+                    Log("Got hash " + command.Hash + " from " + command.Player + " but expected hash " + hashState.Hash);
                     throw new OutOfSyncException("Match simulation out of sync");
+                }
+
+                // remove old hashes for which we have compared every player
+                hashState.PlayerCount += 1;
+                if (hashState.PlayerCount == _match.PlayerCount)
+                {
+                    _stepHashes.Remove(command.HashTime);
                 }
             }
             else
             {
-                _stepHashes[command.HashTime] = command.Hash;
+                hashState = new HashState()
+                {
+                    Hash = command.Hash,
+                    PlayerCount = 1
+                };
+                _stepHashes[command.HashTime] = hashState;
             }
         }
 
@@ -223,6 +235,15 @@ namespace Strategy.Net
 #endif
         }
 
+        /// <summary>
+        /// Tuple of hash code and number of players reporting that code.
+        /// </summary>
+        private class HashState
+        {
+            public long Hash;
+            public int PlayerCount;
+        }
+
         private Match _match;
 
         private CommandList _commands;
@@ -230,7 +251,7 @@ namespace Strategy.Net
         private long _stepEndTime;
         private long _readyStepStartTime;
         private long[] _readyStepStartTimes;
-        private Dictionary<long, long> _stepHashes;
+        private Dictionary<long, HashState> _stepHashes;
     }
 
     /// <summary>
