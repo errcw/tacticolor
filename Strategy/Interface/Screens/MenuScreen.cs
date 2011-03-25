@@ -25,11 +25,6 @@ namespace Strategy.Interface.Screens
     public class MenuScreen : Screen
     {
         /// <summary>
-        /// If this screen is the root menu of a tree.
-        /// </summary>
-        public bool IsRoot { get; set; }
-
-        /// <summary>
         /// The position of the first menu item.
         /// </summary>
         public Vector2 BasePosition { get; set; }
@@ -38,11 +33,6 @@ namespace Strategy.Interface.Screens
         /// The number of entries to display on each screen before scrolling.
         /// </summary>
         protected int VisibleEntryCount { get; set; }
-
-        /// <summary>
-        /// If the back button should be displayed if this is a root menu screen.
-        /// </summary>
-        protected bool AllowBackOnRoot { get; set; }
 
         /// <summary>
         /// The vertical padding, in pixels, between menu entries.
@@ -161,7 +151,7 @@ namespace Strategy.Interface.Screens
         {
             base.Show(pushed);
             _selectSprite.Color = Color.White;
-            _backSprite.Color = IsRoot && !AllowBackOnRoot ? Color.Transparent : Color.White;
+            _backSprite.Color = Color.White;
             _moveSprite.Color = _entries.Count > VisibleEntryCount ? Color.White : Color.Transparent;
             if (pushed)
             {
@@ -213,7 +203,7 @@ namespace Strategy.Interface.Screens
         /// </summary>
         protected override void UpdateActive(GameTime gameTime)
         {
-            if (_input.Cancel.Pressed && (!IsRoot || (IsRoot && AllowBackOnRoot)))
+            if (_input.Cancel.Pressed)
             {
                 Stack.Pop();
                 return;

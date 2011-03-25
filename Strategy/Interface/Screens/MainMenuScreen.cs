@@ -32,8 +32,6 @@ namespace Strategy.Interface.Screens
                 .CreateButtonEntry(Resources.MenuExit, OnExitSelected);
 
             TransitionOnTime = 0.01f;
-            IsRoot = true;
-            AllowBackOnRoot = true;
             BasePosition = new Vector2(130f, 80f);
         }
 
