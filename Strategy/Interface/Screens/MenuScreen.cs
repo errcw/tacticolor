@@ -379,7 +379,7 @@ namespace Strategy.Interface.Screens
 
         private MenuInput _input;
 
-        protected List<MenuEntry> _entries = new List<MenuEntry>();
+        private List<MenuEntry> _entries = new List<MenuEntry>();
         private int _selectedEntryRel; /// relative index inside visible entries
         private int _selectedEntryAbs; /// absolute index inside all entries
         private int _listWindowBaseIndex; /// index of top entry
