@@ -1,7 +1,5 @@
 To Do
 -----
 
-* Fix movement sound on non-host lobby screen
 * Testing
-  - simulated network latency testing
   - online: playing, invites, etc.
