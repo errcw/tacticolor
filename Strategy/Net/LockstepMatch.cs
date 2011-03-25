@@ -193,8 +193,7 @@ namespace Strategy.Net
             // explicitly allow for infinite synchronization special case
             if (command.Time > _match.Time + SchedulingOffset + StepTime && command.Time < long.MaxValue)
             {
-                Log("Got a sync command from " + command.Player + " for time " + command.Time + " but match time is only " + _match.Time);
-                throw new OutOfSyncException("Got a sync command from too far in the future");
+                throw new OutOfSyncException("Got a sync command from " + command.Player + " for time " + command.Time + " but match time is only " + _match.Time);
             }
 
             HashState hashState;
@@ -202,8 +201,7 @@ namespace Strategy.Net
             {
                 if (command.Hash != hashState.Hash)
                 {
-                    Log("Got hash " + command.Hash + " from " + command.Player + " but expected hash " + hashState.Hash);
-                    throw new OutOfSyncException("Match simulation out of sync");
+                    throw new OutOfSyncException("Got hash " + command.Hash + " from " + command.Player + " but expected hash " + hashState.Hash);
                 }
 
                 // remove old hashes for which we have compared every player
