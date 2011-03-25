@@ -41,12 +41,8 @@ namespace Strategy.Net
             }
             Debug.Assert(_sendReceiveGamer != null);
 
-            // build the pending command dictionary
-            _pendingCommands = new Dictionary<Player, ICollection<Command>>();
-            foreach (Player player in _players)
-            {
-                _pendingCommands[player] = new List<Command>();
-            }
+            // build the pending command list
+            _unsentCommands = new List<Command>();
         }
 
         /// <summary>
@@ -90,6 +86,8 @@ namespace Strategy.Net
                     BroadcastCommand(command, player);
                 }
             }
+            // flush the start game commands lest the game never start
+            FlushCommands();
         }
 
         /// <summary>
@@ -119,6 +117,8 @@ namespace Strategy.Net
                     BroadcastCommand(command, player);
                 }
             }
+            // flush all the buffered commands
+            FlushCommands();
         }
 
         /// <summary>
@@ -151,22 +151,23 @@ namespace Strategy.Net
             _match.ScheduleCommand(command);
             if (RequiresRemoteBroadcastFrom(sender))
             {
-                _pendingCommands[sender].Add(command);
-                if (command is SynchronizationCommand)
+                _unsentCommands.Add(command);
+            }
+        }
+
+        /// <summary>
+        /// Flushes all the buffered commands to the network.
+        /// </summary>
+        private void FlushCommands()
+        {
+            foreach (Player player in _players)
+            {
+                if (RequiresRemoteBroadcastTo(player))
                 {
-                    // flush all the buffered commands to the network
-                    ICollection<Command> commands = _pendingCommands[sender];
-                    foreach (Player player in _players)
-                    {
-                        if (RequiresRemoteBroadcastTo(player))
-                        {
-                            _session.SendCommands(commands, _sendReceiveGamer, player.Gamer, SendDataOptions.Reliable);
-                        }
-                    }
-                    // buffer a new set of commands
-                    commands.Clear();
+                    _session.SendCommands(_unsentCommands, _sendReceiveGamer, player.Gamer, SendDataOptions.Reliable);
                 }
             }
+            _unsentCommands.Clear();
         }
 
         private bool RequiresLocalInput(Player player, bool suppressLocalHumanInput)
@@ -193,6 +194,6 @@ namespace Strategy.Net
         private ICollection<Player> _players;
         private StrategyNetworkSession _session;
         private LocalNetworkGamer _sendReceiveGamer;
-        private IDictionary<Player, ICollection<Command>> _pendingCommands;
+        private ICollection<Command> _unsentCommands;
     }
 }

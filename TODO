@@ -1,7 +1,6 @@
 To Do
 -----
 
-* Clean up command batching implementation
 * Fix movement sound on non-host lobby screen
 * Testing
   - simulated network latency testing
