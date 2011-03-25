@@ -223,6 +223,12 @@ namespace Strategy.Interface.Screens
 
             PlayerSlot slot = FindSlotByPlayer(playerToRemove);
             slot.Player = null;
+
+            NetworkPlayerSlot networkSlot = slot as NetworkPlayerSlot;
+            if (networkSlot != null)
+            {
+                networkSlot.IsReady = false;
+            }
         }
 
         private void OnHostChanged(object sender, HostChangedEventArgs args)
@@ -439,48 +445,6 @@ namespace Strategy.Interface.Screens
                 return;
             }
             base.SetSelected(deltaIdx);
-        }
-
-        private void AddPlayer(NetworkGamer gamer)
-        {
-            Player player = new Player() { Gamer = gamer };
-            _players.Add(player);
-
-            PlayerSlot slot = FindSlotByPlayer(null);
-            slot.Player = player;
-
-            // for local players find the local controller
-            if (gamer.IsLocal)
-            {
-                for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
-                {
-                    if (Gamer.SignedInGamers[p].Gamertag == gamer.Gamertag)
-                    {
-                        player.Controller = p;
-                        break;
-                    }
-                }
-                if (!player.Controller.HasValue)
-                {
-                    Debug.WriteLine("Local player with no controller! Falling back to controller one.");
-                    player.Controller = PlayerIndex.One;
-                }
-            }
-        }
-
-        private void RemovePlayer(NetworkGamer gamer)
-        {
-            Player playerToRemove = FindPlayerByGamer(gamer);
-            _players.Remove(playerToRemove);
-
-            PlayerSlot slot = FindSlotByPlayer(playerToRemove);
-            slot.Player = null;
-
-            if (_players.Count == 0 && !_isMatchRunning)
-            {
-                // lost all the players, back out to the main menu
-                Stack.Pop();
-            }
         }
 
         private Player FindPlayerByGamer(Gamer gamer)
