@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Net;
 
 using Strategy.Gameplay;
+using Strategy.Library.Helper;
 
 namespace Strategy.Net
 {
@@ -128,7 +129,7 @@ namespace Strategy.Net
                 {
                     NetworkSession session = NetworkSession.Create(
                         type,
-                        Enumerable.Repeat(creator, 1),
+                        IEnumerableHelper.Single(creator),
                         Match.MaxPlayerCount,
                         0,
                         null);
@@ -157,7 +158,7 @@ namespace Strategy.Net
                 {
                     AvailableNetworkSessionCollection availableSessions = NetworkSession.Find(
                         type,
-                        Enumerable.Repeat(joiner, 1),
+                        IEnumerableHelper.Single(joiner),
                         null);
 
                     // wait for QOS data if we need to choose between sessions
@@ -225,7 +226,7 @@ namespace Strategy.Net
             {
                 try
                 {
-                    NetworkSession session = NetworkSession.JoinInvited(Enumerable.Repeat(accepter, 1));
+                    NetworkSession session = NetworkSession.JoinInvited(IEnumerableHelper.Single(accepter));
                     SetCurrentSession(session);
                     result.Complete(session, false);
                 }
