@@ -154,15 +154,15 @@ namespace Strategy.Interface.Screens
             base.Draw(m);
         }
 
-        protected override void OnDraw()
+        protected override void OnDraw(SpriteBatch spriteBatch)
         {
-            _background.Draw(_spriteBatch);
+            _background.Draw(spriteBatch);
             if (_legend != null)
             {
-                _legend.Draw(_spriteBatch);
+                _legend.Draw(spriteBatch);
             }
-            _slots.ForEach(slot => slot.Draw(_spriteBatch));
-            base.OnDraw();
+            _slots.ForEach(slot => slot.Draw(spriteBatch));
+            base.OnDraw(spriteBatch);
         }
 
         protected internal override void Show(bool pushed)

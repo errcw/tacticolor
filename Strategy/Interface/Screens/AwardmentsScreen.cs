@@ -78,10 +78,10 @@ namespace Strategy.Interface.Screens
             base.Hide(popped);
         }
 
-        protected override void OnDraw()
+        protected override void OnDraw(SpriteBatch spriteBatch)
         {
-            _upsellPanel.Draw(_spriteBatch);
-            base.OnDraw();
+            _upsellPanel.Draw(spriteBatch);
+            base.OnDraw(spriteBatch);
         }
 
         protected override void UpdateTransitionOn(GameTime gameTime, float progress, bool pushed)

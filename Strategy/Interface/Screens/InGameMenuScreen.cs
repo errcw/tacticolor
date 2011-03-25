@@ -46,10 +46,10 @@ namespace Strategy.Interface.Screens
             BasePosition = new Vector2(130f, 80f);
         }
 
-        protected override void OnDraw()
+        protected override void OnDraw(SpriteBatch spriteBatch)
         {
-            _background.Draw(_spriteBatch);
-            base.OnDraw();
+            _background.Draw(spriteBatch);
+            base.OnDraw(spriteBatch);
         }
 
         protected internal override void Hide(bool popped)
