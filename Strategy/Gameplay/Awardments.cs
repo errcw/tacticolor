@@ -578,6 +578,11 @@ namespace Strategy.Gameplay
         {
             match.PiecePlaced += delegate(object matchObj, PiecePlacedEventArgs args)
             {
+                if (args.Location.Owner.Value != player)
+                {
+                    return;
+                }
+
                 if (_placementCount == 0)
                 {
                     _firstPlacementTime = match.Time;
