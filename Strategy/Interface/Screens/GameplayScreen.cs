@@ -194,13 +194,6 @@ namespace Strategy.Interface.Screens
                     break;
                 }
             }
-
-            if (_input.Debug.Pressed)
-            {
-                // game is almost over, show the purchase screen
-                _endScreen = new PurchaseScreen(Stack.Game, Resources.TrialMatchEnd, typeof(LobbyScreen));
-                _endTime = 0f;
-            }
         }
 
         public override void Draw()
@@ -267,8 +260,17 @@ namespace Strategy.Interface.Screens
             ShowPlayerLeftMatch(player);
 
             // check if all the human players have been defeated
-            int maxHumanTerritories = _players.Where(p => p.Gamer != null).Max(p => _lockstepMatch.Match.TerritoriesOwnedCount[(int)p.Id]);
-            if (maxHumanTerritories == 0)
+            bool hasAliveHuman = false;
+            foreach (Player p in _players)
+            {
+                if (p.Gamer != null && !p.Gamer.HasLeftSession && _lockstepMatch.Match.TerritoriesOwnedCount[(int)p.Id] > 0)
+                {
+                    hasAliveHuman = true;
+                    break;
+                }
+            }
+
+            if (!hasAliveHuman)
             {
                 PlayerId aiWinner = _players.First(p => p.Gamer == null).Id; // have an arbitrary AI player "win"
                 OnMatchEnded(Resources.GameLost, aiWinner);
