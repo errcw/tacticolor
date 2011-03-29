@@ -24,7 +24,7 @@ using Strategy.Properties;
 namespace Strategy
 {
     /// <summary>
-    /// This is the main type for your game
+    /// Game scaffolding. Handles the game-global state.
     /// </summary>
     public class StrategyGame : Game
     {
@@ -54,7 +54,7 @@ namespace Strategy
             Services.AddService<Options>(_options = new Options());
             Services.AddService<Awardments>(_awardments = new Awardments());
 
-#if DEBUG
+#if WINDOWS && DEBUG
             Guide.SimulateTrialMode = true;
 #endif
         }
