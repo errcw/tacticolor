@@ -844,7 +844,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Back to Main Menu.
+        ///   Looks up a localized string similar to No, Back to Main Menu.
         /// </summary>
         internal static string MenuExitNo {
             get {
@@ -853,7 +853,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exit to Dashboard.
+        ///   Looks up a localized string similar to Yes, Exit to Dashboard.
         /// </summary>
         internal static string MenuExitYes {
             get {
@@ -925,7 +925,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Back to Match Menu.
+        ///   Looks up a localized string similar to No, Back to Match Menu.
         /// </summary>
         internal static string MenuLeaveNo {
             get {
@@ -934,7 +934,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exit to Main Menu.
+        ///   Looks up a localized string similar to Yes, Exit to Main Menu.
         /// </summary>
         internal static string MenuLeaveYes {
             get {
