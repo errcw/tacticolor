@@ -475,7 +475,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to box-art-maker.
+        ///   Looks up a localized string similar to Ling Wang.
         /// </summary>
         internal static string CreditsArtList {
             get {
