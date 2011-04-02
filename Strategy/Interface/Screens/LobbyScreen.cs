@@ -62,7 +62,7 @@ namespace Strategy.Interface.Screens
                     _random.Next(1, int.MaxValue),
                     MapType.LandRush,
                     MapSize.Normal,
-                    AiDifficulty.Normal);
+                    AiDifficulty.Easy);
             }
 
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundLobby"));
