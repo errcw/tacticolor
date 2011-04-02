@@ -46,7 +46,7 @@ namespace Strategy.AI
                 case AiDifficulty.Hard: _evaluator = new HardCommandEvaluator(this); break;
             }
 
-            _lastCommandTime = 0;
+            _lastCommandTime = GetCommandWaitTime();
             _shouldScheduleCommand = true;
         }
 
@@ -157,7 +157,7 @@ namespace Strategy.AI
             int baseTime = 0;
             switch (_difficulty)
             {
-                case AiDifficulty.Easy: baseTime = 2000; break;
+                case AiDifficulty.Easy: baseTime = 3000; break;
                 case AiDifficulty.Normal: baseTime = 1000; break;
                 case AiDifficulty.Hard: baseTime = 750; break;
             }
@@ -274,11 +274,21 @@ namespace Strategy.AI
 
             protected override int RatePlacement(Territory place)
             {
-                bool hasEnemyNeighbors = place.Neighbors.Any(t => t.Owner != place.Owner);
+                bool hasEnemyNeighbors = place.Neighbors.Any(t => t.Owner != _input._player);
                 if (hasEnemyNeighbors)
                 {
+                    int filledSlots = place.Pieces.Count;
+                    int enemyPiecesMax = place.Neighbors.Where(t => t.Owner != _input._player).Max(t => t.Pieces.Count);
+                    if (enemyPiecesMax != 0 && // allow placement next to empty territories
+                        filledSlots > 1 && // allow placement to attack other territories
+                        filledSlots >= enemyPiecesMax - 1)
+                    {
+                        // disallow placement of pieces that would overwhelm an enemy
+                        return 0;
+                    }
+
                     int enemyNeighbors = place.Neighbors.Count(t => t.Owner != null && t.Owner != _input._player);
-                    int missingSlots = place.Capacity - place.Pieces.Count;
+                    int missingSlots = place.Capacity - filledSlots;
                     return BasePlacementRating + enemyNeighbors + missingSlots;
                 }
                 else
@@ -292,7 +302,7 @@ namespace Strategy.AI
             protected override int RateAttack(Territory atk, Territory def)
             {
                 int diff = atk.Pieces.Count(p => p.Ready) - def.Pieces.Count;
-                bool fullAttacker = atk.Pieces.Count == atk.Capacity;
+                bool fullAttacker = atk.Pieces.Count >= atk.Capacity - 1; // account for -1 calculations above
                 return (diff >= 0 || fullAttacker) ? BaseAttackRating + diff : 0;
             }
 
