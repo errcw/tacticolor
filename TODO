@@ -1,10 +1,25 @@
 To Do
 -----
 
-* Playtest!
-  - easier easy?
-  - better piece readiness? only show ready/unready states?
+- Set default difficulty to Easy
+- Tweak Easy difficulty
+ * Computer players should not move right away
+ * Computer players should not act as aggressively?
+  * Computer players should act more slowly?
+- Show pieces as ready/unready
+- Fix the awardment panel timing
+- Add more instructions?
+- Tweak piece ready time?
+- Menu legend?
+- Add progress tracking to awardments?
 
-  - better selection?
-  - better highlighting? (brighter? flashing?)
-  - better instruction visibility?
+Instructions
+------------
+   A picks up pieces to move or attack (start)
+   L selects territories (after pick up)
+   A attacks or moves (after selecting a non-owned territory)
+   X places pieces (after getting one piece and move done)
+   B puts pieces down (after next selection?)
+   P Only ready pieces (colored) can move or attack (after next selection?)
+   P Pieces can move or attack every six seconds (after next selection?)
+   P Owning more territories creates new pieces faster (after owning >= 4 territories)
