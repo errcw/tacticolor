@@ -161,7 +161,11 @@ namespace Strategy.Interface.Gameplay
             }
 
             // show the readiness
-            _readySprite.Color = Interpolation.InterpolateColor(Easing.Uniform)(UnreadyColor, PlayerColor, _piece.ReadyProgress);
+            Color readyColor = _piece.Ready ? PlayerColor : UnreadyColor;
+            if (_readySprite.Color != readyColor && _readyAnimation == null)
+            {
+                _readyAnimation = new ColorAnimation(_readySprite, readyColor, 0.2f, Interpolation.InterpolateColor(Easing.Uniform));
+            }
 
             // update the animation
             if (_actionAnimation != null)
@@ -176,6 +180,13 @@ namespace Strategy.Interface.Gameplay
                 if (!_selectionAnimation.Update(time))
                 {
                     _selectionAnimation = null;
+                }
+            }
+            if (_readyAnimation != null)
+            {
+                if (!_readyAnimation.Update(time))
+                {
+                    _readyAnimation = null;
                 }
             }
         }
@@ -215,6 +226,7 @@ namespace Strategy.Interface.Gameplay
 
         private IAnimation _actionAnimation;
         private IAnimation _selectionAnimation;
+        private IAnimation _readyAnimation;
 
         private readonly Color PlayerColor;
         private readonly Color UnreadyColor;
