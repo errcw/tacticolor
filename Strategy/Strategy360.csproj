@@ -87,6 +87,7 @@
     <Compile Include="Interface\Gameplay\PiecesAvailableView.cs" />
     <Compile Include="Interface\Gameplay\PieceView.cs" />
     <Compile Include="Interface\Gameplay\PlayerView.cs" />
+    <Compile Include="Interface\Gameplay\TerritoryCountView.cs" />
     <Compile Include="Interface\Gameplay\TerritoryView.cs" />
     <Compile Include="Interface\MenuInput.cs" />
     <Compile Include="Interface\Options.cs" />

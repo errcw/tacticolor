@@ -79,10 +79,12 @@ namespace Strategy.Interface.Screens
             _inputViews = new List<LocalInputView>(players.Count);
             _playerViews = new List<PlayerView>(players.Count);
             _piecesAvailableViews = new List<PiecesAvailableView>(players.Count);
+            _territoryCountViews = new List<TerritoryCountView>(players.Count);
             foreach (Player player in players)
             {
                 _playerViews.Add(new PlayerView(player, _lockstepMatch, _context));
                 _piecesAvailableViews.Add(new PiecesAvailableView(match, player.Id, _context));
+                _territoryCountViews.Add(new TerritoryCountView(match, player.Id, _context));
                 LocalInput input = player.Input as LocalInput;
                 if (input != null)
                 {
@@ -173,6 +175,7 @@ namespace Strategy.Interface.Screens
             _inputViews.ForEach(view => view.Update(seconds));
             _playerViews.ForEach(view => view.Update(seconds));
             _piecesAvailableViews.ForEach(view => view.Update(seconds));
+            _territoryCountViews.ForEach(view => view.Update(seconds));
             _instructions.Update(seconds);
 
             if (_endScreen != null)
@@ -211,6 +214,7 @@ namespace Strategy.Interface.Screens
             _isoView.Draw(_spriteBatch);
             _playerViews.ForEach(view => view.Draw(_spriteBatch));
             _piecesAvailableViews.ForEach(view => view.Draw(_spriteBatch));
+            _territoryCountViews.ForEach(view => view.Draw(_spriteBatch));
             _instructions.Draw(_spriteBatch);
 
             _spriteBatch.End();
@@ -373,6 +377,7 @@ namespace Strategy.Interface.Screens
         private List<LocalInputView> _inputViews;
         private List<PlayerView> _playerViews;
         private List<PiecesAvailableView> _piecesAvailableViews;
+        private List<TerritoryCountView> _territoryCountViews;
         private Instructions _instructions;
 
         private MenuInput _input;

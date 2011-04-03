@@ -1,17 +1,12 @@
 To Do
 -----
 
-- Set default difficulty to Easy
-- Tweak Easy difficulty
- * Computer players should not move right away
- * Computer players should not act as aggressively?
-  * Computer players should act more slowly?
-- Show pieces as ready/unready
-- Fix the awardment panel timing
 - Add more instructions?
 - Tweak piece ready time?
 - Menu legend?
+- Fix the awardment panel timing
 - Add progress tracking to awardments?
+- Territory count?
 
 Instructions
 ------------

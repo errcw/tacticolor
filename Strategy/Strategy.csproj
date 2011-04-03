@@ -131,6 +131,7 @@
     <Compile Include="Interface\Gameplay\LocalInput.cs" />
     <Compile Include="Interface\Gameplay\LocalInputView.cs" />
     <Compile Include="Interface\Gameplay\MapView.cs" />
+    <Compile Include="Interface\Gameplay\TerritoryCountView.cs" />
     <Compile Include="Interface\MenuInput.cs" />
     <Compile Include="Interface\Options.cs" />
     <Compile Include="Interface\Gameplay\PiecesAvailableView.cs" />
