@@ -36,13 +36,13 @@ namespace Strategy.Gameplay
         /// The name of this awardment.
         /// </summary>
         [XmlIgnore]
-        public string Name { get; protected set; }
+        public virtual string Name { get; protected set; }
 
         /// <summary>
         /// A description of how to acheive this awardment.
         /// </summary>
         [XmlIgnore]
-        public string Description { get; protected set; }
+        public virtual string Description { get; protected set; }
 
         /// <summary>
         /// If this awardment has been earned.
@@ -122,10 +122,7 @@ namespace Strategy.Gameplay
                 }
                 foreach (Awardment awardment in awardments)
                 {
-                    if (!awardment.IsEarned)
-                    {
-                        awardment.MatchStarted(match, player.Value);
-                    }
+                    awardment.MatchStarted(match, player.Value);
                 }
             }
         }
@@ -137,10 +134,7 @@ namespace Strategy.Gameplay
                 List<Awardment> awardments = _awardments[player.Key];
                 foreach (Awardment awardment in awardments)
                 {
-                    if (!awardment.IsEarned)
-                    {
-                        awardment.MatchEnded(_match, player.Value, winner);
-                    }
+                    awardment.MatchEnded(_match, player.Value, winner);
                 }
             }
         }
@@ -330,19 +324,27 @@ namespace Strategy.Gameplay
 
     public class ManyMatchesWonAwardment : MatchesPlayedAwardment
     {
+        public override string Description
+        {
+            get { return String.Format(Resources.AwardmentManyMatchesWonDescription, MatchCount, 100); }
+        }
+
         public ManyMatchesWonAwardment() : base(100, false)
         {
             Name = Resources.AwardmentManyMatchesWonName;
-            Description = Resources.AwardmentManyMatchesWonDescription;
         }
     }
 
     public class ManyMatchesPlayedAwardment : MatchesPlayedAwardment
     {
+        public override string Description
+        {
+            get { return String.Format(Resources.AwardmentManyMatchesPlayedDescription, MatchCount, 100); }
+        }
+
         public ManyMatchesPlayedAwardment() : base(100, true)
         {
             Name = Resources.AwardmentManyMatchesPlayedName;
-            Description = Resources.AwardmentManyMatchesPlayedDescription;
         }
     }
 
@@ -385,10 +387,14 @@ namespace Strategy.Gameplay
 
     public class ManyTerritoriesCapturedAwardment : TerritoryCaptureAwardment
     {
+        public override string Description
+        {
+            get { return String.Format(Resources.AwardmentManyTerritoriesCapturedDescription, TerritoriesCaptured, 1000); }
+        }
+
         public ManyTerritoriesCapturedAwardment() : base(1000)
         {
             Name = Resources.AwardmentManyTerritoriesCapturedName;
-            Description = Resources.AwardmentManyTerritoriesCapturedDescription;
         }
     }
 
@@ -456,7 +462,7 @@ namespace Strategy.Gameplay
 
     public class QuickWinAwardment : MatchTimeAwardment
     {
-        public QuickWinAwardment() : base(3 * 60 * 1000)
+        public QuickWinAwardment() : base(2 * 60 * 1000)
         {
             Name = Resources.AwardmentQuickWinName;
             Description = Resources.AwardmentQuickWinDescription;
@@ -504,19 +510,27 @@ namespace Strategy.Gameplay
 
     public class MatchShortWinStreakAwardment : MatchWinStreakAwardment
     {
+        public override string Description
+        {
+            get { return String.Format(Resources.AwardmentShortStreakDescription, MatchesWon, 3); }
+        }
+
         public MatchShortWinStreakAwardment() : base(3)
         {
             Name = Resources.AwardmentShortStreakName;
-            Description = Resources.AwardmentShortStreakDescription;
         }
     }
 
     public class MatchLongWinStreakAwardment : MatchWinStreakAwardment
     {
+        public override string Description
+        {
+            get { return String.Format(Resources.AwardmentLongStreakDescription, MatchesWon, 20); }
+        }
+
         public MatchLongWinStreakAwardment() : base(20)
         {
             Name = Resources.AwardmentLongStreakName;
-            Description = Resources.AwardmentLongStreakDescription;
         }
     }
 
@@ -550,19 +564,27 @@ namespace Strategy.Gameplay
 
     public class ManyPiecesPlacedAwardment : PiecePlacementAwardment
     {
+        public override string Description
+        {
+            get { return String.Format(Resources.AwardmentManyPiecesPlacedDescription, PiecesPlaced, 250); }
+        }
+
         public ManyPiecesPlacedAwardment() : base(250)
         {
             Name = Resources.AwardmentManyPiecesPlacedName;
-            Description = Resources.AwardmentManyPiecesPlacedDescription;
         }
     }
 
     public class VeryManyPiecesPlacedAwardment : PiecePlacementAwardment
     {
+        public override string Description
+        {
+            get { return String.Format(Resources.AwardmentVeryManyPiecesPlacedDescription, PiecesPlaced, 1000); }
+        }
+
         public VeryManyPiecesPlacedAwardment() : base(1000)
         {
             Name = Resources.AwardmentVeryManyPiecesPlacedName;
-            Description = Resources.AwardmentVeryManyPiecesPlacedDescription;
         }
     }
 
@@ -616,6 +638,11 @@ namespace Strategy.Gameplay
     {
         public bool[][] Configurations { get; set; }
 
+        public override string Description
+        {
+            get { return String.Format(Resources.AwardmentEveryConfigurationDescription, GetPlayedConfigurationCount(), MapTypeCount * MapSizeCount); }
+        }
+
         public EveryConfigurationAwardment()
         {
             Name = Resources.AwardmentEveryConfigurationName;
@@ -647,23 +674,26 @@ namespace Strategy.Gameplay
 
             Configurations[mapSizeIdx][mapTypeIdx] = true;
 
-            bool earned = true;
+            if (GetPlayedConfigurationCount() == MapSizeCount * MapTypeCount)
+            {
+                SetEarned();
+            }
+        }
+
+        private int GetPlayedConfigurationCount()
+        {
+            int count = 0;
             for (int s = 0; s < MapSizeCount; s++)
             {
                 for (int t = 0; t < MapTypeCount; t++)
                 {
-                    if (!Configurations[s][t])
+                    if (Configurations[s][t])
                     {
-                        earned = false;
-                        goto Done;
+                        count += 1;
                     }
                 }
             }
-        Done:
-            if (earned)
-            {
-                SetEarned();
-            }
+            return count;
         }
 
         private const int MapSizeCount = 4;

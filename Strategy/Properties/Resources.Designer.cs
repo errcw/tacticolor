@@ -88,7 +88,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Win the match after losing all but one territory..
+        ///   Looks up a localized string similar to Win the match after losing all but one territory.
         /// </summary>
         internal static string AwardmentBrinkDescription {
             get {
@@ -106,7 +106,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Play a match in every map size and game type..
+        ///   Looks up a localized string similar to Play a match in every map size and game type ({0}/{1}).
         /// </summary>
         internal static string AwardmentEveryConfigurationDescription {
             get {
@@ -124,7 +124,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Win a match..
+        ///   Looks up a localized string similar to Win a match.
         /// </summary>
         internal static string AwardmentFirstMatchWonDescription {
             get {
@@ -142,7 +142,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Capture a territory..
+        ///   Looks up a localized string similar to Capture a territory.
         /// </summary>
         internal static string AwardmentFirstTerritoryCapturedDescription {
             get {
@@ -160,7 +160,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Win 20 matches in a row..
+        ///   Looks up a localized string similar to Win {1} matches in a row ({0}/{1}).
         /// </summary>
         internal static string AwardmentLongStreakDescription {
             get {
@@ -178,7 +178,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Play 100 matches..
+        ///   Looks up a localized string similar to Play {1} matches ({0}/{1}).
         /// </summary>
         internal static string AwardmentManyMatchesPlayedDescription {
             get {
@@ -196,7 +196,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Win 100 matches..
+        ///   Looks up a localized string similar to Win {1} matches ({0}/{1}).
         /// </summary>
         internal static string AwardmentManyMatchesWonDescription {
             get {
@@ -214,7 +214,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Place 250 pieces..
+        ///   Looks up a localized string similar to Place {1} pieces ({0}/{1}).
         /// </summary>
         internal static string AwardmentManyPiecesPlacedDescription {
             get {
@@ -232,7 +232,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Capture 1000 territories..
+        ///   Looks up a localized string similar to Capture {1} territories ({0}/{1}).
         /// </summary>
         internal static string AwardmentManyTerritoriesCapturedDescription {
             get {
@@ -250,7 +250,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Place 5 pieces in under 1 second..
+        ///   Looks up a localized string similar to Place 5 pieces in under 1 second.
         /// </summary>
         internal static string AwardmentQuickPiecePlacementDescription {
             get {
@@ -268,7 +268,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Capture 3 territories in under 3 seconds..
+        ///   Looks up a localized string similar to Capture 3 territories in under 3 seconds.
         /// </summary>
         internal static string AwardmentQuickTerritoryCaptureDescription {
             get {
@@ -286,7 +286,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Win a match in under 3 minutes..
+        ///   Looks up a localized string similar to Win a match in under 2 minutes.
         /// </summary>
         internal static string AwardmentQuickWinDescription {
             get {
@@ -304,7 +304,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Capture the same territory 10 times in a single match..
+        ///   Looks up a localized string similar to Capture the same territory 10 times in a single match.
         /// </summary>
         internal static string AwardmentRecaptureDescription {
             get {
@@ -322,7 +322,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Win 3 matches in a row..
+        ///   Looks up a localized string similar to Win {1} matches in a row ({0}/{1}).
         /// </summary>
         internal static string AwardmentShortStreakDescription {
             get {
@@ -349,7 +349,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Place 1000 pieces..
+        ///   Looks up a localized string similar to Place {1} pieces ({0}/{1}).
         /// </summary>
         internal static string AwardmentVeryManyPiecesPlacedDescription {
             get {
@@ -367,7 +367,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Win a match in under a minute..
+        ///   Looks up a localized string similar to Win a match in under a minute.
         /// </summary>
         internal static string AwardmentVeryQuickWinDescription {
             get {

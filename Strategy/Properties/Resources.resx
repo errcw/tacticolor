@@ -127,85 +127,85 @@
     <value>Normal</value>
   </data>
   <data name="AwardmentBrinkDescription" xml:space="preserve">
-    <value>Win the match after losing all but one territory.</value>
+    <value>Win the match after losing all but one territory</value>
   </data>
   <data name="AwardmentBrinkName" xml:space="preserve">
     <value>I'll Be Back</value>
   </data>
   <data name="AwardmentEveryConfigurationDescription" xml:space="preserve">
-    <value>Play a match in every map size and game type.</value>
+    <value>Play a match in every map size and game type ({0}/{1})</value>
   </data>
   <data name="AwardmentEveryConfigurationName" xml:space="preserve">
     <value>Experimenter</value>
   </data>
   <data name="AwardmentFirstMatchWonDescription" xml:space="preserve">
-    <value>Win a match.</value>
+    <value>Win a match</value>
   </data>
   <data name="AwardmentFirstMatchWonName" xml:space="preserve">
     <value>Victory</value>
   </data>
   <data name="AwardmentFirstTerritoryCapturedDescription" xml:space="preserve">
-    <value>Capture a territory.</value>
+    <value>Capture a territory</value>
   </data>
   <data name="AwardmentFirstTerritoryCapturedName" xml:space="preserve">
     <value>First!</value>
   </data>
   <data name="AwardmentLongStreakDescription" xml:space="preserve">
-    <value>Win 20 matches in a row.</value>
+    <value>Win {1} matches in a row ({0}/{1})</value>
   </data>
   <data name="AwardmentLongStreakName" xml:space="preserve">
     <value>Unstoppable</value>
   </data>
   <data name="AwardmentManyMatchesPlayedDescription" xml:space="preserve">
-    <value>Play 100 matches.</value>
+    <value>Play {1} matches ({0}/{1})</value>
   </data>
   <data name="AwardmentManyMatchesPlayedName" xml:space="preserve">
     <value>Dedicated</value>
   </data>
   <data name="AwardmentManyMatchesWonDescription" xml:space="preserve">
-    <value>Win 100 matches.</value>
+    <value>Win {1} matches ({0}/{1})</value>
   </data>
   <data name="AwardmentManyMatchesWonName" xml:space="preserve">
     <value>Epic Win</value>
   </data>
   <data name="AwardmentManyPiecesPlacedDescription" xml:space="preserve">
-    <value>Place 250 pieces.</value>
+    <value>Place {1} pieces ({0}/{1})</value>
   </data>
   <data name="AwardmentManyPiecesPlacedName" xml:space="preserve">
     <value>Producer</value>
   </data>
   <data name="AwardmentManyTerritoriesCapturedDescription" xml:space="preserve">
-    <value>Capture 1000 territories.</value>
+    <value>Capture {1} territories ({0}/{1})</value>
   </data>
   <data name="AwardmentManyTerritoriesCapturedName" xml:space="preserve">
     <value>Conqueror</value>
   </data>
   <data name="AwardmentQuickPiecePlacementDescription" xml:space="preserve">
-    <value>Place 5 pieces in under 1 second.</value>
+    <value>Place 5 pieces in under 1 second</value>
   </data>
   <data name="AwardmentQuickPiecePlacementName" xml:space="preserve">
     <value>Reinforcer</value>
   </data>
   <data name="AwardmentQuickTerritoryCaptureDescription" xml:space="preserve">
-    <value>Capture 3 territories in under 3 seconds.</value>
+    <value>Capture 3 territories in under 3 seconds</value>
   </data>
   <data name="AwardmentQuickTerritoryCaptureName" xml:space="preserve">
     <value>Blitzkrieg</value>
   </data>
   <data name="AwardmentQuickWinDescription" xml:space="preserve">
-    <value>Win a match in under 3 minutes.</value>
+    <value>Win a match in under 2 minutes</value>
   </data>
   <data name="AwardmentQuickWinName" xml:space="preserve">
     <value>Quickly</value>
   </data>
   <data name="AwardmentRecaptureDescription" xml:space="preserve">
-    <value>Capture the same territory 10 times in a single match.</value>
+    <value>Capture the same territory 10 times in a single match</value>
   </data>
   <data name="AwardmentRecaptureName" xml:space="preserve">
     <value>Back and Forth</value>
   </data>
   <data name="AwardmentShortStreakDescription" xml:space="preserve">
-    <value>Win 3 matches in a row.</value>
+    <value>Win {1} matches in a row ({0}/{1})</value>
   </data>
   <data name="AwardmentShortStreakName" xml:space="preserve">
     <value>Hat Trick</value>
@@ -214,13 +214,13 @@
     <value>Awardment: {0}</value>
   </data>
   <data name="AwardmentVeryManyPiecesPlacedDescription" xml:space="preserve">
-    <value>Place 1000 pieces.</value>
+    <value>Place {1} pieces ({0}/{1})</value>
   </data>
   <data name="AwardmentVeryManyPiecesPlacedName" xml:space="preserve">
     <value>Prolific Producer</value>
   </data>
   <data name="AwardmentVeryQuickWinDescription" xml:space="preserve">
-    <value>Win a match in under a minute.</value>
+    <value>Win a match in under a minute</value>
   </data>
   <data name="AwardmentVeryQuickWinName" xml:space="preserve">
     <value>Blitz</value>
