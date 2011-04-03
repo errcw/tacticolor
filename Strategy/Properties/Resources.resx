@@ -333,6 +333,39 @@
   <data name="Loading" xml:space="preserve">
     <value>Loading</value>
   </data>
+  <data name="LobbyLegendDifficultyEasy" xml:space="preserve">
+    <value>Computer players are weak</value>
+  </data>
+  <data name="LobbyLegendDifficultyHard" xml:space="preserve">
+    <value>Computer players are formidable</value>
+  </data>
+  <data name="LobbyLegendDifficultyNormal" xml:space="preserve">
+    <value>Computer players are competent</value>
+  </data>
+  <data name="LobbyLegendMapSizeLarge" xml:space="preserve">
+    <value>Map contains 20 territories</value>
+  </data>
+  <data name="LobbyLegendMapSizeNormal" xml:space="preserve">
+    <value>Map contains 16 territories</value>
+  </data>
+  <data name="LobbyLegendMapSizeSmall" xml:space="preserve">
+    <value>Map contains 12 territories</value>
+  </data>
+  <data name="LobbyLegendMapSizeTiny" xml:space="preserve">
+    <value>Map contains 8 territories</value>
+  </data>
+  <data name="LobbyLegendMapTypeFilled" xml:space="preserve">
+    <value>Each player starts with several territories</value>
+  </data>
+  <data name="LobbyLegendMapTypeLandRush" xml:space="preserve">
+    <value>Each player starts with one territory</value>
+  </data>
+  <data name="LobbyLegendStart" xml:space="preserve">
+    <value>Starts the match</value>
+  </data>
+  <data name="LobbyLegendStartBlocked" xml:space="preserve">
+    <value>Stats the match when all the players are ready</value>
+  </data>
   <data name="MapSizeLarge" xml:space="preserve">
     <value>Large</value>
   </data>

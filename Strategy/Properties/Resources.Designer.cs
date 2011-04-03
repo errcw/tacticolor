@@ -709,6 +709,105 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Computer players are weak.
+        /// </summary>
+        internal static string LobbyLegendDifficultyEasy {
+            get {
+                return ResourceManager.GetString("LobbyLegendDifficultyEasy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Computer players are formidable.
+        /// </summary>
+        internal static string LobbyLegendDifficultyHard {
+            get {
+                return ResourceManager.GetString("LobbyLegendDifficultyHard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Computer players are competent.
+        /// </summary>
+        internal static string LobbyLegendDifficultyNormal {
+            get {
+                return ResourceManager.GetString("LobbyLegendDifficultyNormal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map contains 20 territories.
+        /// </summary>
+        internal static string LobbyLegendMapSizeLarge {
+            get {
+                return ResourceManager.GetString("LobbyLegendMapSizeLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map contains 16 territories.
+        /// </summary>
+        internal static string LobbyLegendMapSizeNormal {
+            get {
+                return ResourceManager.GetString("LobbyLegendMapSizeNormal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map contains 12 territories.
+        /// </summary>
+        internal static string LobbyLegendMapSizeSmall {
+            get {
+                return ResourceManager.GetString("LobbyLegendMapSizeSmall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map contains 8 territories.
+        /// </summary>
+        internal static string LobbyLegendMapSizeTiny {
+            get {
+                return ResourceManager.GetString("LobbyLegendMapSizeTiny", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Each player starts with several territories.
+        /// </summary>
+        internal static string LobbyLegendMapTypeFilled {
+            get {
+                return ResourceManager.GetString("LobbyLegendMapTypeFilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Each player starts with one territory.
+        /// </summary>
+        internal static string LobbyLegendMapTypeLandRush {
+            get {
+                return ResourceManager.GetString("LobbyLegendMapTypeLandRush", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starts the match.
+        /// </summary>
+        internal static string LobbyLegendStart {
+            get {
+                return ResourceManager.GetString("LobbyLegendStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stats the match when all the players are ready.
+        /// </summary>
+        internal static string LobbyLegendStartBlocked {
+            get {
+                return ResourceManager.GetString("LobbyLegendStartBlocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Large.
         /// </summary>
         internal static string MapSizeLarge {

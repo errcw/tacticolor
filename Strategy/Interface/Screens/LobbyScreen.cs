@@ -67,20 +67,21 @@ namespace Strategy.Interface.Screens
 
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundLobby"));
 
-            if (!_net.Session.IsLocalSession())
-            {
-                ImageSprite readyImage = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonX"));
-                TextSprite readyText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuToggleReady);
-                readyText.Position = new Vector2(readyImage.Size.X + 5, (readyImage.Size.Y - readyText.Size.Y) / 2);
+            ImageSprite readyImage = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonX"));
+            TextSprite readyText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuToggleReady);
+            readyText.Position = new Vector2(readyImage.Size.X + 5, (readyImage.Size.Y - readyText.Size.Y) / 2);
 
-                ImageSprite inviteImage = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonY"));
-                inviteImage.Position = new Vector2(0, readyImage.Position.Y + readyImage.Size.Y + 10);
-                TextSprite inviteText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuInvite);
-                inviteText.Position = new Vector2(inviteImage.Size.X + 5, inviteImage.Position.Y + (inviteImage.Size.Y - inviteText.Size.Y) / 2);
+            ImageSprite inviteImage = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonY"));
+            inviteImage.Position = new Vector2(0, readyImage.Position.Y + readyImage.Size.Y + 10);
+            TextSprite inviteText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuInvite);
+            inviteText.Position = new Vector2(inviteImage.Size.X + 5, inviteImage.Position.Y + (inviteImage.Size.Y - inviteText.Size.Y) / 2);
 
-                _legend = new CompositeSprite(readyImage, readyText, inviteImage, inviteText);
-                _legend.Position = new Vector2(ControlsBasePosition.X + 150, ControlsBasePosition.Y);
-            }
+            _buttonsLegend = new CompositeSprite(readyImage, readyText, inviteImage, inviteText);
+            _buttonsLegend.Position = new Vector2(ControlsBasePosition.X + 150, ControlsBasePosition.Y);
+            _buttonsLegend.Color = _net.Session.IsLocalSession() ? Color.Transparent : Color.White;
+
+            _optionsLegend = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextSmall"));
+            _optionsLegend.Position = LegendBase;
 
             new MenuBuilder(this, game)
                 .CreateButtonEntry(Resources.MenuStartGame, OnStartGame, out _startEntry)
@@ -92,7 +93,6 @@ namespace Strategy.Interface.Screens
             UpdateUiForHostChange();
             UpdateUiForReadyChange();
 
-            //BasePosition = new Vector2(270f, 590f);
             BasePosition = new Vector2(130f, 80f);
             TransitionOnTime = 0.5f;
             TransitionOffTime = 0.5f;
@@ -114,6 +114,7 @@ namespace Strategy.Interface.Screens
             HandleLocalInput();
 
             _slots.ForEach(slot => slot.Update(gameTime.GetElapsedSeconds()));
+            UpdateLegend();
 
             base.UpdateActive(gameTime);
         }
@@ -157,11 +158,9 @@ namespace Strategy.Interface.Screens
         protected override void OnDraw(SpriteBatch spriteBatch)
         {
             _background.Draw(spriteBatch);
-            if (_legend != null)
-            {
-                _legend.Draw(spriteBatch);
-            }
             _slots.ForEach(slot => slot.Draw(spriteBatch));
+            _buttonsLegend.Draw(spriteBatch);
+            _optionsLegend.Draw(spriteBatch);
             base.OnDraw(spriteBatch);
         }
 
@@ -447,6 +446,21 @@ namespace Strategy.Interface.Screens
             base.SetSelected(deltaIdx);
         }
 
+        private void UpdateLegend()
+        {
+            string legendKey = null;
+            switch (SelectedEntryIndex)
+            {
+                case 0: legendKey = CanStartGame() ? "Start" : "StartBlocked"; break;
+                case 1: legendKey = "MapType" + _configuration.MapType.ToString(); break;
+                case 2: legendKey = "MapSize" + _configuration.MapSize.ToString(); break;
+                case 3: legendKey = "Difficulty" + _configuration.Difficulty.ToString(); break;
+            }
+            _optionsLegend.Text = Resources.ResourceManager.GetString("LobbyLegend" + legendKey);
+            _optionsLegend.Position = LegendBase - new Vector2(_optionsLegend.Size.X, 0);
+            _optionsLegend.Color = _net.Session.IsHost ? Color.White : Color.Transparent;
+        }
+
         private Player FindPlayerByGamer(Gamer gamer)
         {
             return _players.FirstOrDefault(player => player.Gamer == gamer);
@@ -532,15 +546,17 @@ namespace Strategy.Interface.Screens
         private bool _isMatchRunning = false;
 
         private Sprite _background;
-        private Sprite _legend;
+        private Sprite _buttonsLegend;
         private List<PlayerSlot> _slots;
         private MenuEntry _startEntry;
         private CyclingTextMenuEntry _mapTypeEntry;
         private CyclingTextMenuEntry _mapSizeEntry;
         private CyclingTextMenuEntry _difficultyEntry;
+        private TextSprite _optionsLegend;
         private float _transitionProgress;
 
         private static readonly Color CannotStartGameColor = new Color(100, 100, 100);
+        private static readonly Vector2 LegendBase = new Vector2(1150, 595);
     }
 
     /// <summary>

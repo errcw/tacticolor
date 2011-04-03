@@ -40,6 +40,11 @@ namespace Strategy.Interface.Screens
         protected float Spacing { get; set; }
 
         /// <summary>
+        /// The index of the currently selected menu entry.
+        /// </summary>
+        protected int SelectedEntryIndex { get { return _selectedEntryAbs; } }
+
+        /// <summary>
         /// Creates a new menu screen.
         /// </summary>
         public MenuScreen(Game game)
