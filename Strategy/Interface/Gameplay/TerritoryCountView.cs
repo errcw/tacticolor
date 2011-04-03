@@ -20,16 +20,16 @@ namespace Strategy.Interface.Gameplay
 
             _lastCount = _match.TerritoriesOwnedCount[(int)_player];
 
-            Texture2D tileTex = context.Content.Load<Texture2D>("Images/Tile");
+            Texture2D tileTex = context.Content.Load<Texture2D>("Images/TileHolder");
             SpriteFont countFont = context.Content.Load<SpriteFont>("Fonts/TextLarge");
             Vector2 position = GetBasePosition(player);
 
             _tileSprite = new ImageSprite(tileTex);
             _tileSprite.Position = position;
-            _tileSprite.Color = player.GetTerritoryColor();
+            _tileSprite.Color = player.GetPieceColor();
 
             _countSprite = new TextSprite(countFont, _lastCount.ToString());
-            _countSprite.Position = position + new Vector2(_tileSprite.Size.X + 5, 3);
+            _countSprite.Position = position + new Vector2(_tileSprite.Size.X + 5, -3);
             _countSprite.Effect = TextSprite.TextEffect.Shadow;
             _countSprite.EffectColor = new Color(30, 30, 30, 160);
             _countSprite.EffectSize = 1;
@@ -58,8 +58,9 @@ namespace Strategy.Interface.Gameplay
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            _tileSprite.Draw(spriteBatch);
-            _countSprite.Draw(spriteBatch);
+            //TODO: reenable?
+            //_tileSprite.Draw(spriteBatch);
+            //_countSprite.Draw(spriteBatch);
         }
 
         /// <summary>
@@ -67,8 +68,8 @@ namespace Strategy.Interface.Gameplay
         /// </summary>
         private Vector2 GetBasePosition(PlayerId player)
         {
-            const int BaseX = 80;
-            const int BaseY = 300;
+            const int BaseX = 1130;
+            const int BaseY = 540;
             const int SpacingY = 40;
             return new Vector2(BaseX, BaseY + (int)player * SpacingY);
         }
