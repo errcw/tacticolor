@@ -278,6 +278,8 @@ namespace Strategy.Interface.Screens
             {
                 PlayerId aiWinner = _players.First(p => p.Gamer == null).Id; // have an arbitrary AI player "win"
                 OnMatchEnded(Resources.GameLost, aiWinner);
+                // do not fall through to the trial code, the game is over
+                return;
             }
 
             // stop the match before it finishes in trial mode
