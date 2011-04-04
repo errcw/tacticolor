@@ -39,7 +39,7 @@ namespace Strategy
 
             Components.Add(_screens = new ScreenStack(this));
             Components.Add(_input = new MenuInput(this));
-            Components.Add(_storage = new SharedStorage(this, "Strategy"));
+            Components.Add(_storage = new SharedStorage(this, "Tacticolor"));
             Components.Add(_music = new MusicController(this));
             Components.Add(_trial = new TrialModeObserverComponent(this));
 
