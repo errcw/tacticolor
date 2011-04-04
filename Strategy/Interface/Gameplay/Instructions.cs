@@ -70,15 +70,15 @@ namespace Strategy.Interface.Gameplay
                 }
                 else
                 {
-                    if (!_showed[(int)InstructionState.Placement] && _match.PiecesAvailable[(int)_input.Player] >= 2)
+                    if (!_showed[(int)InstructionState.Placement] && _match.PiecesAvailable[(int)_input.Player] >= 1)
                     {
                         SetState(InstructionState.Placement);
                     }
-                    else if (!_showed[(int)InstructionState.Readiness] && _input.Selected != null && _input.Selected.Pieces.Count(p => !p.Ready) > 0)
+                    else if (!_showed[(int)InstructionState.Readiness] && _input.Selected != null && _input.Selected.Pieces.Any(p => !p.Ready))
                     {
                         SetState(InstructionState.Readiness);
                     }
-                    else if (!_showed[(int)InstructionState.Cancel] && _input.Selected != null && _input.Selected.Pieces.Count(p => p.Ready) == 0)
+                    else if (!_showed[(int)InstructionState.Cancel] && _input.Selected != null && _input.Selected.Pieces.Any(p => !p.Ready))
                     {
                         SetState(InstructionState.Cancel);
                     }
@@ -187,7 +187,7 @@ namespace Strategy.Interface.Gameplay
                     _panel.Show(Resources.InstructionsPlacement, imageTex);
                     break;
                 case InstructionState.Readiness:
-                    _panel.Show(Resources.InstructionsWaiting, imageTex);
+                    _panel.Show(Resources.InstructionsReadiness, imageTex);
                     break;
                 case InstructionState.Owning:
                     _panel.Show(Resources.InstructionsTerritories, imageTex);

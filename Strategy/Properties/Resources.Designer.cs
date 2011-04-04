@@ -673,6 +673,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only ready pieces--colored--can move or attack.
+        /// </summary>
+        internal static string InstructionsReadiness {
+            get {
+                return ResourceManager.GetString("InstructionsReadiness", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to picks up pieces to move or attack.
         /// </summary>
         internal static string InstructionsSelection {
@@ -687,15 +696,6 @@ namespace Strategy.Properties {
         internal static string InstructionsTerritories {
             get {
                 return ResourceManager.GetString("InstructionsTerritories", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Pieces can only move or attack every 5 seconds.
-        /// </summary>
-        internal static string InstructionsWaiting {
-            get {
-                return ResourceManager.GetString("InstructionsWaiting", resourceCulture);
             }
         }
         
