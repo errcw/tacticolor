@@ -52,7 +52,7 @@ namespace Strategy.Gameplay
         /// <summary>
         /// Occurs when this awardments is earned.
         /// </summary>
-        public event EventHandler<EventArgs> Earned;
+        public event EventHandler<AwardmentEventArgs> Earned;
 
         /// <summary>
         /// The gamertag owning this awardment.
@@ -74,17 +74,33 @@ namespace Strategy.Gameplay
         {
         }
 
+        protected void SetEarnedPlacingPiece(Piece piece)
+        {
+            SetEarned(0L);
+        }
+
+        protected void SetEarnedAttackingTerritory(Territory territory)
+        {
+            SetEarned(territory.Cooldown);
+        }
+
+        protected void SetEarnedPlayingMatch(Match match)
+        {
+            SetEarned(match.Map.Territories.Max(t => t.Cooldown));
+        }
+
         /// <summary>
         /// Notifies this awardment and its listeners that it was earned.
         /// </summary>
-        protected void SetEarned()
+        /// <param name="delay">The delay before the earning event occurs in the interface.</param>
+        private void SetEarned(long delay)
         {
             if (!IsEarned) // filter multiple earned calls
             {
                 IsEarned = true;
                 if (Earned != null)
                 {
-                    Earned(this, EventArgs.Empty);
+                    Earned(this, new AwardmentEventArgs(this, delay));
                 }
             }
         }
@@ -256,12 +272,12 @@ namespace Strategy.Gameplay
             }
         }
 
-        private void OnAwardmentEarned(object awardmentObj, EventArgs args)
+        private void OnAwardmentEarned(object awardmentObj, AwardmentEventArgs args)
         {
-            Awardment awardment = (Awardment)awardmentObj;
+            // propagate the event to the listeners
             if (AwardmentEarned != null)
             {
-                AwardmentEarned(this, new AwardmentEventArgs(awardment));
+                AwardmentEarned(this, args);
             }
         }
 
@@ -279,10 +295,12 @@ namespace Strategy.Gameplay
     /// </summary>
     public class AwardmentEventArgs : EventArgs
     {
-        public Awardment Awardment { get; private set; }
-        public AwardmentEventArgs(Awardment awardment)
+        public readonly Awardment Awardment;
+        public readonly long AwardmentEventDelay;
+        public AwardmentEventArgs(Awardment awardment, long delay)
         {
             Awardment = awardment;
+            AwardmentEventDelay = delay;
         }
     }
 
@@ -305,7 +323,7 @@ namespace Strategy.Gameplay
             }
             if (MatchCount >= MatchThreshold)
             {
-                SetEarned();
+                SetEarnedPlayingMatch(match);
             }
         }
 
@@ -368,7 +386,7 @@ namespace Strategy.Gameplay
                 }
                 if (TerritoriesCaptured >= TerritoryThreshold)
                 {
-                    SetEarned();
+                    SetEarnedAttackingTerritory(args.Defender);
                 }
             };
         }
@@ -429,7 +447,7 @@ namespace Strategy.Gameplay
 
                     if (_captureCount >= CaptureThreshold)
                     {
-                        SetEarned();
+                        SetEarnedAttackingTerritory(args.Defender);
                     }
                 }
             };
@@ -453,7 +471,7 @@ namespace Strategy.Gameplay
         {
             if (match.Time < MatchTimeThreshold && player == winner)
             {
-                SetEarned();
+                SetEarnedPlayingMatch(match);
             }
         }
 
@@ -495,7 +513,7 @@ namespace Strategy.Gameplay
                 MatchesWon += 1;
                 if (MatchesWon >= MatchWinStreakThreshold)
                 {
-                    SetEarned();
+                    SetEarnedPlayingMatch(match);
                 }
             }
             else
@@ -554,7 +572,7 @@ namespace Strategy.Gameplay
                 }
                 if(PiecesPlaced >= PiecesPlacedThreshold)
                 {
-                    SetEarned();
+                    SetEarnedPlacingPiece(args.Piece);
                 }
             };
         }
@@ -622,7 +640,7 @@ namespace Strategy.Gameplay
 
                 if (_placementCount >= PlacementThreshold)
                 {
-                    SetEarned();
+                    SetEarnedPlacingPiece(args.Piece);
                 }
             };
         }
@@ -676,7 +694,7 @@ namespace Strategy.Gameplay
 
             if (GetPlayedConfigurationCount() == MapSizeCount * MapTypeCount)
             {
-                SetEarned();
+                SetEarnedPlayingMatch(match);
             }
         }
 
@@ -724,7 +742,7 @@ namespace Strategy.Gameplay
                     captureCount += 1;
                     if (captureCount == CaptureThreshold)
                     {
-                        SetEarned();
+                        SetEarnedAttackingTerritory(args.Defender);
                     }
 
                     territoryCaptureCount[args.Defender] = captureCount;
@@ -761,7 +779,7 @@ namespace Strategy.Gameplay
         {
             if (player == winner && _oneTerritoryLeft)
             {
-                SetEarned();
+                SetEarnedPlayingMatch(match);
             }
         }
 

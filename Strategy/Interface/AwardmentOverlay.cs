@@ -21,7 +21,7 @@ namespace Strategy.Interface
     {
         public AwardmentOverlay(StrategyGame game, Awardments awardments)
         {
-            awardments.AwardmentEarned += (s, a) => _pendingAwardments.Enqueue(a.Awardment);
+            awardments.AwardmentEarned += OnAwardmentEarned;
 
             _imageTextures = new Texture2D[4];
             for (PlayerIndex p = PlayerIndex.One; p <= PlayerIndex.Four; p++)
@@ -47,16 +47,14 @@ namespace Strategy.Interface
         {
             float time = gameTime.GetElapsedSeconds();
 
-            if (_displayedAwardment != null)
+            _displayTime -= time;
+            if (_displayTime <= 0 && _displayedAwardment != null)
             {
-                _displayTime -= time;
-                if (_displayTime <= 0)
-                {
-                    _displayedAwardment = null;
-                    _panel.Hide();
-                }
+                _displayedAwardment = null;
+                _panel.Hide();
             }
-            if (_displayedAwardment == null && _pendingAwardments.Count > 0)
+
+            if (_displayTime <= 0 && _pendingAwardments.Count > 0)
             {
                 _displayedAwardment = _pendingAwardments.Dequeue();
                 _displayTime = DisplayTime;
@@ -67,6 +65,20 @@ namespace Strategy.Interface
             }
 
             _panel.Update(time);
+        }
+
+        private void OnAwardmentEarned(object sender, AwardmentEventArgs args)
+        {
+            _pendingAwardments.Enqueue(args.Awardment);
+
+            // add an appropriate delay before showing the awardment
+            // account for situations where an awardment is earned after another
+            // but should be shown first because of the smaller delay
+            if (_displayedAwardment == null)
+            {
+                float awardmentDelay = args.AwardmentEventDelay / 1000f;
+                _displayTime = _displayTime > 0 ? Math.Min(awardmentDelay, _displayTime) : awardmentDelay;
+            }
         }
 
         private PlayerIndex GetIndexForGamertag(string gamertag)
@@ -90,5 +102,6 @@ namespace Strategy.Interface
         private SpriteBatch _spriteBatch;
 
         private const float DisplayTime = 4f;
+        private const float StartDelayTime = 2f;
     }
 }
