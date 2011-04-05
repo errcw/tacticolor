@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -30,6 +31,8 @@ namespace Strategy.Interface
             }
             _panel = new SlidingPanel(Resources.AwardmentTitle, _imageTextures[0], 720 - 40 - 75, game.Content);
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
+
+            _earnEffect = game.Content.Load<SoundEffect>("Sounds/AwardmentEarned");
 
             TransitionOnTime = 0f;
             TransitionOffTime = 0f;
@@ -62,6 +65,8 @@ namespace Strategy.Interface
                 string text = string.Format(Resources.AwardmentTitle, _displayedAwardment.Name);
                 Texture2D image = _imageTextures[(int)GetIndexForGamertag(_displayedAwardment.OwnerGamertag)];
                 _panel.Show(text, image);
+
+                _earnEffect.Play();
             }
 
             _panel.Update(time);
@@ -100,6 +105,8 @@ namespace Strategy.Interface
         private SlidingPanel _panel;
         private Texture2D[] _imageTextures;
         private SpriteBatch _spriteBatch;
+
+        private SoundEffect _earnEffect;
 
         private const float DisplayTime = 4f;
         private const float StartDelayTime = 2f;
