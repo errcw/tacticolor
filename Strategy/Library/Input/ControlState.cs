@@ -92,6 +92,6 @@ namespace Strategy.Library.Input
         private float _repeatElapsed;
 
         private const float AutoRepeatStartDelay = 0.3f;
-        private const float AutoRepeatTriggerDelay = 0.08f;
+        private const float AutoRepeatTriggerDelay = 0.09f;
     }
 }
