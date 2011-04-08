@@ -159,7 +159,7 @@ namespace Strategy.AI
             int baseTime = 0;
             switch (_difficulty)
             {
-                case AiDifficulty.None: baseTime = int.MaxValue; break;
+                case AiDifficulty.None: baseTime = 10000; break;
                 case AiDifficulty.Easy: baseTime = 3000; break;
                 case AiDifficulty.Normal: baseTime = 1000; break;
                 case AiDifficulty.Hard: baseTime = 750; break;
