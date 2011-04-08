@@ -54,11 +54,11 @@ namespace Strategy.Gameplay
         /// </summary>
         /// <param name="mapType">The type of map to generate.</param>
         /// <param name="mapSize">The size of map to generate.</param>
+        /// <param name="numPlayers">The number of players in the match.</param>
         /// <returns>The generated map.</returns>
-        public Map Generate(MapType mapType, MapSize mapSize)
+        public Map Generate(MapType mapType, MapSize mapSize, int numPlayers)
         {
             int numTerritories = (int)mapSize;
-            int numPlayers = Match.MaxPlayerCount;
             int territoriesPerPlayer = (mapType == MapType.LandRush ? 1 : numTerritories / numPlayers);
             int piecesPerPlayer = territoriesPerPlayer * 2 + 2;
             return Generate(numTerritories, numPlayers, territoriesPerPlayer, piecesPerPlayer);

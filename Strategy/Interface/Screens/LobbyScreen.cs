@@ -269,9 +269,10 @@ namespace Strategy.Interface.Screens
             _isMatchRunning = true;
 
             // create the game objects
+            int numPlayers = (_configuration.Difficulty == AiDifficulty.None) ? _players.Count : Match.MaxPlayerCount;
             Random gameRandom = new Random(_configuration.Seed);
             MapGenerator generator = new MapGenerator(gameRandom);
-            Map map = generator.Generate(_configuration.MapType, _configuration.MapSize);
+            Map map = generator.Generate(_configuration.MapType, _configuration.MapSize, numPlayers);
             Match match = new Match(map, gameRandom);
 
             // create a copy of the list so that the match can continue to
@@ -296,15 +297,18 @@ namespace Strategy.Interface.Screens
                 }
             }
 
-            // fill out the remaining players with AI
-            int humanPlayerCount = gamePlayers.Count;
-            int aiPlayerCount = Match.MaxPlayerCount - humanPlayerCount;
-            for (int p = 0; p < aiPlayerCount; p++)
+            // fill out the remaining players with AI, if necessary
+            if (_configuration.Difficulty != AiDifficulty.None)
             {
-                Player aiPlayer = new Player();
-                aiPlayer.Id = (PlayerId)(p + humanPlayerCount);
-                aiPlayer.Input = new AiInput(aiPlayer.Id, match, _configuration.Difficulty, gameRandom);
-                gamePlayers.Add(aiPlayer);
+                int humanPlayerCount = gamePlayers.Count;
+                int aiPlayerCount = Match.MaxPlayerCount - humanPlayerCount;
+                for (int p = 0; p < aiPlayerCount; p++)
+                {
+                    Player aiPlayer = new Player();
+                    aiPlayer.Id = (PlayerId)(p + humanPlayerCount);
+                    aiPlayer.Input = new AiInput(aiPlayer.Id, match, _configuration.Difficulty, gameRandom);
+                    gamePlayers.Add(aiPlayer);
+                }
             }
 
             GameplayScreen gameplayScreen = new GameplayScreen(Stack.Game, _net, gamePlayers, match);
@@ -397,9 +401,10 @@ namespace Strategy.Interface.Screens
             }
             switch (_configuration.Difficulty)
             {
+                case AiDifficulty.None: _configuration.Difficulty = AiDifficulty.None; break;
                 case AiDifficulty.Easy: _configuration.Difficulty = AiDifficulty.Normal; break;
                 case AiDifficulty.Normal: _configuration.Difficulty = AiDifficulty.Hard; break;
-                case AiDifficulty.Hard: _configuration.Difficulty = AiDifficulty.Easy; break;
+                case AiDifficulty.Hard: _configuration.Difficulty = AiDifficulty.None; break;
             }
         }
 

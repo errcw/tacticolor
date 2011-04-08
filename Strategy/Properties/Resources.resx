@@ -339,6 +339,9 @@
   <data name="LobbyLegendDifficultyHard" xml:space="preserve">
     <value>Computer players are formidable</value>
   </data>
+  <data name="LobbyLegendDifficultyNone" xml:space="preserve">
+    <value>Only human players in the match</value>
+  </data>
   <data name="LobbyLegendDifficultyNormal" xml:space="preserve">
     <value>Computer players are competent</value>
   </data>

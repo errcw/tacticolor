@@ -727,6 +727,15 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only human players in the match.
+        /// </summary>
+        internal static string LobbyLegendDifficultyNone {
+            get {
+                return ResourceManager.GetString("LobbyLegendDifficultyNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Computer players are competent.
         /// </summary>
         internal static string LobbyLegendDifficultyNormal {
