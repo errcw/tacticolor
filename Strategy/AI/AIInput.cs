@@ -17,6 +17,7 @@ namespace Strategy.AI
     /// </summary>
     public enum AiDifficulty
     {
+        None,
         Easy,
         Normal,
         Hard
@@ -41,6 +42,7 @@ namespace Strategy.AI
 
             switch (_difficulty)
             {
+                case AiDifficulty.None: _evaluator = new NullCommandEvaluator(this); break;
                 case AiDifficulty.Easy: _evaluator = new EasyCommandEvaluator(this); break;
                 case AiDifficulty.Normal: _evaluator = new NormalCommandEvaluator(this); break;
                 case AiDifficulty.Hard: _evaluator = new HardCommandEvaluator(this); break;
@@ -157,6 +159,7 @@ namespace Strategy.AI
             int baseTime = 0;
             switch (_difficulty)
             {
+                case AiDifficulty.None: baseTime = int.MaxValue; break;
                 case AiDifficulty.Easy: baseTime = 3000; break;
                 case AiDifficulty.Normal: baseTime = 1000; break;
                 case AiDifficulty.Hard: baseTime = 750; break;
@@ -249,6 +252,17 @@ namespace Strategy.AI
             protected int BasePlacementRating = 10;
             protected int BaseAttackRating = 20;
             protected int BaseMovementRating = 5;
+        }
+
+        /// <summary>
+        /// Takes no action by treating every possible command as invalid.
+        /// </summary>
+        private class NullCommandEvaluator : CommandEvaluator
+        {
+            public NullCommandEvaluator(AiInput input) : base(input)
+            {
+                BasePlacementRating = BaseAttackRating = BaseMovementRating = 0;
+            }
         }
 
         /// <summary>
