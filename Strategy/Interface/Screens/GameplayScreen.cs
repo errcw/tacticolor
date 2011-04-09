@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
@@ -42,6 +43,7 @@ namespace Strategy.Interface.Screens
             _music = game.Services.GetService<MusicController>();
             _menuMusic = game.Content.Load<Song>("Music/Menu");
             _gameMusic = game.Content.Load<Song>("Music/Game");
+            _matchEndedEffect = game.Content.Load<SoundEffect>("Sounds/MatchEnded");
 
             // create the model
             _lockstepMatch = new LockstepMatch(match);
@@ -183,6 +185,7 @@ namespace Strategy.Interface.Screens
                 _endTime -= seconds;
                 if (_endTime <= 0f)
                 {
+                    _matchEndedEffect.Play();
                     Stack.PushOn(_endScreen, this);
                     _endScreen = null; // do not push multiple times
                 }
@@ -387,6 +390,7 @@ namespace Strategy.Interface.Screens
         private MusicController _music;
         private Song _menuMusic;
         private Song _gameMusic;
+        private SoundEffect _matchEndedEffect;
 
         private Screen _endScreen;
         private float _endTime;
