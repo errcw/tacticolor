@@ -18,6 +18,11 @@
         <Start>&#97;</Start>
         <End>&#122;</End>
       </CharacterRegion>
+      <!-- 0-9 -->
+      <CharacterRegion>
+        <Start>&#48;</Start>
+        <End>&#57;</End>
+      </CharacterRegion>
       <!-- space -->
       <CharacterRegion>
         <Start>&#32;</Start>
