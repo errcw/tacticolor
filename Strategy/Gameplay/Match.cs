@@ -216,7 +216,7 @@ namespace Strategy.Gameplay
             {
                 PieceAttackData data = new PieceAttackData();
                 data.Piece = piece;
-                data.Roll = _random.Next(1, 6 + 1);
+                data.Roll = _random.Next(1, 4 + 1);
                 data.Survived = true;
                 data.Moved = false;
                 defenders.Add(data);
