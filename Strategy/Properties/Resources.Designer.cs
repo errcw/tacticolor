@@ -808,11 +808,20 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stats the match when all the players are ready.
+        ///   Looks up a localized string similar to Starts the match when there are enough players.
         /// </summary>
-        internal static string LobbyLegendStartBlocked {
+        internal static string LobbyLegendStartBlockedPlayers {
             get {
-                return ResourceManager.GetString("LobbyLegendStartBlocked", resourceCulture);
+                return ResourceManager.GetString("LobbyLegendStartBlockedPlayers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starts the match when all the players are ready.
+        /// </summary>
+        internal static string LobbyLegendStartBlockedReady {
+            get {
+                return ResourceManager.GetString("LobbyLegendStartBlockedReady", resourceCulture);
             }
         }
         

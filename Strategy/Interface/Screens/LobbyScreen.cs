@@ -91,7 +91,7 @@ namespace Strategy.Interface.Screens
 
             // seed the UI with the host/ready status
             UpdateUiForHostChange();
-            UpdateUiForReadyChange();
+            UpdateUiForCanStartChange();
 
             BasePosition = new Vector2(130f, 80f);
             TransitionOnTime = 0.5f;
@@ -211,6 +211,8 @@ namespace Strategy.Interface.Screens
                     player.Controller = PlayerIndex.One;
                 }
             }
+
+            UpdateUiForCanStartChange();
         }
 
         private void OnGamerLeft(object sender, GamerLeftEventArgs args)
@@ -228,6 +230,8 @@ namespace Strategy.Interface.Screens
             {
                 networkSlot.IsReady = false;
             }
+
+            UpdateUiForCanStartChange();
         }
 
         private void OnHostChanged(object sender, HostChangedEventArgs args)
@@ -353,7 +357,7 @@ namespace Strategy.Interface.Screens
             NetworkPlayerSlot slot = FindSlotByPlayer(player) as NetworkPlayerSlot;
             slot.IsReady = args.IsReady;
 
-            UpdateUiForReadyChange();
+            UpdateUiForCanStartChange();
         }
 
         private void OnMapSizeCycled(object sender, EventArgs args)
@@ -401,11 +405,12 @@ namespace Strategy.Interface.Screens
             }
             switch (_configuration.Difficulty)
             {
-                case AiDifficulty.None: _configuration.Difficulty = AiDifficulty.None; break;
+                case AiDifficulty.None: _configuration.Difficulty = AiDifficulty.Easy; break;
                 case AiDifficulty.Easy: _configuration.Difficulty = AiDifficulty.Normal; break;
                 case AiDifficulty.Normal: _configuration.Difficulty = AiDifficulty.Hard; break;
                 case AiDifficulty.Hard: _configuration.Difficulty = AiDifficulty.None; break;
             }
+            UpdateUiForCanStartChange();
         }
 
         private void OnStartGame(object sender, EventArgs args)
@@ -418,13 +423,18 @@ namespace Strategy.Interface.Screens
 
         private bool CanStartGame()
         {
+            if (_configuration == null)
+            {
+                return false;
+            }
             bool readyOk = (_net.Session.IsLocalSession() || _configuration.IsEveryoneReady);
-            return readyOk && _net.Session.IsHost;
+            bool playerCountOk = (_configuration.Difficulty != AiDifficulty.None || _players.Count >= 2);
+            return readyOk && playerCountOk && _net.Session.IsHost;
         }
 
-        private void UpdateUiForReadyChange()
+        private void UpdateUiForCanStartChange()
         {
-            if (_net.Session.IsHost)
+            if (_net.Session.IsHost && _startEntry != null) // only the host can see the menu entry
             {
                 _startEntry.TargetColor = CanStartGame() ? Color.White : CannotStartGameColor;
             }
@@ -437,7 +447,7 @@ namespace Strategy.Interface.Screens
             _mapTypeEntry.IsSelectable = _net.Session.IsHost;
             _mapSizeEntry.IsSelectable = _net.Session.IsHost;
             _difficultyEntry.IsSelectable = _net.Session.IsHost;
-            UpdateUiForReadyChange();
+            UpdateUiForCanStartChange();
             SetSelected(0); // propagate the selectable state to the legend
         }
         
@@ -456,7 +466,13 @@ namespace Strategy.Interface.Screens
             string legendKey = null;
             switch (SelectedEntryIndex)
             {
-                case 0: legendKey = CanStartGame() ? "Start" : "StartBlocked"; break;
+                case 0:
+                    legendKey = CanStartGame()
+                        ? "Start"
+                        : (_configuration.Difficulty == AiDifficulty.None && _players.Count < 2)
+                            ? "StartBlockedPlayers"
+                            : "StartBlockedReady";
+                    break;
                 case 1: legendKey = "MapType" + _configuration.MapType.ToString(); break;
                 case 2: legendKey = "MapSize" + _configuration.MapSize.ToString(); break;
                 case 3: legendKey = "Difficulty" + _configuration.Difficulty.ToString(); break;

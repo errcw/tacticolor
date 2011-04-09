@@ -366,8 +366,11 @@
   <data name="LobbyLegendStart" xml:space="preserve">
     <value>Starts the match</value>
   </data>
-  <data name="LobbyLegendStartBlocked" xml:space="preserve">
-    <value>Stats the match when all the players are ready</value>
+  <data name="LobbyLegendStartBlockedPlayers" xml:space="preserve">
+    <value>Starts the match when there are enough players</value>
+  </data>
+  <data name="LobbyLegendStartBlockedReady" xml:space="preserve">
+    <value>Starts the match when all the players are ready</value>
   </data>
   <data name="MapSizeLarge" xml:space="preserve">
     <value>Large</value>
