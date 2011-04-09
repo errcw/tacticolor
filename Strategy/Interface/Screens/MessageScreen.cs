@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 
 using Strategy.Properties;
@@ -69,6 +70,8 @@ namespace Strategy.Interface.Screens
 
             _spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
+            _dismissEffect = game.Content.Load<SoundEffect>("Sounds/MenuSelect");
+
             ShowBeneath = true;
             TransitionOnTime = fadeIn ? 0.25f : 0f;
             TransitionOffTime = 0.25f;
@@ -85,6 +88,7 @@ namespace Strategy.Interface.Screens
         {
             if (_input.Action.Pressed)
             {
+                _dismissEffect.Play();
                 while (!_popUntilScreen.IsInstanceOfType(Stack.ActiveScreen))
                 {
                     Stack.Pop();
@@ -140,5 +144,7 @@ namespace Strategy.Interface.Screens
         protected float _boxRightX;
         protected float _boxBottomY;
         private SpriteBatch _spriteBatch;
+
+        private SoundEffect _dismissEffect;
     }
 }
