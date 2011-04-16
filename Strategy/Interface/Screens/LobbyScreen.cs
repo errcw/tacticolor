@@ -464,6 +464,7 @@ namespace Strategy.Interface.Screens
         private void UpdateLegend()
         {
             string legendKey = null;
+            float offsetX = 0f;
             switch (SelectedEntryIndex)
             {
                 case 0:
@@ -472,13 +473,23 @@ namespace Strategy.Interface.Screens
                         : (_configuration.Difficulty == AiDifficulty.None && _players.Count < 2)
                             ? "StartBlockedPlayers"
                             : "StartBlockedReady";
+                    offsetX = _startEntry.Sprite.X;
                     break;
-                case 1: legendKey = "MapType" + _configuration.MapType.ToString(); break;
-                case 2: legendKey = "MapSize" + _configuration.MapSize.ToString(); break;
-                case 3: legendKey = "Difficulty" + _configuration.Difficulty.ToString(); break;
+                case 1:
+                    legendKey = "MapType" + _configuration.MapType.ToString();
+                    offsetX = _mapTypeEntry.Sprite.X;
+                    break;
+                case 2:
+                    legendKey = "MapSize" + _configuration.MapSize.ToString();
+                    offsetX = _mapSizeEntry.Sprite.X;
+                    break;
+                case 3:
+                    legendKey = "Difficulty" + _configuration.Difficulty.ToString();
+                    offsetX = _difficultyEntry.Sprite.X;
+                    break;
             }
             _optionsLegend.Text = Resources.ResourceManager.GetString("LobbyLegend" + legendKey);
-            _optionsLegend.Position = LegendBase - new Vector2(_optionsLegend.Size.X, 0);
+            _optionsLegend.Position = new Vector2(offsetX, LegendBase.Y);
             _optionsLegend.Color = _net.Session.IsHost ? Color.White : Color.Transparent;
         }
 
@@ -577,7 +588,7 @@ namespace Strategy.Interface.Screens
         private float _transitionProgress;
 
         private static readonly Color CannotStartGameColor = new Color(100, 100, 100);
-        private static readonly Vector2 LegendBase = new Vector2(1150, 595);
+        private static readonly Vector2 LegendBase = new Vector2(130, 125);
     }
 
     /// <summary>
@@ -596,7 +607,7 @@ namespace Strategy.Interface.Screens
             _backgroundSprite = new ImageSprite(content.Load<Texture2D>("Images/LobbyBox"));
             _backgroundSprite.Position = new Vector2(
                 (1280 - _backgroundSprite.Size.X * 2 + 30) / 2,
-                (720 - _backgroundSprite.Size.Y * 2 + 30) / 2 - 60);
+                (720 - _backgroundSprite.Size.Y * 2 + 30) / 2 - 35);
             if (slotNumber == 1 || slotNumber == 3)
             {
                 _backgroundSprite.Position += new Vector2(_backgroundSprite.Size.X + 30, 0);
