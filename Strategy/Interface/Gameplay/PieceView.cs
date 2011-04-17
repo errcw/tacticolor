@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -33,21 +32,15 @@ namespace Strategy.Interface.Gameplay
             UnreadyColor = Color.Lerp(PlayerColor, Color.White, 0.75f);
 
             Texture2D pieceTex = context.Content.Load<Texture2D>("Images/Piece");
-            _baseSprite = new ImageSprite(pieceTex);
-            _baseSprite.Origin = new Vector2(12, 22);
-            _baseSprite.Color = PlayerColor;
+            _pyramidSprite = new ImageSprite(pieceTex);
+            _pyramidSprite.Origin = new Vector2(12, 22);
+            _pyramidSprite.Color = PlayerColor;
 
             Texture2D pieceShadowTex = context.Content.Load<Texture2D>("Images/PieceShadow");
             _shadowSprite = new ImageSprite(pieceShadowTex);
-            _shadowSprite.Origin = _baseSprite.Origin;
+            _shadowSprite.Origin = _pyramidSprite.Origin;
             _shadowSprite.Color = PlayerColor;
 
-            Texture2D readyTex = context.Content.Load<Texture2D>("Images/PieceReadyOverlay");
-            _readySprite = new ImageSprite(readyTex);
-            _readySprite.Origin = _baseSprite.Origin;
-            _readySprite.Color = _piece.Ready ? PlayerColor : UnreadyColor;
-
-            _pyramidSprite = new CompositeSprite(_baseSprite, _readySprite);
             _pieceSprite = new CompositeSprite(_shadowSprite, _pyramidSprite);
         }
 
@@ -162,11 +155,10 @@ namespace Strategy.Interface.Gameplay
 
             // show the readiness
             Color readyColor = _piece.Ready ? PlayerColor : UnreadyColor;
-            if (_baseSprite.Color != readyColor && _readyAnimation == null)
+            if (_pyramidSprite.Color != readyColor && _readyAnimation == null)
             {
-                _readyAnimation = new ColorAnimation(_baseSprite, readyColor, 0.2f, Interpolation.InterpolateColor(Easing.Uniform));
+                _readyAnimation = new ColorAnimation(_pyramidSprite, readyColor, 0.2f, Interpolation.InterpolateColor(Easing.Uniform));
             }
-            _readySprite.Color = Interpolation.InterpolateColor(Easing.Uniform)(UnreadyColor, PlayerColor, _piece.ReadyProgress);
 
             // update the animation
             if (_actionAnimation != null)
@@ -223,7 +215,7 @@ namespace Strategy.Interface.Gameplay
         private TerritoryView _territoryView;
 
         private Sprite _pieceSprite;
-        private Sprite _shadowSprite, _pyramidSprite, _baseSprite, _readySprite; // parts of the piece
+        private Sprite _shadowSprite, _pyramidSprite; // parts of the piece
 
         private IAnimation _actionAnimation;
         private IAnimation _selectionAnimation;
