@@ -37,7 +37,7 @@ namespace Strategy.Interface.Gameplay
             _cursor = new ImageSprite(cursorTex);
             _cursor.Color = cursorColor;
             _cursor.Position = GetPosition(ChooseCell(Input.Hovered));
-            _cursor.Origin = new Vector2(0, 14);
+            _cursor.Origin = new Vector2(1, 14);
 
             _pickUpEffect = context.Content.Load<SoundEffect>("Sounds/PlayerPickUp");
             _putDownEffect = context.Content.Load<SoundEffect>("Sounds/PlayerPutDown");
@@ -46,11 +46,7 @@ namespace Strategy.Interface.Gameplay
             _placeEffect = context.Content.Load<SoundEffect>("Sounds/PlayerPlace");
             _invalidEffect = context.Content.Load<SoundEffect>("Sounds/PlayerInvalid");
 
-            // bounce the cursor until the player acts
-            _animation = new SequentialAnimation(
-                new PositionAnimation(_cursor, _cursor.Position + new Vector2(0, -10), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
-                new PositionAnimation(_cursor, _cursor.Position, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
-                new DelayAnimation(0.5f));
+            _animation = GetBounceAnimation();
             _repeatAnimation = true;
         }
 
@@ -90,12 +86,7 @@ namespace Strategy.Interface.Gameplay
         {
             Cell cell = ChooseCell(Input.Hovered);
             _cursor.Position = GetPosition(cell);
-            if (Input.Selected != null && Input.Hovered == Input.Selected)
-            {
-                _cursor.Position += HoverOffset;
-            }
-
-            _animation = null; // end the bounce animation
+            _animation = GetBounceAnimation();
         }
 
         /// <summary>
@@ -105,17 +96,10 @@ namespace Strategy.Interface.Gameplay
         {
             if (Input.Selected != null)
             {
-                Vector2 selectedPosition = GetPosition(ChooseCell(Input.Selected)) + HoverOffset;
-                _animation = new PositionAnimation(_cursor, selectedPosition, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticIn));
                 _pickUpEffect.Play();
             }
             else
             {
-                if (Input.Hovered == args.PreviousInput)
-                {
-                    Vector2 deselectedPosition = GetPosition(ChooseCell(Input.Hovered));
-                    _animation = new PositionAnimation(_cursor, deselectedPosition, 0.1f, Interpolation.InterpolateVector2(Easing.QuadraticOut));
-                }
                 if (args.WasPlayerInitiated)
                 {
                     _putDownEffect.Play();
@@ -182,8 +166,19 @@ namespace Strategy.Interface.Gameplay
         {
             Point point = _context.IsoParams.GetPoint(cell);
             Vector2 position = new Vector2(point.X, point.Y);
-            position += new Vector2(9, 9); // offset in tile
+            position += new Vector2(9, 8); // offset in tile
             return position;
+        }
+
+        /// <summary>
+        /// Creates an animation of the cursor bouncing at its current position.
+        /// </summary>
+        private IAnimation GetBounceAnimation()
+        {
+            return new SequentialAnimation(
+                new PositionAnimation(_cursor, _cursor.Position + new Vector2(0, -10), 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticIn)),
+                new PositionAnimation(_cursor, _cursor.Position, 0.5f, Interpolation.InterpolateVector2(Easing.QuadraticOut)),
+                new DelayAnimation(0.5f));
         }
 
         private InterfaceContext _context;
