@@ -155,15 +155,13 @@ namespace Strategy.Interface.Gameplay
             else if (Move.Pressed)
             {
                 Vector2 direction = GetDirectionInInputSpace();
-
-                Territory newHovered = null;
-                float minAngle = float.MaxValue;
-                float minDistance2 = float.MaxValue;
                 Point curLoc = GetPointInInputSpace(Hovered.Location);
 
                 IEnumerable<Territory> territoriesToConsider = (Selected != null)
                     ? Selected.Neighbors.Concat(Selected)
                     : _match.Map.Territories.Where(t => t.Owner == Player);
+
+                List<MoveOption> options = new List<MoveOption>();
 
                 foreach (Territory other in territoriesToConsider)
                 {
@@ -176,26 +174,29 @@ namespace Strategy.Interface.Gameplay
                     Point otherLoc = GetPointInInputSpace(other.Location);
                     Vector2 toOtherLoc = new Vector2(otherLoc.X - curLoc.X, otherLoc.Y - curLoc.Y);
 
-                    float distance2 = toOtherLoc.LengthSquared();
-
                     float dot = Vector2.Dot(direction, toOtherLoc);
                     float crossMag = direction.X * toOtherLoc.Y - direction.Y * toOtherLoc.X;
                     float angle = (float)Math.Abs(Math.Atan2(crossMag, dot));
 
-                    // choose the best angle and distance, but favour localaity over minimizing the angle
-                    bool areAnglesClose = Math.Abs(angle - minAngle) < MoveAngleThreshold;
-                    if ((angle < minAngle && distance2 < minDistance2) ||
-                        (areAnglesClose && distance2 < minDistance2) || (!areAnglesClose && angle < minAngle))
+                    float distance = Hovered.Neighbors.Contains(other) ? 0 : toOtherLoc.LengthSquared();
+
+                    options.Add(new MoveOption()
                     {
-                        minAngle = angle;
-                        minDistance2 = distance2;
-                        newHovered = other;
-                    }
+                        Territory = other,
+                        Angle = angle,
+                        Distance = distance
+                    });
                 }
 
-                if (newHovered != null)
+                // choose the closest territory with an acceptable angle (possibly none)
+                var sortedOptions = options.OrderBy(t => t.Distance).ThenBy(t => t.Angle);
+                foreach (MoveOption option in sortedOptions)
                 {
-                    SetHovered(newHovered);
+                    if (option.Angle < (Math.PI / 3))
+                    {
+                        SetHovered(option.Territory);
+                        break;
+                    }
                 }
             }
 
@@ -270,13 +271,23 @@ namespace Strategy.Interface.Gameplay
             }
         }
 
+        /// <summary>
+        /// Describes a possible move.
+        /// </summary>
+        private struct MoveOption
+        {
+            public Territory Territory;
+            public float Angle;
+            public float Distance;
+        }
+
         private Match _match;
         private IsometricParameters _isoParams;
 
         private bool _actionPending;
 
         private Input _input;
-        private readonly ControlState Move = new ControlState() { RepeatEnabled = true };
+        private readonly ControlState Move = new ControlState();
         private readonly ControlPosition MoveDirection = new ControlPosition();
         private readonly ControlState Action = new ControlState();
         private readonly ControlState Cancel = new ControlState();
