@@ -238,18 +238,6 @@ namespace Strategy.Interface.Screens
         {
             Debug.WriteLine(args.NewHost.Gamertag + " is now host (was " + args.OldHost.Gamertag + ")");
 
-            if (_net.Session.SessionState == NetworkSessionState.Playing)
-            {
-                // once the game has started host changes do not matter
-                return;
-            }
-
-            if (_net.Session.IsHost)
-            {
-                // use a new configuration with the new host to sync all players
-                _configuration.Seed = _random.Next(1, int.MaxValue);
-            }
-
             // update the configuration ui
             UpdateUiForHostChange();
 
@@ -263,6 +251,13 @@ namespace Strategy.Interface.Screens
             Player newHostPlayer = FindPlayerByGamer(args.NewHost);
             NetworkPlayerSlot newHostSlot = FindSlotByPlayer(newHostPlayer) as NetworkPlayerSlot;
             newHostSlot.UpdateHostStatus();
+
+            // use a new configuration with the new host to sync all players
+            // not necessary after the match has started
+            if (_net.Session.IsHost && _net.Session.SessionState == NetworkSessionState.Lobby)
+            {
+                _configuration.Seed = _random.Next(1, int.MaxValue);
+            }
         }
 
         private void OnGameStarted(object sender, GameStartedEventArgs args)
@@ -448,7 +443,6 @@ namespace Strategy.Interface.Screens
             _mapSizeEntry.IsSelectable = _net.Session.IsHost;
             _difficultyEntry.IsSelectable = _net.Session.IsHost;
             UpdateUiForCanStartChange();
-            SetSelected(0); // propagate the selectable state to the legend
         }
         
         protected override void SetSelected(int deltaIdx)
