@@ -17,6 +17,7 @@ namespace Strategy.Library.Sound
         public MusicController(Game game) : base(game)
         {
             MediaPlayer.IsRepeating = true;
+            _didGameHaveControl = MediaPlayer.GameHasControl;
         }
 
         public override void Update(GameTime gameTime)
@@ -37,6 +38,16 @@ namespace Strategy.Library.Sound
                     _fadeInAnimation = null;
                 }
             }
+
+            if (!_didGameHaveControl && MediaPlayer.GameHasControl)
+            {
+                // game got control back from the player, restart the music
+                if (MediaPlayer.State == MediaState.Stopped && _nextSongToPlay != null)
+                {
+                    Play(_nextSongToPlay);
+                }
+            }
+            _didGameHaveControl = MediaPlayer.GameHasControl;
         }
 
         /// <summary>
@@ -44,7 +55,8 @@ namespace Strategy.Library.Sound
         /// </summary>
         public void Play(Song song)
         {
-            MediaPlayer.Play(song);
+            _nextSongToPlay = song;
+            MediaPlayer.Play(_nextSongToPlay);
             _fadeOutAnimation = null;
             _fadeInAnimation = null;
         }
@@ -108,6 +120,8 @@ namespace Strategy.Library.Sound
         private VolumeAnimation _fadeInAnimation;
 
         private Song _nextSongToPlay;
+
+        private bool _didGameHaveControl;
 
         private const float MusicVolume = 0.3f;
     }
