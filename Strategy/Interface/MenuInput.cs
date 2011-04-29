@@ -12,8 +12,8 @@ namespace Strategy.Interface
     {
         public PlayerIndex? Controller
         {
-            get { return _input.Controller; }
-            set { _input.Controller = value; }
+            get { return _controller; }
+            set { _input.Controller = _controller = value; }
         }
 
         public readonly ControlState Action = new ControlState();
@@ -78,7 +78,8 @@ namespace Strategy.Interface
             {
                 if (Activate[(int)p].Pressed)
                 {
-                    _input.Controller = p;
+                    _controller = p;
+                    _input.Controller = _controller;
                     _input.Update(0f); // force an update to initialise the state
                     return true;
                 }
@@ -88,5 +89,7 @@ namespace Strategy.Interface
 
         private Input _input;
         private Input[] _inputs;
+
+        private PlayerIndex? _controller;
     }
 }
