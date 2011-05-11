@@ -115,7 +115,6 @@ namespace Strategy.Net
         private static void SetCurrentSession(NetworkSession session)
         {
             CurrentSession = session;
-            CurrentSession.SessionEnded += (s,a) => CurrentSession = null;
         }
 
         /// <summary>

@@ -238,6 +238,13 @@ namespace Strategy.Interface.Screens
         {
             Debug.WriteLine(args.NewHost.Gamertag + " is now host (was " + args.OldHost.Gamertag + ")");
 
+            // host changes only occur in local sessions when a player is
+            // signing out, which will ultimately bail us from the lobby
+            if (_net.Session.IsLocalSession())
+            {
+                return;
+            }
+
             // update the configuration ui
             UpdateUiForHostChange();
 
@@ -724,7 +731,7 @@ namespace Strategy.Interface.Screens
 
         protected override Color GetIconColor()
         {
-            return (Player != null) ? _playerId.GetPieceColor() : Color.White;
+            return (Player != null) ? _playerId.GetPieceColor() : Color.Transparent;
         }
 
         private PlayerId _playerId;

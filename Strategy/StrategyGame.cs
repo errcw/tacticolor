@@ -163,7 +163,7 @@ namespace Strategy
             else
             {
                 // dispose the current session if one exists
-                if (NetworkSessionProvider.CurrentSession != null)
+                if (NetworkSessionProvider.CurrentSession != null && !NetworkSessionProvider.CurrentSession.IsDisposed)
                 {
                     NetworkSessionProvider.CurrentSession.Dispose();
                 }
@@ -213,19 +213,9 @@ namespace Strategy
 
         private void OnGamerSignedOut(object sender, SignedOutEventArgs args)
         {
-            bool shouldBail = false;
-            if (NetworkSessionProvider.CurrentSession != null)
-            {
-                // player that signed out was playing a game
-                Gamer player = NetworkSessionProvider.CurrentSession.LocalGamers.AsEnumerable<Gamer>().FirstOrDefault(gamer => gamer.Gamertag == args.Gamer.Gamertag);
-                shouldBail = player != null;
-            }
-            else
-            {
-                // player that signed out was controlling the menus
-                shouldBail = _input.Controller.Value == args.Gamer.PlayerIndex;
-            }
-            // only bail if we have passed the title screen
+            // bail if player that signed out was controlling the menus
+            bool shouldBail = _input.Controller.Value == args.Gamer.PlayerIndex;
+            // but only bail if we have passed the title screen
             shouldBail &= !(_screens.ActiveScreen is TitleScreen);
             if (shouldBail)
             {
