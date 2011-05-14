@@ -45,6 +45,11 @@ namespace Strategy.Interface.Screens
         protected int SelectedEntryIndex { get { return _selectedEntryAbs; } }
 
         /// <summary>
+        /// The index of the currently selected menu entry relative to the currently visible entries.
+        /// </summary>
+        protected int SelectedEntryRelativeIndex { get { return _selectedEntryRel; } }
+
+        /// <summary>
         /// Creates a new menu screen.
         /// </summary>
         public MenuScreen(Game game)

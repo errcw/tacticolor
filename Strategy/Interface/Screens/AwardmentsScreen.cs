@@ -44,7 +44,8 @@ namespace Strategy.Interface.Screens
                 Sprite title = new TextSprite(titleFont, awardment.Name);
                 title.Position = new Vector2(image.Size.X + 10, 0);
 
-                Sprite description = new TextSprite(descFont, awardment.Description);
+                //Sprite description = new TextSprite(descFont, awardment.Description);
+                Sprite description = BuildWrappedTextSprite(awardment.Description, descFont, 225f);
                 description.Position = new Vector2(
                     title.Position.X,
                     title.Position.Y + title.Size.Y + 5);
@@ -60,7 +61,48 @@ namespace Strategy.Interface.Screens
 
             TransitionOnTime = 0.01f;
             BasePosition = new Vector2(150f, 120f);
-            VisibleEntryCount = 1;
+            VisibleEntryCount = 3;
+            Spacing = 35f;
+        }
+
+        private Sprite BuildWrappedTextSprite(String text, SpriteFont font, float lineWidth)
+        {
+            CompositeSprite textSprite = new CompositeSprite();
+            float x = 0f, y = 0f;
+
+            string[] words = text.Split(' ');
+            foreach (string word in words)
+            {
+                float wordWidth = font.MeasureString(word + " ").X;
+                if (x + wordWidth > lineWidth)
+                {
+                    x = 0f;
+                    y += font.LineSpacing;
+                }
+
+                TextSprite wordSprite = new TextSprite(font, word + " ");
+                wordSprite.Position = new Vector2(x, y);
+                textSprite.Add(wordSprite);
+
+                x += wordWidth;
+            }
+
+            return textSprite;
+        }
+
+        protected override void SetSelected(int deltaIdx)
+        {
+            // move the cursor to the edge of the visible entries such that
+            // we always scroll the visible entry set (and never internally)
+            if (deltaIdx > 0)
+            {
+                deltaIdx += VisibleEntryCount - SelectedEntryRelativeIndex - deltaIdx;
+            }
+            else if (deltaIdx < 0)
+            {
+                deltaIdx -= SelectedEntryRelativeIndex;
+            }
+            base.SetSelected(deltaIdx);
         }
 
         protected internal override void Show(bool pushed)
@@ -89,6 +131,7 @@ namespace Strategy.Interface.Screens
             _upsellPanel.Update(gameTime.GetElapsedSeconds());
             base.UpdateTransitionOn(gameTime, progress, pushed);
         }
+
         protected override void UpdateTransitionOff(GameTime gameTime, float progress, bool popped)
         {
             _upsellPanel.Update(gameTime.GetElapsedSeconds());
