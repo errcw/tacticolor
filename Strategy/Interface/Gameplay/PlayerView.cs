@@ -27,7 +27,7 @@ namespace Strategy.Interface.Gameplay
             _match = match;
 
             Vector2 position = GetBasePosition(Player.Id);
-            SpriteFont font = context.Content.Load<SpriteFont>("Fonts/Gamertag");
+            SpriteFont font = context.Content.Load<SpriteFont>("Fonts/Text");
             string name = Player.DisplayName;
             float nameWidth = font.MeasureString(name).X;
 

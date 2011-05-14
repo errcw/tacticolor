@@ -6,6 +6,7 @@
     <Spacing>0</Spacing>
     <UseKerning>true</UseKerning>
     <Style>Bold</Style>
+    <DefaultCharacter>&#95;</DefaultCharacter>
     <CharacterRegions>
       <CharacterRegion>
         <Start>&#32;</Start>

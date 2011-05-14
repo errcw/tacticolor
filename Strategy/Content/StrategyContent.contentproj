@@ -119,13 +119,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fonts\Gamertag.spritefont">
-      <Name>Gamertag</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Images\PieceAvailable.png">
       <Name>PieceAvailable</Name>
       <Importer>TextureImporter</Importer>
