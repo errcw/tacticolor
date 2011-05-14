@@ -418,7 +418,7 @@
     <value>Exit to Dashboard</value>
   </data>
   <data name="MenuExitNo" xml:space="preserve">
-    <value>No, Back to Main Menu</value>
+    <value>No, Keep Playing</value>
   </data>
   <data name="MenuExitYes" xml:space="preserve">
     <value>Yes, Exit to Dashboard</value>
@@ -446,10 +446,10 @@
     <value>Leave Match</value>
   </data>
   <data name="MenuLeaveNo" xml:space="preserve">
-    <value>No, Back to Match Menu</value>
+    <value>No, Keep Playing</value>
   </data>
   <data name="MenuLeaveYes" xml:space="preserve">
-    <value>Yes, Exit to Main Menu</value>
+    <value>Yes, Exit to Menu</value>
   </data>
   <data name="MenuLocalGame" xml:space="preserve">
     <value>Local Game</value>
