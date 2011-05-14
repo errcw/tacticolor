@@ -349,7 +349,7 @@ namespace Strategy.Interface.Screens
             _selectTextSprite = new TextSprite(font, Resources.MenuSelect);
             _selectTextSprite.Position = new Vector2(
                 selectImage.Position.X + selectImage.Size.X + 5,
-                selectImage.Position.Y + (selectImage.Size.Y - _selectTextSprite.Size.Y) / 2);
+                selectImage.Position.Y + (selectImage.Size.Y - _selectTextSprite.Size.Y) / 2 + 2);
             _selectSprite = new CompositeSprite(selectImage, _selectTextSprite);
             _selectSprite.Position = ControlsBasePosition;
 
@@ -357,7 +357,7 @@ namespace Strategy.Interface.Screens
             TextSprite backText = new TextSprite(font, Resources.MenuBack);
             backText.Position = new Vector2(
                 backImage.Position.X + backImage.Size.X + 5,
-                backImage.Position.Y + (backImage.Size.Y - backText.Size.Y) / 2);
+                backImage.Position.Y + (backImage.Size.Y - backText.Size.Y) / 2 + 2);
             _backSprite = new CompositeSprite(backImage, backText);
             _backSprite.Position = new Vector2(
                 ControlsBasePosition.X,
@@ -367,7 +367,7 @@ namespace Strategy.Interface.Screens
             _moveTextSprite = new TextSprite(font, Resources.MenuNext);
             _moveTextSprite.Position = new Vector2(
                 moveImage.Position.X + moveImage.Size.X + 5,
-                moveImage.Position.Y + (moveImage.Size.Y - _moveTextSprite.Size.Y) / 2);
+                moveImage.Position.Y + (moveImage.Size.Y - _moveTextSprite.Size.Y) / 2 + 2);
             _moveSprite = new CompositeSprite(moveImage, _moveTextSprite);
             _moveSprite.Position = ControlsBasePosition;
 

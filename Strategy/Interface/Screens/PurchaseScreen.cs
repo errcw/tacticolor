@@ -25,7 +25,7 @@ namespace Strategy.Interface.Screens
             TextSprite instructions = new TextSprite(font, Resources.MenuPurchase);
             instructions.Position = new Vector2(
                 _boxRightX - instructions.Size.X,
-                _boxBottomY + instructions.Size.Y + 15);
+                _boxBottomY + instructions.Size.Y + 17);
             instructions.Color = Color.White;
 
             ImageSprite button = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonX"));

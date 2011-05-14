@@ -436,7 +436,7 @@
     <value>Invite</value>
   </data>
   <data name="MenuJoin" xml:space="preserve">
-    <value>         to join</value>
+    <value>        to join</value>
     <comment>Spacing used as a hacky layout workaround</comment>
   </data>
   <data name="MenuJoinMatch" xml:space="preserve">
@@ -461,7 +461,7 @@
     <value>Map Type</value>
   </data>
   <data name="MenuMultiplayerGame" xml:space="preserve">
-    <value>Xbox LIVE Game</value>
+    <value>Online Game</value>
   </data>
   <data name="MenuMultiplayerUnavailable" xml:space="preserve">
     <value>You cannot play online as this gamer.</value>
@@ -495,7 +495,7 @@
     <value>Previous</value>
   </data>
   <data name="MenuPurchase" xml:space="preserve">
-    <value>Get Full Version</value>
+    <value>Buy Now!</value>
   </data>
   <data name="MenuReturnMatch" xml:space="preserve">
     <value>Return to Match</value>

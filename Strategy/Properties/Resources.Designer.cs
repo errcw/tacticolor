@@ -1015,7 +1015,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to          to join.
+        ///   Looks up a localized string similar to         to join.
         /// </summary>
         internal static string MenuJoin {
             get {
@@ -1087,7 +1087,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Xbox LIVE Game.
+        ///   Looks up a localized string similar to Online Game.
         /// </summary>
         internal static string MenuMultiplayerGame {
             get {
@@ -1186,7 +1186,7 @@ namespace Strategy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Get Full Version.
+        ///   Looks up a localized string similar to Buy Now!.
         /// </summary>
         internal static string MenuPurchase {
             get {

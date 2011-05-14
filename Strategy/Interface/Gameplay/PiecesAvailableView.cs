@@ -176,14 +176,14 @@ namespace Strategy.Interface.Gameplay
         {
             const int OriginOffset = 12;
             const int BaseX = 80 + OriginOffset;
-            const int BaseY = 80;
+            const int BaseY = 85;
             const int SpacingY = 100;
             switch (player)
             {
                 case PlayerId.A: return new Vector2(BaseX, BaseY + OriginOffset);
                 case PlayerId.B: return new Vector2(BaseX, BaseY + OriginOffset + SpacingY);
-                case PlayerId.C: return new Vector2(BaseX, 720 - 25 - BaseY + OriginOffset - SpacingY);
-                case PlayerId.D: return new Vector2(BaseX, 720 - 25 - BaseY + OriginOffset);
+                case PlayerId.C: return new Vector2(BaseX, 720 - 20 - BaseY + OriginOffset - SpacingY);
+                case PlayerId.D: return new Vector2(BaseX, 720 - 20 - BaseY + OriginOffset);
                 default: throw new ArgumentException("Invalid player id " + player);
             }
         }

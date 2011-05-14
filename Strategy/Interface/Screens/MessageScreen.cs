@@ -58,7 +58,7 @@ namespace Strategy.Interface.Screens
             CompositeSprite message = new CompositeSprite(lineSprites);
 
             TextSprite instructions = new TextSprite(font, Resources.MenuContinue);
-            instructions.Position = new Vector2(_boxRightX - instructions.Size.X, _boxBottomY + 5);
+            instructions.Position = new Vector2(_boxRightX - instructions.Size.X, _boxBottomY + 7);
             instructions.Color = Color.White;
 
             ImageSprite button = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonA"));
