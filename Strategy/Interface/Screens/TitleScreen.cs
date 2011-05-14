@@ -46,7 +46,7 @@ namespace Strategy.Interface.Screens
             _title.Position = new Vector2((1280 - _title.Size.X) / 2, (720 - _title.Size.Y) / 2);
             _title.Color = Color.White;
 
-            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextLarge");
+            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/Text");
             Vector2 loadingTextSize = font.MeasureString(Resources.Loading);
             _loadingText = new TextSprite(font, Resources.Loading);
             _loadingText.Position = new Vector2((1280 - loadingTextSize.X) / 2, 720 - 200);

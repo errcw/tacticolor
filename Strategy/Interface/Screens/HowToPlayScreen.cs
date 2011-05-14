@@ -22,7 +22,7 @@ namespace Strategy.Interface.Screens
         public HowToPlayScreen(Game game) : base(game)
         {
             SpriteFont normalFont = game.Content.Load<SpriteFont>("Fonts/TextSmall");
-            SpriteFont emphasisFont = game.Content.Load<SpriteFont>("Fonts/TextSmallBold");
+            SpriteFont emphasisFont = game.Content.Load<SpriteFont>("Fonts/Text");
 
             MenuBuilder builder = new MenuBuilder(this, game);
             for (int page = 1; page <= 4; page++)

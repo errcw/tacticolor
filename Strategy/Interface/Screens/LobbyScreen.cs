@@ -68,12 +68,12 @@ namespace Strategy.Interface.Screens
             _background = new ImageSprite(game.Content.Load<Texture2D>("Images/BackgroundLobby"));
 
             ImageSprite readyImage = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonX"));
-            TextSprite readyText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuToggleReady);
+            TextSprite readyText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/Text"), Resources.MenuToggleReady);
             readyText.Position = new Vector2(readyImage.Size.X + 5, (readyImage.Size.Y - readyText.Size.Y) / 2);
 
             ImageSprite inviteImage = new ImageSprite(game.Content.Load<Texture2D>("Images/ButtonY"));
             inviteImage.Position = new Vector2(0, readyImage.Position.Y + readyImage.Size.Y + 10);
-            TextSprite inviteText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLarge"), Resources.MenuInvite);
+            TextSprite inviteText = new TextSprite(game.Content.Load<SpriteFont>("Fonts/Text"), Resources.MenuInvite);
             inviteText.Position = new Vector2(inviteImage.Size.X + 5, inviteImage.Position.Y + (inviteImage.Size.Y - inviteText.Size.Y) / 2);
 
             _buttonsLegend = new CompositeSprite(readyImage, readyText, inviteImage, inviteText);

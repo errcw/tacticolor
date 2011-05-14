@@ -9,13 +9,12 @@ Images\TileHolder
 Images\Piece
 Images\Cursor
 Fonts\Gamertag
-Fonts\Roll
 Images\PieceAvailable
 Images\PieceReadyOverlay
 Images\PieceSelectedOverlay
 Images\PieceShadow
 Images\Title
-Fonts\TextLarge
+Fonts\Text
 Images\Voice
 Images\MessageBox
 Images\Colourable
@@ -34,7 +33,6 @@ Images\BackgroundUI
 Images\Lag
 Images\Controls
 Fonts\TextSmallItalic
-Fonts\TextSmallBold
 Images\HowToPlay1
 Images\HowToPlay2
 Images\HowToPlay3
@@ -46,7 +44,6 @@ Images\LobbyBox
 Images\Ready
 Images\LobbyReady
 Images\LobbyUnready
-Fonts\TextVeryLarge
 Images\ButtonY
 Images\TerritoryAttack
 Images\TerritoryDefend

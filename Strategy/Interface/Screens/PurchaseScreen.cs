@@ -19,7 +19,7 @@ namespace Strategy.Interface.Screens
         {
             _trialComponent = game.Services.GetService<TrialModeObserverComponent>();
 
-            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextLarge");
+            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/Text");
 
             // build the purchase instructions
             TextSprite instructions = new TextSprite(font, Resources.MenuPurchase);

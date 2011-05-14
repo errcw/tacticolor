@@ -126,13 +126,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fonts\Roll.spritefont">
-      <Name>Roll</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Images\PieceAvailable.png">
       <Name>PieceAvailable</Name>
       <Importer>TextureImporter</Importer>
@@ -168,8 +161,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fonts\TextLarge.spritefont">
-      <Name>TextLarge</Name>
+    <Compile Include="Fonts\Text.spritefont">
+      <Name>Text</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
     </Compile>
@@ -329,13 +322,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fonts\TextSmallBold.spritefont">
-      <Name>TextSmallBold</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Images\HowToPlay1.png">
       <Name>HowToPlay1</Name>
       <Importer>TextureImporter</Importer>
@@ -402,13 +388,6 @@
       <Name>LobbyUnready</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Fonts\TextVeryLarge.spritefont">
-      <Name>TextVeryLarge</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>

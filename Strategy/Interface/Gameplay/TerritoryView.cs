@@ -69,7 +69,7 @@ namespace Strategy.Interface.Gameplay
                 (int)(territoryPosition.Y - _attackPartySprite.Size.Y / 2));
             _attackPartySprite.Color = Color.White;
 
-            _attackRollSprite = new TextSprite(context.Content.Load<SpriteFont>("Fonts/TextSmallBold"), "1");
+            _attackRollSprite = new TextSprite(context.Content.Load<SpriteFont>("Fonts/Text"), "1");
             _attackRollSprite.Origin = new Vector2(0, (int)(_attackRollSprite.Size.Y / 2));
             _attackRollSprite.Position = _attackPartySprite.Position + _attackRollSprite.Origin + new Vector2(_attackPartySprite.Size.X + 3, 1);
             _attackRollSprite.Color = Color.White;

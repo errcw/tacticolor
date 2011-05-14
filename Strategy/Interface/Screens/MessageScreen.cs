@@ -43,7 +43,7 @@ namespace Strategy.Interface.Screens
             _boxRightX = box.Position.X + box.Size.X;
             _boxBottomY = box.Position.Y + box.Size.Y;
 
-            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextLarge");
+            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/Text");
             string[] lines = SplitLines(messageText, box.Size.X * 0.8f, font);
             Sprite[] lineSprites = new Sprite[lines.Length];
             float y = box.Position.Y + (box.Size.Y - font.LineSpacing * lines.Length) / 2;

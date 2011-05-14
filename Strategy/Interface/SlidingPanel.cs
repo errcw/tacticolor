@@ -32,7 +32,7 @@ namespace Strategy.Interface
             Hidden = new Vector2(1280, verticalPosition);
 
             Texture2D background = content.Load<Texture2D>("Images/SlidingPanelBackground");
-            SpriteFont font = content.Load<SpriteFont>("Fonts/TextLarge");
+            SpriteFont font = content.Load<SpriteFont>("Fonts/Text");
             Vector2 charSize = font.MeasureString(text);
 
             ImageSprite backSprite = new ImageSprite(background);

@@ -343,7 +343,7 @@ namespace Strategy.Interface.Screens
         /// </summary>
         private void LoadContent(ContentManager content)
         {
-            SpriteFont font = content.Load<SpriteFont>("Fonts/TextLarge");
+            SpriteFont font = content.Load<SpriteFont>("Fonts/Text");
 
             ImageSprite selectImage = new ImageSprite(content.Load<Texture2D>("Images/ButtonA"));
             _selectTextSprite = new TextSprite(font, Resources.MenuSelect);

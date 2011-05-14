@@ -21,7 +21,7 @@ namespace Strategy.Interface.Gameplay
             _lastCount = _match.TerritoriesOwnedCount[(int)_player];
 
             Texture2D tileTex = context.Content.Load<Texture2D>("Images/TileHolder");
-            SpriteFont countFont = context.Content.Load<SpriteFont>("Fonts/TextLarge");
+            SpriteFont countFont = context.Content.Load<SpriteFont>("Fonts/Text");
             Vector2 position = GetBasePosition(player);
 
             _tileSprite = new ImageSprite(tileTex);

@@ -26,7 +26,7 @@ namespace Strategy.Interface.Screens
         {
             _screen = screen;
             _game = game;
-            _font = _game.Content.Load<SpriteFont>("Fonts/TextLarge");
+            _font = _game.Content.Load<SpriteFont>("Fonts/Text");
             _fontSmall = _game.Content.Load<SpriteFont>("Fonts/TextSmall");
         }
 
