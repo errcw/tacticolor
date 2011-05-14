@@ -1,4 +1,4 @@
-Fonts\TextSmall
+Fonts\TextLight
 Sounds\MenuBack
 Sounds\MenuMove
 Sounds\MenuSelect
@@ -31,7 +31,7 @@ Images\BackgroundGame
 Images\BackgroundUI
 Images\Lag
 Images\Controls
-Fonts\TextSmallItalic
+Fonts\TextLightItalic
 Images\HowToPlay1
 Images\HowToPlay2
 Images\HowToPlay3

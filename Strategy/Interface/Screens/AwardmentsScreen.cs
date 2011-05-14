@@ -31,8 +31,8 @@ namespace Strategy.Interface.Screens
 
             Texture2D earnedTex = game.Content.Load<Texture2D>("Images/AwardmentEarned");
             Texture2D unearnedTex = game.Content.Load<Texture2D>("Images/AwardmentNotEarned");
-            SpriteFont titleFont = game.Content.Load<SpriteFont>("Fonts/TextSmallItalic");
-            SpriteFont descFont = game.Content.Load<SpriteFont>("Fonts/TextSmall");
+            SpriteFont titleFont = game.Content.Load<SpriteFont>("Fonts/TextLightItalic");
+            SpriteFont descFont = game.Content.Load<SpriteFont>("Fonts/TextLight");
 
             // build an entry for every awardment
             MenuBuilder builder = new MenuBuilder(this, game);

@@ -27,7 +27,7 @@ namespace Strategy.Library.Components
         public ExceptionDebugGame(Exception exception)
         {
             Exception = exception;
-            FontName = "Fonts/TextSmall";
+            FontName = "Fonts/TextLight";
 
             new GraphicsDeviceManager(this)
             {

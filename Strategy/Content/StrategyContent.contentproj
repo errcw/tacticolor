@@ -55,8 +55,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fonts\TextSmall.spritefont">
-      <Name>TextSmall</Name>
+    <Compile Include="Fonts\TextLight.spritefont">
+      <Name>TextLight</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
     </Compile>
@@ -308,8 +308,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fonts\TextSmallItalic.spritefont">
-      <Name>TextSmallItalic</Name>
+    <Compile Include="Fonts\TextLightItalic.spritefont">
+      <Name>TextLightItalic</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
     </Compile>

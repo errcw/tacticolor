@@ -21,7 +21,7 @@ namespace Strategy.Interface.Screens
     {
         public ControlsScreen(Game game) : base(game)
         {
-            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextSmall");
+            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextLight");
             Sprite aText = new TextSprite(font, Resources.ControlsA) { Position = new Vector2(436, 237) };
             Sprite bText = new TextSprite(font, Resources.ControlsB) { Position = new Vector2(436, 156) };
             Sprite xText = new TextSprite(font, Resources.ControlsX) { Position = new Vector2(436, 79) };

@@ -80,7 +80,7 @@ namespace Strategy.Interface.Screens
             _buttonsLegend.Position = new Vector2(ControlsBasePosition.X + 150, ControlsBasePosition.Y);
             _buttonsLegend.Color = _net.Session.IsLocalSession() ? Color.Transparent : Color.White;
 
-            _optionsLegend = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextSmall"));
+            _optionsLegend = new TextSprite(game.Content.Load<SpriteFont>("Fonts/TextLight"));
             _optionsLegend.Position = LegendBase;
 
             new MenuBuilder(this, game)
@@ -627,7 +627,7 @@ namespace Strategy.Interface.Screens
                 (int)(_backgroundSprite.Position.Y + (_backgroundSprite.Size.Y - _labelImageSprite.Size.Y) / 2))
                 + _labelImageSprite.Origin;
 
-            _labelTextSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextSmall"), Resources.MenuJoin);
+            _labelTextSprite = new TextSprite(content.Load<SpriteFont>("Fonts/TextLight"), Resources.MenuJoin);
             _labelTextSprite.Color = Color.Black;
             _labelTextSprite.Position = new Vector2(
                 (int)(_backgroundSprite.Position.X + 25),

@@ -22,7 +22,7 @@ namespace Strategy.Library.Components
         public FpsOverlay(Game game) : base(game)
         {
             DrawOrder = Int32.MaxValue; // draw last
-            FontName = "Fonts/TextSmall";
+            FontName = "Fonts/Text";
         }
 
         protected override void LoadContent()

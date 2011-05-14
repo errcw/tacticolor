@@ -21,8 +21,8 @@ namespace Strategy.Interface.Screens
     {
         public CreditsScreen(Game game) : base(game)
         {
-            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextSmall");
-            SpriteFont titleFont = game.Content.Load<SpriteFont>("Fonts/TextSmallItalic");
+            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/TextLight");
+            SpriteFont titleFont = game.Content.Load<SpriteFont>("Fonts/TextLightItalic");
             Sprite main = new TextSprite(font, Resources.CreditsMain) { Position = new Vector2(0, 0) };
             Sprite musicTitle = new TextSprite(titleFont, Resources.CreditsSoundMusic) { Position = new Vector2(0, 35) };
             Sprite musicList = new TextSprite(font, Resources.CreditsSoundMusicList) { Position = new Vector2(15, 60) };

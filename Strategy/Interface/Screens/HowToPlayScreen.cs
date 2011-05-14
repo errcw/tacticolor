@@ -21,7 +21,7 @@ namespace Strategy.Interface.Screens
     {
         public HowToPlayScreen(Game game) : base(game)
         {
-            SpriteFont normalFont = game.Content.Load<SpriteFont>("Fonts/TextSmall");
+            SpriteFont normalFont = game.Content.Load<SpriteFont>("Fonts/TextLight");
             SpriteFont emphasisFont = game.Content.Load<SpriteFont>("Fonts/Text");
 
             MenuBuilder builder = new MenuBuilder(this, game);
